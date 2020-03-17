@@ -5,19 +5,19 @@
 <web-app>
   <display-name>VeriFit OSLC Analysis</display-name>
   <context-param>
-    <param-name>verifit.servlet.baseurl</param-name>
+    <param-name>verifit.analysis.servlet.baseurl</param-name>
     <param-value>http://localhost:8080</param-value>
     <description>Base URI for the adaptor.</description>
   </context-param>
   <listener>
-    <listener-class>verifit.anaconda.servlet.ServletListener</listener-class>
+    <listener-class>verifit.analysis.servlet.ServletListener</listener-class>
   </listener>
   <servlet>
     <servlet-name>JAX-RS Servlet</servlet-name>
     <servlet-class>org.apache.wink.server.internal.servlet.RestServlet</servlet-class>
     <init-param>
       <param-name>javax.ws.rs.Application</param-name>
-      <param-value>verifit.anaconda.servlet.Application</param-value>
+      <param-value>verifit.analysis.servlet.Application</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>

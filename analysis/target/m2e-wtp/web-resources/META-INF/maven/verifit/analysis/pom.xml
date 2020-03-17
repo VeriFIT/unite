@@ -20,7 +20,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
-	<name>Anaconda OSLC Adapter</name>
+	<name>Verifit OSLC Analysis</name>
 	<dependencies>
 		<!-- Adaptor-specific dependencies -->
 		<dependency>
