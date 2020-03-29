@@ -32,7 +32,7 @@
           <basicCapabilities>
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.0"/>
           </basicCapabilities>
-          <basicCapabilities>
+          <basicCapabilities update="true">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.1"/>
           </basicCapabilities>
           <basicCapabilities>
@@ -79,7 +79,7 @@
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.0"/>
           </basicCapabilities>
           <basicCapabilities resourceTypes="//@specification/@domainSpecifications.0/@resources.1"/>
-          <basicCapabilities>
+          <basicCapabilities update="true">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.1"/>
           </basicCapabilities>
           <basicCapabilities>
@@ -98,6 +98,8 @@
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.3"/>
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.2/@resourceProperties.0"/>
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.2/@resourceProperties.1"/>
+        <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.2"/>
+        <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.1"/>
       </resources>
       <resources name="SUT">
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.8"/>
