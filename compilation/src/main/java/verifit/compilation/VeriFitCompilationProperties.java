@@ -42,6 +42,10 @@ public class VeriFitCompilationProperties
 		if (SPARQL_SERVER_UPDATE_ENDPOINT == null)
 			throw new IOException("sparql_update missing");
 		
+		SPARQL_SERVER_NAMED_GRAPH_RESOURCES = VeriFitCompilationProperties.getProperty("sparql_graph");	
+		if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
+			throw new IOException("sparql_graph missing");
+		
 		updateConstants();
 	}
 	
@@ -63,6 +67,7 @@ public class VeriFitCompilationProperties
 	public static String ADAPTER_HOST;
 	public static String ADAPTER_PORT;
 
+    public static String SPARQL_SERVER_NAMED_GRAPH_RESOURCES;
     public static String SPARQL_SERVER_QUERY_ENDPOINT;
     public static String SPARQL_SERVER_UPDATE_ENDPOINT;
     
@@ -71,8 +76,7 @@ public class VeriFitCompilationProperties
      *  Internal constants
      */
 	public static String SERVER_URL = ADAPTER_HOST + ":" + ADAPTER_PORT + "/";
-	public static final String ADAPTER_CONTEXT = "AnacondaOSLC/";
+	public static final String ADAPTER_CONTEXT = "compilation/";
     public static String PATH_AUTOMATION_SERVICE_PROVIDERS = SERVER_URL + ADAPTER_CONTEXT + "services/Automation/";
     public static String PATH_RESOURCE_SHAPES = SERVER_URL + ADAPTER_CONTEXT + "services/resourceShapes/";
-    public static final String SPARQL_SERVER_NAMED_GRAPH_RESOURCES = "http://automation_resources";
 }

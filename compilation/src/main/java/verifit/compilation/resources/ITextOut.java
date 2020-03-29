@@ -66,7 +66,9 @@ import org.eclipse.lyo.oslc4j.core.model.ValueType;
 
 import verifit.compilation.resources.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
+import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
+import org.eclipse.lyo.oslc.domains.IPerson;
 
 // Start of user code imports
 // End of user code
@@ -78,6 +80,7 @@ public interface ITextOut
 {
 
     public void addType(final Link type );
+    public void addCreator(final Link creator );
 
     @OslcName("title")
     @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "title")
@@ -110,10 +113,29 @@ public interface ITextOut
     @OslcReadOnly(false)
     public String getValue();
 
+    @OslcName("created")
+    @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "created")
+    @OslcDescription("Timestamp of resource creation")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.DateTime)
+    @OslcReadOnly(false)
+    public Date getCreated();
+
+    @OslcName("creator")
+    @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "creator")
+    @OslcDescription("Creator or creators of the resource. It is likely that the target resource will be a foaf:Person but that is not necessarily the case.")
+    @OslcOccurs(Occurs.ZeroOrMany)
+    @OslcValueType(ValueType.Resource)
+    @OslcRange({FoafDomainConstants.PERSON_TYPE})
+    @OslcReadOnly(false)
+    public HashSet<Link> getCreator();
+
 
     public void setTitle(final String title );
     public void setDescription(final String description );
     public void setType(final Set<Link> type );
     public void setValue(final String value );
+    public void setCreated(final Date created );
+    public void setCreator(final Set<Link> creator );
 }
 

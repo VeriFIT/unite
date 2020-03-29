@@ -74,7 +74,9 @@ import verifit.analysis.resources.FitDomainConstants;
 
 
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
+import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
+import org.eclipse.lyo.oslc.domains.Person;
 
 // Start of user code imports
 // End of user code
@@ -103,6 +105,12 @@ public class TextOut
     // Start of user code attributeAnnotation:value
     // End of user code
     private String value;
+    // Start of user code attributeAnnotation:created
+    // End of user code
+    private Date created;
+    // Start of user code attributeAnnotation:creator
+    // End of user code
+    private HashSet<Link> creator = new HashSet<Link>();
     
     // Start of user code classAttributes
     // End of user code
@@ -194,6 +202,11 @@ public class TextOut
         this.type.add(type);
     }
     
+    public void addCreator(final Link creator)
+    {
+        this.creator.add(creator);
+    }
+    
     
     // Start of user code getterAnnotation:title
     // End of user code
@@ -254,6 +267,37 @@ public class TextOut
         return value;
     }
     
+    // Start of user code getterAnnotation:created
+    // End of user code
+    @OslcName("created")
+    @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "created")
+    @OslcDescription("Timestamp of resource creation")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.DateTime)
+    @OslcReadOnly(false)
+    public Date getCreated()
+    {
+        // Start of user code getterInit:created
+        // End of user code
+        return created;
+    }
+    
+    // Start of user code getterAnnotation:creator
+    // End of user code
+    @OslcName("creator")
+    @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "creator")
+    @OslcDescription("Creator or creators of the resource. It is likely that the target resource will be a foaf:Person but that is not necessarily the case.")
+    @OslcOccurs(Occurs.ZeroOrMany)
+    @OslcValueType(ValueType.Resource)
+    @OslcRange({FoafDomainConstants.PERSON_TYPE})
+    @OslcReadOnly(false)
+    public HashSet<Link> getCreator()
+    {
+        // Start of user code getterInit:creator
+        // End of user code
+        return creator;
+    }
+    
     
     // Start of user code setterAnnotation:title
     // End of user code
@@ -304,6 +348,34 @@ public class TextOut
         this.value = value;
     
         // Start of user code setterFinalize:value
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:created
+    // End of user code
+    public void setCreated(final Date created )
+    {
+        // Start of user code setterInit:created
+        // End of user code
+        this.created = created;
+    
+        // Start of user code setterFinalize:created
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:creator
+    // End of user code
+    public void setCreator(final Set<Link> creator )
+    {
+        // Start of user code setterInit:creator
+        // End of user code
+        this.creator.clear();
+        if (creator != null)
+        {
+            this.creator.addAll(creator);
+        }
+    
+        // Start of user code setterFinalize:creator
         // End of user code
     }
     
@@ -382,6 +454,45 @@ public class TextOut
     
         s= s + "<input name=\"value\" type=\"text\" style=\"width: 400px\" id=\"value\" >";
         // Start of user code "Finalize:valueToHtmlForCreation(...)"
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    static public String createdToHtmlForCreation (final HttpServletRequest httpServletRequest)
+    {
+        String s = "";
+    
+        // Start of user code "Init:createdToHtmlForCreation(...)"
+        // End of user code
+    
+        s = s + "<label for=\"created\">created: </LABEL>";
+    
+        // Start of user code "Mid:createdToHtmlForCreation(...)"
+        // End of user code
+    
+        s= s + "<input name=\"created\" type=\"text\" style=\"width: 400px\" id=\"created\" >";
+        // Start of user code "Finalize:createdToHtmlForCreation(...)"
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    static public String creatorToHtmlForCreation (final HttpServletRequest httpServletRequest)
+    {
+        String s = "";
+    
+        // Start of user code "Init:creatorToHtmlForCreation(...)"
+        // End of user code
+    
+        s = s + "<label for=\"creator\">creator: </LABEL>";
+    
+        // Start of user code "Mid:creatorToHtmlForCreation(...)"
+        // End of user code
+    
+        // Start of user code "Finalize:creatorToHtmlForCreation(...)"
         // End of user code
     
         return s;
@@ -489,6 +600,57 @@ public class TextOut
         }
     
         // Start of user code valuetoHtml_finalize
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    public String createdToHtml()
+    {
+        String s = "";
+    
+        // Start of user code createdtoHtml_mid
+        // End of user code
+    
+        try {
+            if (created == null) {
+                s = s + "<em>null</em>";
+            }
+            else {
+                s = s + created.toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        // Start of user code createdtoHtml_finalize
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    public String creatorToHtml()
+    {
+        String s = "";
+    
+        // Start of user code creatortoHtml_mid
+        // End of user code
+    
+        try {
+            s = s + "<ul>";
+            for(Link next : creator) {
+                s = s + "<li>";
+                s = s + (new Person (next.getValue())).toHtml(false);
+                s = s + "</li>";
+            }
+            s = s + "</ul>";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        // Start of user code creatortoHtml_finalize
         // End of user code
     
         return s;

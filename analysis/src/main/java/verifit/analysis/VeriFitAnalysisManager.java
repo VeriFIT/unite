@@ -201,6 +201,13 @@ public class VeriFitAnalysisManager {
     }
 
 
+    public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, final AutomationResult aResource, final String serviceProviderId, final String automationResultId) {
+        AutomationResult updatedResource = null;
+        // Start of user code updateAutomationResult
+        // TODO Implement code to update and return a resource
+        // End of user code
+        return updatedResource;
+    }
 
 
     public static String getETagFromAutomationPlan(final AutomationPlan aResource)

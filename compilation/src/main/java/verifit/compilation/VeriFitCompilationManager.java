@@ -26,40 +26,40 @@ package verifit.compilation;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletContextEvent;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Date;
 import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
-import org.eclipse.lyo.store.StoreAccessException;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
-import org.eclipse.lyo.oslc4j.core.model.Link;
-
 import verifit.compilation.servlet.ServiceProviderCatalogSingleton;
 import verifit.compilation.ServiceProviderInfo;
-import verifit.compilation.automationPlans.AutomationPlanDefinition;
-import verifit.compilation.persistance.Persistence;
-
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
 import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
-import org.apache.commons.io.FileUtils;
 import org.eclipse.lyo.oslc.domains.Person;
 import verifit.compilation.resources.SUT;
 import verifit.compilation.resources.TextOut;
 
 
 // Start of user code imports
+import verifit.compilation.persistance.Persistence;
+import verifit.compilation.automationPlans.AutomationPlanDefinition;
+import org.eclipse.lyo.store.StoreAccessException;
+import org.eclipse.lyo.oslc4j.core.model.Link;
+import org.apache.commons.io.FileUtils;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.NoSuchElementException;
 // End of user code
 
 // Start of user code pre_class_code
@@ -192,20 +192,48 @@ public class VeriFitCompilationManager {
 			newResource.setFutureAction(aResource.getFutureAction());
 			
 			// persist in the triplestore
-			//store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
+			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
 
 		} catch (URISyntaxException e) {
 			// TODO should never be thrown (URI syntax)
 			e.printStackTrace();
 			
-		}/* catch (StoreAccessException e) {
+		} catch (StoreAccessException e) {
 			throw new StoreAccessException("AutomationPlan creation failed: " + e.getMessage());
-		}*/
+		}
 		
 		return newResource;
     }
     
-	
+
+    /**
+     * Updates an AutomationRequest in the Adapter's catalog. The old resource is replaced with the new one.
+     * @param changedResource		This resource will be used as replacement for the old resource.
+     * @param serviceProviderId		ID of the service provider for the updated resource.
+     * @param automationRequestId	ID of the AutomationRequest to update
+     * @return						The updated resource.
+     */
+    public static AutomationRequest updateAutomationRequest(AutomationRequest changedResource, final String serviceProviderId, final String automationRequestId)
+    {
+    	AutomationRequest updatedResource = null;
+
+    	changedResource.setModified(new Date());
+  
+    	try {
+    		
+			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), changedResource);
+			
+		} catch (StoreAccessException e) {
+			System.out.println("WARNING: AutomationRequest update failed: " + e.getMessage());
+			
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+		}
+
+        return updatedResource;
+    }
+    
     /**
      * Creates an AutomationResult resource with the specified properties, and stores in the Adapter's catalog.
      * @param aResource			The new resource will copy properties from the specified aResource.
@@ -321,17 +349,15 @@ public class VeriFitCompilationManager {
     	// create the tmp directory
     	createTmpDir();
 
-    	/*
     	// connect to the triplestore
-    	String sparqlQueryEndpoint = AnacondaAdapterConstants.SPARQL_SERVER_QUERY_ENDPOINT;
-    	String sparqlUpdateEndpoint = AnacondaAdapterConstants.SPARQL_SERVER_UPDATE_ENDPOINT; 
+    	String sparqlQueryEndpoint = VeriFitCompilationProperties.SPARQL_SERVER_QUERY_ENDPOINT;
+    	String sparqlUpdateEndpoint = VeriFitCompilationProperties.SPARQL_SERVER_UPDATE_ENDPOINT; 
 		try {
 			store = new Persistence(sparqlQueryEndpoint, sparqlUpdateEndpoint);
 		} catch (IOException e) {
 			System.out.println("ERROR: Adapter configuration: " + e.getMessage());
 			System.exit(1);
 		}
-		*/
 
     	// create predefined AutomationPlans
 		try {
@@ -347,7 +373,7 @@ public class VeriFitCompilationManager {
 		
 		// check what the last AutomationRequest ID is
     	// requests have a numerical ID
-    	int initReqId = 0;
+    	/*int initReqId = 0;
     	try {
 			List<AutomationRequest> listAutoRequests =  store.getResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), AutomationRequest.class);
 			for (AutomationRequest autoReq : listAutoRequests)
@@ -366,7 +392,7 @@ public class VeriFitCompilationManager {
 			// TODO should never be thrown (URI syntax)
 			e.printStackTrace();
 		}		
-		AutoRequestIdGen = new ResourceIdGen(initReqId);
+		AutoRequestIdGen = new ResourceIdGen(initReqId);*/
 
         // End of user code
     }
@@ -415,7 +441,18 @@ public class VeriFitCompilationManager {
         List<AutomationRequest> resources = null;
         
         // Start of user code queryAutomationRequests
-        // TODO Implement code to return a set of resources
+		resources = new ArrayList<AutomationRequest>();
+        try {
+        	
+	    	resources = store.whereQuery(httpServletRequest, new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), AutomationRequest.class, where, page, limit);
+
+		} catch (StoreAccessException e) {
+			System.out.println("WARNING: AutomationRequest query failed: " + e.getMessage());
+			
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+		}
         // End of user code
         return resources;
     }
@@ -424,7 +461,18 @@ public class VeriFitCompilationManager {
         List<AutomationResult> resources = null;
         
         // Start of user code queryAutomationResults
-        // TODO Implement code to return a set of resources
+		resources = new ArrayList<AutomationResult>();
+        try {
+        	
+        	resources = store.whereQuery(httpServletRequest, new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), AutomationResult.class, where, page, limit);
+	    	
+		} catch (StoreAccessException e) {
+			System.out.println("WARNING: AutomationResult query failed: " + e.getMessage());
+			
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+		}
         // End of user code
         return resources;
     }
@@ -433,7 +481,18 @@ public class VeriFitCompilationManager {
         List<AutomationPlan> resources = null;
         
         // Start of user code queryAutomationPlans
-        // TODO Implement code to return a set of resources
+		resources = new ArrayList<AutomationPlan>();
+        try {
+
+	    	resources = store.whereQuery(httpServletRequest, new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), AutomationPlan.class, where, page, limit);
+
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+			
+		} catch (StoreAccessException e) {
+			System.out.println("WARNING: AutomationPlan query failed: " + e.getMessage());
+		}
         // End of user code
         return resources;
     }
@@ -451,7 +510,9 @@ public class VeriFitCompilationManager {
         List<AutomationRequest> resources = null;
         
         // Start of user code AutomationRequestSelector
-        // TODO Implement code to return a set of resources, based on search criteria 
+        
+        resources = queryAutomationRequests(httpServletRequest, serviceProviderId, terms, 0, 20);       
+        
         // End of user code
         return resources;
     }
@@ -460,7 +521,9 @@ public class VeriFitCompilationManager {
         List<AutomationResult> resources = null;
         
         // Start of user code AutomationResultSelector
-        // TODO Implement code to return a set of resources, based on search criteria 
+        
+        resources = queryAutomationResults(httpServletRequest, serviceProviderId, terms, 0, 20);
+        
         // End of user code
         return resources;
     }
@@ -469,7 +532,9 @@ public class VeriFitCompilationManager {
         List<AutomationPlan> resources = null;
         
         // Start of user code AutomationPlanSelector
-        // TODO Implement code to return a set of resources, based on search criteria 
+        
+        resources = queryAutomationPlans(httpServletRequest, serviceProviderId, terms, 0, 20);
+        
         // End of user code
         return resources;
     }
@@ -502,7 +567,23 @@ public class VeriFitCompilationManager {
         AutomationPlan aResource = null;
         
         // Start of user code getAutomationPlan
-        // TODO Implement code to return a resource
+
+        URI resUri = VeriFitCompilationResourcesFactory.constructURIForAutomationPlan(serviceProviderId, automationPlanId);
+        try {
+
+        	aResource = store.getAutoPlan(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), resUri);
+
+        } catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+			
+		} catch (NoSuchElementException e) {
+			aResource = null;
+			
+		} catch (StoreAccessException e) {
+			System.out.println("WARNING: AutomationPlan GET failed: " + e.getMessage());
+		}
+        
         // End of user code
         return aResource;
     }
@@ -524,7 +605,23 @@ public class VeriFitCompilationManager {
         AutomationRequest aResource = null;
         
         // Start of user code getAutomationRequest
-        // TODO Implement code to return a resource
+
+        URI resUri = VeriFitCompilationResourcesFactory.constructURIForAutomationRequest(serviceProviderId, automationRequestId);
+        try {
+        	
+			aResource = store.getAutoRequest(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), resUri);
+
+        } catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+			
+		} catch (NoSuchElementException e) {
+			aResource = null;
+			
+		} catch (StoreAccessException e) {
+			System.out.println("WARNING: AutomationRequest GET failed: " + e.getMessage());
+		}
+        
         // End of user code
         return aResource;
     }
@@ -535,19 +632,61 @@ public class VeriFitCompilationManager {
         AutomationResult aResource = null;
         
         // Start of user code getAutomationResult
-        // TODO Implement code to return a resource
+
+        URI resUri = VeriFitCompilationResourcesFactory.constructURIForAutomationResult(serviceProviderId, automationResultId);
+        try {
+        	
+			aResource = store.getAutoResult(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), resUri);
+
+        } catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+			
+		} catch (NoSuchElementException e) {
+			aResource = null;
+			
+		} catch (StoreAccessException e) {
+			System.out.println("WARNING: AutomationResult GET failed: " + e.getMessage());
+		}
+        
         // End of user code
         return aResource;
     }
 
 
+    public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, final AutomationResult aResource, final String serviceProviderId, final String automationResultId) {
+        AutomationResult updatedResource = null;
+        // Start of user code updateAutomationResult
+    	
+        AutomationResult changedResource = aResource;
+        aResource.setAbout(VeriFitCompilationResourcesFactory.constructURIForAutomationResult(serviceProviderId, automationResultId));
+    	changedResource.setModified(new Date());
+    	
+    	try {
+    		
+			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), changedResource);
+			
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+			
+		} catch (Exception e) {
+			System.out.println("WARNING: AutomationResult update failed: " + e.getMessage());
+		}
+
+        // End of user code
+        return updatedResource;
+    }
 
 
     public static String getETagFromAutomationPlan(final AutomationPlan aResource)
     {
         String eTag = null;
         // Start of user code getETagFromAutomationPlan
-        // TODO Implement code to return an ETag for a particular resource
+        
+        if (aResource != null && aResource.getModified() != null)
+        	eTag = Long.toString(aResource.getModified().getTime());
+        
         // End of user code
         return eTag;
     }
@@ -555,7 +694,10 @@ public class VeriFitCompilationManager {
     {
         String eTag = null;
         // Start of user code getETagFromAutomationRequest
-        // TODO Implement code to return an ETag for a particular resource
+        
+        if (aResource != null && aResource.getModified() != null)
+        	eTag = Long.toString(aResource.getModified().getTime());
+        
         // End of user code
         return eTag;
     }
@@ -563,7 +705,10 @@ public class VeriFitCompilationManager {
     {
         String eTag = null;
         // Start of user code getETagFromAutomationResult
-        // TODO Implement code to return an ETag for a particular resource
+        
+        if (aResource != null && aResource.getModified() != null)
+        	eTag = Long.toString(aResource.getModified().getTime());
+        
         // End of user code
         return eTag;
     }
@@ -571,7 +716,8 @@ public class VeriFitCompilationManager {
     {
         String eTag = null;
         // Start of user code getETagFromSUT
-        // TODO Implement code to return an ETag for a particular resource
+        if (aResource != null && aResource.getCreated() != null)
+        	eTag = Long.toString(aResource.getCreated().getTime());
         // End of user code
         return eTag;
     }

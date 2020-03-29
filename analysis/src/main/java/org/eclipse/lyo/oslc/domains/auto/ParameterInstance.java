@@ -244,7 +244,7 @@ public class ParameterInstance
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(false)
-    public Set<Link> getType()
+    public HashSet<Link> getType()
     {
         // Start of user code getterInit:type
         // End of user code
@@ -272,7 +272,7 @@ public class ParameterInstance
     @OslcDescription("A link to the resource's OSLC Service Provider. There may be cases when the subject resource is available from a service provider that implements multiple domain specifications, which could result in multiple values for this property.")
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcReadOnly(false)
-    public Set<URI> getServiceProvider()
+    public HashSet<URI> getServiceProvider()
     {
         // Start of user code getterInit:serviceProvider
         // End of user code

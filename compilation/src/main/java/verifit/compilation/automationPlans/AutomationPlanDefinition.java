@@ -36,7 +36,7 @@ public class AutomationPlanDefinition {
 	 */
 	public static void createPredefinedAutomationPlans() throws StoreAccessException
 	{
-    	createSingleFileAutomationPlan();
+		createSutDeployAutomationPlan();
 	}	
 	
 	/**
@@ -52,15 +52,14 @@ public class AutomationPlanDefinition {
 	}
 	
 	/**
-	 * Creates an AutomationPlan which allows the user to submit a single source code program. The are multiple ways
-	 * of submitting the source code which can be selected through the ProgramDefinition parameter.
+	 * TODO
 	 * @throws StoreAccessException 
 	 */
-	private static void createSingleFileAutomationPlan() throws StoreAccessException
+	private static void createSutDeployAutomationPlan() throws StoreAccessException
 	{ 
 		try {
 			// create parameter definitions
-			ParameterDefinition Analyser = new ParameterDefinition();
+			/*ParameterDefinition Analyser = new ParameterDefinition();
 			Analyser.setDescription("Specify what analyser to use");
 			Analyser.setName("Analyser");
 			Analyser.setTitle("Analyser to Use");
@@ -109,17 +108,18 @@ public class AutomationPlanDefinition {
 			ExecutionParameters.setReadOnly(false);
 			ExecutionParameters.setDefaultValue("");
 			ExecutionParameters.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
-			ExecutionParameters.setRepresentation(new Link(new URI(VeriFitCompilationConstants.OSLC_REPRESENTATION_EITHER)));
+			ExecutionParameters.setRepresentation(new Link(new URI(VeriFitCompilationConstants.OSLC_REPRESENTATION_EITHER)));*/
 						
-			// create the autoPlan
+			// create the autoPlan TODO
 			AutomationPlan propertiesPlan = new AutomationPlan();
-			propertiesPlan.setTitle("Run Analysis of a Single File Program");
-			propertiesPlan.setDescription("Analyze a program with an analyzer and retrieve the output. The program to analyze has to be a single source file. When an Automation Request is created, then the Adapter will create an Automation Result for it. The Result will have the same ID as the Request.");
-			propertiesPlan.addParameterDefinition(Analyser);
+			propertiesPlan.setTitle("SUT Deploy");
+			propertiesPlan.setDescription(
+					"Download and compile an SUT on the server so it can be executed later.");
+			/*propertiesPlan.addParameterDefinition(Analyser);
 			propertiesPlan.addParameterDefinition(Program);
 			propertiesPlan.addParameterDefinition(ProgramDefinition);
 			propertiesPlan.addParameterDefinition(CompilationParameters);
-			propertiesPlan.addParameterDefinition(ExecutionParameters);
+			propertiesPlan.addParameterDefinition(ExecutionParameters);*/
 			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
 			VeriFitCompilationManager.createAutomationPlan(propertiesPlan, VeriFitCompilationConstants.AUTOMATION_PROVIDER_ID);
 	

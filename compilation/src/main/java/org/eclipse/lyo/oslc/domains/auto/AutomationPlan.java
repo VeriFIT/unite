@@ -320,7 +320,7 @@ public class AutomationPlan
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public Set<Link> getContributor()
+    public HashSet<Link> getContributor()
     {
         // Start of user code getterInit:contributor
         // End of user code
@@ -351,7 +351,7 @@ public class AutomationPlan
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public Set<Link> getCreator()
+    public HashSet<Link> getCreator()
     {
         // Start of user code getterInit:creator
         // End of user code
@@ -411,7 +411,7 @@ public class AutomationPlan
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(false)
-    public Set<Link> getType()
+    public HashSet<Link> getType()
     {
         // Start of user code getterInit:type
         // End of user code
@@ -427,7 +427,7 @@ public class AutomationPlan
     @OslcValueType(ValueType.String)
     @OslcReadOnly(false)
     @OslcTitle("")
-    public Set<String> getSubject()
+    public HashSet<String> getSubject()
     {
         // Start of user code getterInit:subject
         // End of user code
@@ -470,7 +470,7 @@ public class AutomationPlan
     @OslcDescription("A link to the resource's OSLC Service Provider. There may be cases when the subject resource is available from a service provider that implements multiple domain specifications, which could result in multiple values for this property.")
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcReadOnly(false)
-    public Set<URI> getServiceProvider()
+    public HashSet<URI> getServiceProvider()
     {
         // Start of user code getterInit:serviceProvider
         // End of user code
@@ -487,7 +487,7 @@ public class AutomationPlan
     @OslcRepresentation(Representation.Inline)
     @OslcRange({Oslc_autoDomainConstants.PARAMETERDEFINITION_TYPE})
     @OslcReadOnly(false)
-    public Set<ParameterDefinition> getParameterDefinition()
+    public HashSet<ParameterDefinition> getParameterDefinition()
     {
         // Start of user code getterInit:parameterDefinition
         // End of user code
@@ -503,7 +503,7 @@ public class AutomationPlan
     @OslcValueType(ValueType.Resource)
     @OslcRepresentation(Representation.Reference)
     @OslcReadOnly(false)
-    public Set<Link> getUsesExecutionEnvironment()
+    public HashSet<Link> getUsesExecutionEnvironment()
     {
         // Start of user code getterInit:usesExecutionEnvironment
         // End of user code
@@ -519,7 +519,7 @@ public class AutomationPlan
     @OslcValueType(ValueType.Resource)
     @OslcRepresentation(Representation.Reference)
     @OslcReadOnly(false)
-    public Set<Link> getFutureAction()
+    public HashSet<Link> getFutureAction()
     {
         // Start of user code getterInit:futureAction
         // End of user code
@@ -748,24 +748,6 @@ public class AutomationPlan
     }
     
     @Deprecated
-    static public String contributorToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:contributorToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"contributor\">contributor: </LABEL>";
-    
-        // Start of user code "Mid:contributorToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        // Start of user code "Finalize:contributorToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
-    @Deprecated
     static public String createdToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
         String s = "";
@@ -786,25 +768,6 @@ public class AutomationPlan
     }
     
     @Deprecated
-    static public String createdToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:createdToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"created\">created: </LABEL>";
-    
-        // Start of user code "Mid:createdToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s= s + "<input name=\"created\" type=\"text\" style=\"width: 400px\" id=\"created\" >";
-        // Start of user code "Finalize:createdToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
-    @Deprecated
     static public String creatorToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
         String s = "";
@@ -823,24 +786,6 @@ public class AutomationPlan
         return s;
     }
     
-    @Deprecated
-    static public String creatorToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:creatorToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"creator\">creator: </LABEL>";
-    
-        // Start of user code "Mid:creatorToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        // Start of user code "Finalize:creatorToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
     @Deprecated
     static public String descriptionToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
@@ -862,25 +807,6 @@ public class AutomationPlan
     }
     
     @Deprecated
-    static public String descriptionToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:descriptionToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"description\">description: </LABEL>";
-    
-        // Start of user code "Mid:descriptionToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s= s + "<input name=\"description\" type=\"text\" style=\"width: 400px\" id=\"description\" >";
-        // Start of user code "Finalize:descriptionToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
-    @Deprecated
     static public String identifierToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
         String s = "";
@@ -900,25 +826,6 @@ public class AutomationPlan
         return s;
     }
     
-    @Deprecated
-    static public String identifierToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:identifierToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"identifier\">identifier: </LABEL>";
-    
-        // Start of user code "Mid:identifierToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s= s + "<input name=\"identifier\" type=\"text\" style=\"width: 400px\" id=\"identifier\" >";
-        // Start of user code "Finalize:identifierToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
     @Deprecated
     static public String modifiedToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
@@ -940,25 +847,6 @@ public class AutomationPlan
     }
     
     @Deprecated
-    static public String modifiedToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:modifiedToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"modified\">modified: </LABEL>";
-    
-        // Start of user code "Mid:modifiedToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s= s + "<input name=\"modified\" type=\"text\" style=\"width: 400px\" id=\"modified\" >";
-        // Start of user code "Finalize:modifiedToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
-    @Deprecated
     static public String typeToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
         String s = "";
@@ -977,24 +865,6 @@ public class AutomationPlan
         return s;
     }
     
-    @Deprecated
-    static public String typeToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:typeToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"type\">type: </LABEL>";
-    
-        // Start of user code "Mid:typeToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        // Start of user code "Finalize:typeToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
     @Deprecated
     static public String subjectToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
@@ -1016,25 +886,6 @@ public class AutomationPlan
     }
     
     @Deprecated
-    static public String subjectToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:subjectToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"subject\">subject: </LABEL>";
-    
-        // Start of user code "Mid:subjectToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s= s + "<input name=\"subject\" type=\"text\" style=\"width: 400px\" id=\"subject\" >";
-        // Start of user code "Finalize:subjectToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
-    @Deprecated
     static public String titleToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
         String s = "";
@@ -1054,25 +905,6 @@ public class AutomationPlan
         return s;
     }
     
-    @Deprecated
-    static public String titleToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:titleToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"title\">title: </LABEL>";
-    
-        // Start of user code "Mid:titleToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s= s + "<input name=\"title\" type=\"text\" style=\"width: 400px\" id=\"title\" >";
-        // Start of user code "Finalize:titleToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
     @Deprecated
     static public String instanceShapeToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
@@ -1094,25 +926,6 @@ public class AutomationPlan
     }
     
     @Deprecated
-    static public String instanceShapeToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:instanceShapeToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"instanceShape\">instanceShape: </LABEL>";
-    
-        // Start of user code "Mid:instanceShapeToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s= s + "<input name=\"instanceShape\" type=\"text\" style=\"width: 400px\" id=\"instanceShape\" >";
-        // Start of user code "Finalize:instanceShapeToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
-    @Deprecated
     static public String serviceProviderToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
         String s = "";
@@ -1133,25 +946,6 @@ public class AutomationPlan
     }
     
     @Deprecated
-    static public String serviceProviderToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:serviceProviderToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"serviceProvider\">serviceProvider: </LABEL>";
-    
-        // Start of user code "Mid:serviceProviderToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s= s + "<input name=\"serviceProvider\" type=\"text\" style=\"width: 400px\" id=\"serviceProvider\" >";
-        // Start of user code "Finalize:serviceProviderToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
-    @Deprecated
     static public String parameterDefinitionToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
         String s = "";
@@ -1170,24 +964,6 @@ public class AutomationPlan
         return s;
     }
     
-    @Deprecated
-    static public String parameterDefinitionToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:parameterDefinitionToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"parameterDefinition\">parameterDefinition: </LABEL>";
-    
-        // Start of user code "Mid:parameterDefinitionToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        // Start of user code "Finalize:parameterDefinitionToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
     @Deprecated
     static public String usesExecutionEnvironmentToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
@@ -1208,24 +984,6 @@ public class AutomationPlan
     }
     
     @Deprecated
-    static public String usesExecutionEnvironmentToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:usesExecutionEnvironmentToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"usesExecutionEnvironment\">usesExecutionEnvironment: </LABEL>";
-    
-        // Start of user code "Mid:usesExecutionEnvironmentToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        // Start of user code "Finalize:usesExecutionEnvironmentToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
-    @Deprecated
     static public String futureActionToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
         String s = "";
@@ -1244,24 +1002,6 @@ public class AutomationPlan
         return s;
     }
     
-    @Deprecated
-    static public String futureActionToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:futureActionToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"futureAction\">futureAction: </LABEL>";
-    
-        // Start of user code "Mid:futureActionToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        // Start of user code "Finalize:futureActionToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
     
     @Deprecated
     public String contributorToHtml()

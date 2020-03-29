@@ -117,14 +117,14 @@ public class ServiceProviderService1
 
     @OslcQueryCapability
     (
-        title = "QueryCapability1",
-        label = "QueryCapability1",
+        title = "QuerySUT",
+        label = "QuerySUT",
         resourceShape = OslcConstants.PATH_RESOURCE_SHAPES + "/" + FitDomainConstants.SUT_PATH,
         resourceTypes = {FitDomainConstants.SUT_TYPE},
         usages = {}
     )
     @GET
-    @Path("query")
+    @Path("querySUT")
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
     public SUT[] querySUTs(
                                                     @PathParam("serviceProviderId") final String serviceProviderId ,
@@ -150,7 +150,7 @@ public class ServiceProviderService1
     }
 
     @GET
-    @Path("query")
+    @Path("querySUT")
     @Produces({ MediaType.TEXT_HTML })
     public Response querySUTsAsHtml(
                                     @PathParam("serviceProviderId") final String serviceProviderId ,
@@ -193,14 +193,14 @@ public class ServiceProviderService1
 
     @OslcQueryCapability
     (
-        title = "QueryCapability2",
-        label = "QueryCapability2",
+        title = "QueryAutoRequest",
+        label = "QueryAutoRequest",
         resourceShape = OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.AUTOMATIONREQUEST_PATH,
         resourceTypes = {Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE},
         usages = {}
     )
     @GET
-    @Path("query")
+    @Path("queryAutoRequest")
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
     public AutomationRequest[] queryAutomationRequests(
                                                     @PathParam("serviceProviderId") final String serviceProviderId ,
@@ -226,7 +226,7 @@ public class ServiceProviderService1
     }
 
     @GET
-    @Path("query")
+    @Path("queryAutoRequest")
     @Produces({ MediaType.TEXT_HTML })
     public Response queryAutomationRequestsAsHtml(
                                     @PathParam("serviceProviderId") final String serviceProviderId ,
@@ -269,14 +269,14 @@ public class ServiceProviderService1
 
     @OslcQueryCapability
     (
-        title = "QueryCapability3",
-        label = "QueryCapability3",
+        title = "QueryAutoResult",
+        label = "QueryAutoResult",
         resourceShape = OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.AUTOMATIONRESULT_PATH,
         resourceTypes = {Oslc_autoDomainConstants.AUTOMATIONRESULT_TYPE},
         usages = {}
     )
     @GET
-    @Path("query")
+    @Path("queryAutoResult")
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
     public AutomationResult[] queryAutomationResults(
                                                     @PathParam("serviceProviderId") final String serviceProviderId ,
@@ -302,7 +302,7 @@ public class ServiceProviderService1
     }
 
     @GET
-    @Path("query")
+    @Path("queryAutoResult")
     @Produces({ MediaType.TEXT_HTML })
     public Response queryAutomationResultsAsHtml(
                                     @PathParam("serviceProviderId") final String serviceProviderId ,
@@ -345,14 +345,14 @@ public class ServiceProviderService1
 
     @OslcQueryCapability
     (
-        title = "QueryCapability4",
-        label = "QueryCapability4",
+        title = "QueryAutoPlan",
+        label = "QueryAutoPlan",
         resourceShape = OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.AUTOMATIONPLAN_PATH,
         resourceTypes = {Oslc_autoDomainConstants.AUTOMATIONPLAN_TYPE},
         usages = {}
     )
     @GET
-    @Path("query")
+    @Path("queryAutoPlan")
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
     public AutomationPlan[] queryAutomationPlans(
                                                     @PathParam("serviceProviderId") final String serviceProviderId ,
@@ -378,7 +378,7 @@ public class ServiceProviderService1
     }
 
     @GET
-    @Path("query")
+    @Path("queryAutoPlan")
     @Produces({ MediaType.TEXT_HTML })
     public Response queryAutomationPlansAsHtml(
                                     @PathParam("serviceProviderId") final String serviceProviderId ,
@@ -421,16 +421,16 @@ public class ServiceProviderService1
 
     @OslcDialog
     (
-         title = "SelectionDialog1",
-         label = "SelectionDialog1",
-         uri = "serviceProviders/{serviceProviderId}/resources/selector",
+         title = "SelectSUT",
+         label = "SelectSUT",
+         uri = "serviceProviders/{serviceProviderId}/resources/selectSUT",
          hintWidth = "0px",
          hintHeight = "0px",
          resourceTypes = {FitDomainConstants.SUT_TYPE},
          usages = {}
     )
     @GET
-    @Path("selector")
+    @Path("selectSUT")
     @Consumes({ MediaType.TEXT_HTML, MediaType.WILDCARD })
     public void SUTSelector(
         @QueryParam("terms") final String terms
@@ -471,16 +471,16 @@ public class ServiceProviderService1
 
     @OslcDialog
     (
-         title = "SelectionDialog2",
-         label = "SelectionDialog2",
-         uri = "serviceProviders/{serviceProviderId}/resources/selector",
+         title = "SelectAutoRequest",
+         label = "SelectAutoRequest",
+         uri = "serviceProviders/{serviceProviderId}/resources/selectAutoRequest",
          hintWidth = "0px",
          hintHeight = "0px",
          resourceTypes = {Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE},
          usages = {}
     )
     @GET
-    @Path("selector")
+    @Path("selectAutoRequest")
     @Consumes({ MediaType.TEXT_HTML, MediaType.WILDCARD })
     public void AutomationRequestSelector(
         @QueryParam("terms") final String terms
@@ -521,16 +521,16 @@ public class ServiceProviderService1
 
     @OslcDialog
     (
-         title = "SelectionDialog3",
-         label = "SelectionDialog3",
-         uri = "serviceProviders/{serviceProviderId}/resources/selector",
+         title = "SelectAutoResult",
+         label = "SelectAutoResult",
+         uri = "serviceProviders/{serviceProviderId}/resources/selectAutoResult",
          hintWidth = "0px",
          hintHeight = "0px",
          resourceTypes = {Oslc_autoDomainConstants.AUTOMATIONRESULT_TYPE},
          usages = {}
     )
     @GET
-    @Path("selector")
+    @Path("selectAutoResult")
     @Consumes({ MediaType.TEXT_HTML, MediaType.WILDCARD })
     public void AutomationResultSelector(
         @QueryParam("terms") final String terms
@@ -571,16 +571,16 @@ public class ServiceProviderService1
 
     @OslcDialog
     (
-         title = "SelectionDialog4",
-         label = "SelectionDialog4",
-         uri = "serviceProviders/{serviceProviderId}/resources/selector",
+         title = "SelectAutoPlan",
+         label = "SelectAutoPlan",
+         uri = "serviceProviders/{serviceProviderId}/resources/selectAutoPlan",
          hintWidth = "0px",
          hintHeight = "0px",
          resourceTypes = {Oslc_autoDomainConstants.AUTOMATIONPLAN_TYPE},
          usages = {}
     )
     @GET
-    @Path("selector")
+    @Path("selectAutoPlan")
     @Consumes({ MediaType.TEXT_HTML, MediaType.WILDCARD })
     public void AutomationPlanSelector(
         @QueryParam("terms") final String terms
@@ -627,14 +627,14 @@ public class ServiceProviderService1
      */
     @OslcCreationFactory
     (
-         title = "CreationFactory3",
-         label = "CreationFactory3",
+         title = "CreateAutoRequest",
+         label = "CreateAutoRequest",
          resourceShapes = {OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.AUTOMATIONREQUEST_PATH},
          resourceTypes = {Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE},
          usages = {}
     )
     @POST
-    @Path("create")
+    @Path("createAutoRequest")
     @Consumes({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
     public Response createAutomationRequest(
@@ -659,7 +659,7 @@ public class ServiceProviderService1
      * @throws ServletException
      */
     @GET
-    @Path("creator")
+    @Path("creatorAutoRequest")
     @Consumes({MediaType.WILDCARD})
     public void AutomationRequestCreator(
                 @PathParam("serviceProviderId") final String serviceProviderId
@@ -682,16 +682,16 @@ public class ServiceProviderService1
      */
     @OslcDialog
     (
-         title = "CreationDialog3",
-         label = "CreationDialog3",
-         uri = "serviceProviders/{serviceProviderId}/resources/creator",
+         title = "CreatorAutoRequest",
+         label = "CreatorAutoRequest",
+         uri = "serviceProviders/{serviceProviderId}/resources/creatorAutoRequest",
          hintWidth = "0px",
          hintHeight = "0px",
          resourceTypes = {Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE},
          usages = {}
     )
     @POST
-    @Path("creator")
+    @Path("creatorAutoRequest")
     @Consumes({ MediaType.APPLICATION_FORM_URLENCODED})
     public void createAutomationRequestFromDialog(
             @PathParam("serviceProviderId") final String serviceProviderId
@@ -1404,4 +1404,43 @@ public class ServiceProviderService1
 
         throw new WebApplicationException(Status.NOT_FOUND);
     }
+    @PUT
+    @Path("automationResults/{automationResultId}")
+    @Consumes({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
+    public Response updateAutomationResult(
+            @HeaderParam("If-Match") final String eTagHeader,
+            @PathParam("serviceProviderId") final String serviceProviderId, @PathParam("automationResultId") final String automationResultId ,
+            final AutomationResult aResource
+        ) throws IOException, ServletException
+    {
+        // Start of user code updateAutomationResult_init
+        // End of user code
+        final AutomationResult originalResource = VeriFitCompilationManager.getAutomationResult(httpServletRequest, serviceProviderId, automationResultId);
+
+        if (originalResource != null) {
+            try {
+                final String originalETag = VeriFitCompilationManager.getETagFromAutomationResult(originalResource);
+
+                if ((eTagHeader == null) || (originalETag.equals(eTagHeader))) {
+                    // Start of user code updateAutomationResult
+                    // End of user code
+                    final AutomationResult updatedResource = VeriFitCompilationManager.updateAutomationResult(httpServletRequest, aResource, serviceProviderId, automationResultId);
+                    httpServletResponse.setHeader("ETag", VeriFitCompilationManager.getETagFromAutomationResult(updatedResource));
+                    return Response.ok().header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();
+                }
+                else {
+                    throw new WebApplicationException(Status.PRECONDITION_FAILED);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new WebApplicationException(e);
+            }
+
+        }
+        else {
+            throw new WebApplicationException(Status.NOT_FOUND);
+        }
+    }
+
 }

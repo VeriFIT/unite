@@ -80,12 +80,12 @@ public abstract class RequestRunner extends Thread
 			}
 			
 			//TODO stderr is appended to the end of stdout
-			String outputLog = stdoutLog.concat(stderrLog);
+			String textOut = stdoutLog.concat(stderrLog);
 			
 			// check for errors in the output
-			if (outputLog.contains("E:   The Operating System configuration prevents Pin from using the default (parent) injection mode."))
+			if (textOut.contains("E:   The Operating System configuration prevents Pin from using the default (parent) injection mode."))
 			{
-				throw new IOException(outputLog);
+				throw new IOException(textOut);
 			}
 			if (stderrLog.matches("^error. analyser .+ not found.\n$"))
 			{
@@ -96,7 +96,7 @@ public abstract class RequestRunner extends Thread
 				throw new IOException("Internal error. Compiled program binary not found.\n" + stderrLog);
 			}
 			
-			return outputLog;
+			return textOut;
     } 
     
 	

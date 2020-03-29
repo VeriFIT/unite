@@ -108,7 +108,7 @@ public interface IAutomationResult
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public Set<Link> getContributor();
+    public HashSet<Link> getContributor();
 
     @OslcName("created")
     @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "created")
@@ -125,7 +125,7 @@ public interface IAutomationResult
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public Set<Link> getCreator();
+    public HashSet<Link> getCreator();
 
     @OslcName("identifier")
     @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "identifier")
@@ -149,7 +149,7 @@ public interface IAutomationResult
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(false)
-    public Set<Link> getType();
+    public HashSet<Link> getType();
 
     @OslcName("subject")
     @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "subject")
@@ -158,7 +158,7 @@ public interface IAutomationResult
     @OslcValueType(ValueType.String)
     @OslcReadOnly(false)
     @OslcTitle("")
-    public Set<String> getSubject();
+    public HashSet<String> getSubject();
 
     @OslcName("title")
     @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "title")
@@ -180,7 +180,7 @@ public interface IAutomationResult
     @OslcDescription("A link to the resource's OSLC Service Provider. There may be cases when the subject resource is available from a service provider that implements multiple domain specifications, which could result in multiple values for this property.")
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcReadOnly(false)
-    public Set<URI> getServiceProvider();
+    public HashSet<URI> getServiceProvider();
 
     @OslcName("state")
     @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "state")
@@ -188,7 +188,7 @@ public interface IAutomationResult
     @OslcOccurs(Occurs.OneOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(true)
-    public Set<Link> getState();
+    public HashSet<Link> getState();
 
     @OslcName("desiredState")
     @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "desiredState")
@@ -204,7 +204,7 @@ public interface IAutomationResult
     @OslcOccurs(Occurs.OneOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(false)
-    public Set<Link> getVerdict();
+    public HashSet<Link> getVerdict();
 
     @OslcName("contribution")
     @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "contribution")
@@ -214,7 +214,7 @@ public interface IAutomationResult
     @OslcRepresentation(Representation.Inline)
     @OslcRange({FitDomainConstants.TEXTOUT_TYPE})
     @OslcReadOnly(false)
-    public Set<TextOut> getContribution();
+    public HashSet<TextOut> getContribution();
 
     @OslcName("inputParameter")
     @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "inputParameter")
@@ -224,7 +224,7 @@ public interface IAutomationResult
     @OslcRepresentation(Representation.Inline)
     @OslcRange({Oslc_autoDomainConstants.PARAMETERINSTANCE_TYPE})
     @OslcReadOnly(false)
-    public Set<ParameterInstance> getInputParameter();
+    public HashSet<ParameterInstance> getInputParameter();
 
     @OslcName("outputParameter")
     @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "outputParameter")
@@ -234,7 +234,7 @@ public interface IAutomationResult
     @OslcRepresentation(Representation.Inline)
     @OslcRange({Oslc_autoDomainConstants.PARAMETERINSTANCE_TYPE})
     @OslcReadOnly(false)
-    public Set<ParameterInstance> getOutputParameter();
+    public HashSet<ParameterInstance> getOutputParameter();
 
     @OslcName("producedByAutomationRequest")
     @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "producedByAutomationRequest")

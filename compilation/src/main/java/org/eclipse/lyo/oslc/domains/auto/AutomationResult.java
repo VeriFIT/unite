@@ -347,7 +347,7 @@ public class AutomationResult
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public Set<Link> getContributor()
+    public HashSet<Link> getContributor()
     {
         // Start of user code getterInit:contributor
         // End of user code
@@ -378,7 +378,7 @@ public class AutomationResult
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public Set<Link> getCreator()
+    public HashSet<Link> getCreator()
     {
         // Start of user code getterInit:creator
         // End of user code
@@ -423,7 +423,7 @@ public class AutomationResult
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(false)
-    public Set<Link> getType()
+    public HashSet<Link> getType()
     {
         // Start of user code getterInit:type
         // End of user code
@@ -439,7 +439,7 @@ public class AutomationResult
     @OslcValueType(ValueType.String)
     @OslcReadOnly(false)
     @OslcTitle("")
-    public Set<String> getSubject()
+    public HashSet<String> getSubject()
     {
         // Start of user code getterInit:subject
         // End of user code
@@ -482,7 +482,7 @@ public class AutomationResult
     @OslcDescription("A link to the resource's OSLC Service Provider. There may be cases when the subject resource is available from a service provider that implements multiple domain specifications, which could result in multiple values for this property.")
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcReadOnly(false)
-    public Set<URI> getServiceProvider()
+    public HashSet<URI> getServiceProvider()
     {
         // Start of user code getterInit:serviceProvider
         // End of user code
@@ -497,7 +497,7 @@ public class AutomationResult
     @OslcOccurs(Occurs.OneOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(true)
-    public Set<Link> getState()
+    public HashSet<Link> getState()
     {
         // Start of user code getterInit:state
         // End of user code
@@ -527,7 +527,7 @@ public class AutomationResult
     @OslcOccurs(Occurs.OneOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(false)
-    public Set<Link> getVerdict()
+    public HashSet<Link> getVerdict()
     {
         // Start of user code getterInit:verdict
         // End of user code
@@ -544,7 +544,7 @@ public class AutomationResult
     @OslcRepresentation(Representation.Inline)
     @OslcRange({FitDomainConstants.TEXTOUT_TYPE})
     @OslcReadOnly(false)
-    public Set<TextOut> getContribution()
+    public HashSet<TextOut> getContribution()
     {
         // Start of user code getterInit:contribution
         // End of user code
@@ -561,7 +561,7 @@ public class AutomationResult
     @OslcRepresentation(Representation.Inline)
     @OslcRange({Oslc_autoDomainConstants.PARAMETERINSTANCE_TYPE})
     @OslcReadOnly(false)
-    public Set<ParameterInstance> getInputParameter()
+    public HashSet<ParameterInstance> getInputParameter()
     {
         // Start of user code getterInit:inputParameter
         // End of user code
@@ -578,7 +578,7 @@ public class AutomationResult
     @OslcRepresentation(Representation.Inline)
     @OslcRange({Oslc_autoDomainConstants.PARAMETERINSTANCE_TYPE})
     @OslcReadOnly(false)
-    public Set<ParameterInstance> getOutputParameter()
+    public HashSet<ParameterInstance> getOutputParameter()
     {
         // Start of user code getterInit:outputParameter
         // End of user code
