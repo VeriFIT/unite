@@ -49,11 +49,11 @@ import verifit.compilation.VeriFitCompilationManager;
 import verifit.compilation.VeriFitCompilationResourcesFactory;
 import verifit.compilation.resources.TextOut;
 /**
- * A thread for executing the Single File Automation Plan.
+ * A thread for executing the Deploy SUT Automation Plan.
  * @author od42
  *
  */
-public class SingleFileAutoPlanExecution extends RequestRunner
+public class SutDeployAutoPlanExecution extends RequestRunner
 {
 	final private String serviceProviderId;
 	final private String execAutoRequestId;
@@ -66,7 +66,7 @@ public class SingleFileAutoPlanExecution extends RequestRunner
 	 * @param execAutoRequest	Executed AutomationRequest resource object
 	 * @param inputParamsMap	Input parameters as a "name" => "value" map
 	 */
-	public SingleFileAutoPlanExecution(String serviceProviderId, AutomationRequest execAutoRequest, Map<String, String> inputParamsMap) 
+	public SutDeployAutoPlanExecution(String serviceProviderId, AutomationRequest execAutoRequest, Map<String, String> inputParamsMap) 
 	{
 		super();
 		
@@ -87,11 +87,9 @@ public class SingleFileAutoPlanExecution extends RequestRunner
 		try {
 			
 			// get the input parameters
-			final String paramAnalyser = inputParamsMap.get("Analyser");
 			final String paramProgram = inputParamsMap.get("Program");
 			final String paramProgramDefinition = inputParamsMap.get("ProgramDefinition");
 			final String paramCompilatinParameters = inputParamsMap.get("CompilationParameters");
-			final String paramExecutionParameters = inputParamsMap.get("ExecutionParameters");
 
 			//create the autoResult as inProgress
 			AutomationResult propAutoResult = new AutomationResult();
@@ -105,7 +103,7 @@ public class SingleFileAutoPlanExecution extends RequestRunner
 			propAutoResult.addVerdict(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_VERDICT_UNAVAILABLE)));
 		    AutomationResult newAutoResult = VeriFitCompilationManager.createAutomationResult(propAutoResult, serviceProviderId, execAutoRequestId);
 	    	
-		    // prepare result contributions - program fetching, compilation, analysis
+		    // prepare result contributions - program fetching, compilation
 		    TextOut fetchLog = new TextOut();
 		    fetchLog.setDescription("Output of the program fetching process. Stderr is appended to the end."); // TODO update if changed
 		    fetchLog.setTitle("Fetching Log");
@@ -115,11 +113,6 @@ public class SingleFileAutoPlanExecution extends RequestRunner
 		    compLog.setDescription("Output of the compilation. Stderr is appended to the end."); // TODO update if changed
 		    compLog.setTitle("Compilation Log");
 		    compLog.addType(new Link(new URI("http://purl.org/dc/dcmitype/Text")));
-		    
-			TextOut analysisLog = new TextOut();
-			analysisLog.setDescription("Output of the analysis. Stderr is appended to the end."); // TODO update if changed
-			analysisLog.setTitle("Analysis Log");
-		    compLog.addType(new Link(new URI("http://purl.org/dc/dcmitype/Text")));
 			
 			// create the program path and name
 			final String folderPath = createTmpDir("singlefile");
@@ -127,7 +120,6 @@ public class SingleFileAutoPlanExecution extends RequestRunner
 		  
 			// flags to disable a part of the execution in case of an error
 		    Boolean performCompilation = true;
-		    Boolean performAnalysis = true;
 			
 			String executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_PASSED;
 			String programToExecute = null;
@@ -161,13 +153,11 @@ public class SingleFileAutoPlanExecution extends RequestRunner
 				executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_ERROR;
 				fetchLog.setValue("Unknown host or host unreachable: " + e.getMessage());
 	    		performCompilation = false;
-	    		performAnalysis = false;
 	    		
 			} catch (IOException e) {
 				executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_ERROR;
 				fetchLog.setValue(e.getMessage());
 	    		performCompilation = false;
-	    		performAnalysis = false;
 	    		
 			} finally {
 				// create the program fetching result Contribution
@@ -194,13 +184,11 @@ public class SingleFileAutoPlanExecution extends RequestRunner
 			    	if (programToExecute == null)
 			    	{
 			    		executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_ERROR;
-			    		performAnalysis = false;
 			    	}
 				    
 				} catch (IOException e) {
 					executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_ERROR;
 					compLog.setValue(e.getMessage());
-		    		performAnalysis = false;
 		    		
 				} finally {
 					// create the compilation result Contribution
@@ -209,35 +197,6 @@ public class SingleFileAutoPlanExecution extends RequestRunner
 				}
 			}
 	    	
-			
-			// execute analysis
-			if (performAnalysis)
-			{
-				try {
-		    		String stringToExecute = "echo" + " " + paramAnalyser + " " + programToExecute + " " + paramExecutionParameters;			
-		    		String analysisOutLog = executeTheAnalysis(stringToExecute);
-		    		analysisLog.setValue(analysisOutLog);
-			    
-				} catch (IOException e) {
-					executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_ERROR;
-					
-					// alter the error text for console commands
-					if (paramProgramDefinition.equals("console command"))
-					{
-						analysisLog.setValue(e.getMessage().replace("Internal error. Compiled program binary not found.", "Specified console command not found."));
-					}
-					else
-					{
-						analysisLog.setValue(e.getMessage());
-					}
-					
-				} finally {
-					// create the analysis result Contribution
-					analysisLog = VeriFitCompilationManager.createTextOut(analysisLog, serviceProviderId, execAutoRequestId + "-out");
-					newAutoResult.addContribution(analysisLog);
-				}
-		    }
-			
 			// update the autoResult state, contribution, verdict
 			newAutoResult.setState(new HashSet<Link>());
 			newAutoResult.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));

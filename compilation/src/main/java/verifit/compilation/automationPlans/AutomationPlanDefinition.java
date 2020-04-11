@@ -59,15 +59,6 @@ public class AutomationPlanDefinition {
 	{ 
 		try {
 			// create parameter definitions
-			/*ParameterDefinition Analyser = new ParameterDefinition();
-			Analyser.setDescription("Specify what analyser to use");
-			Analyser.setName("Analyser");
-			Analyser.setTitle("Analyser to Use");
-			Analyser.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ONE)));
-			Analyser.setReadOnly(false);
-			Analyser.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
-			Analyser.setRepresentation(new Link(new URI(VeriFitCompilationConstants.OSLC_REPRESENTATION_EITHER)));
-			
 			ParameterDefinition ProgramDefinition = new ParameterDefinition();
 			ProgramDefinition.setDescription("Specify how the value of the Program parameter should be treated. See the allowedValue properties for options.");
 			ProgramDefinition.setName("ProgramDefinition");
@@ -100,26 +91,13 @@ public class AutomationPlanDefinition {
 			CompilationParameters.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
 			CompilationParameters.setRepresentation(new Link(new URI(VeriFitCompilationConstants.OSLC_REPRESENTATION_EITHER)));
 						
-			ParameterDefinition ExecutionParameters = new ParameterDefinition();
-			ExecutionParameters.setDescription("Set the execution parameters for the analyzed program. Write down all parameters as you would in a console.");
-			ExecutionParameters.setName("ExecutionParameters");
-			ExecutionParameters.setTitle("Parameters for Program Execution");
-			ExecutionParameters.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ZEROorONE)));
-			ExecutionParameters.setReadOnly(false);
-			ExecutionParameters.setDefaultValue("");
-			ExecutionParameters.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
-			ExecutionParameters.setRepresentation(new Link(new URI(VeriFitCompilationConstants.OSLC_REPRESENTATION_EITHER)));*/
-						
 			// create the autoPlan TODO
 			AutomationPlan propertiesPlan = new AutomationPlan();
 			propertiesPlan.setTitle("SUT Deploy");
-			propertiesPlan.setDescription(
-					"Download and compile an SUT on the server so it can be executed later.");
-			/*propertiesPlan.addParameterDefinition(Analyser);
+			propertiesPlan.setDescription("Download and compile an SUT on the server so it can be executed later.");
 			propertiesPlan.addParameterDefinition(Program);
 			propertiesPlan.addParameterDefinition(ProgramDefinition);
 			propertiesPlan.addParameterDefinition(CompilationParameters);
-			propertiesPlan.addParameterDefinition(ExecutionParameters);*/
 			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
 			VeriFitCompilationManager.createAutomationPlan(propertiesPlan, VeriFitCompilationConstants.AUTOMATION_PROVIDER_ID);
 	

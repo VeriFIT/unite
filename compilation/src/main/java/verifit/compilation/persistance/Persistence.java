@@ -122,14 +122,15 @@ public class Persistence {
 		try {
 			AutomationPlan autoPlan = store.getResource(namedGraph, resUri, AutomationPlan.class);
 			
+			/*
 			Set<ParameterDefinition> paramDef = new HashSet<ParameterDefinition>();
 	    	for (ParameterDefinition def : autoPlan.getParameterDefinition())
 	    	{
 	    		ParameterDefinition fullDef = store.getResource(namedGraph, def.getAbout(), ParameterDefinition.class);
 	    		paramDef.add(fullDef);
 	    	}
-	    	
 	    	autoPlan.setParameterDefinition(paramDef);
+	    	*/
 	    	
 	    	return autoPlan;
 
@@ -154,14 +155,15 @@ public class Persistence {
 		try {
 			AutomationRequest autoRequest = store.getResource(namedGraph, resUri, AutomationRequest.class);
 			
+			/*
 			Set<ParameterInstance> inputParams = new HashSet<ParameterInstance>();
 	    	for (ParameterInstance input : autoRequest.getInputParameter())
 	    	{
 	    		ParameterInstance fullInput = store.getResource(namedGraph, input.getAbout(), ParameterInstance.class);
 	    		inputParams.add(fullInput);
 	    	}
-	    	
 	    	autoRequest.setInputParameter(inputParams);
+	    	*/
 	    	
 	    	return autoRequest;
 
@@ -186,6 +188,7 @@ public class Persistence {
 		try {
 			AutomationResult autoResult = store.getResource(namedGraph, resUri, AutomationResult.class);
 			
+			/*
 			Set<ParameterInstance> inputParams = new HashSet<ParameterInstance>();
 			Set<ParameterInstance> outputParams = new HashSet<ParameterInstance>();
 			Set<TextOut> textOuts = new HashSet<TextOut>();
@@ -215,7 +218,8 @@ public class Persistence {
 	    	autoResult.setInputParameter(inputParams);
 	    	autoResult.setOutputParameter(outputParams);
 	    	autoResult.setContribution(textOuts);
-	    	
+	    	*/
+			
 	    	return autoResult;
 
 		} catch (NoSuchElementException e) {
@@ -282,7 +286,7 @@ public class Persistence {
 		try {
 			for (AutomationPlan res : resToUpdate)
 			{
-				// update all inlined resources first 
+				// update all inlined resources first TODO
 				for (ParameterDefinition def : res.getParameterDefinition())
 				{
 					store.updateResources(namedGraph, def);
@@ -308,7 +312,7 @@ public class Persistence {
 		try {
 			for (AutomationRequest res : resToUpdate)
 			{
-				// update all inlined resources first 
+				// update all inlined resources first TODO
 				for (ParameterInstance input : res.getInputParameter())
 				{
 					store.updateResources(namedGraph, input);
@@ -334,7 +338,7 @@ public class Persistence {
 		try {
 			for (AutomationResult res : resToUpdate)
 			{
-				// update all inlined resources first 
+				// update all inlined resources first TODO
 				for (ParameterInstance input : res.getInputParameter())
 				{
 					store.updateResources(namedGraph, input);
@@ -343,15 +347,15 @@ public class Persistence {
 				{
 					store.updateResources(namedGraph, output);
 				}
-				/*for (TextOut log : res.getContribution())
+				for (TextOut log : res.getContribution())
 				{
 					// encode the output log to be XML storable
 					String plainOutput = log.getValue();
-					String xmlEncoded = StringEscapeUtils.escapeXml(plainOutput);
+					String xmlEncoded = StringEscapeUtils.escapeXml(plainOutput); // TODO
 					log.setValue(xmlEncoded);
 					
 					store.updateResources(namedGraph, log);
-				}*/
+				}
 				
 				store.updateResources(namedGraph, res);
 			}
@@ -382,7 +386,7 @@ public class Persistence {
 			/*for (TextOut log : resToDelete.getContribution())
 			{
 				urisToDelete.add(log.getAbout());
-			}*/
+			}
 
 			for (ParameterInstance input : resToDelete.getInputParameter())
 			{
@@ -393,6 +397,7 @@ public class Persistence {
 			{
 				urisToDelete.add(output.getAbout());
 			}
+			*/
 			
 			store.deleteResources(namedGraph, urisToDelete.toArray(new URI[]{}));
 			

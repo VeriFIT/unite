@@ -92,6 +92,8 @@ import verifit.compilation.resources.SUT;
 import verifit.compilation.resources.TextOut;
 
 // Start of user code imports
+import verifit.compilation.exceptions.OslcResourceException;
+import org.eclipse.lyo.oslc4j.core.model.Error;
 // End of user code
 
 // Start of user code pre_class_code
@@ -642,10 +644,18 @@ public class ServiceProviderService1
             final AutomationRequest aResource
         ) throws IOException, ServletException
     {
+    	
         try {
             AutomationRequest newResource = VeriFitCompilationManager.createAutomationRequest(httpServletRequest, aResource, serviceProviderId);
             httpServletResponse.setHeader("ETag", VeriFitCompilationManager.getETagFromAutomationRequest(newResource));
             return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();
+        
+        } catch (OslcResourceException e) {
+            Error errorResource = new Error();
+            errorResource.setStatusCode("400");
+            errorResource.setMessage(e.getMessage());
+            return Response.status(400).entity(errorResource).build();
+            
         } catch (Exception e) {
             e.printStackTrace();
             throw new WebApplicationException(e);
