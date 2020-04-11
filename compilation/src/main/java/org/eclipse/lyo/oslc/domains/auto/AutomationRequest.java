@@ -311,7 +311,7 @@ public class AutomationRequest
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public HashSet<Link> getContributor()
+    public Set<Link> getContributor()
     {
         // Start of user code getterInit:contributor
         // End of user code
@@ -342,7 +342,7 @@ public class AutomationRequest
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public HashSet<Link> getCreator()
+    public Set<Link> getCreator()
     {
         // Start of user code getterInit:creator
         // End of user code
@@ -402,7 +402,7 @@ public class AutomationRequest
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(false)
-    public HashSet<Link> getType()
+    public Set<Link> getType()
     {
         // Start of user code getterInit:type
         // End of user code
@@ -445,7 +445,7 @@ public class AutomationRequest
     @OslcDescription("A link to the resource's OSLC Service Provider. There may be cases when the subject resource is available from a service provider that implements multiple domain specifications, which could result in multiple values for this property.")
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcReadOnly(false)
-    public HashSet<URI> getServiceProvider()
+    public Set<URI> getServiceProvider()
     {
         // Start of user code getterInit:serviceProvider
         // End of user code
@@ -460,7 +460,7 @@ public class AutomationRequest
     @OslcOccurs(Occurs.OneOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(true)
-    public HashSet<Link> getState()
+    public Set<Link> getState()
     {
         // Start of user code getterInit:state
         // End of user code
@@ -492,7 +492,7 @@ public class AutomationRequest
     @OslcRepresentation(Representation.Inline)
     @OslcRange({Oslc_autoDomainConstants.PARAMETERINSTANCE_TYPE})
     @OslcReadOnly(false)
-    public HashSet<ParameterInstance> getInputParameter()
+    public Set<ParameterInstance> getInputParameter()
     {
         // Start of user code getterInit:inputParameter
         // End of user code

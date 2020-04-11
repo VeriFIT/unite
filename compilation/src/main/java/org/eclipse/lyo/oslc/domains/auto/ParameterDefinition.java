@@ -279,7 +279,7 @@ public class ParameterDefinition
     @OslcOccurs(Occurs.OneOrMany)
     @OslcValueType(ValueType.String)
     @OslcReadOnly(false)
-    public HashSet<String> getAllowedValue()
+    public Set<String> getAllowedValue()
     {
         // Start of user code getterInit:allowedValue
         // End of user code
@@ -399,7 +399,7 @@ public class ParameterDefinition
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(false)
-    public HashSet<Link> getRange()
+    public Set<Link> getRange()
     {
         // Start of user code getterInit:range
         // End of user code
@@ -444,7 +444,7 @@ public class ParameterDefinition
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(false)
-    public HashSet<Link> getValueType()
+    public Set<Link> getValueType()
     {
         // Start of user code getterInit:valueType
         // End of user code

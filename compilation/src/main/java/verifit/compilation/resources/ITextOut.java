@@ -104,7 +104,7 @@ public interface ITextOut
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(false)
-    public HashSet<Link> getType();
+    public Set<Link> getType();
 
     @OslcName("value")
     @OslcPropertyDefinition(RdfDomainConstants.RDF_NAMSPACE + "value")
@@ -128,7 +128,7 @@ public interface ITextOut
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public HashSet<Link> getCreator();
+    public Set<Link> getCreator();
 
 
     public void setTitle(final String title );

@@ -99,7 +99,7 @@ public interface IAutomationPlan
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public HashSet<Link> getContributor();
+    public Set<Link> getContributor();
 
     @OslcName("created")
     @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "created")
@@ -116,7 +116,7 @@ public interface IAutomationPlan
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public HashSet<Link> getCreator();
+    public Set<Link> getCreator();
 
     @OslcName("description")
     @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "description")
@@ -148,7 +148,7 @@ public interface IAutomationPlan
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(false)
-    public HashSet<Link> getType();
+    public Set<Link> getType();
 
     @OslcName("subject")
     @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "subject")
@@ -157,7 +157,7 @@ public interface IAutomationPlan
     @OslcValueType(ValueType.String)
     @OslcReadOnly(false)
     @OslcTitle("")
-    public HashSet<String> getSubject();
+    public Set<String> getSubject();
 
     @OslcName("title")
     @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "title")
@@ -179,7 +179,7 @@ public interface IAutomationPlan
     @OslcDescription("A link to the resource's OSLC Service Provider. There may be cases when the subject resource is available from a service provider that implements multiple domain specifications, which could result in multiple values for this property.")
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcReadOnly(false)
-    public HashSet<URI> getServiceProvider();
+    public Set<URI> getServiceProvider();
 
     @OslcName("parameterDefinition")
     @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "parameterDefinition")
@@ -189,7 +189,7 @@ public interface IAutomationPlan
     @OslcRepresentation(Representation.Inline)
     @OslcRange({Oslc_autoDomainConstants.PARAMETERDEFINITION_TYPE})
     @OslcReadOnly(false)
-    public HashSet<ParameterDefinition> getParameterDefinition();
+    public Set<ParameterDefinition> getParameterDefinition();
 
     @OslcName("usesExecutionEnvironment")
     @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "usesExecutionEnvironment")
@@ -198,7 +198,7 @@ public interface IAutomationPlan
     @OslcValueType(ValueType.Resource)
     @OslcRepresentation(Representation.Reference)
     @OslcReadOnly(false)
-    public HashSet<Link> getUsesExecutionEnvironment();
+    public Set<Link> getUsesExecutionEnvironment();
 
     @OslcName("futureAction")
     @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "futureAction")
@@ -207,7 +207,7 @@ public interface IAutomationPlan
     @OslcValueType(ValueType.Resource)
     @OslcRepresentation(Representation.Reference)
     @OslcReadOnly(false)
-    public HashSet<Link> getFutureAction();
+    public Set<Link> getFutureAction();
 
 
     public void setContributor(final Set<Link> contributor );

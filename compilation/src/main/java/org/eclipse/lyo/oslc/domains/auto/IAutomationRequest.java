@@ -98,7 +98,7 @@ public interface IAutomationRequest
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public HashSet<Link> getContributor();
+    public Set<Link> getContributor();
 
     @OslcName("created")
     @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "created")
@@ -115,7 +115,7 @@ public interface IAutomationRequest
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public HashSet<Link> getCreator();
+    public Set<Link> getCreator();
 
     @OslcName("description")
     @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "description")
@@ -147,7 +147,7 @@ public interface IAutomationRequest
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(false)
-    public HashSet<Link> getType();
+    public Set<Link> getType();
 
     @OslcName("title")
     @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "title")
@@ -169,7 +169,7 @@ public interface IAutomationRequest
     @OslcDescription("A link to the resource's OSLC Service Provider. There may be cases when the subject resource is available from a service provider that implements multiple domain specifications, which could result in multiple values for this property.")
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcReadOnly(false)
-    public HashSet<URI> getServiceProvider();
+    public Set<URI> getServiceProvider();
 
     @OslcName("state")
     @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "state")
@@ -177,7 +177,7 @@ public interface IAutomationRequest
     @OslcOccurs(Occurs.OneOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(true)
-    public HashSet<Link> getState();
+    public Set<Link> getState();
 
     @OslcName("desiredState")
     @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "desiredState")
@@ -195,7 +195,7 @@ public interface IAutomationRequest
     @OslcRepresentation(Representation.Inline)
     @OslcRange({Oslc_autoDomainConstants.PARAMETERINSTANCE_TYPE})
     @OslcReadOnly(false)
-    public HashSet<ParameterInstance> getInputParameter();
+    public Set<ParameterInstance> getInputParameter();
 
     @OslcName("executesAutomationPlan")
     @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "executesAutomationPlan")

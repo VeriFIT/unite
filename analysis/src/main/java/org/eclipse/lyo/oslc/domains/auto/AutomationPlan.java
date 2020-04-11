@@ -320,7 +320,7 @@ public class AutomationPlan
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public HashSet<Link> getContributor()
+    public Set<Link> getContributor()
     {
         // Start of user code getterInit:contributor
         // End of user code
@@ -351,7 +351,7 @@ public class AutomationPlan
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public HashSet<Link> getCreator()
+    public Set<Link> getCreator()
     {
         // Start of user code getterInit:creator
         // End of user code
@@ -411,7 +411,7 @@ public class AutomationPlan
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(false)
-    public HashSet<Link> getType()
+    public Set<Link> getType()
     {
         // Start of user code getterInit:type
         // End of user code
@@ -427,7 +427,7 @@ public class AutomationPlan
     @OslcValueType(ValueType.String)
     @OslcReadOnly(false)
     @OslcTitle("")
-    public HashSet<String> getSubject()
+    public Set<String> getSubject()
     {
         // Start of user code getterInit:subject
         // End of user code
@@ -470,7 +470,7 @@ public class AutomationPlan
     @OslcDescription("A link to the resource's OSLC Service Provider. There may be cases when the subject resource is available from a service provider that implements multiple domain specifications, which could result in multiple values for this property.")
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcReadOnly(false)
-    public HashSet<URI> getServiceProvider()
+    public Set<URI> getServiceProvider()
     {
         // Start of user code getterInit:serviceProvider
         // End of user code
@@ -487,7 +487,7 @@ public class AutomationPlan
     @OslcRepresentation(Representation.Inline)
     @OslcRange({Oslc_autoDomainConstants.PARAMETERDEFINITION_TYPE})
     @OslcReadOnly(false)
-    public HashSet<ParameterDefinition> getParameterDefinition()
+    public Set<ParameterDefinition> getParameterDefinition()
     {
         // Start of user code getterInit:parameterDefinition
         // End of user code
@@ -503,7 +503,7 @@ public class AutomationPlan
     @OslcValueType(ValueType.Resource)
     @OslcRepresentation(Representation.Reference)
     @OslcReadOnly(false)
-    public HashSet<Link> getUsesExecutionEnvironment()
+    public Set<Link> getUsesExecutionEnvironment()
     {
         // Start of user code getterInit:usesExecutionEnvironment
         // End of user code
@@ -519,7 +519,7 @@ public class AutomationPlan
     @OslcValueType(ValueType.Resource)
     @OslcRepresentation(Representation.Reference)
     @OslcReadOnly(false)
-    public HashSet<Link> getFutureAction()
+    public Set<Link> getFutureAction()
     {
         // Start of user code getterInit:futureAction
         // End of user code

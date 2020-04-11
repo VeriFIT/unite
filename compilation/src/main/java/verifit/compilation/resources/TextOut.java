@@ -246,7 +246,7 @@ public class TextOut
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(false)
-    public HashSet<Link> getType()
+    public Set<Link> getType()
     {
         // Start of user code getterInit:type
         // End of user code
@@ -291,7 +291,7 @@ public class TextOut
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public HashSet<Link> getCreator()
+    public Set<Link> getCreator()
     {
         // Start of user code getterInit:creator
         // End of user code

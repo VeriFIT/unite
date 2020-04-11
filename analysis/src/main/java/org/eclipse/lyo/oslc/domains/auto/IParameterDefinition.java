@@ -103,7 +103,7 @@ public interface IParameterDefinition
     @OslcOccurs(Occurs.OneOrMany)
     @OslcValueType(ValueType.String)
     @OslcReadOnly(false)
-    public HashSet<String> getAllowedValue();
+    public Set<String> getAllowedValue();
 
     @OslcName("defaultValue")
     @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "defaultValue")
@@ -167,7 +167,7 @@ public interface IParameterDefinition
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(false)
-    public HashSet<Link> getRange();
+    public Set<Link> getRange();
 
     @OslcName("readOnly")
     @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "readOnly")
@@ -191,7 +191,7 @@ public interface IParameterDefinition
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.Resource)
     @OslcReadOnly(false)
-    public HashSet<Link> getValueType();
+    public Set<Link> getValueType();
 
     @OslcName("valueShape")
     @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "valueShape")

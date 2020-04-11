@@ -799,7 +799,7 @@
                 <styles xmi:type="notation:FilteringStyle" xmi:id="_D7zbdmb0Eeq0hJ-HGKMQPA"/>
               </children>
               <styles xmi:type="notation:ShapeStyle" xmi:id="_D7zbcWb0Eeq0hJ-HGKMQPA" fontName="Ubuntu" fontHeight="8" bold="true"/>
-              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_D7zbcmb0Eeq0hJ-HGKMQPA" x="163" y="432"/>
+              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_D7zbcmb0Eeq0hJ-HGKMQPA" x="79" y="16"/>
             </children>
             <children xmi:type="notation:Node" xmi:id="_O-OAAGb0Eeq0hJ-HGKMQPA" type="3009" element="_O7jtkGb0Eeq0hJ-HGKMQPA">
               <children xmi:type="notation:Node" xmi:id="_O-OAA2b0Eeq0hJ-HGKMQPA" type="5004"/>
@@ -832,7 +832,7 @@
                 <styles xmi:type="notation:FilteringStyle" xmi:id="_O-OABmb0Eeq0hJ-HGKMQPA"/>
               </children>
               <styles xmi:type="notation:ShapeStyle" xmi:id="_O-OAAWb0Eeq0hJ-HGKMQPA" fontName="Ubuntu" fontHeight="8"/>
-              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_O-OAAmb0Eeq0hJ-HGKMQPA" x="15" y="495" width="192" height="126"/>
+              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_O-OAAmb0Eeq0hJ-HGKMQPA" x="15" y="207" width="192" height="126"/>
             </children>
             <children xmi:type="notation:Node" xmi:id="_kyUwEGb1Eeq0hJ-HGKMQPA" type="3009" element="_kxykkGb1Eeq0hJ-HGKMQPA">
               <children xmi:type="notation:Node" xmi:id="_kyUwE2b1Eeq0hJ-HGKMQPA" type="5004"/>
@@ -865,13 +865,13 @@
                 <styles xmi:type="notation:FilteringStyle" xmi:id="_kyUwFmb1Eeq0hJ-HGKMQPA"/>
               </children>
               <styles xmi:type="notation:ShapeStyle" xmi:id="_kyUwEWb1Eeq0hJ-HGKMQPA" fontName="Ubuntu" fontHeight="8"/>
-              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_kyUwEmb1Eeq0hJ-HGKMQPA" x="17" y="52"/>
+              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_kyUwEmb1Eeq0hJ-HGKMQPA" x="17" y="79"/>
             </children>
             <styles xmi:type="notation:SortingStyle" xmi:id="_D7y0ZWb0Eeq0hJ-HGKMQPA"/>
             <styles xmi:type="notation:FilteringStyle" xmi:id="_D7y0Zmb0Eeq0hJ-HGKMQPA"/>
           </children>
           <styles xmi:type="notation:ShapeStyle" xmi:id="_D7y0YWb0Eeq0hJ-HGKMQPA" fontName="Ubuntu"/>
-          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_D7y0Ymb0Eeq0hJ-HGKMQPA" x="1134" y="26" width="252" height="664"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_D7y0Ymb0Eeq0hJ-HGKMQPA" x="1134" y="315" width="252" height="374"/>
         </children>
         <styles xmi:type="notation:DiagramStyle" xmi:id="_m4x4g2bwEeqsSLlUW5sjBQ"/>
         <edges xmi:type="notation:Edge" xmi:id="_UlcZIGbyEeq0hJ-HGKMQPA" type="4001" element="_Uj3EwGbyEeq0hJ-HGKMQPA" source="_UlKsUGbyEeq0hJ-HGKMQPA" target="_UlMhimbyEeq0hJ-HGKMQPA">
@@ -1701,8 +1701,8 @@
     </ownedDiagramElements>
     <ownedDiagramElements xmi:type="diagram:DEdge" xmi:id="_Uk18MGbyEeq0hJ-HGKMQPA" name="[Local: outputParameter, Local: inputParameter]" sourceNode="_UhpeQWbyEeq0hJ-HGKMQPA" targetNode="_Uho3MGbyEeq0hJ-HGKMQPA" endLabel="[0..*, 0..*]">
       <target xmi:type="oslc4j_ai:Resource" href="platform:/resource/org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.3"/>
-      <semanticElements xmi:type="oslc4j_ai:ResourceProperty" href="platform:/resource/org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resourceProperties.9"/>
       <semanticElements xmi:type="oslc4j_ai:ResourceProperty" href="platform:/resource/org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resourceProperties.5"/>
+      <semanticElements xmi:type="oslc4j_ai:ResourceProperty" href="platform:/resource/org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resourceProperties.9"/>
       <ownedStyle xmi:type="diagram:EdgeStyle" xmi:id="_Uk3xYGbyEeq0hJ-HGKMQPA" lineStyle="dot" size="2" strokeColor="0,0,0">
         <description xmi:type="style:EdgeStyleDescription" href="platform:/plugin/org.eclipse.lyo.tools.toolchain.design/description/ToolChainModel.odesign#//@ownedViewpoints[name='ToolchainViewpoint']/@ownedRepresentations[name='SpecificationDiagram']/@defaultLayer/@edgeMappings[name='Specification.ResourceToReferenceProperty']/@conditionnalStyles.1/@style"/>
         <centerLabelStyle xmi:type="diagram:CenterLabelStyle" xmi:id="_Uk3xYWbyEeq0hJ-HGKMQPA" labelSize="9" showIcon="false"/>

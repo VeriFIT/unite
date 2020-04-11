@@ -111,7 +111,7 @@ public interface ISUT
     @OslcValueType(ValueType.Resource)
     @OslcRange({FoafDomainConstants.PERSON_TYPE})
     @OslcReadOnly(false)
-    public HashSet<Link> getCreator();
+    public Set<Link> getCreator();
 
     @OslcName("modified")
     @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "modified")
