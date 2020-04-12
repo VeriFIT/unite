@@ -47,6 +47,7 @@ import org.eclipse.lyo.oslc4j.core.model.Link;
 import verifit.compilation.VeriFitCompilationConstants;
 import verifit.compilation.VeriFitCompilationManager;
 import verifit.compilation.VeriFitCompilationResourcesFactory;
+import verifit.compilation.resources.SUT;
 import verifit.compilation.resources.TextOut;
 /**
  * A thread for executing the Deploy SUT Automation Plan.
@@ -204,11 +205,19 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 				}
 			}
 	    	
+			// create the SUT resource
+			SUT newSut = new SUT();
+			newSut.setTitle("SUT - " + execAutoRequest.getTitle());
+			// TODO newSut.setLaunchCommand(...);
+			newSut.setCreator(execAutoRequest.getCreator());
+			VeriFitCompilationManager.createSUT(newSut, serviceProviderId, execAutoRequestId); // TODO
+			
 			// update the autoResult state, contribution, verdict
 			newAutoResult.setState(new HashSet<Link>());
 			newAutoResult.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));
 			newAutoResult.setVerdict(new HashSet<Link>());
 			newAutoResult.addVerdict(new Link(new URI(executionVerdict)));
+			newAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(serviceProviderId, VeriFitCompilationManager.getResourceIdFromUri(newSut.getAbout()))); // TODO
 			VeriFitCompilationManager.updateAutomationResult(null, newAutoResult, serviceProviderId, VeriFitCompilationManager.getResourceIdFromUri(newAutoResult.getAbout()));
 			
 			// update the autoRequest state

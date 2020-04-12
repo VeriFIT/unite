@@ -382,36 +382,33 @@ public class VeriFitCompilationManager {
 		return inputParamsMap;
 	}
 	
-	/**
+	
+    /**
 	 * Creates an SUT resource with the specified properties, and stores in the Adapter's catalog.
-	 * @param aResource			The new resource will copy properties from the specified aResource.
-	 * @param serviceProviderId	ID of the service provider for the new resource.
-	 * @return					The newly created resource. Or null if one of the required properties was missing.
-	 * @throws StoreAccessException 
-	 */
-    public static SUT createSUT(final SUT aResource, final String serviceProviderId) throws StoreAccessException
+     * @param aResource			The new resource will copy properties from the specified aResource.
+     * @param serviceProviderId	ID of the service provider for the new resource.
+     * @param newID				ID to assign to the new SUT (meant to be the same as the Request ID)
+     * @return					The newly created resource. Or null if one of the required properties was missing.
+     */
+    public static SUT createSUT(final SUT aResource, final String serviceProviderId, final String newID) 
     {    	
     	SUT newResource = null;
     	
     	// check that required properties are specified in the input parameter
-    	if (aResource == null || aResource.getTitle() == null || aResource.getTitle().isEmpty())
+    	if (aResource == null || aResource.getTitle() == null || aResource.getTitle().isEmpty()) // TODO
     	{
     		return null;
     	}
         
 		try {
-			String newID = AutoPlanIdGen.getId();
 			newResource = aResource;
-			newResource.setAbout(VeriFitCompilationResourcesFactory.constructURIForAutomationPlan(serviceProviderId, newID));
+			newResource.setAbout(VeriFitCompilationResourcesFactory.constructURIForSUT(serviceProviderId, newID));
 			
 			// resources set by the service provider
-			newResource.setIdentifier(newID);
 			Date timestamp = new Date();
 			newResource.setCreated(timestamp);
 			newResource.setModified(timestamp);
-			//newResource.setInstanceShape(new URI(VeriFitCompilationProperties.PATH_RESOURCE_SHAPES + "automationPlan"));
-			//newResource.addServiceProvider(new URI(VeriFitCompilationProperties.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
-			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationPlan"));
+			//TODO
 			
 			// persist in the triplestore
 			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
@@ -421,7 +418,7 @@ public class VeriFitCompilationManager {
 			e.printStackTrace();
 			
 		} catch (StoreAccessException e) {
-			throw new StoreAccessException("AutomationPlan creation failed: " + e.getMessage());
+			System.out.println("WARNING: SUT creation failed: " + e.getMessage());
 		}
 		
 		return newResource;
@@ -468,7 +465,7 @@ public class VeriFitCompilationManager {
 		
 		// check what the last AutomationRequest ID is
     	// requests have a numerical ID
-    	/*int initReqId = 0;
+    	int initReqId = 0;
     	try {
 			List<AutomationRequest> listAutoRequests =  store.getResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), AutomationRequest.class);
 			for (AutomationRequest autoReq : listAutoRequests)
@@ -487,9 +484,7 @@ public class VeriFitCompilationManager {
 			// TODO should never be thrown (URI syntax)
 			e.printStackTrace();
 		}		
-		*/
-		AutoRequestIdGen = new ResourceIdGen();
-
+		AutoRequestIdGen = new ResourceIdGen(initReqId);
         // End of user code
     }
 
@@ -783,7 +778,23 @@ public class VeriFitCompilationManager {
         SUT aResource = null;
         
         // Start of user code getSUT
-        // TODO Implement code to return a resource
+
+        URI resUri = VeriFitCompilationResourcesFactory.constructURIForSUT(serviceProviderId, sUTId);
+        try {
+        	
+			aResource = store.getResource(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), resUri, SUT.class);
+
+        } catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+			
+		} catch (NoSuchElementException e) {
+			aResource = null;
+			
+		} catch (StoreAccessException e) {
+			System.out.println("WARNING: SUT GET failed: " + e.getMessage());
+		}
+        
         // End of user code
         return aResource;
     }
