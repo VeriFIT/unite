@@ -88,7 +88,7 @@ public class Persistence {
 	
 
 	/**
-	 * Get a generic resource from the triplestore. Will NOT return the bodies of inlined resources.
+	 * Get a generic resource from the triplestore.
 	 * @param namedGraph	URI of the named graph in the tripletore
 	 * @param resUri		URI of the resource to get
 	 * @param clazz			Class of the resource to get
@@ -100,127 +100,6 @@ public class Persistence {
 	{
 		try {
 			return store.getResource(namedGraph, resUri, clazz);
-
-		} catch (NoSuchElementException e) {
-			throw e;
-		
-		} catch (Exception e) {
-			throw new StoreAccessException(e.getMessage());
-		}
-	}
-	
-	/**
-	 * Get an AutomationPlan from the triplestore based on its URI.
-	 * @param namedGraph	URI of the named graph in the tripletore
-	 * @param resUri		URI of the resource to get
-	 * @return				The requested resource
-	 * @throws NoSuchElementException	When the resource cannot be found
-	 * @throws StoreAccessException
-	 */
-	public AutomationPlan getAutoPlan(final URI namedGraph, final URI resUri) throws NoSuchElementException, StoreAccessException
-	{
-		try {
-			AutomationPlan autoPlan = store.getResource(namedGraph, resUri, AutomationPlan.class);
-			
-			/*
-			Set<ParameterDefinition> paramDef = new HashSet<ParameterDefinition>();
-	    	for (ParameterDefinition def : autoPlan.getParameterDefinition())
-	    	{
-	    		ParameterDefinition fullDef = store.getResource(namedGraph, def.getAbout(), ParameterDefinition.class);
-	    		paramDef.add(fullDef);
-	    	}
-	    	autoPlan.setParameterDefinition(paramDef);
-	    	*/
-	    	
-	    	return autoPlan;
-
-		} catch (NoSuchElementException e) {
-			throw e;
-		
-		} catch (Exception e) {
-			throw new StoreAccessException(e.getMessage());
-		}
-	}
-
-	/**
-	 * Get an AutomationRequest from the triplestore based on its URI.
-	 * @param namedGraph	URI of the named graph in the tripletore
-	 * @param resUri		URI of the resource to get
-	 * @return				The requested resource
-	 * @throws NoSuchElementException	When the resource cannot be found
-	 * @throws StoreAccessException
-	 */
-	public AutomationRequest getAutoRequest(final URI namedGraph, final URI resUri) throws NoSuchElementException, StoreAccessException
-	{
-		try {
-			AutomationRequest autoRequest = store.getResource(namedGraph, resUri, AutomationRequest.class);
-			
-			/*
-			Set<ParameterInstance> inputParams = new HashSet<ParameterInstance>();
-	    	for (ParameterInstance input : autoRequest.getInputParameter())
-	    	{
-	    		ParameterInstance fullInput = store.getResource(namedGraph, input.getAbout(), ParameterInstance.class);
-	    		inputParams.add(fullInput);
-	    	}
-	    	autoRequest.setInputParameter(inputParams);
-	    	*/
-	    	
-	    	return autoRequest;
-
-		} catch (NoSuchElementException e) {
-			throw e;
-		
-		} catch (Exception e) {
-			throw new StoreAccessException(e.getMessage());
-		}
-	}
-	
-	/**
-	 * Get an AutomationResult from the triplestore based on its URI.
-	 * @param namedGraph	URI of the named graph in the tripletore
-	 * @param resUri		URI of the resource to get
-	 * @return				The requested resource
-	 * @throws NoSuchElementException	When the resource cannot be found
-	 * @throws StoreAccessException
-	 */
-	public AutomationResult getAutoResult(final URI namedGraph, final URI resUri) throws NoSuchElementException, StoreAccessException
-	{
-		try {
-			AutomationResult autoResult = store.getResource(namedGraph, resUri, AutomationResult.class);
-			
-			/*
-			Set<ParameterInstance> inputParams = new HashSet<ParameterInstance>();
-			Set<ParameterInstance> outputParams = new HashSet<ParameterInstance>();
-			Set<TextOut> textOuts = new HashSet<TextOut>();
-			
-	    	for (ParameterInstance input : autoResult.getInputParameter())
-	    	{
-	    		ParameterInstance fullInput = store.getResource(namedGraph, input.getAbout(), ParameterInstance.class);
-	    		inputParams.add(fullInput);
-	    	}
-	    	for (ParameterInstance output : autoResult.getOutputParameter())
-	    	{
-	    		ParameterInstance fullOutput = store.getResource(namedGraph, output.getAbout(), ParameterInstance.class);
-	    		outputParams.add(fullOutput);
-	    	}
-	    	for (TextOut log : autoResult.getContribution())
-	    	{
-	    		TextOut fullLog = store.getResource(namedGraph, log.getAbout(), TextOut.class);
-	    		
-	    		// decode the output (was encoded to be a valid XML)
-				String xmlEncoded = fullLog.getValue();
-				String XmlDecoded = StringEscapeUtils.unescapeXml(xmlEncoded);
-				fullLog.setValue(XmlDecoded);
-	    		
-	    		textOuts.add(fullLog);
-	    	}
-	    	
-	    	autoResult.setInputParameter(inputParams);
-	    	autoResult.setOutputParameter(outputParams);
-	    	autoResult.setContribution(textOuts);
-	    	*/
-			
-	    	return autoResult;
 
 		} catch (NoSuchElementException e) {
 			throw e;
@@ -286,11 +165,13 @@ public class Persistence {
 		try {
 			for (AutomationPlan res : resToUpdate)
 			{
+				/*
 				// update all inlined resources first TODO
 				for (ParameterDefinition def : res.getParameterDefinition())
 				{
 					store.updateResources(namedGraph, def);
 				}
+				*/
 				
 				store.updateResources(namedGraph, res);
 			}
@@ -312,11 +193,13 @@ public class Persistence {
 		try {
 			for (AutomationRequest res : resToUpdate)
 			{
+				/*
 				// update all inlined resources first TODO
 				for (ParameterInstance input : res.getInputParameter())
 				{
 					store.updateResources(namedGraph, input);
 				}
+				*/
 				
 				store.updateResources(namedGraph, res);
 			}
@@ -338,6 +221,7 @@ public class Persistence {
 		try {
 			for (AutomationResult res : resToUpdate)
 			{
+				/*
 				// update all inlined resources first TODO
 				for (ParameterInstance input : res.getInputParameter())
 				{
@@ -356,6 +240,7 @@ public class Persistence {
 					
 					store.updateResources(namedGraph, log);
 				}
+				*/
 				
 				store.updateResources(namedGraph, res);
 			}

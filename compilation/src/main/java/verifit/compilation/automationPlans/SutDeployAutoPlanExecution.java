@@ -107,12 +107,12 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 		    TextOut fetchLog = new TextOut();
 		    fetchLog.setDescription("Output of the program fetching process. Stderr is appended to the end."); // TODO update if changed
 		    fetchLog.setTitle("Fetching Log");
-		    fetchLog.addType(new Link(new URI("http://purl.org/dc/dcmitype/Text")));
+		    //fetchLog.addType(new Link(new URI("http://purl.org/dc/dcmitype/Text")));
 		    
 		    TextOut compLog = new TextOut();
 		    compLog.setDescription("Output of the compilation. Stderr is appended to the end."); // TODO update if changed
 		    compLog.setTitle("Compilation Log");
-		    compLog.addType(new Link(new URI("http://purl.org/dc/dcmitype/Text")));
+		    //compLog.addType(new Link(new URI("http://purl.org/dc/dcmitype/Text")));
 			
 			// create the program path and name
 			final String folderPath = createTmpDir("singlefile");

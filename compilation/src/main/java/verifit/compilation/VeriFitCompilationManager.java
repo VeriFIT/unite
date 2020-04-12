@@ -678,7 +678,7 @@ public class VeriFitCompilationManager {
 			newResource = processAutomationRequest(serviceProviderId, newResource);
 
 			// persist in the triplestore
-			store.updateResources(new URI(VeriFitCompilationConstants.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
+			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
 
 		} catch (OslcResourceException e) {
 			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
@@ -722,7 +722,7 @@ public class VeriFitCompilationManager {
         URI resUri = VeriFitCompilationResourcesFactory.constructURIForAutomationPlan(serviceProviderId, automationPlanId);
         try {
 
-        	aResource = store.getAutoPlan(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), resUri);
+        	aResource = store.getResource(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), resUri, AutomationPlan.class);
 
         } catch (URISyntaxException e) {
 			// TODO should never be thrown (URI syntax)
@@ -760,7 +760,7 @@ public class VeriFitCompilationManager {
         URI resUri = VeriFitCompilationResourcesFactory.constructURIForAutomationRequest(serviceProviderId, automationRequestId);
         try {
         	
-			aResource = store.getAutoRequest(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), resUri);
+			aResource = store.getResource(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), resUri, AutomationRequest.class);
 
         } catch (URISyntaxException e) {
 			// TODO should never be thrown (URI syntax)
@@ -787,7 +787,7 @@ public class VeriFitCompilationManager {
         URI resUri = VeriFitCompilationResourcesFactory.constructURIForAutomationResult(serviceProviderId, automationResultId);
         try {
         	
-			aResource = store.getAutoResult(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), resUri);
+			aResource = store.getResource(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), resUri, AutomationResult.class);
 
         } catch (URISyntaxException e) {
 			// TODO should never be thrown (URI syntax)

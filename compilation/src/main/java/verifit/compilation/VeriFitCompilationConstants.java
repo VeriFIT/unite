@@ -64,8 +64,7 @@ public interface VeriFitCompilationConstants
     // ADD more value types when needed
     // https://archive.open-services.net/bin/view/Main/OSLCCoreSpecAppendixA.html#Representation_Property
     public static final String OSLC_REPRESENTATION_EITHER = "http://open-services.net/ns/core#Either";
-    
-    public static final String SPARQL_SERVER_NAMED_GRAPH_RESOURCES = "http://automation_resources";
+
     // End of user code
 
     public static final String HDR_OSLC_VERSION = "OSLC-Core-Version";
