@@ -74,6 +74,7 @@ import org.eclipse.lyo.oslc.domains.IPerson;
 import org.eclipse.lyo.oslc.domains.IPerson;
 import org.eclipse.lyo.oslc.domains.auto.IAutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.IParameterInstance;
+import org.eclipse.lyo.oslc.domains.auto.IAutomationResult;
 
 // Start of user code imports
 // End of user code
@@ -207,6 +208,15 @@ public interface IAutomationRequest
     @OslcReadOnly(false)
     public Link getExecutesAutomationPlan();
 
+    @OslcName("producedAutomationResult")
+    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "producedAutomationResult")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.Resource)
+    @OslcRepresentation(Representation.Reference)
+    @OslcRange({Oslc_autoDomainConstants.AUTOMATIONRESULT_TYPE})
+    @OslcReadOnly(false)
+    public Link getProducedAutomationResult();
+
 
     public void setContributor(final Set<Link> contributor );
     public void setCreated(final Date created );
@@ -222,5 +232,6 @@ public interface IAutomationRequest
     public void setDesiredState(final Link desiredState );
     public void setInputParameter(final Set<ParameterInstance> inputParameter );
     public void setExecutesAutomationPlan(final Link executesAutomationPlan );
+    public void setProducedAutomationResult(final Link producedAutomationResult );
 }
 

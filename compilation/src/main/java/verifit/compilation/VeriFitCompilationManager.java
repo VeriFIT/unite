@@ -27,7 +27,6 @@ package verifit.compilation;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletContextEvent;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
@@ -66,6 +65,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.NoSuchElementException;
+import java.util.Map;
 // End of user code
 
 // Start of user code pre_class_code
@@ -304,104 +304,128 @@ public class VeriFitCompilationManager {
     
 
 	/**
-	 * Choose what AutomationPlan execution method to use for the specific
-	 * executedAutomationPlan of this AutomationRequest.
+	 * Check that the AutomationRequest contains all the neccesary input parameters based on its AutoPlan
+	 * and return a map of them
 	 * @param serviceProviderId			serviceProviderId passed by the HTTP request
 	 * @param execAutoRequest			The AutomationRequest to execute. Needs to have a valid
 	 * 									executesAutomationPlan property.
 	 * @throws OslcResourceException 	When the executed AutomationRequest properties are invalid or missing
 	 */
-	private static AutomationRequest processAutomationRequest(String serviceProviderId, AutomationRequest execAutoRequest) throws OslcResourceException
+	private static Map<String, String> getAutoReqInputParams(String serviceProviderId, AutomationRequest execAutoRequest) throws OslcResourceException
 	{
-		try {
-			// get the executed AutomationPlan resource			
-			String execAutoPlanId = getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue());
-			AutomationPlan execAutoPlan = getAutomationPlan(null, serviceProviderId, execAutoPlanId);
-			if (execAutoPlan == null)
-				throw new OslcResourceException("AutomationPlan not found (id: " + execAutoPlanId + ")");
-			
-			/// check the input parameters and create a map of "name" -> "value"
-			Map<String, String> inputParamsMap = new HashMap<String, String>();
+		// get the executed AutomationPlan resource			
+		String execAutoPlanId = getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue());
+		AutomationPlan execAutoPlan = getAutomationPlan(null, serviceProviderId, execAutoPlanId);
+		if (execAutoPlan == null)
+			throw new OslcResourceException("AutomationPlan not found (id: " + execAutoPlanId + ")");
+		
+		/// check the input parameters and create a map of "name" -> "value"
+		Map<String, String> inputParamsMap = new HashMap<String, String>();
 
-			// loop through autoPlan defined parameters
-			for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
-			{
-				// set the default value (will be overwritten later), may be null if not set
-				inputParamsMap.put(definedParam.getName(), definedParam.getDefaultValue());
-					
-				// find the corresponding autoRequest input parameter
-				for (ParameterInstance submittedParam : execAutoRequest.getInputParameter())
-				{				
-					if (definedParam.getName().equals(submittedParam.getName()))
+		// loop through autoPlan defined parameters
+		for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
+		{
+			// set the default value (will be overwritten later), may be null if not set
+			inputParamsMap.put(definedParam.getName(), definedParam.getDefaultValue());
+				
+			// find the corresponding autoRequest input parameter
+			for (ParameterInstance submittedParam : execAutoRequest.getInputParameter())
+			{				
+				if (definedParam.getName().equals(submittedParam.getName()))
+				{
+					// check if the value is allowed
+					Boolean validValue = true;
+					if (definedParam.getAllowedValue().size() > 0)
 					{
-						// check if the value is allowed
-						Boolean validValue = true;
-						if (definedParam.getAllowedValue().size() > 0)
+						validValue = false;
+						for (String allowedValue : definedParam.getAllowedValue())
 						{
-							validValue = false;
-							for (String allowedValue : definedParam.getAllowedValue())
+							if (allowedValue.equals(submittedParam.getValue()))
 							{
-								if (allowedValue.equals(submittedParam.getValue()))
-								{
-									validValue = true;
-									break;
-								}
+								validValue = true;
+								break;
 							}
 						}
-						if (!validValue)
-						{
-							throw new OslcResourceException("value '" + submittedParam.getValue() + "' not allowed for the '" + definedParam.getName() + "' parameter");
-						}
-						
-						inputParamsMap.put(definedParam.getName(), submittedParam.getValue());
 					}
-				}
-				
-				// check parameter occurrences
-				Boolean paramMissing = false;
-				switch (definedParam.getOccurs().getValue().toString())
-				{
-				case VeriFitCompilationConstants.OSLC_OCCURS_ONE:
-					// TODO check for more then one when there should be exactly one
-				case VeriFitCompilationConstants.OSLC_OCCURS_ONEorMany:
-					if (inputParamsMap.get(definedParam.getName()) == null)
-						paramMissing = true;
-					break;
+					if (!validValue)
+					{
+						throw new OslcResourceException("value '" + submittedParam.getValue() + "' not allowed for the '" + definedParam.getName() + "' parameter");
+					}
 					
-				case VeriFitCompilationConstants.OSLC_OCCURS_ZEROorONE:
-					// TODO check for more then one when there should be max one
-					break;
-
-				case VeriFitCompilationConstants.OSLC_OCCURS_ZEROorMany:
-					break;
+					inputParamsMap.put(definedParam.getName(), submittedParam.getValue());
 				}
-				
-				if (paramMissing == true)
-					throw new OslcResourceException("'" + definedParam.getName() + "' input parameter missing");
 			}
 			
-			// set the request's state to in progress (the execution will start in a new thread)
-			execAutoRequest.setState(new HashSet<Link>());
-			execAutoRequest.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_INPROGRESS)));
-			
-			// find the right method for executing the AutomationPlan
-			switch (execAutoPlan.getTitle())
+			// check parameter occurrences
+			Boolean paramMissing = false;
+			switch (definedParam.getOccurs().getValue().toString())
 			{
-			case "SUT Deploy":
-				new SutDeployAutoPlanExecution(serviceProviderId, execAutoRequest, inputParamsMap);	// TODO
-				break;				
+			case VeriFitCompilationConstants.OSLC_OCCURS_ONE:
+				// TODO check for more then one when there should be exactly one
+			case VeriFitCompilationConstants.OSLC_OCCURS_ONEorMany:
+				if (inputParamsMap.get(definedParam.getName()) == null)
+					paramMissing = true;
+				break;
 				
-			default:
-				throw new OslcResourceException("Unknown AutomationPlan (Not implemented)");
+			case VeriFitCompilationConstants.OSLC_OCCURS_ZEROorONE:
+				// TODO check for more then one when there should be max one
+				break;
+
+			case VeriFitCompilationConstants.OSLC_OCCURS_ZEROorMany:
+				break;
 			}
 			
+			if (paramMissing == true)
+				throw new OslcResourceException("'" + definedParam.getName() + "' input parameter missing");
+		}
+		
+		return inputParamsMap;
+	}
+	
+	/**
+	 * Creates an SUT resource with the specified properties, and stores in the Adapter's catalog.
+	 * @param aResource			The new resource will copy properties from the specified aResource.
+	 * @param serviceProviderId	ID of the service provider for the new resource.
+	 * @return					The newly created resource. Or null if one of the required properties was missing.
+	 * @throws StoreAccessException 
+	 */
+    public static SUT createSUT(final SUT aResource, final String serviceProviderId) throws StoreAccessException
+    {    	
+    	SUT newResource = null;
+    	
+    	// check that required properties are specified in the input parameter
+    	if (aResource == null || aResource.getTitle() == null || aResource.getTitle().isEmpty())
+    	{
+    		return null;
+    	}
+        
+		try {
+			String newID = AutoPlanIdGen.getId();
+			newResource = aResource;
+			newResource.setAbout(VeriFitCompilationResourcesFactory.constructURIForAutomationPlan(serviceProviderId, newID));
+			
+			// resources set by the service provider
+			newResource.setIdentifier(newID);
+			Date timestamp = new Date();
+			newResource.setCreated(timestamp);
+			newResource.setModified(timestamp);
+			//newResource.setInstanceShape(new URI(VeriFitCompilationProperties.PATH_RESOURCE_SHAPES + "automationPlan"));
+			//newResource.addServiceProvider(new URI(VeriFitCompilationProperties.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
+			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationPlan"));
+			
+			// persist in the triplestore
+			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
+
 		} catch (URISyntaxException e) {
 			// TODO should never be thrown (URI syntax)
 			e.printStackTrace();
+			
+		} catch (StoreAccessException e) {
+			throw new StoreAccessException("AutomationPlan creation failed: " + e.getMessage());
 		}
 		
-		return execAutoRequest;
-	}
+		return newResource;
+    }
     // End of user code
 
     public static void contextInitializeServletListener(final ServletContextEvent servletContextEvent)
@@ -504,7 +528,18 @@ public class VeriFitCompilationManager {
         List<SUT> resources = null;
         
         // Start of user code querySUTs
-        // TODO Implement code to return a set of resources
+		resources = new ArrayList<SUT>();
+        try {
+        	
+	    	resources = store.whereQuery(httpServletRequest, new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), SUT.class, where, page, limit);
+
+		} catch (StoreAccessException e) {
+			System.out.println("WARNING: AutomationRequest query failed: " + e.getMessage());
+			
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+		}
         // End of user code
         return resources;
     }
@@ -673,12 +708,15 @@ public class VeriFitCompilationManager {
 			}
 			*/
 			
-			// when a request is created - get its executed autoPlan, check parameters and execute the autoPlan
+			// when a request is created - get its executed autoPlan, check parameters and make an input map
 			// throws an exception if the autoRequest is not valid
-			newResource = processAutomationRequest(serviceProviderId, newResource);
+			Map<String, String> inputParamsMap = getAutoReqInputParams(serviceProviderId, newResource);
 
 			// persist in the triplestore
 			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
+			
+			// create a new thread to execute the automation request // TODO
+			new SutDeployAutoPlanExecution(serviceProviderId, newResource.getAbout(), inputParamsMap);	
 
 		} catch (OslcResourceException e) {
 			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());

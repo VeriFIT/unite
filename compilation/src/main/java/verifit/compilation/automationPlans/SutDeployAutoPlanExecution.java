@@ -66,14 +66,14 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 	 * @param execAutoRequest	Executed AutomationRequest resource object
 	 * @param inputParamsMap	Input parameters as a "name" => "value" map
 	 */
-	public SutDeployAutoPlanExecution(String serviceProviderId, AutomationRequest execAutoRequest, Map<String, String> inputParamsMap) 
+	public SutDeployAutoPlanExecution(String serviceProviderId, URI execAutoRequestURI, Map<String, String> inputParamsMap) 
 	{
 		super();
 		
 		this.serviceProviderId = serviceProviderId;
-		this.execAutoRequest = execAutoRequest;
 		this.inputParamsMap = inputParamsMap;
-		this.execAutoRequestId = VeriFitCompilationManager.getResourceIdFromUri(execAutoRequest.getAbout());
+		this.execAutoRequestId = VeriFitCompilationManager.getResourceIdFromUri(execAutoRequestURI);
+		this.execAutoRequest = VeriFitCompilationManager.getAutomationRequest(null, serviceProviderId, execAutoRequestId); // TODO added this to avoid copy by refference -- might be slow
 		
 		this.start();
 	}
@@ -103,6 +103,13 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			propAutoResult.addVerdict(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_VERDICT_UNAVAILABLE)));
 		    AutomationResult newAutoResult = VeriFitCompilationManager.createAutomationResult(propAutoResult, serviceProviderId, execAutoRequestId);
 	    	
+			// set the autoRequest's state to in progress and link the autoResult
+			execAutoRequest.setState(new HashSet<Link>());
+			execAutoRequest.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_INPROGRESS)));
+			execAutoRequest.setProducedAutomationResult(new Link(newAutoResult.getAbout()));
+			VeriFitCompilationManager.updateAutomationRequest(execAutoRequest, serviceProviderId, execAutoRequestId);
+			
+			
 		    // prepare result contributions - program fetching, compilation
 		    TextOut fetchLog = new TextOut();
 		    fetchLog.setDescription("Output of the program fetching process. Stderr is appended to the end."); // TODO update if changed

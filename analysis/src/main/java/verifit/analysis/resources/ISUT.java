@@ -67,6 +67,7 @@ import org.eclipse.lyo.oslc4j.core.model.ValueType;
 import verifit.analysis.resources.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
+import verifit.analysis.resources.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.IPerson;
 
 // Start of user code imports
@@ -129,6 +130,14 @@ public interface ISUT
     @OslcReadOnly(false)
     public String getIdentifier();
 
+    @OslcName("launchCommand")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "launchCommand")
+    @OslcOccurs(Occurs.ExactlyOne)
+    @OslcValueType(ValueType.XMLLiteral)
+    @OslcReadOnly(false)
+    @OslcTitle("")
+    public String getLaunchCommand();
+
 
     public void setTitle(final String title );
     public void setDescription(final String description );
@@ -136,5 +145,6 @@ public interface ISUT
     public void setCreator(final Set<Link> creator );
     public void setModified(final Date modified );
     public void setIdentifier(final String identifier );
+    public void setLaunchCommand(final String launchCommand );
 }
 

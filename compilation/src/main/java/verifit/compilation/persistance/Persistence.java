@@ -46,6 +46,7 @@ import org.eclipse.lyo.store.StoreAccessException;
 import org.eclipse.lyo.store.StoreFactory;
 
 import verifit.compilation.VeriFitCompilationProperties;
+import verifit.compilation.resources.SUT;
 import verifit.compilation.resources.TextOut;
 
 /**
@@ -155,7 +156,6 @@ public class Persistence {
 	
 	/**
 	 * Insert new AutomationPlan into the triplestore. If the resource already exists then rewrite it.
-	 * @note The Lyo store updateResources does not seem to update inlined resources properly => doing it one by one
 	 * @param namedGraph	URI of the named graph in the tripletore
 	 * @param resToUpdate	Resources to update/insert
 	 * @throws StoreAccessException
@@ -183,7 +183,6 @@ public class Persistence {
 	
 	/**
 	 * Insert new AutomationRequest into the triplestore. If the resource already exists then rewrite it.
-	 * @note The Lyo store updateResources does not seem to update inlined resources properly => doing it one by one
 	 * @param namedGraph	URI of the named graph in the tripletore
 	 * @param resToUpdate	Resources to update/insert
 	 * @throws StoreAccessException
@@ -211,7 +210,6 @@ public class Persistence {
 	
 	/**
 	 * Insert new AutomationResults into the triplestore. If the resource already exists then rewrite it.
-	 * @note The Lyo store updateResources does not seem to update inlined resources properly => doing it one by one
 	 * @param namedGraph	URI of the named graph in the tripletore
 	 * @param resToUpdate	Resources to update/insert
 	 * @throws StoreAccessException
@@ -242,6 +240,26 @@ public class Persistence {
 				}
 				*/
 				
+				store.updateResources(namedGraph, res);
+			}
+
+		} catch (Exception e) {
+			throw new StoreAccessException(e.getMessage());
+		}
+	}
+	
+
+	/**
+	 * Insert new SUT into the triplestore. If the resource already exists then rewrite it.
+	 * @param namedGraph	URI of the named graph in the tripletore
+	 * @param resToUpdate	Resources to update/insert
+	 * @throws StoreAccessException
+	 */
+	public void updateResources(final URI namedGraph, final SUT... resToUpdate) throws StoreAccessException
+	{
+		try {
+			for (SUT res : resToUpdate)
+			{
 				store.updateResources(namedGraph, res);
 			}
 

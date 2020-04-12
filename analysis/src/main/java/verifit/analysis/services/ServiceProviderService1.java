@@ -87,6 +87,7 @@ import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
 import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc.domains.Person;
+import verifit.analysis.resources.SUT;
 import verifit.analysis.resources.TextOut;
 
 // Start of user code imports
@@ -679,6 +680,15 @@ public class ServiceProviderService1
                     if (paramValues.length == 1) {
                         if (paramValues[0].length() != 0)
                             aResource.setExecutesAutomationPlan(new Link(new URI(paramValues[0])));
+                        // else, there is an empty value for that parameter, and hence ignore since the parameter is not actually set.
+                    }
+
+            }
+            paramValues = httpServletRequest.getParameterValues("producedAutomationResult");
+            if (paramValues != null) {
+                    if (paramValues.length == 1) {
+                        if (paramValues[0].length() != 0)
+                            aResource.setProducedAutomationResult(new Link(new URI(paramValues[0])));
                         // else, there is an empty value for that parameter, and hence ignore since the parameter is not actually set.
                     }
 

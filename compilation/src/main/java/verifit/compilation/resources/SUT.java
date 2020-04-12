@@ -75,6 +75,7 @@ import verifit.compilation.resources.FitDomainConstants;
 
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
+import verifit.compilation.resources.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.Person;
 
 // Start of user code imports
@@ -110,6 +111,9 @@ public class SUT
     // Start of user code attributeAnnotation:identifier
     // End of user code
     private String identifier;
+    // Start of user code attributeAnnotation:launchCommand
+    // End of user code
+    private String launchCommand;
     
     // Start of user code classAttributes
     // End of user code
@@ -338,6 +342,21 @@ public class SUT
         return identifier;
     }
     
+    // Start of user code getterAnnotation:launchCommand
+    // End of user code
+    @OslcName("launchCommand")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "launchCommand")
+    @OslcOccurs(Occurs.ExactlyOne)
+    @OslcValueType(ValueType.XMLLiteral)
+    @OslcReadOnly(false)
+    @OslcTitle("")
+    public String getLaunchCommand()
+    {
+        // Start of user code getterInit:launchCommand
+        // End of user code
+        return launchCommand;
+    }
+    
     
     // Start of user code setterAnnotation:title
     // End of user code
@@ -412,6 +431,18 @@ public class SUT
         this.identifier = identifier;
     
         // Start of user code setterFinalize:identifier
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:launchCommand
+    // End of user code
+    public void setLaunchCommand(final String launchCommand )
+    {
+        // Start of user code setterInit:launchCommand
+        // End of user code
+        this.launchCommand = launchCommand;
+    
+        // Start of user code setterFinalize:launchCommand
         // End of user code
     }
     
@@ -530,6 +561,26 @@ public class SUT
     
         s= s + "<input name=\"identifier\" type=\"text\" style=\"width: 400px\" id=\"identifier\" >";
         // Start of user code "Finalize:identifierToHtmlForCreation(...)"
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    static public String launchCommandToHtmlForCreation (final HttpServletRequest httpServletRequest)
+    {
+        String s = "";
+    
+        // Start of user code "Init:launchCommandToHtmlForCreation(...)"
+        // End of user code
+    
+        s = s + "<label for=\"launchCommand\">launchCommand: </LABEL>";
+    
+        // Start of user code "Mid:launchCommandToHtmlForCreation(...)"
+        // End of user code
+    
+        s= s + "<input name=\"launchCommand\" type=\"text\" style=\"width: 400px\" id=\"launchCommand\" >";
+        // Start of user code "Finalize:launchCommandToHtmlForCreation(...)"
         // End of user code
     
         return s;
@@ -682,6 +733,31 @@ public class SUT
         }
     
         // Start of user code identifiertoHtml_finalize
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    public String launchCommandToHtml()
+    {
+        String s = "";
+    
+        // Start of user code launchCommandtoHtml_mid
+        // End of user code
+    
+        try {
+            if (launchCommand == null) {
+                s = s + "<em>null</em>";
+            }
+            else {
+                s = s + launchCommand.toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        // Start of user code launchCommandtoHtml_finalize
         // End of user code
     
         return s;

@@ -81,6 +81,7 @@ import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
 import verifit.analysis.resources.FitDomainConstants;
 import verifit.analysis.resources.TextOut;
 import org.eclipse.lyo.oslc.domains.Person;
+import verifit.analysis.resources.SUT;
 import org.eclipse.lyo.oslc.domains.Person;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
@@ -156,6 +157,9 @@ public class AutomationResult
     // Start of user code attributeAnnotation:reportsOnAutomationPlan
     // End of user code
     private Link reportsOnAutomationPlan = new Link();
+    // Start of user code attributeAnnotation:createdSUT
+    // End of user code
+    private Link createdSUT = new Link();
     
     // Start of user code classAttributes
     // End of user code
@@ -619,6 +623,22 @@ public class AutomationResult
         return reportsOnAutomationPlan;
     }
     
+    // Start of user code getterAnnotation:createdSUT
+    // End of user code
+    @OslcName("createdSUT")
+    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "createdSUT")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.Resource)
+    @OslcRepresentation(Representation.Reference)
+    @OslcRange({FitDomainConstants.SUT_TYPE})
+    @OslcReadOnly(false)
+    public Link getCreatedSUT()
+    {
+        // Start of user code getterInit:createdSUT
+        // End of user code
+        return createdSUT;
+    }
+    
     
     // Start of user code setterAnnotation:contributor
     // End of user code
@@ -873,6 +893,18 @@ public class AutomationResult
         this.reportsOnAutomationPlan = reportsOnAutomationPlan;
     
         // Start of user code setterFinalize:reportsOnAutomationPlan
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:createdSUT
+    // End of user code
+    public void setCreatedSUT(final Link createdSUT )
+    {
+        // Start of user code setterInit:createdSUT
+        // End of user code
+        this.createdSUT = createdSUT;
+    
+        // Start of user code setterFinalize:createdSUT
         // End of user code
     }
     
@@ -1221,6 +1253,25 @@ public class AutomationResult
         // End of user code
     
         // Start of user code "Finalize:reportsOnAutomationPlanToHtmlForCreation(...)"
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    static public String createdSUTToHtmlForCreation (final HttpServletRequest httpServletRequest)
+    {
+        String s = "";
+    
+        // Start of user code "Init:createdSUTToHtmlForCreation(...)"
+        // End of user code
+    
+        s = s + "<label for=\"createdSUT\">createdSUT: </LABEL>";
+    
+        // Start of user code "Mid:createdSUTToHtmlForCreation(...)"
+        // End of user code
+    
+        // Start of user code "Finalize:createdSUTToHtmlForCreation(...)"
         // End of user code
     
         return s;
@@ -1699,6 +1750,31 @@ public class AutomationResult
         }
     
         // Start of user code reportsOnAutomationPlantoHtml_finalize
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    public String createdSUTToHtml()
+    {
+        String s = "";
+    
+        // Start of user code createdSUTtoHtml_mid
+        // End of user code
+    
+        try {
+            if ((createdSUT == null) || (createdSUT.getValue() == null)) {
+                s = s + "<em>null</em>";
+            }
+            else {
+                s = s + (new SUT (createdSUT.getValue())).toHtml(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        // Start of user code createdSUTtoHtml_finalize
         // End of user code
     
         return s;

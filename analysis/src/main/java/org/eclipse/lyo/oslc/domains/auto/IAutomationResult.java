@@ -70,11 +70,10 @@ import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
-
-import verifit.analysis.resources.TextOut;
 import verifit.analysis.resources.FitDomainConstants;
 import verifit.analysis.resources.ITextOut;
 import org.eclipse.lyo.oslc.domains.IPerson;
+import verifit.analysis.resources.ISUT;
 import org.eclipse.lyo.oslc.domains.IPerson;
 import org.eclipse.lyo.oslc.domains.auto.IParameterInstance;
 import org.eclipse.lyo.oslc.domains.auto.IParameterInstance;
@@ -82,6 +81,7 @@ import org.eclipse.lyo.oslc.domains.auto.IAutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.IAutomationPlan;
 
 // Start of user code imports
+import verifit.analysis.resources.TextOut;
 // End of user code
 
 @OslcNamespace(Oslc_autoDomainConstants.AUTOMATIONRESULT_NAMESPACE)
@@ -256,6 +256,15 @@ public interface IAutomationResult
     @OslcReadOnly(false)
     public Link getReportsOnAutomationPlan();
 
+    @OslcName("createdSUT")
+    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "createdSUT")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.Resource)
+    @OslcRepresentation(Representation.Reference)
+    @OslcRange({FitDomainConstants.SUT_TYPE})
+    @OslcReadOnly(false)
+    public Link getCreatedSUT();
+
 
     public void setContributor(final Set<Link> contributor );
     public void setCreated(final Date created );
@@ -275,5 +284,6 @@ public interface IAutomationResult
     public void setOutputParameter(final Set<ParameterInstance> outputParameter );
     public void setProducedByAutomationRequest(final Link producedByAutomationRequest );
     public void setReportsOnAutomationPlan(final Link reportsOnAutomationPlan );
+    public void setCreatedSUT(final Link createdSUT );
 }
 

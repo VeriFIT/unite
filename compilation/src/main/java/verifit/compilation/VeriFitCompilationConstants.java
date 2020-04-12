@@ -39,7 +39,7 @@ public interface VeriFitCompilationConstants
      */
 	public static final String AUTOMATION_PROVIDER_ID = "A0";
 	
-    public static final String AUTOMATION_STATE_NEW = "http://open-services.net/ns/auto#success";
+    public static final String AUTOMATION_STATE_NEW = "http://open-services.net/ns/auto#new";
     public static final String AUTOMATION_STATE_QUEUED = "http://open-services.net/ns/auto#queued";
     public static final String AUTOMATION_STATE_INPROGRESS = "http://open-services.net/ns/auto#inProgress";
     public static final String AUTOMATION_STATE_CANCELING = "http://open-services.net/ns/auto#canceling";

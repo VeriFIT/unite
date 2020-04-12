@@ -82,6 +82,7 @@ import org.eclipse.lyo.oslc.domains.Person;
 import org.eclipse.lyo.oslc.domains.Person;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
+import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
 
 // Start of user code imports
 // End of user code
@@ -140,6 +141,9 @@ public class AutomationRequest
     // Start of user code attributeAnnotation:executesAutomationPlan
     // End of user code
     private Link executesAutomationPlan = new Link();
+    // Start of user code attributeAnnotation:producedAutomationResult
+    // End of user code
+    private Link producedAutomationResult = new Link();
     
     // Start of user code classAttributes
     // End of user code
@@ -516,6 +520,22 @@ public class AutomationRequest
         return executesAutomationPlan;
     }
     
+    // Start of user code getterAnnotation:producedAutomationResult
+    // End of user code
+    @OslcName("producedAutomationResult")
+    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "producedAutomationResult")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.Resource)
+    @OslcRepresentation(Representation.Reference)
+    @OslcRange({Oslc_autoDomainConstants.AUTOMATIONRESULT_TYPE})
+    @OslcReadOnly(false)
+    public Link getProducedAutomationResult()
+    {
+        // Start of user code getterInit:producedAutomationResult
+        // End of user code
+        return producedAutomationResult;
+    }
+    
     
     // Start of user code setterAnnotation:contributor
     // End of user code
@@ -706,6 +726,18 @@ public class AutomationRequest
         this.executesAutomationPlan = executesAutomationPlan;
     
         // Start of user code setterFinalize:executesAutomationPlan
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:producedAutomationResult
+    // End of user code
+    public void setProducedAutomationResult(final Link producedAutomationResult )
+    {
+        // Start of user code setterInit:producedAutomationResult
+        // End of user code
+        this.producedAutomationResult = producedAutomationResult;
+    
+        // Start of user code setterFinalize:producedAutomationResult
         // End of user code
     }
     
@@ -1242,6 +1274,43 @@ public class AutomationRequest
     
         return s;
     }
+    @Deprecated
+    static public String producedAutomationResultToHtmlForCreation (final HttpServletRequest httpServletRequest)
+    {
+        String s = "";
+    
+        // Start of user code "Init:producedAutomationResultToHtmlForCreation(...)"
+        // End of user code
+    
+        s = s + "<label for=\"producedAutomationResult\">producedAutomationResult: </LABEL>";
+    
+        // Start of user code "Mid:producedAutomationResultToHtmlForCreation(...)"
+        // End of user code
+    
+        // Start of user code "Finalize:producedAutomationResultToHtmlForCreation(...)"
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    static public String producedAutomationResultToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
+    {
+        String s = "";
+    
+        // Start of user code "Init:producedAutomationResultToHtmlForCreation1(...final String serviceProviderId)"
+        // End of user code
+    
+        s = s + "<label for=\"producedAutomationResult\">producedAutomationResult: </LABEL>";
+    
+        // Start of user code "Mid:producedAutomationResultToHtmlForCreation1(...final String serviceProviderId)"
+        // End of user code
+    
+        // Start of user code "Finalize:producedAutomationResultToHtmlForCreation1(...final String serviceProviderId)"
+        // End of user code
+    
+        return s;
+    }
     
     @Deprecated
     public String contributorToHtml()
@@ -1605,6 +1674,31 @@ public class AutomationRequest
         }
     
         // Start of user code executesAutomationPlantoHtml_finalize
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    public String producedAutomationResultToHtml()
+    {
+        String s = "";
+    
+        // Start of user code producedAutomationResulttoHtml_mid
+        // End of user code
+    
+        try {
+            if ((producedAutomationResult == null) || (producedAutomationResult.getValue() == null)) {
+                s = s + "<em>null</em>";
+            }
+            else {
+                s = s + (new AutomationResult (producedAutomationResult.getValue())).toHtml(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        // Start of user code producedAutomationResulttoHtml_finalize
         // End of user code
     
         return s;

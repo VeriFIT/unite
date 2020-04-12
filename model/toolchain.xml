@@ -108,7 +108,9 @@
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.1"/>
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.5"/>
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.4"/>
+        <resourceProperties href="#//@specification/@domainSpecifications.0/@resourceProperties.0"/>
       </resources>
+      <resourceProperties title="" name="launchCommand" valueType="XMLLiteral"/>
     </domainSpecifications>
     <domainPrefixes name="fit"/>
   </specification>
