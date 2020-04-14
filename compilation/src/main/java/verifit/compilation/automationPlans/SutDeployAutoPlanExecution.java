@@ -88,15 +88,31 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 		try {
 			
 			// get the input parameters
-			final String paramProgram = inputParamsMap.get("Program");
-			final String paramProgramDefinition = inputParamsMap.get("ProgramDefinition");
-			final String paramCompilatinParameters = inputParamsMap.get("CompilationParameters");
+			final String paramSourceGit = inputParamsMap.get("sourceGit");
+			final String paramSourceFileUrl = inputParamsMap.get("sourceFileUrl");
+			final String paramBuildCommand = inputParamsMap.get("buildCommand");
+			final String paramLaunchCommand = inputParamsMap.get("launchCommand");
 
+			// check wich one of the source parameters was used 
+			String ProgramDefinition = "";	//TODO use something else than a string (speed)
+			String ProgramSource = "";
+			if (paramSourceGit != null)
+			{
+				ProgramDefinition = "sourceGit";
+				ProgramSource = paramSourceGit;
+			}
+			else if (paramSourceFileUrl != null)
+			{
+				ProgramDefinition = "sourceFileUrl";
+				ProgramSource = paramSourceFileUrl;
+			}
+				
+			
 			//create the autoResult as inProgress
 			AutomationResult propAutoResult = new AutomationResult();
 			propAutoResult.setTitle("Result - " + execAutoRequest.getTitle());
 			propAutoResult.setReportsOnAutomationPlan(execAutoRequest.getExecutesAutomationPlan());
-			propAutoResult.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(serviceProviderId, execAutoRequest.getIdentifier()));
+			propAutoResult.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(serviceProviderId, execAutoRequestId));
 			propAutoResult.setInputParameter(execAutoRequest.getInputParameter());
 			propAutoResult.setContributor(execAutoRequest.getContributor());
 			propAutoResult.setCreator(execAutoRequest.getCreator());
@@ -115,49 +131,37 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 		    TextOut fetchLog = new TextOut();
 		    fetchLog.setDescription("Output of the program fetching process. Stderr is appended to the end."); // TODO update if changed
 		    fetchLog.setTitle("Fetching Log");
-		    //fetchLog.addType(new Link(new URI("http://purl.org/dc/dcmitype/Text")));
+		    //fetchLog.addType(new Link(new URI("http://purl.org/dc/dcmitype/Text"))); //TODO
 		    
 		    TextOut compLog = new TextOut();
 		    compLog.setDescription("Output of the compilation. Stderr is appended to the end."); // TODO update if changed
 		    compLog.setTitle("Compilation Log");
-		    //compLog.addType(new Link(new URI("http://purl.org/dc/dcmitype/Text")));
 			
+		    
 			// create the program path and name
-			final String folderPath = createTmpDir("singlefile");
-			final String programPath = folderPath + "/" + genFileName(execAutoRequestId);
+			final String folderPath = createTmpDir(execAutoRequestId);
 		  
-			// flags to disable a part of the execution in case of an error
-		    Boolean performCompilation = true;
-			
+		    Boolean performCompilation = true;	// flag to disable a part of the execution in case of an error
 			String executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_PASSED;
 			String programToExecute = null;
 		    
 			// fetch source file
 			try {
 			    // get the source file depending on the ProgramDefinition
-			    switch (paramProgramDefinition)
+			    switch (ProgramDefinition)
 			    {
-			    case "url download":
-			    	downloadFileFromUrl(paramProgram, programPath);
+			    case "sourceGit":
+			    	gitClonePublic(ProgramSource, folderPath); // TODO
 			    	break;
 			    	
-			    case "base64 string":
-			    	createFileFromBase64(paramProgram, programPath);
-			    	break;
-			    	
-			    case "filesystem path":
-			    	createFileFromFilesystem(paramProgram, programPath);
-			    	break;
-			    	
-			    case "console command":
-			    	performCompilation = false; // console commands dont have to be compiled
-			    	programToExecute = paramProgram;
+			    case "sourceFileUrl":
+			    	downloadFileFromUrl(ProgramSource, folderPath);
 			    	break;
 			    }
 
 				fetchLog.setValue(""); // TODO fetchlog is empty when there is no error
 				
-			} catch (UnknownHostException e) {
+			} catch (UnknownHostException e) {	// TODO
 				executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_ERROR;
 				fetchLog.setValue("Unknown host or host unreachable: " + e.getMessage());
 	    		performCompilation = false;
@@ -167,32 +171,14 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 				fetchLog.setValue(e.getMessage());
 	    		performCompilation = false;
 	    		
-			} finally {
-				// create the program fetching result Contribution
-				// except for the "console command" version
-				if (!paramProgramDefinition.equals("console command"))
-				{
-					fetchLog = VeriFitCompilationManager.createTextOut(fetchLog, serviceProviderId, execAutoRequestId + "-fetch");
-					newAutoResult.addContribution(fetchLog);
-				}
 			}
 			    
 			// compile source file
 			if (performCompilation)
 			{
 				try {
-	
-				    Map<String,String> compOut = compileSourceFile(programPath, paramCompilatinParameters); 
-			    	String compOutLog = compOut.get("out");
-			    	programToExecute = compOut.get("path");
-			    	
+			    	String compOutLog = compileSourceFile(folderPath, paramBuildCommand);
 			    	compLog.setValue(compOutLog);
-					
-			    	// check for compilation error
-			    	if (programToExecute == null)
-			    	{
-			    		executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_ERROR;
-			    	}
 				    
 				} catch (IOException e) {
 					executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_ERROR;
@@ -200,7 +186,7 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 		    		
 				} finally {
 					// create the compilation result Contribution
-			    	compLog = VeriFitCompilationManager.createTextOut(compLog, serviceProviderId, execAutoRequestId + "-comp");
+			    	compLog = VeriFitCompilationManager.createTextOut(compLog, serviceProviderId, execAutoRequestId + "-comp"); //TODO uri
 			    	newAutoResult.addContribution(compLog);
 				}
 			}
@@ -208,7 +194,7 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			// create the SUT resource
 			SUT newSut = new SUT();
 			newSut.setTitle("SUT - " + execAutoRequest.getTitle());
-			// TODO newSut.setLaunchCommand(...);
+			newSut.setLaunchCommand(paramLaunchCommand);
 			newSut.setCreator(execAutoRequest.getCreator());
 			VeriFitCompilationManager.createSUT(newSut, serviceProviderId, execAutoRequestId); // TODO
 			

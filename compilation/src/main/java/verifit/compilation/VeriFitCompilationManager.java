@@ -158,11 +158,10 @@ public class VeriFitCompilationManager {
 	/**
 	 * Creates an AutomationPlan resource with the specified properties, and stores in the Adapter's catalog.
 	 * @param aResource			The new resource will copy properties from the specified aResource.
-	 * @param serviceProviderId	ID of the service provider for the new resource.
 	 * @return					The newly created resource. Or null if one of the required properties was missing.
 	 * @throws StoreAccessException 
 	 */
-    public static AutomationPlan createAutomationPlan(final AutomationPlan aResource, final String serviceProviderId) throws StoreAccessException
+    public static AutomationPlan createAutomationPlan(final AutomationPlan aResource) throws StoreAccessException
     {    	
     	AutomationPlan newResource = null;
     	
@@ -175,7 +174,7 @@ public class VeriFitCompilationManager {
 		try {
 			String newID = AutoPlanIdGen.getId();
 			newResource = aResource;
-			newResource.setAbout(VeriFitCompilationResourcesFactory.constructURIForAutomationPlan(serviceProviderId, newID));
+			newResource.setAbout(VeriFitCompilationResourcesFactory.constructURIForAutomationPlan(VeriFitCompilationConstants.AUTOMATION_PROVIDER_ID, newID));
 			
 			// resources set by the service provider
 			newResource.setIdentifier(newID);
@@ -304,8 +303,8 @@ public class VeriFitCompilationManager {
     
 
 	/**
-	 * Check that the AutomationRequest contains all the neccesary input parameters based on its AutoPlan
-	 * and return a map of them
+	 * Check that the AutomationRequest contains the neccesary input parameters based on its AutoPlan
+	 * and return a map of them.
 	 * @param serviceProviderId			serviceProviderId passed by the HTTP request
 	 * @param execAutoRequest			The AutomationRequest to execute. Needs to have a valid
 	 * 									executesAutomationPlan property.
@@ -321,8 +320,9 @@ public class VeriFitCompilationManager {
 		
 		/// check the input parameters and create a map of "name" -> "value"
 		Map<String, String> inputParamsMap = new HashMap<String, String>();
-
-		// loop through autoPlan defined parameters
+		int countMatchedParams = 0;
+		
+		// loop through autoPlan defined parameters to match them with the input params
 		for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
 		{
 			// set the default value (will be overwritten later), may be null if not set
@@ -333,6 +333,8 @@ public class VeriFitCompilationManager {
 			{				
 				if (definedParam.getName().equals(submittedParam.getName()))
 				{
+					countMatchedParams++;
+					
 					// check if the value is allowed
 					Boolean validValue = true;
 					if (definedParam.getAllowedValue().size() > 0)
@@ -379,6 +381,12 @@ public class VeriFitCompilationManager {
 				throw new OslcResourceException("'" + definedParam.getName() + "' input parameter missing");
 		}
 		
+		// check that there were no unknown input parameters
+		if (countMatchedParams != execAutoRequest.getInputParameter().size())
+		{
+			throw new OslcResourceException("unrecognized input parameters");
+		}
+		
 		return inputParamsMap;
 	}
 	
@@ -408,6 +416,7 @@ public class VeriFitCompilationManager {
 			Date timestamp = new Date();
 			newResource.setCreated(timestamp);
 			newResource.setModified(timestamp);
+			newResource.setIdentifier(newID);
 			//TODO
 			
 			// persist in the triplestore
@@ -423,6 +432,34 @@ public class VeriFitCompilationManager {
 		
 		return newResource;
     }
+    
+    
+    /**
+	 * Check that the AutomationRequest exactly one "source.*" input parameter.
+	 * @param autoRequest			Automation Request with parameters to check
+	 * @throws OslcResourceException 	When the executed AutomationRequest "source.*" input params are invalid or missing
+	 */
+    public static void checkSutDeploySourceInputs (AutomationRequest autoRequest) throws OslcResourceException
+    {
+		// count the "source.*" input params
+		int count = 0;
+    	for (ParameterInstance submittedParam : autoRequest.getInputParameter())
+		{				
+			if (submittedParam.getName().startsWith("source"))
+			{
+				count++;
+			}
+		}
+    	
+    	if (count == 1)
+    		return;	// all fine
+    	else if (count == 0)
+    		throw new OslcResourceException("Source parameter missing. Expected exactly one.");
+    	else // (count > 1)
+    		throw new OslcResourceException("Too many source parameters. Expected exactly one.");
+    }
+    
+    
     // End of user code
 
     public static void contextInitializeServletListener(final ServletContextEvent servletContextEvent)
@@ -682,31 +719,16 @@ public class VeriFitCompilationManager {
 			newResource.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_NEW)));
 			newResource.setDesiredState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));
 			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationRequest"));
-			
-			/*
-			// add or create ParameterInstances
-			if (aResource.getInputParameter().isEmpty()) // TODO maybe not needed
-			{
-				newResource.setInputParameter(aResource.getInputParameter());
-			}
-			else 
-			{
-				int paramInstCounter = 0;
-				for (ParameterInstance paramInst : aResource.getInputParameter())
-				{
-					String paramInstID = newID + "-" + Integer.toString(paramInstCounter);
-					paramInstCounter++;
-					
-					ParameterInstance newParam = createParameterInstance(paramInst, serviceProviderId, paramInstID);
-					newResource.addInputParameter(newParam);
-				}
-			}
-			*/
+
 			
 			// when a request is created - get its executed autoPlan, check parameters and make an input map
 			// throws an exception if the autoRequest is not valid
 			Map<String, String> inputParamsMap = getAutoReqInputParams(serviceProviderId, newResource);
-
+			
+			// check that the request contains exactly one "source.*" parameter (can not be checked automatically based on the AutoPlan
+			// throws an exception if the Inputs are not OK
+			checkSutDeploySourceInputs(newResource);
+			
 			// persist in the triplestore
 			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
 			

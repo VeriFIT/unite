@@ -59,47 +59,43 @@ public class AutomationPlanDefinition {
 	{ 
 		try {
 			// create parameter definitions
-			ParameterDefinition ProgramDefinition = new ParameterDefinition();
-			ProgramDefinition.setDescription("Specify how the value of the Program parameter should be treated. See the allowedValue properties for options.");
-			ProgramDefinition.setName("ProgramDefinition");
-			ProgramDefinition.setTitle("Definition of the Program Value");
-			ProgramDefinition.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ONE)));
-			ProgramDefinition.setReadOnly(false);
-			ProgramDefinition.addAllowedValue("url download");
-			ProgramDefinition.addAllowedValue("base64 string");
-			ProgramDefinition.addAllowedValue("filesystem path");
-			ProgramDefinition.addAllowedValue("console command");
-			ProgramDefinition.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
-			ProgramDefinition.setRepresentation(new Link(new URI(VeriFitCompilationConstants.OSLC_REPRESENTATION_EITHER)));
+			ParameterDefinition GitURL = new ParameterDefinition();
+			GitURL.setDescription("The SUT will be retrieved from a Git repository.");
+			GitURL.setName("sourceGit");
+			//GitURL.setTitle("Definition"); //TODO
+			GitURL.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ZEROorONE)));
+			//GitURL.setReadOnly(false);
+			GitURL.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING))); // TODO change to URI
+			//GitURL.setRepresentation(new Link(new URI(VeriFitCompilationConstants.OSLC_REPRESENTATION_EITHER)));
 			
-			ParameterDefinition Program = new ParameterDefinition();
-			Program.setDescription("Specify what program to analyze. The value is proccessed based on the ProgramDefinition parameter.");
-			Program.setName("Program");
-			Program.setTitle("Program to Analyze");
-			Program.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ONE)));
-			Program.setReadOnly(false);
-			Program.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
-			Program.setRepresentation(new Link(new URI(VeriFitCompilationConstants.OSLC_REPRESENTATION_EITHER)));
+			ParameterDefinition sourceFileUrl = new ParameterDefinition();
+			sourceFileUrl.setDescription("A single file SUT will be downloaded from a URL. Example: https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis.git");
+			sourceFileUrl.setName("sourceFileUrl");
+			sourceFileUrl.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ZEROorONE)));
+			sourceFileUrl.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
 			
-			ParameterDefinition CompilationParameters = new ParameterDefinition();
-			CompilationParameters.setDescription("Parameters to use during compilation - gcc source 'compilation_parameters'. Default is '-g' because ANaConDA needs debug information to provide useful reports (line numbers, variable names,...). Do NOT use the '-o' parameter or the adapter will not find the compiled binary.");
-			CompilationParameters.setName("CompilationParameters");
-			CompilationParameters.setTitle("Parameters for Compilation");
-			CompilationParameters.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ZEROorONE))); //TODO if there is a defaultValue isnt it exactly one?
-			CompilationParameters.setReadOnly(false);
-			CompilationParameters.setDefaultValue("-g");
-			CompilationParameters.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
-			CompilationParameters.setRepresentation(new Link(new URI(VeriFitCompilationConstants.OSLC_REPRESENTATION_EITHER)));
+			ParameterDefinition buildCommand = new ParameterDefinition();
+			buildCommand.setDescription("How to build the SUT. Examples: make | ./build.sh | gcc -g -o my_sut"); 
+			buildCommand.setName("buildCommand");
+			buildCommand.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ONE)));
+			buildCommand.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
+
+			ParameterDefinition launchCommand = new ParameterDefinition();
+			launchCommand.setDescription("How to launch the SUT once its build. Examples: make run | ./run.sh | ./my_sut"); 
+			launchCommand.setName("launchCommand");
+			launchCommand.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ONE)));
+			launchCommand.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
 						
-			// create the autoPlan TODO
+			// create the autoPlan
 			AutomationPlan propertiesPlan = new AutomationPlan();
 			propertiesPlan.setTitle("SUT Deploy");
-			propertiesPlan.setDescription("Download and compile an SUT on the server so it can be executed later.");
-			propertiesPlan.addParameterDefinition(Program);
-			propertiesPlan.addParameterDefinition(ProgramDefinition);
-			propertiesPlan.addParameterDefinition(CompilationParameters);
+			propertiesPlan.setDescription("Download and compile an SUT on the server so it can be executed later. Use exactly one of the \"source.*\" parameters.");
+			propertiesPlan.addParameterDefinition(sourceFileUrl);
+			propertiesPlan.addParameterDefinition(GitURL);
+			propertiesPlan.addParameterDefinition(buildCommand);
+			propertiesPlan.addParameterDefinition(launchCommand);
 			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
-			VeriFitCompilationManager.createAutomationPlan(propertiesPlan, VeriFitCompilationConstants.AUTOMATION_PROVIDER_ID);
+			VeriFitCompilationManager.createAutomationPlan(propertiesPlan);
 	
 		} catch (URISyntaxException e) {
 			// TODO should never be thrown (URI syntax)

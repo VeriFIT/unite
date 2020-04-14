@@ -27,12 +27,15 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Base64.Decoder;
 
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
 import org.eclipse.lyo.oslc4j.core.model.Link;
@@ -54,67 +57,16 @@ public abstract class RequestRunner extends Thread
 	}
 	
 	/**
-	 * Run the analysis by passing the stringToExecute to Runtime exec()
-	 * @param stringToExecute	String to pass to exec()
-	 * @return Output of the analysis (stdout.concat(stderr))
-	 * @throws IOException When the execution fails (including anaconda errors)
-	 */
-    protected String executeTheAnalysis(String stringToExecute) throws IOException
-    { 
-			// execute the automation plan
-			Process process;
-			process = Runtime.getRuntime().exec(stringToExecute);
-			InputStream stdout = process.getInputStream();
-			InputStream stderr = process.getErrorStream();
-			InputStreamReader stdoutReader = new InputStreamReader(stdout);
-			BufferedReader stdoutBuffReader = new BufferedReader(stdoutReader);
-			InputStreamReader stderrReader = new InputStreamReader(stderr);
-			BufferedReader stderrBuffReader = new BufferedReader(stderrReader);
-			String line, stdoutLog = "", stderrLog = "";
-			
-			while ((line = stdoutBuffReader.readLine()) != null) {
-				stdoutLog = stdoutLog.concat(line + "\n");
-			}
-			while ((line = stderrBuffReader.readLine()) != null) {
-				stderrLog = stderrLog.concat(line + "\n");
-			}
-			
-			//TODO stderr is appended to the end of stdout
-			String textOut = stdoutLog.concat(stderrLog);
-			
-			// check for errors in the output
-			if (textOut.contains("E:   The Operating System configuration prevents Pin from using the default (parent) injection mode."))
-			{
-				throw new IOException(textOut);
-			}
-			if (stderrLog.matches("^error. analyser .+ not found.\n$"))
-			{
-				throw new IOException("Internal error. Adapter Analyser allowedValues inconsistent with installed ANaConDA analysers.\n" + stderrLog);
-			}
-			if (stderrLog.matches("^error. program .+ not found.\n$"))
-			{
-				throw new IOException("Internal error. Compiled program binary not found.\n" + stderrLog);
-			}
-			
-			return textOut;
-    } 
-    
-	
-	/**
-	 * Compiles a given file using gcc and creates the binary.
-	 * @param pathToFile Path to the source file to compile
-	 * @param parameters Compilation parameters. -o is NOT allowed
-	 * @return	Map with 3 values
-	 * 				"path" => "path to binary" -- is null on compilation failure
-	 * 				"out" => "stdout.concat(stderr) of the compilation"
+	 * Runs a specified compilation command inside of a SUT directory
+	 * @param folderPath Path to the directory
+	 * @param buildCommand Command to run
+	 * @return stdout.concat(stderr) of the compilation TODO
 	 * @throws IOException
 	 */
-	protected Map<String,String> compileSourceFile(String pathToFile, String parameters) throws IOException
+	protected String compileSourceFile(String folderPath, String buildCommand) throws IOException
 	{
-		String binaryPath = pathToFile + ".compiled";
-		
 		Process process;
-		process = Runtime.getRuntime().exec("gcc " + pathToFile + " -o " + binaryPath + " " + parameters);
+		process = Runtime.getRuntime().exec(buildCommand, null, new File(folderPath).getAbsoluteFile());
 		InputStream stdout = process.getInputStream();
 		InputStream stderr = process.getErrorStream();
 		InputStreamReader stdoutReader = new InputStreamReader(stdout);
@@ -138,35 +90,56 @@ public abstract class RequestRunner extends Thread
 			e.printStackTrace();
 		}
 		
+		String output = stdoutLog.concat(stderrLog); //TODO
+		
 		// check gcc return value
 		if (process.exitValue() != 0)
 		{
-			binaryPath = null;
+			throw new IOException(output);
 		}
 		
-		Map<String,String> res = new HashMap<String,String>();
-		res.put("path", binaryPath);
-		res.put("out", stdoutLog.concat(stderrLog));
-		return res;
+		return stdoutLog.concat(output);
+	}
+
+	/**
+	 * Clone a public git repository (no usrname and passwd) TODO
+	 * Source - https://onecompiler.com/posts/3sqk5x3td/how-to-clone-a-git-repository-programmatically-using-java
+	 * @param url	URL of the repository
+	 * @param folderPath	Path to the folder to clone into
+	 * @throws IOException 
+	 */
+	protected void gitClonePublic(String url, String folderPath) throws IOException
+	{
+		try {
+		    Git.cloneRepository()
+		        .setURI(url)
+		        .setDirectory(Paths.get(folderPath).toFile())
+		        .call();
+		} catch (GitAPIException e) {
+			throw new IOException("Git clone failed: " + e.getMessage());
+		}
 	}
 	
 	/**
 	 * Download a file from a URL and save it as a byte stream.
 	 * Source - https://stackoverflow.com/a/921400
 	 * @param url	URL of the file to download
-	 * @param pathToFile	Name and path to save the file
+	 * @param folderPath	Path to the folder where to  save the file
 	 * @throws IOException 
 	 */
-	protected void downloadFileFromUrl(String url, String pathToFile) throws IOException
+	protected void downloadFileFromUrl(String url, String folderPath) throws IOException
 	{
 		try {
+			String fileName = VeriFitCompilationManager.getResourceIdFromUri(new URI (url)); // gets the last part of the URL
+			String pathToFile = folderPath + "/" + fileName;
+			
 			URL website = new URL(url);
 			ReadableByteChannel rbc = Channels.newChannel(website.openStream());
 			FileOutputStream fos = new FileOutputStream(pathToFile);
 			fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 			fos.close();
-		} catch (FileNotFoundException e) {
-			throw new IOException("File download failed: " + e.getMessage());
+		} catch (FileNotFoundException | URISyntaxException e) {
+			throw new IOException("Download from url failed: " + e.getMessage());
 		}
 	}
 	
