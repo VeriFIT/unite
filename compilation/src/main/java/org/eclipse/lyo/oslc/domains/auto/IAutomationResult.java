@@ -72,7 +72,6 @@ import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
 import verifit.compilation.resources.FitDomainConstants;
 import verifit.compilation.resources.ITextOut;
-
 import org.eclipse.lyo.oslc.domains.IPerson;
 import verifit.compilation.resources.ISUT;
 import org.eclipse.lyo.oslc.domains.IPerson;

@@ -132,11 +132,28 @@ public interface ISUT
 
     @OslcName("launchCommand")
     @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "launchCommand")
+    @OslcDescription("How to launch the SUT. The specified command will be launched from the root directory of the downloaded SUT. Examples: make run | ./run.sh | ./my_sut")
     @OslcOccurs(Occurs.ExactlyOne)
     @OslcValueType(ValueType.XMLLiteral)
     @OslcReadOnly(false)
     @OslcTitle("")
     public String getLaunchCommand();
+
+    @OslcName("directoryPath")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "directoryPath")
+    @OslcDescription("Path to the root directory of the SUT. Used to launch and compile the SUT.")
+    @OslcOccurs(Occurs.ExactlyOne)
+    @OslcValueType(ValueType.XMLLiteral)
+    @OslcReadOnly(true)
+    public String getDirectoryPath();
+
+    @OslcName("buildCommand")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "buildCommand")
+    @OslcDescription("How to build the SUT. The specified command will be launched from the root directory of the downloaded SUT. Examples: make | ./build.sh | gcc -g -o my_sut")
+    @OslcOccurs(Occurs.ExactlyOne)
+    @OslcValueType(ValueType.XMLLiteral)
+    @OslcReadOnly(false)
+    public String getBuildCommand();
 
 
     public void setTitle(final String title );
@@ -146,5 +163,7 @@ public interface ISUT
     public void setModified(final Date modified );
     public void setIdentifier(final String identifier );
     public void setLaunchCommand(final String launchCommand );
+    public void setDirectoryPath(final String directoryPath );
+    public void setBuildCommand(final String buildCommand );
 }
 

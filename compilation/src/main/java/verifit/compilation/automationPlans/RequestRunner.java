@@ -63,10 +63,10 @@ public abstract class RequestRunner extends Thread
 	 * @return stdout.concat(stderr) of the compilation TODO
 	 * @throws IOException
 	 */
-	protected String compileSourceFile(String folderPath, String buildCommand) throws IOException
+	protected String compileSourceFile(File folderPath, String buildCommand) throws IOException
 	{
 		Process process;
-		process = Runtime.getRuntime().exec(buildCommand, null, new File(folderPath).getAbsoluteFile());
+		process = Runtime.getRuntime().exec(buildCommand, null, folderPath.getAbsoluteFile());
 		InputStream stdout = process.getInputStream();
 		InputStream stderr = process.getErrorStream();
 		InputStreamReader stdoutReader = new InputStreamReader(stdout);
@@ -108,12 +108,12 @@ public abstract class RequestRunner extends Thread
 	 * @param folderPath	Path to the folder to clone into
 	 * @throws IOException 
 	 */
-	protected void gitClonePublic(String url, String folderPath) throws IOException
+	protected void gitClonePublic(String url, File folderPath) throws IOException
 	{
 		try {
 		    Git.cloneRepository()
 		        .setURI(url)
-		        .setDirectory(Paths.get(folderPath).toFile())
+		        .setDirectory(folderPath)
 		        .call();
 		} catch (GitAPIException e) {
 			throw new IOException("Git clone failed: " + e.getMessage());
@@ -127,11 +127,11 @@ public abstract class RequestRunner extends Thread
 	 * @param folderPath	Path to the folder where to  save the file
 	 * @throws IOException 
 	 */
-	protected void downloadFileFromUrl(String url, String folderPath) throws IOException
+	protected void downloadFileFromUrl(String url, File folderPath) throws IOException
 	{
 		try {
 			String fileName = VeriFitCompilationManager.getResourceIdFromUri(new URI (url)); // gets the last part of the URL
-			String pathToFile = folderPath + "/" + fileName;
+			String pathToFile = folderPath.getAbsolutePath().toString() + "/" + fileName;
 			
 			URL website = new URL(url);
 			ReadableByteChannel rbc = Channels.newChannel(website.openStream());
@@ -187,7 +187,7 @@ public abstract class RequestRunner extends Thread
 	 * @param subfolder How to name the subfolder
 	 * @return	Path to the new folder
 	 */
-	protected String createTmpDir(String subfolder)
+	protected File createTmpDir(String subfolder)
 	{
 		File programDir = new File("tmp/" + subfolder);
 	    if (!programDir.exists())
@@ -195,7 +195,7 @@ public abstract class RequestRunner extends Thread
 	    	programDir.mkdirs();
 	    }
 	    
-	    return "tmp/" + subfolder;
+	    return new File("tmp/" + subfolder).getAbsoluteFile();
 	}
 	
 	/**

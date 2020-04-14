@@ -69,19 +69,24 @@ public class AutomationPlanDefinition {
 			//GitURL.setRepresentation(new Link(new URI(VeriFitCompilationConstants.OSLC_REPRESENTATION_EITHER)));
 			
 			ParameterDefinition sourceFileUrl = new ParameterDefinition();
-			sourceFileUrl.setDescription("A single file SUT will be downloaded from a URL. Example: https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis.git");
+			sourceFileUrl.setDescription("A single file SUT will be downloaded from a URL. "
+					+ "Example: https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis.git");
 			sourceFileUrl.setName("sourceFileUrl");
 			sourceFileUrl.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ZEROorONE)));
 			sourceFileUrl.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
 			
 			ParameterDefinition buildCommand = new ParameterDefinition();
-			buildCommand.setDescription("How to build the SUT. Examples: make | ./build.sh | gcc -g -o my_sut"); 
+			buildCommand.setDescription("How to build the SUT. "
+					+ "The specified command will be launched from the root directory of the downloaded SUT. "
+					+ "Examples: make | ./build.sh | gcc -g -o my_sut"); 
 			buildCommand.setName("buildCommand");
 			buildCommand.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ONE)));
 			buildCommand.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
 
 			ParameterDefinition launchCommand = new ParameterDefinition();
-			launchCommand.setDescription("How to launch the SUT once its build. Examples: make run | ./run.sh | ./my_sut"); 
+			launchCommand.setDescription("How to launch the SUT once its build. "
+					+ "The specified command will be launched from the root directory of the downloaded SUT. "
+					+ "Examples: make run | ./run.sh | ./my_sut"); 
 			launchCommand.setName("launchCommand");
 			launchCommand.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ONE)));
 			launchCommand.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
@@ -89,7 +94,8 @@ public class AutomationPlanDefinition {
 			// create the autoPlan
 			AutomationPlan propertiesPlan = new AutomationPlan();
 			propertiesPlan.setTitle("SUT Deploy");
-			propertiesPlan.setDescription("Download and compile an SUT on the server so it can be executed later. Use exactly one of the \"source.*\" parameters.");
+			propertiesPlan.setDescription("Download and compile an SUT on the server so it can be executed later. "
+					+ "Use exactly one of the \"source.*\" parameters.");
 			propertiesPlan.addParameterDefinition(sourceFileUrl);
 			propertiesPlan.addParameterDefinition(GitURL);
 			propertiesPlan.addParameterDefinition(buildCommand);

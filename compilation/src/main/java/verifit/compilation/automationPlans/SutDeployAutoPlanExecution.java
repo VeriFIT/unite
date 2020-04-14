@@ -139,7 +139,7 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			
 		    
 			// create the program path and name
-			final String folderPath = createTmpDir(execAutoRequestId);
+			final File folderPath = createTmpDir(execAutoRequestId);
 		  
 		    Boolean performCompilation = true;	// flag to disable a part of the execution in case of an error
 			String executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_PASSED;
@@ -195,6 +195,8 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			SUT newSut = new SUT();
 			newSut.setTitle("SUT - " + execAutoRequest.getTitle());
 			newSut.setLaunchCommand(paramLaunchCommand);
+			newSut.setBuildCommand(paramBuildCommand);
+			newSut.setDirectoryPath(folderPath.getAbsolutePath().toString());
 			newSut.setCreator(execAutoRequest.getCreator());
 			VeriFitCompilationManager.createSUT(newSut, serviceProviderId, execAutoRequestId); // TODO
 			

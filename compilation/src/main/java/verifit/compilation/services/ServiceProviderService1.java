@@ -648,13 +648,11 @@ public class ServiceProviderService1
             AutomationRequest newResource = VeriFitCompilationManager.createAutomationRequest(httpServletRequest, aResource, serviceProviderId);
             httpServletResponse.setHeader("ETag", VeriFitCompilationManager.getETagFromAutomationRequest(newResource));
             return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();
-        
         } catch (OslcResourceException e) {
-        	Error errorResource = new Error();
-        	errorResource.setStatusCode("400");
-        	errorResource.setMessage(e.getMessage());
-        	return Response.status(400).entity(errorResource).build();            
-
+               Error errorResource = new Error();
+               errorResource.setStatusCode("400");
+               errorResource.setMessage(e.getMessage());
+               return Response.status(400).entity(errorResource).build();
         } catch (Exception e) {
             e.printStackTrace();
             throw new WebApplicationException(e);

@@ -114,6 +114,12 @@ public class SUT
     // Start of user code attributeAnnotation:launchCommand
     // End of user code
     private String launchCommand;
+    // Start of user code attributeAnnotation:directoryPath
+    // End of user code
+    private String directoryPath;
+    // Start of user code attributeAnnotation:buildCommand
+    // End of user code
+    private String buildCommand;
     
     // Start of user code classAttributes
     // End of user code
@@ -346,6 +352,7 @@ public class SUT
     // End of user code
     @OslcName("launchCommand")
     @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "launchCommand")
+    @OslcDescription("How to launch the SUT. The specified command will be launched from the root directory of the downloaded SUT. Examples: make run | ./run.sh | ./my_sut")
     @OslcOccurs(Occurs.ExactlyOne)
     @OslcValueType(ValueType.XMLLiteral)
     @OslcReadOnly(false)
@@ -355,6 +362,36 @@ public class SUT
         // Start of user code getterInit:launchCommand
         // End of user code
         return launchCommand;
+    }
+    
+    // Start of user code getterAnnotation:directoryPath
+    // End of user code
+    @OslcName("directoryPath")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "directoryPath")
+    @OslcDescription("Path to the root directory of the SUT. Used to launch and compile the SUT.")
+    @OslcOccurs(Occurs.ExactlyOne)
+    @OslcValueType(ValueType.XMLLiteral)
+    @OslcReadOnly(true)
+    public String getDirectoryPath()
+    {
+        // Start of user code getterInit:directoryPath
+        // End of user code
+        return directoryPath;
+    }
+    
+    // Start of user code getterAnnotation:buildCommand
+    // End of user code
+    @OslcName("buildCommand")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "buildCommand")
+    @OslcDescription("How to build the SUT. The specified command will be launched from the root directory of the downloaded SUT. Examples: make | ./build.sh | gcc -g -o my_sut")
+    @OslcOccurs(Occurs.ExactlyOne)
+    @OslcValueType(ValueType.XMLLiteral)
+    @OslcReadOnly(false)
+    public String getBuildCommand()
+    {
+        // Start of user code getterInit:buildCommand
+        // End of user code
+        return buildCommand;
     }
     
     
@@ -443,6 +480,30 @@ public class SUT
         this.launchCommand = launchCommand;
     
         // Start of user code setterFinalize:launchCommand
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:directoryPath
+    // End of user code
+    public void setDirectoryPath(final String directoryPath )
+    {
+        // Start of user code setterInit:directoryPath
+        // End of user code
+        this.directoryPath = directoryPath;
+    
+        // Start of user code setterFinalize:directoryPath
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:buildCommand
+    // End of user code
+    public void setBuildCommand(final String buildCommand )
+    {
+        // Start of user code setterInit:buildCommand
+        // End of user code
+        this.buildCommand = buildCommand;
+    
+        // Start of user code setterFinalize:buildCommand
         // End of user code
     }
     
@@ -581,6 +642,46 @@ public class SUT
     
         s= s + "<input name=\"launchCommand\" type=\"text\" style=\"width: 400px\" id=\"launchCommand\" >";
         // Start of user code "Finalize:launchCommandToHtmlForCreation(...)"
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    static public String directoryPathToHtmlForCreation (final HttpServletRequest httpServletRequest)
+    {
+        String s = "";
+    
+        // Start of user code "Init:directoryPathToHtmlForCreation(...)"
+        // End of user code
+    
+        s = s + "<label for=\"directoryPath\">directoryPath: </LABEL>";
+    
+        // Start of user code "Mid:directoryPathToHtmlForCreation(...)"
+        // End of user code
+    
+        s= s + "<input name=\"directoryPath\" type=\"text\" style=\"width: 400px\" id=\"directoryPath\" >";
+        // Start of user code "Finalize:directoryPathToHtmlForCreation(...)"
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    static public String buildCommandToHtmlForCreation (final HttpServletRequest httpServletRequest)
+    {
+        String s = "";
+    
+        // Start of user code "Init:buildCommandToHtmlForCreation(...)"
+        // End of user code
+    
+        s = s + "<label for=\"buildCommand\">buildCommand: </LABEL>";
+    
+        // Start of user code "Mid:buildCommandToHtmlForCreation(...)"
+        // End of user code
+    
+        s= s + "<input name=\"buildCommand\" type=\"text\" style=\"width: 400px\" id=\"buildCommand\" >";
+        // Start of user code "Finalize:buildCommandToHtmlForCreation(...)"
         // End of user code
     
         return s;
@@ -758,6 +859,56 @@ public class SUT
         }
     
         // Start of user code launchCommandtoHtml_finalize
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    public String directoryPathToHtml()
+    {
+        String s = "";
+    
+        // Start of user code directoryPathtoHtml_mid
+        // End of user code
+    
+        try {
+            if (directoryPath == null) {
+                s = s + "<em>null</em>";
+            }
+            else {
+                s = s + directoryPath.toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        // Start of user code directoryPathtoHtml_finalize
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    public String buildCommandToHtml()
+    {
+        String s = "";
+    
+        // Start of user code buildCommandtoHtml_mid
+        // End of user code
+    
+        try {
+            if (buildCommand == null) {
+                s = s + "<em>null</em>";
+            }
+            else {
+                s = s + buildCommand.toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        // Start of user code buildCommandtoHtml_finalize
         // End of user code
     
         return s;
