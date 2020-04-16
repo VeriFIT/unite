@@ -94,7 +94,7 @@ public class AutomationPlanDefinition {
 			// create the autoPlan
 			AutomationPlan propertiesPlan = new AutomationPlan();
 			propertiesPlan.setTitle("SUT Deploy");
-			propertiesPlan.setDescription("Download and compile an SUT on the server so it can be executed later. "
+			propertiesPlan.setDescription("Download and compile an SUT on the server so it can be executed later."
 					+ "Use exactly one of the \"source.*\" parameters.");
 			propertiesPlan.addParameterDefinition(sourceFileUrl);
 			propertiesPlan.addParameterDefinition(GitURL);

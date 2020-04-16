@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.tuple.Triple;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
 import org.eclipse.lyo.oslc4j.core.model.Link;
@@ -129,13 +130,16 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			
 		    // prepare result contributions - program fetching, compilation
 		    TextOut fetchLog = new TextOut();
-		    fetchLog.setDescription("Output of the program fetching process. Stderr is appended to the end."); // TODO update if changed
-		    fetchLog.setTitle("Fetching Log");
+		    fetchLog.setDescription("Output of the program fetching process. Provider messages are prefixed with #.");
+		    fetchLog.setTitle("Fetching Output");
 		    //fetchLog.addType(new Link(new URI("http://purl.org/dc/dcmitype/Text"))); //TODO
 		    
-		    TextOut compLog = new TextOut();
-		    compLog.setDescription("Output of the compilation. Stderr is appended to the end."); // TODO update if changed
-		    compLog.setTitle("Compilation Log");
+		    TextOut compStdoutLog = new TextOut();
+		    compStdoutLog.setDescription("Standard output of the compilation. Provider messages are prefixed with #.");
+		    compStdoutLog.setTitle("Compilation stdout");
+		    TextOut compStderrLog = new TextOut();
+		    compStderrLog.setDescription("Error output of the compilation. Provider messages are prefixed with #.");
+		    compStderrLog.setTitle("Compilation stderr");
 			
 		    
 			// create the program path and name
@@ -151,7 +155,7 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			    switch (ProgramDefinition)
 			    {
 			    case "sourceGit":
-			    	gitClonePublic(ProgramSource, folderPath); // TODO
+			    	gitClonePublic(ProgramSource, folderPath);
 			    	break;
 			    	
 			    case "sourceFileUrl":
@@ -159,35 +163,54 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			    	break;
 			    }
 
-				fetchLog.setValue(""); // TODO fetchlog is empty when there is no error
+				fetchLog.setValue("# SUT fetch successful\n");
 				
 			} catch (UnknownHostException e) {	// TODO
 				executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_ERROR;
-				fetchLog.setValue("Unknown host or host unreachable: " + e.getMessage());
+				fetchLog.setValue("# SUT fetch failed\nUnknown host or host unreachable: " + e.getMessage());
 	    		performCompilation = false;
 	    		
 			} catch (IOException e) {
 				executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_ERROR;
-				fetchLog.setValue(e.getMessage());
+				fetchLog.setValue("# SUT fetch failed\n" + e.getMessage());
 	    		performCompilation = false;
 	    		
+			} finally {
+				// create the fetching log Contribution and add it to the AutomationResult
+				fetchLog = VeriFitCompilationManager.createTextOut(fetchLog, serviceProviderId);
+		    	newAutoResult.addContribution(fetchLog);
 			}
 			    
-			// compile source file
+			// compile source file if the fetching did not fail
 			if (performCompilation)
 			{
 				try {
-			    	String compOutLog = compileSourceFile(folderPath, paramBuildCommand);
-			    	compLog.setValue(compOutLog);
+			    	Triple<Integer, String, String> compRes = compileSUT(folderPath, paramBuildCommand);
+			    	
+			    	if (compRes.getLeft() != 0) // get return code
+			    	{	// if the compilation returned non zero, set the verdict as failed
+						executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_FAILED;
+				    	compStdoutLog.setValue("# Compilation failed (returned non-zero: " + compRes.getLeft() + ")\n"
+				    							+ compRes.getMiddle());	// get stdout
+			    	}
+			    	else
+			    	{
+				    	compStdoutLog.setValue("# Compilation completed successfully\n" + compRes.getMiddle());	// get stdout
+			    	}
+			    	compStderrLog.setValue(compRes.getRight());		// get stderr
 				    
 				} catch (IOException e) {
+					// there was an error
 					executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_ERROR;
-					compLog.setValue(e.getMessage());
+					compStdoutLog.setValue("# Compilation error");	// get stdout
+			    	compStderrLog.setValue(e.getMessage());	// get stderr
 		    		
 				} finally {
-					// create the compilation result Contribution
-			    	compLog = VeriFitCompilationManager.createTextOut(compLog, serviceProviderId, execAutoRequestId + "-comp"); //TODO uri
-			    	newAutoResult.addContribution(compLog);
+					// create the compilation Contributions and add them to the Automation Result
+					compStdoutLog = VeriFitCompilationManager.createTextOut(compStdoutLog, serviceProviderId);
+					compStderrLog = VeriFitCompilationManager.createTextOut(compStderrLog, serviceProviderId);
+			    	newAutoResult.addContribution(compStdoutLog);
+			    	newAutoResult.addContribution(compStderrLog);
 				}
 			}
 	    	
@@ -198,6 +221,7 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			newSut.setBuildCommand(paramBuildCommand);
 			newSut.setDirectoryPath(folderPath.getAbsolutePath().toString());
 			newSut.setCreator(execAutoRequest.getCreator());
+			newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(serviceProviderId, execAutoRequestId));
 			VeriFitCompilationManager.createSUT(newSut, serviceProviderId, execAutoRequestId); // TODO
 			
 			// update the autoResult state, contribution, verdict

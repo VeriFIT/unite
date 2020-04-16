@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Base64.Decoder;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
@@ -60,10 +61,10 @@ public abstract class RequestRunner extends Thread
 	 * Runs a specified compilation command inside of a SUT directory
 	 * @param folderPath Path to the directory
 	 * @param buildCommand Command to run
-	 * @return stdout.concat(stderr) of the compilation TODO
-	 * @throws IOException
+	 * @return Triple of (return_code, stdout, stderr)
+	 * @throws IOException when the command execution fails (error)
 	 */
-	protected String compileSourceFile(File folderPath, String buildCommand) throws IOException
+	protected Triple<Integer,String,String> compileSUT(File folderPath, String buildCommand) throws IOException
 	{
 		Process process;
 		process = Runtime.getRuntime().exec(buildCommand, null, folderPath.getAbsoluteFile());
@@ -89,16 +90,8 @@ public abstract class RequestRunner extends Thread
 			// TODO Dont know what that means really
 			e.printStackTrace();
 		}
-		
-		String output = stdoutLog.concat(stderrLog); //TODO
-		
-		// check gcc return value
-		if (process.exitValue() != 0)
-		{
-			throw new IOException(output);
-		}
-		
-		return stdoutLog.concat(output);
+
+		return Triple.of(process.exitValue(), stdoutLog, stderrLog);
 	}
 
 	/**

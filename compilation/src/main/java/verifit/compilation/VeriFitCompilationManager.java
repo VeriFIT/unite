@@ -284,7 +284,7 @@ public class VeriFitCompilationManager {
 	 * @param newID				ID for the new resource
 	 * @return					The newly created resource. Or null if one of the required properties was missing.
 	 */
-    public static TextOut createTextOut(final TextOut aResource, final String serviceProviderId, final String newID)
+    public static TextOut createTextOut(final TextOut aResource, final String serviceProviderId)
     {
     	TextOut newResource = null;
 

@@ -73,10 +73,12 @@ import org.eclipse.lyo.oslc4j.core.model.ResourceShapeFactory;
 import verifit.compilation.resources.FitDomainConstants;
 
 
+import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import verifit.compilation.resources.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.Person;
+import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 
 // Start of user code imports
 // End of user code
@@ -120,6 +122,9 @@ public class SUT
     // Start of user code attributeAnnotation:buildCommand
     // End of user code
     private String buildCommand;
+    // Start of user code attributeAnnotation:producedByAutomationRequest
+    // End of user code
+    private Link producedByAutomationRequest = new Link();
     
     // Start of user code classAttributes
     // End of user code
@@ -394,6 +399,23 @@ public class SUT
         return buildCommand;
     }
     
+    // Start of user code getterAnnotation:producedByAutomationRequest
+    // End of user code
+    @OslcName("producedByAutomationRequest")
+    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "producedByAutomationRequest")
+    @OslcDescription("Automation Request which produced the Automation Result. It is likely that the target resource will be an oslc_auto:AutomationRequest but that is not necessarily the case.")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.Resource)
+    @OslcRepresentation(Representation.Reference)
+    @OslcRange({Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE})
+    @OslcReadOnly(false)
+    public Link getProducedByAutomationRequest()
+    {
+        // Start of user code getterInit:producedByAutomationRequest
+        // End of user code
+        return producedByAutomationRequest;
+    }
+    
     
     // Start of user code setterAnnotation:title
     // End of user code
@@ -504,6 +526,18 @@ public class SUT
         this.buildCommand = buildCommand;
     
         // Start of user code setterFinalize:buildCommand
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:producedByAutomationRequest
+    // End of user code
+    public void setProducedByAutomationRequest(final Link producedByAutomationRequest )
+    {
+        // Start of user code setterInit:producedByAutomationRequest
+        // End of user code
+        this.producedByAutomationRequest = producedByAutomationRequest;
+    
+        // Start of user code setterFinalize:producedByAutomationRequest
         // End of user code
     }
     
@@ -682,6 +716,25 @@ public class SUT
     
         s= s + "<input name=\"buildCommand\" type=\"text\" style=\"width: 400px\" id=\"buildCommand\" >";
         // Start of user code "Finalize:buildCommandToHtmlForCreation(...)"
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    static public String producedByAutomationRequestToHtmlForCreation (final HttpServletRequest httpServletRequest)
+    {
+        String s = "";
+    
+        // Start of user code "Init:producedByAutomationRequestToHtmlForCreation(...)"
+        // End of user code
+    
+        s = s + "<label for=\"producedByAutomationRequest\">producedByAutomationRequest: </LABEL>";
+    
+        // Start of user code "Mid:producedByAutomationRequestToHtmlForCreation(...)"
+        // End of user code
+    
+        // Start of user code "Finalize:producedByAutomationRequestToHtmlForCreation(...)"
         // End of user code
     
         return s;
@@ -909,6 +962,31 @@ public class SUT
         }
     
         // Start of user code buildCommandtoHtml_finalize
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    public String producedByAutomationRequestToHtml()
+    {
+        String s = "";
+    
+        // Start of user code producedByAutomationRequesttoHtml_mid
+        // End of user code
+    
+        try {
+            if ((producedByAutomationRequest == null) || (producedByAutomationRequest.getValue() == null)) {
+                s = s + "<em>null</em>";
+            }
+            else {
+                s = s + (new AutomationRequest (producedByAutomationRequest.getValue())).toHtml(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        // Start of user code producedByAutomationRequesttoHtml_finalize
         // End of user code
     
         return s;

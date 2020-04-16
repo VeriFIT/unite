@@ -65,10 +65,12 @@ import org.eclipse.lyo.oslc4j.core.model.Representation;
 import org.eclipse.lyo.oslc4j.core.model.ValueType;
 
 import verifit.analysis.resources.FitDomainConstants;
+import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import verifit.analysis.resources.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.IPerson;
+import org.eclipse.lyo.oslc.domains.auto.IAutomationRequest;
 
 // Start of user code imports
 // End of user code
@@ -155,6 +157,16 @@ public interface ISUT
     @OslcReadOnly(false)
     public String getBuildCommand();
 
+    @OslcName("producedByAutomationRequest")
+    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "producedByAutomationRequest")
+    @OslcDescription("Automation Request which produced the Automation Result. It is likely that the target resource will be an oslc_auto:AutomationRequest but that is not necessarily the case.")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.Resource)
+    @OslcRepresentation(Representation.Reference)
+    @OslcRange({Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE})
+    @OslcReadOnly(false)
+    public Link getProducedByAutomationRequest();
+
 
     public void setTitle(final String title );
     public void setDescription(final String description );
@@ -165,5 +177,6 @@ public interface ISUT
     public void setLaunchCommand(final String launchCommand );
     public void setDirectoryPath(final String directoryPath );
     public void setBuildCommand(final String buildCommand );
+    public void setProducedByAutomationRequest(final Link producedByAutomationRequest );
 }
 
