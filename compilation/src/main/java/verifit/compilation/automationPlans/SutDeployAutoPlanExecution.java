@@ -59,8 +59,8 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 {
 	final private String serviceProviderId;
 	final private String execAutoRequestId;
+	final private AutomationRequest execAutoRequest;
 	final private Map<String, String> inputParamsMap;
-	private AutomationRequest execAutoRequest;
 	
 	/**
 	 * Creating the thread automatically starts the execution
@@ -68,14 +68,14 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 	 * @param execAutoRequest	Executed AutomationRequest resource object
 	 * @param inputParamsMap	Input parameters as a "name" => "value" map
 	 */
-	public SutDeployAutoPlanExecution(String serviceProviderId, URI execAutoRequestURI, Map<String, String> inputParamsMap) 
+	public SutDeployAutoPlanExecution(String serviceProviderId, AutomationRequest execAutoRequest, Map<String, String> inputParamsMap) 
 	{
 		super();
 		
 		this.serviceProviderId = serviceProviderId;
 		this.inputParamsMap = inputParamsMap;
-		this.execAutoRequestId = VeriFitCompilationManager.getResourceIdFromUri(execAutoRequestURI);
-		this.execAutoRequest = VeriFitCompilationManager.getAutomationRequest(null, serviceProviderId, execAutoRequestId); // TODO added this to avoid copy by refference -- might be slow
+		this.execAutoRequestId = VeriFitCompilationManager.getResourceIdFromUri(execAutoRequest.getAbout());
+		this.execAutoRequest = execAutoRequest;
 		
 		this.start();
 	}
@@ -147,7 +147,6 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 		  
 		    Boolean performCompilation = true;	// flag to disable a part of the execution in case of an error
 			String executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_PASSED;
-			String programToExecute = null;
 		    
 			// fetch source file
 			try {

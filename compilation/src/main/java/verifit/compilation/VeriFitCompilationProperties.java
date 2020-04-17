@@ -55,7 +55,7 @@ public class VeriFitCompilationProperties
 	private static void updateConstants()
 	{
 		SERVER_URL = ADAPTER_HOST + ":" + ADAPTER_PORT + "/";
-	    PATH_AUTOMATION_SERVICE_PROVIDERS = SERVER_URL + ADAPTER_CONTEXT + "services/Automation/";
+	    PATH_AUTOMATION_SERVICE_PROVIDERS = SERVER_URL + ADAPTER_CONTEXT + "services/serviceProviders/";
 	    PATH_RESOURCE_SHAPES = SERVER_URL + ADAPTER_CONTEXT + "services/resourceShapes/";
 	}
 	
@@ -77,6 +77,6 @@ public class VeriFitCompilationProperties
      */
 	public static String SERVER_URL = ADAPTER_HOST + ":" + ADAPTER_PORT + "/";
 	public static final String ADAPTER_CONTEXT = "compilation/";
-    public static String PATH_AUTOMATION_SERVICE_PROVIDERS = SERVER_URL + ADAPTER_CONTEXT + "services/Automation/";
+    public static String PATH_AUTOMATION_SERVICE_PROVIDERS = SERVER_URL + ADAPTER_CONTEXT + "services/serviceProviders/";
     public static String PATH_RESOURCE_SHAPES = SERVER_URL + ADAPTER_CONTEXT + "services/resourceShapes/";
 }

@@ -133,17 +133,6 @@ public class VeriFitCompilationManager {
 	}
 	
 	/**
-	 * Check if a string is a console command by finding it in the system PATH
-	 * source - https://stackoverflow.com/a/23539220
-	 * @param command Command to look for
-	 * @return	Whether the command is in the system PATH
-	 */
-	private static Boolean isInPath(String command)
-	{
-		return Stream.of(System.getenv("PATH").split(Pattern.quote(File.pathSeparator))).map(Paths::get).anyMatch(path -> Files.exists(path.resolve(command)));
-	}
-	
-	/**
 	 * Get the ID of an OSLC resource from its URI (About(), or Link)
 	 * @param	uri	OSLC resource uri (eg. from a Link)
 	 * @return 		ID of the OSLC resource
@@ -458,8 +447,6 @@ public class VeriFitCompilationManager {
     	else // (count > 1)
     		throw new OslcResourceException("Too many source parameters. Expected exactly one.");
     }
-    
-    
     // End of user code
 
     public static void contextInitializeServletListener(final ServletContextEvent servletContextEvent)
@@ -545,7 +532,7 @@ public class VeriFitCompilationManager {
         // Start of user code "ServiceProviderInfo[] getServiceProviderInfos(...)"
 
         ServiceProviderInfo r1 = new ServiceProviderInfo();
-        r1.name = "Verifit Compilation Provider";
+        r1.name = "VeriFit Compilation Provider";
         r1.serviceProviderId = VeriFitCompilationConstants.AUTOMATION_PROVIDER_ID;
 
         serviceProviderInfos = new ServiceProviderInfo[1];
@@ -640,7 +627,9 @@ public class VeriFitCompilationManager {
         List<SUT> resources = null;
         
         // Start of user code SUTSelector
-        // TODO Implement code to return a set of resources, based on search criteria 
+        
+        resources = querySUTs(httpServletRequest, serviceProviderId, terms, 0, 20);
+        
         // End of user code
         return resources;
     }
@@ -733,7 +722,7 @@ public class VeriFitCompilationManager {
 			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
 			
 			// create a new thread to execute the automation request // TODO
-			new SutDeployAutoPlanExecution(serviceProviderId, newResource.getAbout(), inputParamsMap);	
+			new SutDeployAutoPlanExecution(serviceProviderId, newResource, inputParamsMap);	
 
 		} catch (OslcResourceException e) {
 			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
