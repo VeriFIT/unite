@@ -1874,6 +1874,10 @@
 													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
 													"});",
 													"",
+													"pm.test(\"Should contain an SUT refference ID \" + requestId, function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<oslc_auto:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\" + requestId);",
+													"});",
+													"",
 													"",
 													"pm.test(\"Should contain the Compilation stdout\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
@@ -1933,6 +1937,70 @@
 												"A0",
 												"resources",
 												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check the SUT",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "2ac8143a-00b8-4352-9f49-a6cfaba6f982",
+												"exec": [
+													"// get global variable to use in this test",
+													"var requestId = pm.globals.get('requestId');",
+													"var serverAddr = pm.variables.get(\"server_address\");",
+													"var server_context = pm.variables.get(\"server_context\");",
+													"",
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"pm.test(\"SUT should have the expected ID: \" + requestId, function () {",
+													"    pm.expect(pm.response.text()).to.include(\"fit:SUT rdf:about=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\" + requestId);",
+													"});",
+													"pm.test(\"SUT producedByAutomationRequest should match the AutomationRequest with ID \" + requestId, function () {",
+													"    pm.expect(pm.response.text()).to.include(\"oslc_auto:producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/automationRequests/\" + requestId);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "0e22f9d0-a6e8-43bc-8f87-b0861919c0de",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/sUTs/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"sUTs",
 												"{{requestId}}"
 											]
 										}
@@ -2036,6 +2104,9 @@
 													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#failed\\\"/>\");",
 													"});",
 													"",
+													"pm.test(\"Should not contain an SUT refference\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"<oslc_auto:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\");",
+													"});",
 													"",
 													"pm.test(\"Should contain the Compilation stdout\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
@@ -2094,6 +2165,59 @@
 												"A0",
 												"resources",
 												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that SUT does not exist",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "2ac8143a-00b8-4352-9f49-a6cfaba6f982",
+												"exec": [
+													"pm.test(\"Response code should be 404 (not found)\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "0e22f9d0-a6e8-43bc-8f87-b0861919c0de",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/sUTs/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"sUTs",
 												"{{requestId}}"
 											]
 										}
@@ -2197,6 +2321,9 @@
 													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
 													"});",
 													"",
+													"pm.test(\"Should not contain an SUT refference\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"<oslc_auto:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\");",
+													"});",
 													"",
 													"pm.test(\"Should not contain the Compilation stdout\", function () {",
 													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stdout\");",
@@ -2249,6 +2376,59 @@
 												"A0",
 												"resources",
 												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that SUT does not exist",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "2ac8143a-00b8-4352-9f49-a6cfaba6f982",
+												"exec": [
+													"pm.test(\"Response code should be 404 (not found)\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "0e22f9d0-a6e8-43bc-8f87-b0861919c0de",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/sUTs/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"sUTs",
 												"{{requestId}}"
 											]
 										}
@@ -2374,6 +2554,9 @@
 													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
 													"});",
 													"",
+													"pm.test(\"Should not contain an SUT refference\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"<oslc_auto:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\");",
+													"});",
 													"",
 													"pm.test(\"Should not contain the Compilation stdout\", function () {",
 													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stdout\");",
@@ -2426,6 +2609,59 @@
 												"A0",
 												"resources",
 												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that SUT does not exist",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "2ac8143a-00b8-4352-9f49-a6cfaba6f982",
+												"exec": [
+													"pm.test(\"Response code should be 404 (not found)\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "0e22f9d0-a6e8-43bc-8f87-b0861919c0de",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/sUTs/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"sUTs",
 												"{{requestId}}"
 											]
 										}
@@ -2588,6 +2824,9 @@
 													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
 													"});",
 													"",
+													"pm.test(\"Should contain an SUT refference ID \" + requestId, function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<oslc_auto:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\" + requestId);",
+													"});",
 													"",
 													"pm.test(\"Should contain the Compilation stdout\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
@@ -2647,6 +2886,70 @@
 												"A0",
 												"resources",
 												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check the SUT",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "2ac8143a-00b8-4352-9f49-a6cfaba6f982",
+												"exec": [
+													"// get global variable to use in this test",
+													"var requestId = pm.globals.get('requestId');",
+													"var serverAddr = pm.variables.get(\"server_address\");",
+													"var server_context = pm.variables.get(\"server_context\");",
+													"",
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"pm.test(\"SUT should have the expected ID: \" + requestId, function () {",
+													"    pm.expect(pm.response.text()).to.include(\"fit:SUT rdf:about=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\" + requestId);",
+													"});",
+													"pm.test(\"SUT producedByAutomationRequest should match the AutomationRequest with ID \" + requestId, function () {",
+													"    pm.expect(pm.response.text()).to.include(\"oslc_auto:producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/automationRequests/\" + requestId);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "0e22f9d0-a6e8-43bc-8f87-b0861919c0de",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/sUTs/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"sUTs",
 												"{{requestId}}"
 											]
 										}
@@ -2750,6 +3053,9 @@
 													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#failed\\\"/>\");",
 													"});",
 													"",
+													"pm.test(\"Should not contain an SUT refference\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"<oslc_auto:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\");",
+													"});",
 													"",
 													"pm.test(\"Should contain the Compilation stdout\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
@@ -2808,6 +3114,59 @@
 												"A0",
 												"resources",
 												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that SUT does not exist",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "2ac8143a-00b8-4352-9f49-a6cfaba6f982",
+												"exec": [
+													"pm.test(\"Response code should be 404 (not found)\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "0e22f9d0-a6e8-43bc-8f87-b0861919c0de",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/sUTs/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"sUTs",
 												"{{requestId}}"
 											]
 										}
@@ -2911,6 +3270,9 @@
 													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
 													"});",
 													"",
+													"pm.test(\"Should not contain an SUT refference\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"<oslc_auto:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\");",
+													"});",
 													"",
 													"pm.test(\"Should not contain the Compilation stdout\", function () {",
 													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stdout\");",
@@ -2963,6 +3325,59 @@
 												"A0",
 												"resources",
 												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that SUT does not exist",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "2ac8143a-00b8-4352-9f49-a6cfaba6f982",
+												"exec": [
+													"pm.test(\"Response code should be 404 (not found)\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "0e22f9d0-a6e8-43bc-8f87-b0861919c0de",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/sUTs/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"sUTs",
 												"{{requestId}}"
 											]
 										}
@@ -3088,6 +3503,9 @@
 													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
 													"});",
 													"",
+													"pm.test(\"Should not contain an SUT refference\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"<oslc_auto:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\");",
+													"});",
 													"",
 													"pm.test(\"Should not contain the Compilation stdout\", function () {",
 													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stdout\");",
@@ -3140,6 +3558,59 @@
 												"A0",
 												"resources",
 												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that SUT does not exist",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "2ac8143a-00b8-4352-9f49-a6cfaba6f982",
+												"exec": [
+													"pm.test(\"Response code should be 404 (not found)\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "0e22f9d0-a6e8-43bc-8f87-b0861919c0de",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/sUTs/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"sUTs",
 												"{{requestId}}"
 											]
 										}
@@ -5109,25 +5580,25 @@
 	],
 	"variable": [
 		{
-			"id": "608a126b-0f08-42ff-a39a-f7e9b25cb12e",
+			"id": "242ecba9-428e-4745-9b97-af13f760c254",
 			"key": "server_address",
 			"value": "http://localhost:8081",
 			"type": "string"
 		},
 		{
-			"id": "a973c51d-e4ee-46c8-a968-db0a387045fe",
+			"id": "795e7e18-ea37-41d2-8863-87e87358cc89",
 			"key": "result_wait_time",
 			"value": "2000",
 			"type": "string"
 		},
 		{
-			"id": "3d447421-2183-4fa5-827a-faebe4e71590",
+			"id": "812b8a2c-971a-4723-b629-8d5c47af4a84",
 			"key": "server_context",
 			"value": "compilation",
 			"type": "string"
 		},
 		{
-			"id": "522fc007-fef8-4cbe-ba34-6501f95d46c5",
+			"id": "556ad74f-80db-4679-ba98-8d8fd99f58f4",
 			"key": "sut_folder",
 			"value": "/home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/tmp",
 			"type": "string"

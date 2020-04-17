@@ -214,22 +214,25 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 				}
 			}
 	    	
-			// create the SUT resource
-			SUT newSut = new SUT();
-			newSut.setTitle("SUT - " + execAutoRequest.getTitle());
-			newSut.setLaunchCommand(paramLaunchCommand);
-			newSut.setBuildCommand(paramBuildCommand);
-			newSut.setDirectoryPath(folderPath.getAbsolutePath().toString());
-			newSut.setCreator(execAutoRequest.getCreator());
-			newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(serviceProviderId, execAutoRequestId));
-			VeriFitCompilationManager.createSUT(newSut, serviceProviderId, execAutoRequestId); // TODO
+			// create the SUT resource if the compilation was successful
+			if (executionVerdict == VeriFitCompilationConstants.AUTOMATION_VERDICT_PASSED)
+			{
+				SUT newSut = new SUT();
+				newSut.setTitle("SUT - " + execAutoRequest.getTitle());
+				newSut.setLaunchCommand(paramLaunchCommand);
+				newSut.setBuildCommand(paramBuildCommand);
+				newSut.setDirectoryPath(folderPath.getAbsolutePath().toString());
+				newSut.setCreator(execAutoRequest.getCreator());
+				newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(serviceProviderId, execAutoRequestId));
+				VeriFitCompilationManager.createSUT(newSut, serviceProviderId, execAutoRequestId); // TODO
+				newAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(serviceProviderId, VeriFitCompilationManager.getResourceIdFromUri(newSut.getAbout()))); // TODO
+			}
 			
 			// update the autoResult state, contribution, verdict
 			newAutoResult.setState(new HashSet<Link>());
 			newAutoResult.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));
 			newAutoResult.setVerdict(new HashSet<Link>());
 			newAutoResult.addVerdict(new Link(new URI(executionVerdict)));
-			newAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(serviceProviderId, VeriFitCompilationManager.getResourceIdFromUri(newSut.getAbout()))); // TODO
 			VeriFitCompilationManager.updateAutomationResult(null, newAutoResult, serviceProviderId, VeriFitCompilationManager.getResourceIdFromUri(newAutoResult.getAbout()));
 			
 			// update the autoRequest state
