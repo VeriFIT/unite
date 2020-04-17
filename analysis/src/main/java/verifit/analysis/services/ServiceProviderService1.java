@@ -91,6 +91,8 @@ import verifit.analysis.resources.SUT;
 import verifit.analysis.resources.TextOut;
 
 // Start of user code imports
+import verifit.analysis.exceptions.OslcResourceException;
+import org.eclipse.lyo.oslc4j.core.model.Error;
 // End of user code
 
 // Start of user code pre_class_code
@@ -116,14 +118,14 @@ public class ServiceProviderService1
 
     @OslcQueryCapability
     (
-        title = "QueryCapability1",
-        label = "QueryCapability1",
+        title = "QueryAutoPlan",
+        label = "QueryAutoPlan",
         resourceShape = OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.AUTOMATIONPLAN_PATH,
         resourceTypes = {Oslc_autoDomainConstants.AUTOMATIONPLAN_TYPE},
         usages = {}
     )
     @GET
-    @Path("query")
+    @Path("queryAutoPlan")
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
     public AutomationPlan[] queryAutomationPlans(
                                                     @PathParam("serviceProviderId") final String serviceProviderId ,
@@ -149,7 +151,7 @@ public class ServiceProviderService1
     }
 
     @GET
-    @Path("query")
+    @Path("queryAutoPlan")
     @Produces({ MediaType.TEXT_HTML })
     public Response queryAutomationPlansAsHtml(
                                     @PathParam("serviceProviderId") final String serviceProviderId ,
@@ -192,14 +194,14 @@ public class ServiceProviderService1
 
     @OslcQueryCapability
     (
-        title = "QueryCapability2",
-        label = "QueryCapability2",
+        title = "QueryAutoRequest",
+        label = "QueryAutoRequest",
         resourceShape = OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.AUTOMATIONREQUEST_PATH,
         resourceTypes = {Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE},
         usages = {}
     )
     @GET
-    @Path("query")
+    @Path("queryAutoRequest")
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
     public AutomationRequest[] queryAutomationRequests(
                                                     @PathParam("serviceProviderId") final String serviceProviderId ,
@@ -225,7 +227,7 @@ public class ServiceProviderService1
     }
 
     @GET
-    @Path("query")
+    @Path("queryAutoRequest")
     @Produces({ MediaType.TEXT_HTML })
     public Response queryAutomationRequestsAsHtml(
                                     @PathParam("serviceProviderId") final String serviceProviderId ,
@@ -268,14 +270,14 @@ public class ServiceProviderService1
 
     @OslcQueryCapability
     (
-        title = "QueryCapability3",
-        label = "QueryCapability3",
+        title = "QueryAutoResult",
+        label = "QueryAutoResult",
         resourceShape = OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.AUTOMATIONRESULT_PATH,
         resourceTypes = {Oslc_autoDomainConstants.AUTOMATIONRESULT_TYPE},
         usages = {}
     )
     @GET
-    @Path("query")
+    @Path("queryAutoResult")
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
     public AutomationResult[] queryAutomationResults(
                                                     @PathParam("serviceProviderId") final String serviceProviderId ,
@@ -301,7 +303,7 @@ public class ServiceProviderService1
     }
 
     @GET
-    @Path("query")
+    @Path("queryAutoResult")
     @Produces({ MediaType.TEXT_HTML })
     public Response queryAutomationResultsAsHtml(
                                     @PathParam("serviceProviderId") final String serviceProviderId ,
@@ -344,16 +346,16 @@ public class ServiceProviderService1
 
     @OslcDialog
     (
-         title = "SelectionDialog1",
-         label = "SelectionDialog1",
-         uri = "serviceProviders/{serviceProviderId}/resources/selector",
+         title = "SelectAutoPlan",
+         label = "SelectAutoPlan",
+         uri = "serviceProviders/{serviceProviderId}/resources/selectAutoPlan",
          hintWidth = "0px",
          hintHeight = "0px",
          resourceTypes = {Oslc_autoDomainConstants.AUTOMATIONPLAN_TYPE},
          usages = {}
     )
     @GET
-    @Path("selector")
+    @Path("selectAutoPlan")
     @Consumes({ MediaType.TEXT_HTML, MediaType.WILDCARD })
     public void AutomationPlanSelector(
         @QueryParam("terms") final String terms
@@ -394,16 +396,16 @@ public class ServiceProviderService1
 
     @OslcDialog
     (
-         title = "SelectionDialog2",
-         label = "SelectionDialog2",
-         uri = "serviceProviders/{serviceProviderId}/resources/selector",
+         title = "SelectAutoRequest",
+         label = "SelectAutoRequest",
+         uri = "serviceProviders/{serviceProviderId}/resources/selectAutoRequest",
          hintWidth = "0px",
          hintHeight = "0px",
          resourceTypes = {Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE},
          usages = {}
     )
     @GET
-    @Path("selector")
+    @Path("selectAutoRequest")
     @Consumes({ MediaType.TEXT_HTML, MediaType.WILDCARD })
     public void AutomationRequestSelector(
         @QueryParam("terms") final String terms
@@ -444,16 +446,16 @@ public class ServiceProviderService1
 
     @OslcDialog
     (
-         title = "SelectionDialog3",
-         label = "SelectionDialog3",
-         uri = "serviceProviders/{serviceProviderId}/resources/selector",
+         title = "SelectAutoResult",
+         label = "SelectAutoResult",
+         uri = "serviceProviders/{serviceProviderId}/resources/selectAutoResult",
          hintWidth = "0px",
          hintHeight = "0px",
          resourceTypes = {Oslc_autoDomainConstants.AUTOMATIONRESULT_TYPE},
          usages = {}
     )
     @GET
-    @Path("selector")
+    @Path("selectAutoResult")
     @Consumes({ MediaType.TEXT_HTML, MediaType.WILDCARD })
     public void AutomationResultSelector(
         @QueryParam("terms") final String terms
@@ -500,14 +502,14 @@ public class ServiceProviderService1
      */
     @OslcCreationFactory
     (
-         title = "CreationFactory1",
-         label = "CreationFactory1",
+         title = "CreateAutoRequest",
+         label = "CreateAutoRequest",
          resourceShapes = {OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.AUTOMATIONREQUEST_PATH},
          resourceTypes = {Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE},
          usages = {}
     )
     @POST
-    @Path("create")
+    @Path("createAutoRequest")
     @Consumes({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
     public Response createAutomationRequest(
@@ -519,6 +521,11 @@ public class ServiceProviderService1
             AutomationRequest newResource = VeriFitAnalysisManager.createAutomationRequest(httpServletRequest, aResource, serviceProviderId);
             httpServletResponse.setHeader("ETag", VeriFitAnalysisManager.getETagFromAutomationRequest(newResource));
             return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();
+        } catch (OslcResourceException e) {
+               Error errorResource = new Error();
+               errorResource.setStatusCode("400");
+               errorResource.setMessage(e.getMessage());
+               return Response.status(400).entity(errorResource).build();
         } catch (Exception e) {
             e.printStackTrace();
             throw new WebApplicationException(e);
@@ -532,7 +539,7 @@ public class ServiceProviderService1
      * @throws ServletException
      */
     @GET
-    @Path("creator")
+    @Path("creatorAutoRequest")
     @Consumes({MediaType.WILDCARD})
     public void AutomationRequestCreator(
                 @PathParam("serviceProviderId") final String serviceProviderId
@@ -555,16 +562,16 @@ public class ServiceProviderService1
      */
     @OslcDialog
     (
-         title = "CreationDialog1",
-         label = "CreationDialog1",
-         uri = "serviceProviders/{serviceProviderId}/resources/creator",
+         title = "CreatorAutoRequest",
+         label = "CreatorAutoRequest",
+         uri = "serviceProviders/{serviceProviderId}/resources/creatorAutoRequest",
          hintWidth = "0px",
          hintHeight = "0px",
          resourceTypes = {Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE},
          usages = {}
     )
     @POST
-    @Path("creator")
+    @Path("creatorAutoRequest")
     @Consumes({ MediaType.APPLICATION_FORM_URLENCODED})
     public void createAutomationRequestFromDialog(
             @PathParam("serviceProviderId") final String serviceProviderId

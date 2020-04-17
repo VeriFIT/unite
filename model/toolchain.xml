@@ -5,28 +5,28 @@
       <serviceProviders title="Service Provider" description="Service Provider">
         <services>
           <domainSpecification href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12"/>
-          <creationFactories title="CreationFactory1" label="CreationFactory1" creationURI="create">
+          <creationFactories title="CreateAutoRequest" label="CreateAutoRequest" creationURI="createAutoRequest">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.1"/>
           </creationFactories>
-          <queryCapabilities title="QueryCapability1" label="QueryCapability1" queryBaseURI="query">
+          <queryCapabilities title="QueryAutoPlan" label="QueryAutoPlan" queryBaseURI="queryAutoPlan">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.0"/>
           </queryCapabilities>
-          <queryCapabilities title="QueryCapability2" label="QueryCapability2" queryBaseURI="query">
+          <queryCapabilities title="QueryAutoRequest" label="QueryAutoRequest" queryBaseURI="queryAutoRequest">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.1"/>
           </queryCapabilities>
-          <queryCapabilities title="QueryCapability3" label="QueryCapability3" queryBaseURI="query">
+          <queryCapabilities title="QueryAutoResult" label="QueryAutoResult" queryBaseURI="queryAutoResult">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.3"/>
           </queryCapabilities>
-          <selectionDialogs title="SelectionDialog1" label="SelectionDialog1" dialogURI="selector">
+          <selectionDialogs title="SelectAutoPlan" label="SelectAutoPlan" dialogURI="selectAutoPlan">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.0"/>
           </selectionDialogs>
-          <selectionDialogs title="SelectionDialog2" label="SelectionDialog2" dialogURI="selector">
+          <selectionDialogs title="SelectAutoRequest" label="SelectAutoRequest" dialogURI="selectAutoRequest">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.1"/>
           </selectionDialogs>
-          <selectionDialogs title="SelectionDialog3" label="SelectionDialog3" dialogURI="selector">
+          <selectionDialogs title="SelectAutoResult" label="SelectAutoResult" dialogURI="selectAutoResult">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.3"/>
           </selectionDialogs>
-          <creationDialogs title="CreationDialog1" label="CreationDialog1" dialogURI="creator">
+          <creationDialogs title="CreatorAutoRequest" label="CreatorAutoRequest" dialogURI="creatorAutoRequest">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.1"/>
           </creationDialogs>
           <basicCapabilities>
