@@ -134,8 +134,8 @@ public class SutAnalyse extends RequestRunner
 		    	Triple<Integer, String, String> analysisRes = analyseSUT(sutDirectory, VeriFitAnalysisProperties.ANACONDA_PATH, paramAnalyser, sutLaunchCommand, paramExecutionParameters);
 		    	
 		    	if (analysisRes.getLeft() != 0) // get return code
-		    	{	// if the analysis returned non zero, set the verdict as failed
-					executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_FAILED;
+		    	{
+					executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_ERROR;
 			    	analysisStdoutLog.setValue("# Analysis failed (returned non-zero: " + analysisRes.getLeft() + ")\n"
 			    							+ analysisRes.getMiddle());	// get stdout
 		    	}

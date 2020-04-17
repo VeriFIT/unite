@@ -1,0 +1,687 @@
+{
+	"info": {
+		"_postman_id": "9deeb2b1-f514-4bbb-a494-d47fc9ae6b9d",
+		"name": "dev requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "compilation provider",
+			"item": [
+				{
+					"name": "query",
+					"item": [
+						{
+							"name": "query AutomationPlans",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/rdf+xml",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/queryAutoPlan",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"compilation",
+										"services",
+										"serviceProviders",
+										"A0",
+										"resources",
+										"queryAutoPlan"
+									],
+									"query": [
+										{
+											"key": "oslc.searchTerms",
+											"value": "TextToFind",
+											"description": "Full text search in all properties",
+											"disabled": true
+										},
+										{
+											"key": "oslc.where",
+											"value": "dcterms:identifier=\"0\"",
+											"description": "Equality of a certain property (supports INT, String, and URL). Needs to be used with oslc.prefix.",
+											"disabled": true
+										},
+										{
+											"key": "oslc.prefix",
+											"value": "dcterms=<http://purl.org/dc/terms/>",
+											"description": "Define prefixes used in oslc.where",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "20",
+											"description": "Number of resources per response",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "0",
+											"description": "Number of resources to skip (cycle through pages)",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "query AutomationRequests",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/rdf+xml",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/queryAutoRequest",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"compilation",
+										"services",
+										"serviceProviders",
+										"A0",
+										"resources",
+										"queryAutoRequest"
+									],
+									"query": [
+										{
+											"key": "oslc.searchTerms",
+											"value": "TextToFind",
+											"description": "Full text search in all properties",
+											"disabled": true
+										},
+										{
+											"key": "oslc.where",
+											"value": "dcterms:identifier=\"0\"",
+											"description": "Equality of a certain property (supports INT, String, and URL). Needs to be used with oslc.prefix.",
+											"disabled": true
+										},
+										{
+											"key": "oslc.prefix",
+											"value": "dcterms=<http://purl.org/dc/terms/>",
+											"description": "Define prefixes used in oslc.where",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "20",
+											"description": "Number of resources per response",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "0",
+											"description": "Number of resources to skip (cycle through pages)",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "query AutomationResults",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/queryAutoResult",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"compilation",
+										"services",
+										"serviceProviders",
+										"A0",
+										"resources",
+										"queryAutoResult"
+									],
+									"query": [
+										{
+											"key": "oslc.searchTerms",
+											"value": "TextToFind",
+											"description": "Full text search in all properties",
+											"disabled": true
+										},
+										{
+											"key": "oslc.where",
+											"value": "dcterms:identifier=\"0\"",
+											"description": "Equality of a certain property (supports INT, String, and URL). Needs to be used with oslc.prefix.",
+											"disabled": true
+										},
+										{
+											"key": "oslc.prefix",
+											"value": "dcterms=<http://purl.org/dc/terms/>",
+											"description": "Define prefixes used in oslc.where",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "20",
+											"description": "Number of resources per response",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "0",
+											"description": "Number of resources to skip (cycle through pages)",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "query SUT",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/querySUT",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"compilation",
+										"services",
+										"serviceProviders",
+										"A0",
+										"resources",
+										"querySUT"
+									],
+									"query": [
+										{
+											"key": "oslc.searchTerms",
+											"value": "TextToFind",
+											"description": "Full text search in all properties",
+											"disabled": true
+										},
+										{
+											"key": "oslc.where",
+											"value": "dcterms:identifier=\"0\"",
+											"description": "Equality of a certain property (supports INT, String, and URL). Needs to be used with oslc.prefix.",
+											"disabled": true
+										},
+										{
+											"key": "oslc.prefix",
+											"value": "dcterms=<http://purl.org/dc/terms/>",
+											"description": "Define prefixes used in oslc.where",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "20",
+											"description": "Number of resources per response",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "0",
+											"description": "Number of resources to skip (cycle through pages)",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "compile File URL",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/xml",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFileUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+						},
+						"url": {
+							"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/createAutoRequest",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"compilation",
+								"services",
+								"serviceProviders",
+								"A0",
+								"resources",
+								"createAutoRequest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "compile Git",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:creator rdf:resource=\"https://pajda.fit.vutbr.cz/xvasic\"/>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceGit</oslc:name>\n\t\t\t<rdf:value>https://github.com/od42/test.git</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>make</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./testEcho</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+						},
+						"url": {
+							"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/createAutoRequest",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"compilation",
+								"services",
+								"serviceProviders",
+								"A0",
+								"resources",
+								"createAutoRequest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Automation Service Provider",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/rdf+xml"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/compilation/services/serviceProviders/A0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"compilation",
+								"services",
+								"serviceProviders",
+								"A0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Service Provider Catologue",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/rdf+xml",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/compilation/services/catalog/singleton",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"compilation",
+								"services",
+								"catalog",
+								"singleton"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "analysis provider",
+			"item": [
+				{
+					"name": "query",
+					"item": [
+						{
+							"name": "query AutomationPlans",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/rdf+xml",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/queryAutoPlan",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"analysis",
+										"services",
+										"serviceProviders",
+										"A0",
+										"resources",
+										"queryAutoPlan"
+									],
+									"query": [
+										{
+											"key": "oslc.searchTerms",
+											"value": "TextToFind",
+											"description": "Full text search in all properties",
+											"disabled": true
+										},
+										{
+											"key": "oslc.where",
+											"value": "dcterms:identifier=\"0\"",
+											"description": "Equality of a certain property (supports INT, String, and URL). Needs to be used with oslc.prefix.",
+											"disabled": true
+										},
+										{
+											"key": "oslc.prefix",
+											"value": "dcterms=<http://purl.org/dc/terms/>",
+											"description": "Define prefixes used in oslc.where",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "20",
+											"description": "Number of resources per response",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "0",
+											"description": "Number of resources to skip (cycle through pages)",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "query AutomationRequests",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/rdf+xml",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/queryAutoRequest",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"analysis",
+										"services",
+										"serviceProviders",
+										"A0",
+										"resources",
+										"queryAutoRequest"
+									],
+									"query": [
+										{
+											"key": "oslc.searchTerms",
+											"value": "TextToFind",
+											"description": "Full text search in all properties",
+											"disabled": true
+										},
+										{
+											"key": "oslc.where",
+											"value": "dcterms:identifier=\"0\"",
+											"description": "Equality of a certain property (supports INT, String, and URL). Needs to be used with oslc.prefix.",
+											"disabled": true
+										},
+										{
+											"key": "oslc.prefix",
+											"value": "dcterms=<http://purl.org/dc/terms/>",
+											"description": "Define prefixes used in oslc.where",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "20",
+											"description": "Number of resources per response",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "0",
+											"description": "Number of resources to skip (cycle through pages)",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "query AutomationResults",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/queryAutoResult",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"analysis",
+										"services",
+										"serviceProviders",
+										"A0",
+										"resources",
+										"queryAutoResult"
+									],
+									"query": [
+										{
+											"key": "oslc.searchTerms",
+											"value": "TextToFind",
+											"description": "Full text search in all properties",
+											"disabled": true
+										},
+										{
+											"key": "oslc.where",
+											"value": "dcterms:identifier=\"0\"",
+											"description": "Equality of a certain property (supports INT, String, and URL). Needs to be used with oslc.prefix.",
+											"disabled": true
+										},
+										{
+											"key": "oslc.prefix",
+											"value": "dcterms=<http://purl.org/dc/terms/>",
+											"description": "Define prefixes used in oslc.where",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "20",
+											"description": "Number of resources per response",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "0",
+											"description": "Number of resources to skip (cycle through pages)",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "first analyse",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>analyser</oslc:name>\n\t\t\t<rdf:value>atomrace</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>executionParameters</oslc:name>\n\t\t\t<rdf:value>\"Hello World!\"</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+						},
+						"url": {
+							"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"analysis",
+								"services",
+								"serviceProviders",
+								"A0",
+								"resources",
+								"createAutoRequest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Automation Service Provider",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/rdf+xml"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/analysis/services/serviceProviders/A0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"analysis",
+								"services",
+								"serviceProviders",
+								"A0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Service Provider Catologue",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/rdf+xml",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/analysis/services/catalog/singleton",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"analysis",
+								"services",
+								"catalog",
+								"singleton"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

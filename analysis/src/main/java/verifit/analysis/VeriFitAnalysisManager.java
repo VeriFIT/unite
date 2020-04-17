@@ -83,7 +83,6 @@ public class VeriFitAnalysisManager {
 	static ResourceIdGen AutoPlanIdGen;
 	static ResourceIdGen AutoRequestIdGen;
 
-	public static OslcClient client = new OslcClient();
     // End of user code
     
     
@@ -645,9 +644,13 @@ public class VeriFitAnalysisManager {
 			Map<String, String> inputParamsMap = getAutoReqInputParams(serviceProviderId, newResource);
 			
 			// check that the SUT to be executed exists
+			OslcClient client = new OslcClient();
 			ClientResponse response = client.getResource(inputParamsMap.get("SUT"));
+			if (response.getStatusCode() != 200)
+			{
+				throw new IOException("Failed to get refferenced SUT - make sure the compilation provider is running.\nResponse status code: " + response.getStatusCode() + "\nMessage: "+ response.getMessage());
+			}
 			SUT executedSUT = response.getEntity(SUT.class);
-			// if (null) .... TODO TODO
 			
 			// persist in the triplestore
 			store.updateResources(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
@@ -655,7 +658,7 @@ public class VeriFitAnalysisManager {
 			// create a new thread to execute the automation request // TODO
 			new SutAnalyse(serviceProviderId, newResource, executedSUT, inputParamsMap);	
 
-		} catch (OslcResourceException e) {
+		} catch (OslcResourceException | RuntimeException | IOException e) {
 			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
 			
 		} catch (URISyntaxException e) {
