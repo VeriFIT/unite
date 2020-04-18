@@ -52,11 +52,11 @@ import verifit.analysis.VeriFitAnalysisResourcesFactory;
 import verifit.analysis.resources.SUT;
 import verifit.analysis.resources.TextOut;
 /**
- * A thread for executing analysis of and SUT
+ * A thread for executing running perun.
  * @author od42
  *
  */
-public class SutAnalyse extends RequestRunner
+public class RunPerun extends RequestRunner
 {
 	final private String serviceProviderId;
 	final private String execAutoRequestId;
@@ -72,7 +72,7 @@ public class SutAnalyse extends RequestRunner
 	 * @param execSUT			Executed SUT resource object
 	 * @param inputParamsMap	Input parameters as a "name" => "value" map
 	 */
-	public SutAnalyse(String serviceProviderId, AutomationRequest execAutoRequest, SUT execSut, Map<String, String> inputParamsMap) 
+	public RunPerun(String serviceProviderId, AutomationRequest execAutoRequest, SUT execSut, Map<String, String> inputParamsMap) 
 	{
 		super();
 		
@@ -95,8 +95,7 @@ public class SutAnalyse extends RequestRunner
 		try {
 			
 			// get the input parameters
-			final String paramAnalyser = inputParamsMap.get("analyser");
-			final String paramExecutionParameters = inputParamsMap.get("executionParameters");
+			final String paramCommand = inputParamsMap.get("command");
 			
 			//create the autoResult as inProgress
 			AutomationResult propAutoResult = new AutomationResult();
@@ -131,7 +130,7 @@ public class SutAnalyse extends RequestRunner
 			try {
 				File sutDirectory = new File(execSut.getDirectoryPath());
 				String sutLaunchCommand = execSut.getLaunchCommand();
-		    	Triple<Integer, String, String> analysisRes = analyseSUT(sutDirectory, VeriFitAnalysisProperties.ANACONDA_PATH, paramAnalyser, sutLaunchCommand, paramExecutionParameters);
+		    	Triple<Integer, String, String> analysisRes = analyseSUT(sutDirectory, VeriFitAnalysisProperties.PERUN_PATH, paramCommand, "", "");
 		    	
 		    	if (analysisRes.getLeft() != 0) // get return code
 		    	{

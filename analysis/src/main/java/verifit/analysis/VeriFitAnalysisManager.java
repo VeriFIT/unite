@@ -45,6 +45,7 @@ import verifit.analysis.resources.TextOut;
 // Start of user code imports
 import verifit.analysis.persistance.Persistence;
 import verifit.analysis.automationPlans.AutomationPlanDefinition;
+import verifit.analysis.automationPlans.RunPerun;
 import verifit.analysis.automationPlans.SutAnalyse;
 import verifit.analysis.exceptions.OslcResourceException;
 
@@ -656,8 +657,15 @@ public class VeriFitAnalysisManager {
 			store.updateResources(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
 			
 			// create a new thread to execute the automation request // TODO
-			new SutAnalyse(serviceProviderId, newResource, executedSUT, inputParamsMap);	
-
+			switch (getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue()))
+			{
+			case "0":
+				new SutAnalyse(serviceProviderId, newResource, executedSUT, inputParamsMap);
+				break;
+			case "1":
+				new RunPerun(serviceProviderId, newResource, executedSUT, inputParamsMap);	
+				break;
+			}
 		} catch (OslcResourceException | RuntimeException | IOException e) {
 			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
 			

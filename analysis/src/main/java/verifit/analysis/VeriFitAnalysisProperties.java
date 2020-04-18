@@ -79,6 +79,8 @@ public class VeriFitAnalysisProperties
 	public static String ANACONDA_PATH;
     public static Set<String> ANACONDA_ANALYSERS = new HashSet<String>();
 
+	public static String PERUN_PATH = "perun";	// TODO
+	
     public static String SPARQL_SERVER_NAMED_GRAPH_RESOURCES;
     public static String SPARQL_SERVER_QUERY_ENDPOINT;
     public static String SPARQL_SERVER_UPDATE_ENDPOINT;

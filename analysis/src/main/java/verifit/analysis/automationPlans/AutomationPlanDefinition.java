@@ -37,7 +37,8 @@ public class AutomationPlanDefinition {
 	 */
 	public static void createPredefinedAutomationPlans() throws StoreAccessException
 	{
-		createSutDeployAutomationPlan();
+		createAnacondaAutomationPlan();
+		createPerrunAutomationPlan();
 	}	
 	
 	/**
@@ -51,18 +52,17 @@ public class AutomationPlanDefinition {
     	else
     		return true;
 	}
-	
+
 	/**
 	 * TODO
 	 * @throws StoreAccessException 
 	 */
-	private static void createSutDeployAutomationPlan() throws StoreAccessException
+	private static void createAnacondaAutomationPlan() throws StoreAccessException
 	{ 
 		try {
 			// create parameter definitions
 			ParameterDefinition analyser = new ParameterDefinition();
 			analyser.setDescription("Specify what analyser to use");
-			analyser.setAllowedValue(VeriFitAnalysisProperties.ANACONDA_ANALYSERS);
 			analyser.setName("analyser");
 			analyser.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ONE)));
 			analyser.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
@@ -83,10 +83,46 @@ public class AutomationPlanDefinition {
 			
 			// create the autoPlan
 			AutomationPlan propertiesPlan = new AutomationPlan();
-			propertiesPlan.setTitle("ANaConDA");
-			propertiesPlan.setDescription("Analyse an SUT using ANaConDA");
+			propertiesPlan.setTitle("Perun");
+			propertiesPlan.setDescription("Analyse an SUT using Perun");
 			propertiesPlan.addParameterDefinition(analyser);
 			propertiesPlan.addParameterDefinition(executionParameters);
+			propertiesPlan.addParameterDefinition(SUT);
+			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
+			VeriFitAnalysisManager.createAutomationPlan(propertiesPlan);
+	
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * TODO
+	 * @throws StoreAccessException 
+	 */
+	private static void createPerrunAutomationPlan() throws StoreAccessException
+	{ 
+		try {
+			// create parameter definitions
+			ParameterDefinition command = new ParameterDefinition();
+			command.setDescription("Specify a perun command to run");
+			command.setName("command");
+			command.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ONE)));
+			command.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
+			//Analyser.setRepresentation(new Link(new URI(VeriFitAnalysisConstants.OSLC_REPRESENTATION_EITHER))); //TODO		
+			
+			ParameterDefinition SUT = new ParameterDefinition();
+			SUT.setDescription("Refference to an SUT resource to analyse. SUTs are created using the compilation provider."); //TODO
+			SUT.setName("SUT");
+			SUT.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ONE)));
+			SUT.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING))); // TODO change to URI
+			
+			// create the autoPlan
+			AutomationPlan propertiesPlan = new AutomationPlan();
+			propertiesPlan.setTitle("Perun");
+			propertiesPlan.setDescription("Analyse an SUT using Perun");
+			propertiesPlan.addParameterDefinition(command);
 			propertiesPlan.addParameterDefinition(SUT);
 			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
 			VeriFitAnalysisManager.createAutomationPlan(propertiesPlan);
