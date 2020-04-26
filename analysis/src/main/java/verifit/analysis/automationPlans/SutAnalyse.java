@@ -129,9 +129,8 @@ public class SutAnalyse extends RequestRunner
 			// analyse SUT
 		    String executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_PASSED;
 			try {
-				File sutDirectory = new File(execSut.getDirectoryPath());
 				String sutLaunchCommand = execSut.getLaunchCommand();
-		    	Triple<Integer, String, String> analysisRes = analyseSUT(sutDirectory, VeriFitAnalysisProperties.ANACONDA_PATH, paramAnalyser, sutLaunchCommand, paramExecutionParameters);
+		    	Triple<Integer, String, String> analysisRes = analyseSUT(execSut.getDirectoryPath(), VeriFitAnalysisProperties.ANACONDA_PATH, paramAnalyser, sutLaunchCommand, paramExecutionParameters);
 		    	
 		    	if (analysisRes.getLeft() != 0) // get return code
 		    	{

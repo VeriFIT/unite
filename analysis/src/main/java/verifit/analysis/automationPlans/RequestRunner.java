@@ -31,9 +31,11 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Base64.Decoder;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
@@ -65,10 +67,10 @@ public abstract class RequestRunner extends Thread
 	 * @return Triple of (return_code, stdout, stderr)
 	 * @throws IOException when the command execution fails (error)
 	 */
-	protected Triple<Integer,String,String> analyseSUT(File folderPath, String toolCommand, String toolParams, String sutCommand, String sutParams) throws IOException
+	protected Triple<Integer,String,String> analyseSUT(String folderPath, String toolCommand, String toolParams, String sutCommand, String sutParams) throws IOException
 	{
 		Process process;
-		process = Runtime.getRuntime().exec(toolCommand + " " + toolParams + " " + sutCommand + " " + sutParams, null, folderPath.getAbsoluteFile());
+		process = Runtime.getRuntime().exec(toolCommand + " " + toolParams + " " + sutCommand + " " + sutParams, null, new File(folderPath));
 		InputStream stdout = process.getInputStream();
 		InputStream stderr = process.getErrorStream();
 		InputStreamReader stdoutReader = new InputStreamReader(stdout);
@@ -93,5 +95,32 @@ public abstract class RequestRunner extends Thread
 		}
 
 		return Triple.of(process.exitValue(), stdoutLog, stderrLog);
+	}
+	
+	/**
+	 * Takes a snapshot of all file names and their modification times
+	 * @param folderPath	Directory to take a snapshot of 
+	 * @return	A map of (key: file_path; value: file_modification_time)
+	 */
+	protected Map<String, Long> takeDirSnapshot(String folderPath)
+	{
+		Map<String, Long> files = new HashMap<String, Long>();
+		
+		// get all files in a directory recursively and loop over them
+		Iterator<File> it = FileUtils.iterateFiles(new File(folderPath), null, true);
+		while (it.hasNext())
+		{
+            File currFile = it.next();
+        	// TODO do I need read permissions to check the modification date?
+        	if (!currFile.getAbsolutePath().contains("/.git/")) 	// TODO ignores .git
+        	{
+	        	String path = currFile.getAbsolutePath();
+	        	Long timestamp = currFile.lastModified();
+	        	
+	        	files.put(path, timestamp);
+        	}
+		}
+		
+		return files;
 	}
 } 

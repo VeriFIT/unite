@@ -27,7 +27,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Date;
@@ -116,7 +118,7 @@ public class RunPerun extends RequestRunner
 			VeriFitAnalysisManager.updateAutomationRequest(execAutoRequest, serviceProviderId, execAutoRequestId);
 			
 			
-		    // prepare result contributions
+		    // prepare stdin & stdout contributions
 		    TextOut analysisStdoutLog = new TextOut();
 		    analysisStdoutLog.setDescription("Standard output of the analysis. Provider messages are prefixed with #.");
 		    analysisStdoutLog.setTitle("Analysis stdout");
@@ -125,12 +127,13 @@ public class RunPerun extends RequestRunner
 		    analysisStderrLog.setTitle("Analysis stderr");
 			
 		    
+		    // take a snapshot of SUT files modification times before executing the analysis
+		    Map<String, Long> snapshotBeforeAnalysis = takeDirSnapshot(execSut.getDirectoryPath());
+		    
 			// analyse SUT
 		    String executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_PASSED;
 			try {
-				File sutDirectory = new File(execSut.getDirectoryPath());
-				String sutLaunchCommand = execSut.getLaunchCommand();
-		    	Triple<Integer, String, String> analysisRes = analyseSUT(sutDirectory, VeriFitAnalysisProperties.PERUN_PATH, paramCommand, "", "");
+		    	Triple<Integer, String, String> analysisRes = analyseSUT(execSut.getDirectoryPath(), VeriFitAnalysisProperties.PERUN_PATH, paramCommand, "", "");
 		    	
 		    	if (analysisRes.getLeft() != 0) // get return code
 		    	{
@@ -150,14 +153,42 @@ public class RunPerun extends RequestRunner
 				analysisStdoutLog.setValue("# Analysis error");	// get stdout
 				analysisStderrLog.setValue(e.getMessage());	// get stderr
 	    		
-			} finally {
-				// create the compilation Contributions and add them to the Automation Result
-				analysisStdoutLog = VeriFitAnalysisManager.createTextOut(analysisStdoutLog, serviceProviderId);
-				analysisStderrLog = VeriFitAnalysisManager.createTextOut(analysisStderrLog, serviceProviderId);
-		    	newAutoResult.addContribution(analysisStdoutLog);
-		    	newAutoResult.addContribution(analysisStderrLog);
 			}
-			
+
+			// create the compilation Contributions and add them to the Automation Result
+			analysisStdoutLog = VeriFitAnalysisManager.createTextOut(analysisStdoutLog, serviceProviderId);
+			analysisStderrLog = VeriFitAnalysisManager.createTextOut(analysisStderrLog, serviceProviderId);
+	    	newAutoResult.addContribution(analysisStdoutLog);
+	    	newAutoResult.addContribution(analysisStderrLog);
+	    	
+		    // take a snapshot of SUT files modification times after executing the analysis
+	    	// and add all the new ones / modified ones as contributions
+		    Map<String, Long> snapshotAfterAnalysis = takeDirSnapshot(execSut.getDirectoryPath());
+		    for (Map.Entry<String,Long> newFile : snapshotAfterAnalysis.entrySet())
+		    {
+		    	if (snapshotBeforeAnalysis.containsKey(newFile.getKey()))
+		    	{ // if the file existed before the analysis, check if his modif time changed
+		    		Long oldTimestamp = snapshotBeforeAnalysis.get(newFile.getKey());	
+		    		if (newFile.getValue() <= oldTimestamp)
+		    		{ // the file was not modified
+		    			continue;
+		    		}
+		    	}
+
+		    	// the file did not exist before analysis OR was modified --> add it as contribution to the AutoResult
+			    File currFile = new File(newFile.getKey());
+		    	TextOut newOrModifFile = new TextOut();
+			    newOrModifFile.setDescription(currFile.getAbsolutePath());
+			    newOrModifFile.setTitle(currFile.getName());
+			    try {
+					newOrModifFile.setValue(Files.readString(currFile.toPath(), StandardCharsets.US_ASCII));	// TODO
+				} catch (IOException e) {
+					newOrModifFile.setValue(e.getMessage());
+				}
+			    newOrModifFile = VeriFitAnalysisManager.createTextOut(newOrModifFile, serviceProviderId);
+		    	newAutoResult.addContribution(newOrModifFile);
+		    }
+		
 			// update the autoResult state, contribution, verdict
 			newAutoResult.setState(new HashSet<Link>());
 			newAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
