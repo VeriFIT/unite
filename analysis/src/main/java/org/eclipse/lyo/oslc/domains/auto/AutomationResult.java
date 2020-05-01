@@ -626,7 +626,7 @@ public class AutomationResult
     // Start of user code getterAnnotation:createdSUT
     // End of user code
     @OslcName("createdSUT")
-    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "createdSUT")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "createdSUT")
     @OslcOccurs(Occurs.ZeroOrOne)
     @OslcValueType(ValueType.Resource)
     @OslcRepresentation(Representation.Reference)

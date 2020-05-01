@@ -67,6 +67,7 @@ import org.eclipse.lyo.oslc4j.core.model.ValueType;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
+import verifit.analysis.resources.FitDomainConstants;
 
 // Start of user code imports
 // End of user code
@@ -209,6 +210,14 @@ public interface IParameterDefinition
     @OslcReadOnly(false)
     public Link getAllowedValues();
 
+    @OslcName("commandlinePosition")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "commandlinePosition")
+    @OslcDescription("Specifies the order of parameters for an Automation Plan (ie. commandline parameters for a tool). If a parameter has no position, then it will not be used in the command line. If there is more then one parameter with the same position, then their relative position is undefined (but still valid relative to other positions).")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.Integer)
+    @OslcReadOnly(false)
+    public Integer getCommandlinePosition();
+
 
     public void setDescription(final String description );
     public void setTitle(final String title );
@@ -226,5 +235,6 @@ public interface IParameterDefinition
     public void setValueType(final Set<Link> valueType );
     public void setValueShape(final Link valueShape );
     public void setAllowedValues(final Link allowedValues );
+    public void setCommandlinePosition(final Integer commandlinePosition );
 }
 

@@ -75,6 +75,7 @@ import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
+import verifit.compilation.resources.FitDomainConstants;
 
 // Start of user code imports
 // End of user code
@@ -139,6 +140,9 @@ public class ParameterDefinition
     // Start of user code attributeAnnotation:allowedValues
     // End of user code
     private Link allowedValues = new Link();
+    // Start of user code attributeAnnotation:commandlinePosition
+    // End of user code
+    private Integer commandlinePosition;
     
     // Start of user code classAttributes
     // End of user code
@@ -481,6 +485,21 @@ public class ParameterDefinition
         return allowedValues;
     }
     
+    // Start of user code getterAnnotation:commandlinePosition
+    // End of user code
+    @OslcName("commandlinePosition")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "commandlinePosition")
+    @OslcDescription("Specifies the order of parameters for an Automation Plan (ie. commandline parameters for a tool). If a parameter has no position, then it will not be used in the command line. If there is more then one parameter with the same position, then their relative position is undefined (but still valid relative to other positions).")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.Integer)
+    @OslcReadOnly(false)
+    public Integer getCommandlinePosition()
+    {
+        // Start of user code getterInit:commandlinePosition
+        // End of user code
+        return commandlinePosition;
+    }
+    
     
     // Start of user code setterAnnotation:description
     // End of user code
@@ -683,6 +702,18 @@ public class ParameterDefinition
         this.allowedValues = allowedValues;
     
         // Start of user code setterFinalize:allowedValues
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:commandlinePosition
+    // End of user code
+    public void setCommandlinePosition(final Integer commandlinePosition )
+    {
+        // Start of user code setterInit:commandlinePosition
+        // End of user code
+        this.commandlinePosition = commandlinePosition;
+    
+        // Start of user code setterFinalize:commandlinePosition
         // End of user code
     }
     
@@ -995,6 +1026,26 @@ public class ParameterDefinition
         // End of user code
     
         // Start of user code "Finalize:allowedValuesToHtmlForCreation(...)"
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    static public String commandlinePositionToHtmlForCreation (final HttpServletRequest httpServletRequest)
+    {
+        String s = "";
+    
+        // Start of user code "Init:commandlinePositionToHtmlForCreation(...)"
+        // End of user code
+    
+        s = s + "<label for=\"commandlinePosition\">commandlinePosition: </LABEL>";
+    
+        // Start of user code "Mid:commandlinePositionToHtmlForCreation(...)"
+        // End of user code
+    
+        s= s + "<input name=\"commandlinePosition\" type=\"text\" style=\"width: 400px\" id=\"commandlinePosition\" >";
+        // Start of user code "Finalize:commandlinePositionToHtmlForCreation(...)"
         // End of user code
     
         return s;
@@ -1410,6 +1461,31 @@ public class ParameterDefinition
         }
     
         // Start of user code allowedValuestoHtml_finalize
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    public String commandlinePositionToHtml()
+    {
+        String s = "";
+    
+        // Start of user code commandlinePositiontoHtml_mid
+        // End of user code
+    
+        try {
+            if (commandlinePosition == null) {
+                s = s + "<em>null</em>";
+            }
+            else {
+                s = s + commandlinePosition.toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        // Start of user code commandlinePositiontoHtml_finalize
         // End of user code
     
         return s;

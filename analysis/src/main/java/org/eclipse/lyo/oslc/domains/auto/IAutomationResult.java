@@ -257,7 +257,7 @@ public interface IAutomationResult
     public Link getReportsOnAutomationPlan();
 
     @OslcName("createdSUT")
-    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "createdSUT")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "createdSUT")
     @OslcOccurs(Occurs.ZeroOrOne)
     @OslcValueType(ValueType.Resource)
     @OslcRepresentation(Representation.Reference)

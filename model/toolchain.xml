@@ -116,6 +116,8 @@
       <resourceProperties title="" name="launchCommand" valueType="XMLLiteral" description="How to launch the SUT. The specified command will be launched from the root directory of the downloaded SUT. Examples: make run | ./run.sh | ./my_sut"/>
       <resourceProperties name="buildCommand" valueType="XMLLiteral" description="How to build the SUT. The specified command will be launched from the root directory of the downloaded SUT. Examples: make | ./build.sh | gcc -g -o my_sut"/>
       <resourceProperties name="directoryPath" readOnly="true" valueType="XMLLiteral" description="Path to the root directory of the SUT. Used to launch and compile the SUT."/>
+      <resourceProperties name="createdSUT" occurs="zeroOrOne" valueType="Resource" representation="reference" range="//@specification/@domainSpecifications.0/@resources.1"/>
+      <resourceProperties name="commandlinePosition" occurs="zeroOrOne" valueType="Integer" description="Specifies the order of parameters for an Automation Plan (ie. commandline parameters for a tool). If a parameter has no position, then it will not be used in the command line. If there is more then one parameter with the same position, then their relative position is undefined (but still valid relative to other positions)."/>
     </domainSpecifications>
     <domainPrefixes name="fit"/>
   </specification>

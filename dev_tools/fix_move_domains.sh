@@ -22,3 +22,6 @@ sed -i "s|import verifit.compilation.resources.ISUT;|import verifit.analysis.res
 sed -i "s|import verifit.compilation.resources.FitDomainConstants;|import verifit.analysis.resources.FitDomainConstants;|" ../analysis/src/main/java/org/eclipse/lyo/oslc/domains/auto/AutomationResult.java
 sed -i "s|import verifit.compilation.resources.TextOut;|import verifit.analysis.resources.TextOut;|" ../analysis/src/main/java/org/eclipse/lyo/oslc/domains/auto/AutomationResult.java
 sed -i "s|import verifit.compilation.resources.SUT;|import verifit.analysis.resources.SUT;|" ../analysis/src/main/java/org/eclipse/lyo/oslc/domains/auto/AutomationResult.java
+
+sed -i "s|import verifit.compilation.resources.FitDomainConstants;|import verifit.analysis.resources.FitDomainConstants;|" ../analysis/src/main/java/org/eclipse/lyo/oslc/domains/auto/IParameterDefinition.java
+sed -i "s|import verifit.compilation.resources.FitDomainConstants;|import verifit.analysis.resources.FitDomainConstants;|" ../analysis/src/main/java/org/eclipse/lyo/oslc/domains/auto/ParameterDefinition.java
