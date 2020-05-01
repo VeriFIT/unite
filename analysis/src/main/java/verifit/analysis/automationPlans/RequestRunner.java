@@ -60,17 +60,14 @@ public abstract class RequestRunner extends Thread
 	/**
 	 * Analyses an SUT
 	 * @param folderPath Path to the directory
-	 * @param toolCommand 	Analysis command to run
-	 * @param toolParams 	Analysis parameters
-	 * @param sutCommand 	SUT launch command to run
-	 * @param sutParams 	SUT parameters
+	 * @param stringToExecute 	... TODO
 	 * @return Triple of (return_code, stdout, stderr)
 	 * @throws IOException when the command execution fails (error)
 	 */
-	protected Triple<Integer,String,String> analyseSUT(String folderPath, String toolCommand, String toolParams, String sutCommand, String sutParams) throws IOException
+	protected Triple<Integer,String,String> analyseSUT(String folderPath, String stringToExecute) throws IOException
 	{
 		Process process;
-		process = Runtime.getRuntime().exec(toolCommand + " " + toolParams + " " + sutCommand + " " + sutParams, null, new File(folderPath));
+		process = Runtime.getRuntime().exec(stringToExecute, null, new File(folderPath));
 		InputStream stdout = process.getInputStream();
 		InputStream stderr = process.getErrorStream();
 		InputStreamReader stdoutReader = new InputStreamReader(stdout);
@@ -112,7 +109,9 @@ public abstract class RequestRunner extends Thread
 		{
             File currFile = it.next();
         	// TODO do I need read permissions to check the modification date?
-        	if (!currFile.getAbsolutePath().contains("/.git/")) 	// TODO ignores .git
+        	if (   !currFile.getAbsolutePath().contains("/.git/")	// TODO ignores /.git/
+        		&& !currFile.getAbsolutePath().contains(".log") 	// TODO ignores .log
+        		&& !currFile.getAbsolutePath().contains(".index")) 	// TODO ignores .index
         	{
 	        	String path = currFile.getAbsolutePath();
 	        	Long timestamp = currFile.lastModified();

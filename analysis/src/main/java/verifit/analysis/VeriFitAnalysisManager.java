@@ -45,13 +45,13 @@ import verifit.analysis.resources.TextOut;
 // Start of user code imports
 import verifit.analysis.persistance.Persistence;
 import verifit.analysis.automationPlans.AutomationPlanDefinition;
-import verifit.analysis.automationPlans.RunPerun;
 import verifit.analysis.automationPlans.SutAnalyse;
 import verifit.analysis.exceptions.OslcResourceException;
 
 import org.eclipse.lyo.store.StoreAccessException;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.wink.client.ClientResponse;
 
 import java.io.File;
@@ -163,10 +163,11 @@ public class VeriFitAnalysisManager {
 	/**
 	 * Creates an AutomationPlan resource with the specified properties, and stores in the Adapter's catalog.
 	 * @param aResource			The new resource will copy properties from the specified aResource.
+	 * @param toolCommand		What command should be used to launch the tool associated with this AutomationPlan.
 	 * @return					The newly created resource. Or null if one of the required properties was missing.
 	 * @throws StoreAccessException 
 	 */
-    public static AutomationPlan createAutomationPlan(final AutomationPlan aResource) throws StoreAccessException
+    public static AutomationPlan createAutomationPlan(final AutomationPlan aResource, final String toolCommand) throws StoreAccessException
     {    	
     	AutomationPlan newResource = null;
     	
@@ -189,6 +190,39 @@ public class VeriFitAnalysisManager {
 			//newResource.setInstanceShape(new URI(VeriFitAnalysisProperties.PATH_RESOURCE_SHAPES + "automationPlan"));
 			//newResource.addServiceProvider(new URI(VeriFitAnalysisProperties.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
 			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationPlan"));
+			
+			// add default parameters for all tools
+			ParameterDefinition toolCommandDef = new ParameterDefinition();
+			toolCommandDef.setDescription("How should the tool be called.");
+			toolCommandDef.setName("toolCommand");
+			toolCommandDef.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ONE)));
+			toolCommandDef.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
+			toolCommandDef.setHidden(true);
+			toolCommandDef.setReadOnly(true);
+			toolCommandDef.setDefaultValue(toolCommand);
+			toolCommandDef.setCommandlinePosition(0);
+			newResource.addParameterDefinition(toolCommandDef);
+			
+			ParameterDefinition SUT = new ParameterDefinition();
+			SUT.setDescription("Refference to an SUT resource to analyse. SUTs are created using the compilation provider."); //TODO
+			SUT.setName("SUT");
+			SUT.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ONE)));
+			SUT.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING))); // TODO change to URI
+			SUT.setHidden(false);
+			SUT.setReadOnly(false);
+			newResource.addParameterDefinition(SUT);
+			
+			/* TODO later
+			ParameterDefinition extraParams = new ParameterDefinition();
+			extraParams.setDescription("How should the tool be called.");
+			extraParams.setName("extraParameters");
+			extraParams.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ONE)));
+			extraParams.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
+			extraParams.setHidden(false);
+			extraParams.setReadOnly(false);
+			newResource.addParameterDefinition(extraParams);
+			*/
+			
 			
 			// persist in the triplestore
 			store.updateResources(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
@@ -309,36 +343,45 @@ public class VeriFitAnalysisManager {
 
 	/**
 	 * Check that the AutomationRequest contains the neccesary input parameters based on its AutoPlan
-	 * and return a map of them.
+	 * and returns a map of them
 	 * @param serviceProviderId			serviceProviderId passed by the HTTP request
 	 * @param execAutoRequest			The AutomationRequest to execute. Needs to have a valid
 	 * 									executesAutomationPlan property.
 	 * @throws OslcResourceException 	When the executed AutomationRequest properties are invalid or missing
+	 * @return	A map of input parameters [ name, Pair(value,position) ]; position -1 means there was no position
 	 */
-	private static Map<String, String> getAutoReqInputParams(String serviceProviderId, AutomationRequest execAutoRequest) throws OslcResourceException
+	private static Map<String, Pair<String,Integer>> getAutoReqInputParams(String serviceProviderId, AutomationRequest execAutoRequest) throws OslcResourceException
 	{
 		// get the executed AutomationPlan resource			
 		String execAutoPlanId = getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue());
 		AutomationPlan execAutoPlan = getAutomationPlan(null, serviceProviderId, execAutoPlanId);
 		if (execAutoPlan == null)
 			throw new OslcResourceException("AutomationPlan not found (id: " + execAutoPlanId + ")");
-		
-		/// check the input parameters and create a map of "name" -> "value"
-		Map<String, String> inputParamsMap = new HashMap<String, String>();
-		int countMatchedParams = 0;
+
+		/// check the input parameters and create a map of "name" -> ("value", position)
+		Map<String, Pair<String,Integer>> inputParamsMap = new HashMap<String, Pair<String,Integer>>();
 		
 		// loop through autoPlan defined parameters to match them with the input params
 		for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
 		{
+			Integer paramPosition;
+			if (definedParam.getCommandlinePosition() != null)
+			{
+				paramPosition = definedParam.getCommandlinePosition();
+			}
+			else
+			{
+				paramPosition = -1;
+			}
+			
 			// set the default value (will be overwritten later), may be null if not set
-			inputParamsMap.put(definedParam.getName(), definedParam.getDefaultValue());
+			inputParamsMap.put(definedParam.getName(), Pair.of(definedParam.getDefaultValue(), paramPosition));
 				
 			// find the corresponding autoRequest input parameter
 			for (ParameterInstance submittedParam : execAutoRequest.getInputParameter())
 			{				
 				if (definedParam.getName().equals(submittedParam.getName()))
 				{
-					countMatchedParams++;
 					
 					// check if the value is allowed
 					Boolean validValue = true;
@@ -359,7 +402,7 @@ public class VeriFitAnalysisManager {
 						throw new OslcResourceException("value '" + submittedParam.getValue() + "' not allowed for the '" + definedParam.getName() + "' parameter");
 					}
 					
-					inputParamsMap.put(definedParam.getName(), submittedParam.getValue());
+					inputParamsMap.put(definedParam.getName(), Pair.of(submittedParam.getValue(),paramPosition));
 				}
 			}
 			
@@ -370,7 +413,7 @@ public class VeriFitAnalysisManager {
 			case VeriFitAnalysisConstants.OSLC_OCCURS_ONE:
 				// TODO check for more then one when there should be exactly one
 			case VeriFitAnalysisConstants.OSLC_OCCURS_ONEorMany:
-				if (inputParamsMap.get(definedParam.getName()) == null)
+				if (inputParamsMap.get(definedParam.getName()).getLeft() == null)
 					paramMissing = true;
 				break;
 				
@@ -387,9 +430,17 @@ public class VeriFitAnalysisManager {
 		}
 		
 		// check that there were no unknown input parameters
-		if (countMatchedParams != execAutoRequest.getInputParameter().size())
-		{
-			throw new OslcResourceException("unrecognized input parameters");
+		for (ParameterInstance submittedParam : execAutoRequest.getInputParameter())
+		{				
+			boolean matched = false;
+			for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
+			{
+				if (definedParam.getName().equals(submittedParam.getName()))
+					matched = true;
+			}
+			
+			if (!matched)
+				throw new OslcResourceException("'" + submittedParam.getName() + "' input parameter not recognized");
 		}
 		
 		return inputParamsMap;
@@ -642,30 +693,30 @@ public class VeriFitAnalysisManager {
 			
 			// when a request is created - get its executed autoPlan, check parameters and make an input map
 			// throws an exception if the autoRequest is not valid
-			Map<String, String> inputParamsMap = getAutoReqInputParams(serviceProviderId, newResource);
+			Map<String, Pair<String,Integer>> inputParamsMap = getAutoReqInputParams(serviceProviderId, newResource);
 			
 			// check that the SUT to be executed exists
 			OslcClient client = new OslcClient();
-			ClientResponse response = client.getResource(inputParamsMap.get("SUT"));
+			ClientResponse response = client.getResource(inputParamsMap.get("SUT").getLeft());
 			if (response.getStatusCode() != 200)
 			{
 				throw new IOException("Failed to get refferenced SUT - make sure the compilation provider is running.\nResponse status code: " + response.getStatusCode() + "\nMessage: "+ response.getMessage());
 			}
 			SUT executedSUT = response.getEntity(SUT.class);
 			
+			// check if the SUT launch command should be used and get it from the SUT
+			Pair<String,Integer> callSut = inputParamsMap.get("callSUT");
+			if (callSut != null)
+			{
+				inputParamsMap.put("callSUT", Pair.of(executedSUT.getLaunchCommand(), callSut.getRight()));
+			}
+			
 			// persist in the triplestore
 			store.updateResources(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
 			
-			// create a new thread to execute the automation request // TODO
-			switch (getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue()))
-			{
-			case "0":
-				new SutAnalyse(serviceProviderId, newResource, executedSUT, inputParamsMap);
-				break;
-			case "1":
-				new RunPerun(serviceProviderId, newResource, executedSUT, inputParamsMap);	
-				break;
-			}
+			// create a new thread to execute the automation request
+			new SutAnalyse(serviceProviderId, newResource, executedSUT, inputParamsMap);
+
 		} catch (OslcResourceException | RuntimeException | IOException e) {
 			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
 			

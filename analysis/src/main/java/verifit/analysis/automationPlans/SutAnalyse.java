@@ -27,22 +27,30 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Vector;
 import java.util.Base64.Decoder;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
+import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 
 import verifit.analysis.VeriFitAnalysisConstants;
@@ -52,7 +60,7 @@ import verifit.analysis.VeriFitAnalysisResourcesFactory;
 import verifit.analysis.resources.SUT;
 import verifit.analysis.resources.TextOut;
 /**
- * A thread for executing analysis of and SUT
+ * A thread for executing analysis of an SUT.
  * @author od42
  *
  */
@@ -63,7 +71,7 @@ public class SutAnalyse extends RequestRunner
 	final private AutomationRequest execAutoRequest;
 	final private String execSutId;
 	final private SUT execSut;
-	final private Map<String, String> inputParamsMap;
+	final private Map<String, Pair<String,Integer>> inputParamsMap;
 	
 	/**
 	 * Creating the thread automatically starts the execution
@@ -72,7 +80,7 @@ public class SutAnalyse extends RequestRunner
 	 * @param execSUT			Executed SUT resource object
 	 * @param inputParamsMap	Input parameters as a "name" => "value" map
 	 */
-	public SutAnalyse(String serviceProviderId, AutomationRequest execAutoRequest, SUT execSut, Map<String, String> inputParamsMap) 
+	public SutAnalyse(String serviceProviderId, AutomationRequest execAutoRequest, SUT execSut, Map<String, Pair<String,Integer>> inputParamsMap) 
 	{
 		super();
 		
@@ -94,9 +102,16 @@ public class SutAnalyse extends RequestRunner
 		
 		try {
 			
-			// get the input parameters
-			final String paramAnalyser = inputParamsMap.get("analyser");
-			final String paramExecutionParameters = inputParamsMap.get("executionParameters");
+			// Build the string to execute from the input parameters based on their positions TODO maybe move somewhere else
+			String buildStringToExecute = "";
+			List<Pair<String,Integer>> inputParamsList = new ArrayList<Pair<String,Integer>>(inputParamsMap.values());
+			inputParamsList.sort((Pair<String,Integer> a, Pair<String,Integer> b) -> a.getRight().compareTo(b.getRight()));
+			for (Pair<String, Integer> param : inputParamsList)
+			{
+				if (param.getRight() != -1) // skip the non commandline input params
+					buildStringToExecute += param.getLeft() + " ";
+			}
+			final String stringToExecute = buildStringToExecute;
 			
 			//create the autoResult as inProgress
 			AutomationResult propAutoResult = new AutomationResult();
@@ -117,7 +132,7 @@ public class SutAnalyse extends RequestRunner
 			VeriFitAnalysisManager.updateAutomationRequest(execAutoRequest, serviceProviderId, execAutoRequestId);
 			
 			
-		    // prepare result contributions
+		    // prepare stdin & stdout contributions
 		    TextOut analysisStdoutLog = new TextOut();
 		    analysisStdoutLog.setDescription("Standard output of the analysis. Provider messages are prefixed with #.");
 		    analysisStdoutLog.setTitle("Analysis stdout");
@@ -126,11 +141,13 @@ public class SutAnalyse extends RequestRunner
 		    analysisStderrLog.setTitle("Analysis stderr");
 			
 		    
+		    // take a snapshot of SUT files modification times before executing the analysis
+		    Map<String, Long> snapshotBeforeAnalysis = takeDirSnapshot(execSut.getDirectoryPath());
+		    
 			// analyse SUT
 		    String executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_PASSED;
 			try {
-				String sutLaunchCommand = execSut.getLaunchCommand();
-		    	Triple<Integer, String, String> analysisRes = analyseSUT(execSut.getDirectoryPath(), VeriFitAnalysisProperties.ANACONDA_PATH, paramAnalyser, sutLaunchCommand, paramExecutionParameters);
+		    	Triple<Integer, String, String> analysisRes = analyseSUT(execSut.getDirectoryPath(), stringToExecute);
 		    	
 		    	if (analysisRes.getLeft() != 0) // get return code
 		    	{
@@ -150,14 +167,42 @@ public class SutAnalyse extends RequestRunner
 				analysisStdoutLog.setValue("# Analysis error");	// get stdout
 				analysisStderrLog.setValue(e.getMessage());	// get stderr
 	    		
-			} finally {
-				// create the compilation Contributions and add them to the Automation Result
-				analysisStdoutLog = VeriFitAnalysisManager.createTextOut(analysisStdoutLog, serviceProviderId);
-				analysisStderrLog = VeriFitAnalysisManager.createTextOut(analysisStderrLog, serviceProviderId);
-		    	newAutoResult.addContribution(analysisStdoutLog);
-		    	newAutoResult.addContribution(analysisStderrLog);
 			}
-			
+
+			// create the compilation Contributions and add them to the Automation Result
+			analysisStdoutLog = VeriFitAnalysisManager.createTextOut(analysisStdoutLog, serviceProviderId);
+			analysisStderrLog = VeriFitAnalysisManager.createTextOut(analysisStderrLog, serviceProviderId);
+	    	newAutoResult.addContribution(analysisStdoutLog);
+	    	newAutoResult.addContribution(analysisStderrLog);
+	    	
+		    // take a snapshot of SUT files modification times after executing the analysis
+	    	// and add all the new ones / modified ones as contributions
+		    Map<String, Long> snapshotAfterAnalysis = takeDirSnapshot(execSut.getDirectoryPath());
+		    for (Map.Entry<String,Long> newFile : snapshotAfterAnalysis.entrySet())
+		    {
+		    	if (snapshotBeforeAnalysis.containsKey(newFile.getKey()))
+		    	{ // if the file existed before the analysis, check if his modif time changed
+		    		Long oldTimestamp = snapshotBeforeAnalysis.get(newFile.getKey());	
+		    		if (newFile.getValue() <= oldTimestamp)
+		    		{ // the file was not modified
+		    			continue;
+		    		}
+		    	}
+
+		    	// the file did not exist before analysis OR was modified --> add it as contribution to the AutoResult
+			    File currFile = new File(newFile.getKey());
+		    	TextOut newOrModifFile = new TextOut();
+			    newOrModifFile.setDescription(currFile.getAbsolutePath());
+			    newOrModifFile.setTitle(currFile.getName());
+			    try {
+					newOrModifFile.setValue(Files.readString(currFile.toPath(), StandardCharsets.US_ASCII));	// TODO
+				} catch (IOException e) {
+					newOrModifFile.setValue(e.getMessage());
+				}
+			    newOrModifFile = VeriFitAnalysisManager.createTextOut(newOrModifFile, serviceProviderId);
+		    	newAutoResult.addContribution(newOrModifFile);
+		    }
+		
 			// update the autoResult state, contribution, verdict
 			newAutoResult.setState(new HashSet<Link>());
 			newAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
