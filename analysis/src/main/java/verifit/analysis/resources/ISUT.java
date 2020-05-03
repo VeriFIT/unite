@@ -141,13 +141,13 @@ public interface ISUT
     @OslcTitle("")
     public String getLaunchCommand();
 
-    @OslcName("directoryPath")
-    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "directoryPath")
+    @OslcName("SUTdirectoryPath")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "SUTdirectoryPath")
     @OslcDescription("Path to the root directory of the SUT. Used to launch and compile the SUT.")
     @OslcOccurs(Occurs.ExactlyOne)
     @OslcValueType(ValueType.XMLLiteral)
     @OslcReadOnly(true)
-    public String getDirectoryPath();
+    public String getSUTdirectoryPath();
 
     @OslcName("buildCommand")
     @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "buildCommand")
@@ -175,7 +175,7 @@ public interface ISUT
     public void setModified(final Date modified );
     public void setIdentifier(final String identifier );
     public void setLaunchCommand(final String launchCommand );
-    public void setDirectoryPath(final String directoryPath );
+    public void setSUTdirectoryPath(final String sUTdirectoryPath );
     public void setBuildCommand(final String buildCommand );
     public void setProducedByAutomationRequest(final Link producedByAutomationRequest );
 }

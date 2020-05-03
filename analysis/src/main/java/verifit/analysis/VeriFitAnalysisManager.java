@@ -55,7 +55,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.wink.client.ClientResponse;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -732,6 +735,33 @@ public class VeriFitAnalysisManager {
         // End of user code
         return newResource;
     }
+    
+    public static TextOut createTextOut(HttpServletRequest httpServletRequest, final TextOut aResource, final String serviceProviderId) throws OslcResourceException
+    {
+        TextOut newResource = null;
+        
+        // Start of user code createTextOut
+        
+        // Check that all the required properties are set
+        if (aResource == null || aResource.getAbsolutePath() == null || aResource.getTitle() == null)
+        {
+        	throw new OslcResourceException("Failed to write a TextOut file - absolutePath or Title property missing");        	
+        }
+        
+        // write the file - path is getAbsolutePath and content is getValue
+		try (PrintWriter out = new PrintWriter(aResource.getAbsolutePath()))
+		{
+		    out.print(aResource.getValue());
+		} catch (IOException e)
+		{
+			throw new OslcResourceException("WARNING: Failed to write a TextOut file: " + e.getMessage());
+		}
+		
+		newResource = aResource;	// TODO not changed and has no URI because its not GETable
+		
+        // End of user code
+        return newResource;
+    }
 
     public static AutomationRequest createAutomationRequestFromDialog(HttpServletRequest httpServletRequest, final AutomationRequest aResource, final String serviceProviderId)
     {
@@ -741,6 +771,22 @@ public class VeriFitAnalysisManager {
         
         try {
 			newResource = createAutomationRequest(httpServletRequest,aResource, serviceProviderId);
+		} catch (OslcResourceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        // End of user code
+        return newResource;
+    }
+    public static TextOut createTextOutFromDialog(HttpServletRequest httpServletRequest, final TextOut aResource, final String serviceProviderId)
+    {
+        TextOut newResource = null;
+        
+        // Start of user code createTextOutFromDialog
+        
+        try {
+			newResource = createTextOut(httpServletRequest,aResource, serviceProviderId);
 		} catch (OslcResourceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -856,6 +902,8 @@ public class VeriFitAnalysisManager {
     }
 
 
+
+
     public static String getETagFromAutomationPlan(final AutomationPlan aResource)
     {
         String eTag = null;
@@ -886,6 +934,14 @@ public class VeriFitAnalysisManager {
         if (aResource != null && aResource.getModified() != null)
         	eTag = Long.toString(aResource.getModified().getTime());
         
+        // End of user code
+        return eTag;
+    }
+    public static String getETagFromTextOut(final TextOut aResource)
+    {
+        String eTag = null;
+        // Start of user code getETagFromTextOut
+        // TODO Implement code to return an ETag for a particular resource
         // End of user code
         return eTag;
     }

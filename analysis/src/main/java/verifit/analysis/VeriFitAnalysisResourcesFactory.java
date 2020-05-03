@@ -140,4 +140,34 @@ public class VeriFitAnalysisResourcesFactory {
     }
     
 
+    //methods for TextOut resource
+    public static TextOut createTextOut(final String serviceProviderId, final String textOutId)
+           throws URISyntaxException
+    {
+        return new TextOut(constructURIForTextOut(serviceProviderId, textOutId));
+    }
+    
+    public static URI constructURIForTextOut(final String serviceProviderId, final String textOutId)
+    {
+        String basePath = OSLC4JUtils.getServletURI();
+        Map<String, Object> pathParameters = new HashMap<String, Object>();
+        pathParameters.put("serviceProviderId", serviceProviderId);
+        pathParameters.put("textOutId", textOutId);
+        String instanceURI = "serviceProviders/{serviceProviderId}/resources/textOuts/{textOutId}";
+    
+        final UriBuilder builder = UriBuilder.fromUri(basePath);
+        return builder.path(instanceURI).buildFromMap(pathParameters);
+    }
+    
+    public static Link constructLinkForTextOut(final String serviceProviderId, final String textOutId , final String label)
+    {
+        return new Link(constructURIForTextOut(serviceProviderId, textOutId), label);
+    }
+    
+    public static Link constructLinkForTextOut(final String serviceProviderId, final String textOutId)
+    {
+        return new Link(constructURIForTextOut(serviceProviderId, textOutId));
+    }
+    
+
 }

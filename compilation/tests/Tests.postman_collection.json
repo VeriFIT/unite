@@ -864,11 +864,11 @@
 											"pm.test(\"SUT launchCommand should have the expected value\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<fit:launchCommand rdf:parseType=\\\"Literal\\\">\" + launchCommand + \"</fit:launchCommand>\");",
 											"});",
-											"pm.test(\"SUT should contain a directoryPath propery\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<fit:directoryPath\");",
+											"pm.test(\"SUT should contain a SUTdirectoryPath propery\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<fit:SUTdirectoryPath\");",
 											"});",
-											"pm.test(\"SUT directoryPath should have the expected value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<fit:directoryPath rdf:parseType=\\\"Literal\\\">\" + sut_folder + \"/\" + requestId + \"</fit:directoryPath>\");",
+											"pm.test(\"SUT SUTdirectoryPath should have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<fit:SUTdirectoryPath rdf:parseType=\\\"Literal\\\">\" + sut_folder + \"/\" + requestId + \"</fit:SUTdirectoryPath>\");",
 											"});"
 										],
 										"type": "text/javascript"
@@ -4927,25 +4927,25 @@
 	],
 	"variable": [
 		{
-			"id": "90981d11-3941-4477-acea-fdacaf6ad690",
+			"id": "dbfb38b1-7b1a-4c54-a07f-7532624eab02",
 			"key": "server_address",
 			"value": "http://localhost:8081",
 			"type": "string"
 		},
 		{
-			"id": "988c2379-12b2-4c84-b1a7-44a1758cd5b6",
+			"id": "7e86e292-c48d-4f88-a4bb-016af1cfa5d3",
 			"key": "result_wait_time",
 			"value": "2000",
 			"type": "string"
 		},
 		{
-			"id": "80bf9a21-5e68-4143-97f7-9d6b1e99547a",
+			"id": "cbc74fdd-cdd7-4835-a015-777a5126d347",
 			"key": "server_context",
 			"value": "compilation",
 			"type": "string"
 		},
 		{
-			"id": "b2a493d8-ccd2-41d1-9f0b-ec7394345231",
+			"id": "48451ef6-411d-444b-9fa6-5773e13d5d35",
 			"key": "sut_folder",
 			"value": "/home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/tmp",
 			"type": "string"

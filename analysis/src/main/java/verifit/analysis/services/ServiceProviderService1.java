@@ -80,6 +80,7 @@ import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
+import verifit.analysis.resources.FitDomainConstants;
 import verifit.analysis.servlet.ServiceProviderCatalogSingleton;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
@@ -533,6 +534,44 @@ public class ServiceProviderService1
     }
 
     /**
+     * Create a single TextOut via RDF/XML, XML or JSON POST
+     *
+     * @throws IOException
+     * @throws ServletException
+     */
+    @OslcCreationFactory
+    (
+         title = "WriteTextOut",
+         label = "WriteTextOut",
+         resourceShapes = {OslcConstants.PATH_RESOURCE_SHAPES + "/" + FitDomainConstants.TEXTOUT_PATH},
+         resourceTypes = {FitDomainConstants.TEXTOUT_TYPE},
+         usages = {}
+    )
+    @POST
+    @Path("writeTextOut")
+    @Consumes({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
+    @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
+    public Response createTextOut(
+            @PathParam("serviceProviderId") final String serviceProviderId ,
+            final TextOut aResource
+        ) throws IOException, ServletException
+    {
+        try {
+            TextOut newResource = VeriFitAnalysisManager.createTextOut(httpServletRequest, aResource, serviceProviderId);
+            httpServletResponse.setHeader("ETag", VeriFitAnalysisManager.getETagFromTextOut(newResource));
+            return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();
+        } catch (OslcResourceException e) {
+               Error errorResource = new Error();
+               errorResource.setStatusCode("400");
+               errorResource.setMessage(e.getMessage());
+               return Response.status(400).entity(errorResource).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new WebApplicationException(e);
+        }
+    }
+
+    /**
      * OSLC delegated creation dialog for a single resource
      *
      * @throws IOException
@@ -702,6 +741,143 @@ public class ServiceProviderService1
             }
 
             newResource = VeriFitAnalysisManager.createAutomationRequestFromDialog(httpServletRequest, aResource, serviceProviderId);
+
+            if (newResource != null) {
+                httpServletRequest.setAttribute("newResource", newResource);
+                httpServletRequest.setAttribute("newResourceUri", newResource.getAbout().toString());
+
+                // Send back to the form a small JSON response
+                httpServletResponse.setContentType("application/json");
+                httpServletResponse.setStatus(Status.CREATED.getStatusCode());
+                httpServletResponse.addHeader("Location", newResource.getAbout().toString());
+                PrintWriter out = httpServletResponse.getWriter();
+
+                JSONObject oslcResponse = new JSONObject();
+                JSONObject newResourceJson = new JSONObject();
+                newResourceJson.put("rdf:resource", newResource.getAbout().toString());
+                // Start of user code OSLC Resource Label
+                newResourceJson.put("oslc:label", newResource.toString());
+                // End of user code
+                oslcResponse.put("oslc:results", new Object[]{newResourceJson});
+
+                out.print(oslcResponse.toString());
+                out.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new WebApplicationException(e);
+        }
+    }
+    /**
+     * OSLC delegated creation dialog for a single resource
+     *
+     * @throws IOException
+     * @throws ServletException
+     */
+    @GET
+    @Path("writerTextOut")
+    @Consumes({MediaType.WILDCARD})
+    public void TextOutCreator(
+                @PathParam("serviceProviderId") final String serviceProviderId
+        ) throws IOException, ServletException
+    {
+        // Start of user code TextOutCreator
+        // End of user code
+
+        httpServletRequest.setAttribute("creatorUri", UriBuilder.fromUri(OSLC4JUtils.getServletURI()).path(uriInfo.getPath()).build().toString());
+        httpServletRequest.setAttribute("serviceProviderId", serviceProviderId);
+
+        RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/verifit/analysis/textoutcreator.jsp");
+        rd.forward(httpServletRequest, httpServletResponse);
+    }
+
+    /**
+     * Backend creator for the OSLC delegated creation dialog.
+     *
+     * Accepts the input in FormParams and returns a small JSON response
+     */
+    @OslcDialog
+    (
+         title = "WriterTextOut",
+         label = "WriterTextOut",
+         uri = "serviceProviders/{serviceProviderId}/resources/writerTextOut",
+         hintWidth = "0px",
+         hintHeight = "0px",
+         resourceTypes = {FitDomainConstants.TEXTOUT_TYPE},
+         usages = {}
+    )
+    @POST
+    @Path("writerTextOut")
+    @Consumes({ MediaType.APPLICATION_FORM_URLENCODED})
+    public void createTextOutFromDialog(
+            @PathParam("serviceProviderId") final String serviceProviderId
+        ) {
+        try {
+            TextOut newResource = null;
+
+            TextOut aResource = new TextOut();
+
+            String[] paramValues;
+
+            paramValues = httpServletRequest.getParameterValues("title");
+            if (paramValues != null) {
+                    if (paramValues.length == 1) {
+                        if (paramValues[0].length() != 0)
+                            aResource.setTitle(paramValues[0]);
+                        // else, there is an empty value for that parameter, and hence ignore since the parameter is not actually set.
+                    }
+
+            }
+            paramValues = httpServletRequest.getParameterValues("description");
+            if (paramValues != null) {
+                    if (paramValues.length == 1) {
+                        if (paramValues[0].length() != 0)
+                            aResource.setDescription(paramValues[0]);
+                        // else, there is an empty value for that parameter, and hence ignore since the parameter is not actually set.
+                    }
+
+            }
+            paramValues = httpServletRequest.getParameterValues("type");
+            if (paramValues != null) {
+                    for(int i=0; i<paramValues.length; i++) {
+                        aResource.addType(new Link(new URI(paramValues[i])));
+                    }
+            }
+            paramValues = httpServletRequest.getParameterValues("value");
+            if (paramValues != null) {
+                    if (paramValues.length == 1) {
+                        if (paramValues[0].length() != 0)
+                            aResource.setValue(paramValues[0]);
+                        // else, there is an empty value for that parameter, and hence ignore since the parameter is not actually set.
+                    }
+
+            }
+            paramValues = httpServletRequest.getParameterValues("created");
+            if (paramValues != null) {
+                    if (paramValues.length == 1) {
+                        if (paramValues[0].length() != 0)
+                            aResource.setCreated(new SimpleDateFormat("M/D/y").parse(paramValues[0]));
+                        // else, there is an empty value for that parameter, and hence ignore since the parameter is not actually set.
+                    }
+
+            }
+            paramValues = httpServletRequest.getParameterValues("creator");
+            if (paramValues != null) {
+                    for(int i=0; i<paramValues.length; i++) {
+                        aResource.addCreator(new Link(new URI(paramValues[i])));
+                    }
+            }
+            paramValues = httpServletRequest.getParameterValues("absolutePath");
+            if (paramValues != null) {
+                    if (paramValues.length == 1) {
+                        if (paramValues[0].length() != 0)
+                            aResource.setAbsolutePath(paramValues[0]);
+                        // else, there is an empty value for that parameter, and hence ignore since the parameter is not actually set.
+                    }
+
+            }
+
+            newResource = VeriFitAnalysisManager.createTextOutFromDialog(httpServletRequest, aResource, serviceProviderId);
 
             if (newResource != null) {
                 httpServletRequest.setAttribute("newResource", newResource);

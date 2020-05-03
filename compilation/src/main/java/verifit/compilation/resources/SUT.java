@@ -116,9 +116,9 @@ public class SUT
     // Start of user code attributeAnnotation:launchCommand
     // End of user code
     private String launchCommand;
-    // Start of user code attributeAnnotation:directoryPath
+    // Start of user code attributeAnnotation:sUTdirectoryPath
     // End of user code
-    private String directoryPath;
+    private String sUTdirectoryPath;
     // Start of user code attributeAnnotation:buildCommand
     // End of user code
     private String buildCommand;
@@ -369,19 +369,19 @@ public class SUT
         return launchCommand;
     }
     
-    // Start of user code getterAnnotation:directoryPath
+    // Start of user code getterAnnotation:sUTdirectoryPath
     // End of user code
-    @OslcName("directoryPath")
-    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "directoryPath")
+    @OslcName("SUTdirectoryPath")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "SUTdirectoryPath")
     @OslcDescription("Path to the root directory of the SUT. Used to launch and compile the SUT.")
     @OslcOccurs(Occurs.ExactlyOne)
     @OslcValueType(ValueType.XMLLiteral)
     @OslcReadOnly(true)
-    public String getDirectoryPath()
+    public String getSUTdirectoryPath()
     {
-        // Start of user code getterInit:directoryPath
+        // Start of user code getterInit:sUTdirectoryPath
         // End of user code
-        return directoryPath;
+        return sUTdirectoryPath;
     }
     
     // Start of user code getterAnnotation:buildCommand
@@ -505,15 +505,15 @@ public class SUT
         // End of user code
     }
     
-    // Start of user code setterAnnotation:directoryPath
+    // Start of user code setterAnnotation:sUTdirectoryPath
     // End of user code
-    public void setDirectoryPath(final String directoryPath )
+    public void setSUTdirectoryPath(final String sUTdirectoryPath )
     {
-        // Start of user code setterInit:directoryPath
+        // Start of user code setterInit:sUTdirectoryPath
         // End of user code
-        this.directoryPath = directoryPath;
+        this.sUTdirectoryPath = sUTdirectoryPath;
     
-        // Start of user code setterFinalize:directoryPath
+        // Start of user code setterFinalize:sUTdirectoryPath
         // End of user code
     }
     
@@ -682,20 +682,20 @@ public class SUT
     }
     
     @Deprecated
-    static public String directoryPathToHtmlForCreation (final HttpServletRequest httpServletRequest)
+    static public String sUTdirectoryPathToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
         String s = "";
     
-        // Start of user code "Init:directoryPathToHtmlForCreation(...)"
+        // Start of user code "Init:sUTdirectoryPathToHtmlForCreation(...)"
         // End of user code
     
-        s = s + "<label for=\"directoryPath\">directoryPath: </LABEL>";
+        s = s + "<label for=\"SUTdirectoryPath\">SUTdirectoryPath: </LABEL>";
     
-        // Start of user code "Mid:directoryPathToHtmlForCreation(...)"
+        // Start of user code "Mid:sUTdirectoryPathToHtmlForCreation(...)"
         // End of user code
     
-        s= s + "<input name=\"directoryPath\" type=\"text\" style=\"width: 400px\" id=\"directoryPath\" >";
-        // Start of user code "Finalize:directoryPathToHtmlForCreation(...)"
+        s= s + "<input name=\"sUTdirectoryPath\" type=\"text\" style=\"width: 400px\" id=\"sUTdirectoryPath\" >";
+        // Start of user code "Finalize:sUTdirectoryPathToHtmlForCreation(...)"
         // End of user code
     
         return s;
@@ -918,25 +918,25 @@ public class SUT
     }
     
     @Deprecated
-    public String directoryPathToHtml()
+    public String sUTdirectoryPathToHtml()
     {
         String s = "";
     
-        // Start of user code directoryPathtoHtml_mid
+        // Start of user code sUTdirectoryPathtoHtml_mid
         // End of user code
     
         try {
-            if (directoryPath == null) {
+            if (sUTdirectoryPath == null) {
                 s = s + "<em>null</em>";
             }
             else {
-                s = s + directoryPath.toString();
+                s = s + sUTdirectoryPath.toString();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     
-        // Start of user code directoryPathtoHtml_finalize
+        // Start of user code sUTdirectoryPathtoHtml_finalize
         // End of user code
     
         return s;

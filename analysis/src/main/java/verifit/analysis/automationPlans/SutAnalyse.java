@@ -142,12 +142,12 @@ public class SutAnalyse extends RequestRunner
 			
 		    
 		    // take a snapshot of SUT files modification times before executing the analysis
-		    Map<String, Long> snapshotBeforeAnalysis = takeDirSnapshot(execSut.getDirectoryPath());
+		    Map<String, Long> snapshotBeforeAnalysis = takeDirSnapshot(execSut.getSUTdirectoryPath());
 		    
 			// analyse SUT
 		    String executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_PASSED;
 			try {
-		    	Triple<Integer, String, String> analysisRes = analyseSUT(execSut.getDirectoryPath(), stringToExecute);
+		    	Triple<Integer, String, String> analysisRes = analyseSUT(execSut.getSUTdirectoryPath(), stringToExecute);
 		    	
 		    	if (analysisRes.getLeft() != 0) // get return code
 		    	{
@@ -177,7 +177,7 @@ public class SutAnalyse extends RequestRunner
 	    	
 		    // take a snapshot of SUT files modification times after executing the analysis
 	    	// and add all the new ones / modified ones as contributions
-		    Map<String, Long> snapshotAfterAnalysis = takeDirSnapshot(execSut.getDirectoryPath());
+		    Map<String, Long> snapshotAfterAnalysis = takeDirSnapshot(execSut.getSUTdirectoryPath());
 		    for (Map.Entry<String,Long> newFile : snapshotAfterAnalysis.entrySet())
 		    {
 		    	if (snapshotBeforeAnalysis.containsKey(newFile.getKey()))
@@ -192,7 +192,9 @@ public class SutAnalyse extends RequestRunner
 		    	// the file did not exist before analysis OR was modified --> add it as contribution to the AutoResult
 			    File currFile = new File(newFile.getKey());
 		    	TextOut newOrModifFile = new TextOut();
-			    newOrModifFile.setDescription(currFile.getAbsolutePath());
+			    newOrModifFile.setAbsolutePath(currFile.getAbsolutePath());
+			    newOrModifFile.setDescription("This file was modified or created during execution of this Automation Request. "
+			    		+ "If you want to modify the file (eg. its a configuration file), then post this fit:TextOut resource to the TextOut creation factory."); // TODO
 			    newOrModifFile.setTitle(currFile.getName());
 			    try {
 					newOrModifFile.setValue(Files.readString(currFile.toPath(), StandardCharsets.US_ASCII));	// TODO

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-                                            
+                                                
+    
     
     
     
@@ -11,7 +12,8 @@
     
     <wb-module deploy-name="compilation-0.0.1-SNAPSHOT">
         <wb-resource deploy-path="/WEB-INF/web.xml" source-path="/src/main/webapp/WEB-INF/web.xml"/>
-                                                                                        
+                                                                                                
+        
         
         
         
@@ -22,7 +24,8 @@
         
         
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
-                                                                                        
+                                                                                                
+        
         
         
         
@@ -33,7 +36,8 @@
         
         
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
-                                                                                        
+                                                                                                
+        
         
         
         
@@ -44,7 +48,8 @@
         
         
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
-                                                                                        
+                                                                                                
+        
         
         
         
@@ -55,7 +60,8 @@
         
         
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
-                                                                                        
+                                                                                                
+        
         
         
         
@@ -66,7 +72,8 @@
         
         
         <dependent-module deploy-path="/" handle="module:/overlay/var/M2_REPO/org/eclipse/lyo/server/oauth-webapp/2.4.0.M1/oauth-webapp-2.4.0.M1.war?unpackFolder=target/m2e-wtp/overlays&amp;includes=**/**&amp;excludes=META-INF/MANIFEST.MF">
-                                                                                                                                    
+                                                                                                                                                
+            
             
             
             
@@ -77,7 +84,8 @@
             
             
             <dependency-type>consumes</dependency-type>
-                                                                                                                                
+                                                                                                                                            
+        
         
         
         
@@ -88,7 +96,8 @@
         
         
         </dependent-module>
-                                                                                        
+                                                                                                
+        
         
         
         
@@ -99,7 +108,8 @@
         
         
         <dependent-module deploy-path="/" handle="module:/overlay/slf/?includes=**/**&amp;excludes=META-INF/MANIFEST.MF">
-                                                                                                                                    
+                                                                                                                                                
+            
             
             
             
@@ -110,7 +120,8 @@
             
             
             <dependency-type>consumes</dependency-type>
-                                                                                                                                
+                                                                                                                                            
+        
         
         
         
@@ -121,7 +132,8 @@
         
         
         </dependent-module>
-                                                                                        
+                                                                                                
+        
         
         
         
@@ -132,7 +144,8 @@
         
         
         <property name="context-root" value="compilation"/>
-                                                                                        
+                                                                                                
+        
         
         
         
@@ -143,7 +156,8 @@
         
         
         <property name="java-output-path" value="/compilation/target/classes"/>
-                                                                                    
+                                                                                            
+    
     
     
     
@@ -154,7 +168,8 @@
     
     
     </wb-module>
-                                        
+                                            
+
 
 
 

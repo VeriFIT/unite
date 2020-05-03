@@ -220,7 +220,7 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 				newSut.setTitle("SUT - " + execAutoRequest.getTitle());
 				newSut.setLaunchCommand(paramLaunchCommand);
 				newSut.setBuildCommand(paramBuildCommand);
-				newSut.setDirectoryPath(folderPath.getAbsolutePath().toString());
+				newSut.setSUTdirectoryPath(folderPath.getAbsolutePath().toString());
 				newSut.setCreator(execAutoRequest.getCreator());
 				newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(serviceProviderId, execAutoRequestId));
 				VeriFitCompilationManager.createSUT(newSut, serviceProviderId, execAutoRequestId); // TODO

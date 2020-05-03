@@ -68,6 +68,7 @@ import verifit.analysis.resources.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
+import verifit.analysis.resources.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.IPerson;
 
 // Start of user code imports
@@ -130,6 +131,13 @@ public interface ITextOut
     @OslcReadOnly(false)
     public Set<Link> getCreator();
 
+    @OslcName("absolutePath")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "absolutePath")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.XMLLiteral)
+    @OslcReadOnly(false)
+    public String getAbsolutePath();
+
 
     public void setTitle(final String title );
     public void setDescription(final String description );
@@ -137,5 +145,6 @@ public interface ITextOut
     public void setValue(final String value );
     public void setCreated(final Date created );
     public void setCreator(final Set<Link> creator );
+    public void setAbsolutePath(final String absolutePath );
 }
 

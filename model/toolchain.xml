@@ -8,6 +8,7 @@
           <creationFactories title="CreateAutoRequest" label="CreateAutoRequest" creationURI="createAutoRequest">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.1"/>
           </creationFactories>
+          <creationFactories title="WriteTextOut" label="WriteTextOut" creationURI="writeTextOut" resourceTypes="//@specification/@domainSpecifications.0/@resources.0"/>
           <queryCapabilities title="QueryAutoPlan" label="QueryAutoPlan" queryBaseURI="queryAutoPlan">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.0"/>
           </queryCapabilities>
@@ -29,6 +30,7 @@
           <creationDialogs title="CreatorAutoRequest" label="CreatorAutoRequest" dialogURI="creatorAutoRequest">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.1"/>
           </creationDialogs>
+          <creationDialogs title="WriterTextOut" label="WriterTextOut" dialogURI="writerTextOut" resourceTypes="//@specification/@domainSpecifications.0/@resources.0"/>
           <basicCapabilities>
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.0"/>
           </basicCapabilities>
@@ -38,6 +40,7 @@
           <basicCapabilities update="true">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.3"/>
           </basicCapabilities>
+          <basicCapabilities resourceTypes="//@specification/@domainSpecifications.0/@resources.0" read="false"/>
         </services>
       </serviceProviders>
     </serviceProviderCatalog>
@@ -100,6 +103,7 @@
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.2/@resourceProperties.1"/>
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.2"/>
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.1"/>
+        <resourceProperties href="#//@specification/@domainSpecifications.0/@resourceProperties.5"/>
       </resources>
       <resources name="SUT">
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.8"/>
@@ -115,9 +119,10 @@
       </resources>
       <resourceProperties title="" name="launchCommand" valueType="XMLLiteral" description="How to launch the SUT. The specified command will be launched from the root directory of the downloaded SUT. Examples: make run | ./run.sh | ./my_sut"/>
       <resourceProperties name="buildCommand" valueType="XMLLiteral" description="How to build the SUT. The specified command will be launched from the root directory of the downloaded SUT. Examples: make | ./build.sh | gcc -g -o my_sut"/>
-      <resourceProperties name="directoryPath" readOnly="true" valueType="XMLLiteral" description="Path to the root directory of the SUT. Used to launch and compile the SUT."/>
+      <resourceProperties name="SUTdirectoryPath" readOnly="true" valueType="XMLLiteral" description="Path to the root directory of the SUT. Used to launch and compile the SUT."/>
       <resourceProperties name="createdSUT" occurs="zeroOrOne" valueType="Resource" representation="reference" range="//@specification/@domainSpecifications.0/@resources.1"/>
       <resourceProperties name="commandlinePosition" occurs="zeroOrOne" valueType="Integer" description="Specifies the order of parameters for an Automation Plan (ie. commandline parameters for a tool). If a parameter has no position, then it will not be used in the command line. If there is more then one parameter with the same position, then their relative position is undefined (but still valid relative to other positions)."/>
+      <resourceProperties name="absolutePath" occurs="zeroOrOne" valueType="XMLLiteral"/>
     </domainSpecifications>
     <domainPrefixes name="fit"/>
   </specification>

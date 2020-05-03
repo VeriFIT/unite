@@ -76,6 +76,7 @@ import verifit.compilation.resources.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
+import verifit.compilation.resources.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.Person;
 
 // Start of user code imports
@@ -111,6 +112,9 @@ public class TextOut
     // Start of user code attributeAnnotation:creator
     // End of user code
     private HashSet<Link> creator = new HashSet<Link>();
+    // Start of user code attributeAnnotation:absolutePath
+    // End of user code
+    private String absolutePath;
     
     // Start of user code classAttributes
     // End of user code
@@ -298,6 +302,20 @@ public class TextOut
         return creator;
     }
     
+    // Start of user code getterAnnotation:absolutePath
+    // End of user code
+    @OslcName("absolutePath")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "absolutePath")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.XMLLiteral)
+    @OslcReadOnly(false)
+    public String getAbsolutePath()
+    {
+        // Start of user code getterInit:absolutePath
+        // End of user code
+        return absolutePath;
+    }
+    
     
     // Start of user code setterAnnotation:title
     // End of user code
@@ -376,6 +394,18 @@ public class TextOut
         }
     
         // Start of user code setterFinalize:creator
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:absolutePath
+    // End of user code
+    public void setAbsolutePath(final String absolutePath )
+    {
+        // Start of user code setterInit:absolutePath
+        // End of user code
+        this.absolutePath = absolutePath;
+    
+        // Start of user code setterFinalize:absolutePath
         // End of user code
     }
     
@@ -493,6 +523,26 @@ public class TextOut
         // End of user code
     
         // Start of user code "Finalize:creatorToHtmlForCreation(...)"
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    static public String absolutePathToHtmlForCreation (final HttpServletRequest httpServletRequest)
+    {
+        String s = "";
+    
+        // Start of user code "Init:absolutePathToHtmlForCreation(...)"
+        // End of user code
+    
+        s = s + "<label for=\"absolutePath\">absolutePath: </LABEL>";
+    
+        // Start of user code "Mid:absolutePathToHtmlForCreation(...)"
+        // End of user code
+    
+        s= s + "<input name=\"absolutePath\" type=\"text\" style=\"width: 400px\" id=\"absolutePath\" >";
+        // Start of user code "Finalize:absolutePathToHtmlForCreation(...)"
         // End of user code
     
         return s;
@@ -651,6 +701,31 @@ public class TextOut
         }
     
         // Start of user code creatortoHtml_finalize
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    public String absolutePathToHtml()
+    {
+        String s = "";
+    
+        // Start of user code absolutePathtoHtml_mid
+        // End of user code
+    
+        try {
+            if (absolutePath == null) {
+                s = s + "<em>null</em>";
+            }
+            else {
+                s = s + absolutePath.toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        // Start of user code absolutePathtoHtml_finalize
         // End of user code
     
         return s;
