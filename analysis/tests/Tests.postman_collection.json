@@ -2327,7 +2327,7 @@
 											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 											"});",
 											"pm.test(\"AutomationResult should contain a perf profile contribution\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">time-perun-[_--help_]-[_--help_]-\");",
+											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">time-perun-\");",
 											"    pm.expect(pm.response.text()).to.include(\".perf</dcterms:title>\");",
 											"});",
 											"pm.test(\"AutomationResult should contain contributions for new files\", function () {",
@@ -3660,25 +3660,25 @@
 	],
 	"variable": [
 		{
-			"id": "a489b52b-5de0-44f3-9b94-d45b012c021d",
+			"id": "1ec82630-e55f-435f-951e-81fadc76e52f",
 			"key": "server_address",
 			"value": "http://localhost:8080",
 			"type": "string"
 		},
 		{
-			"id": "08875253-e07a-4317-9f6b-1de3726d5993",
+			"id": "d6bcb1bf-c591-4c70-b7c8-08fe77168481",
 			"key": "result_wait_time",
 			"value": "2000",
 			"type": "string"
 		},
 		{
-			"id": "bc17a937-aaa2-472a-a01e-802b1e87aaba",
+			"id": "42d0f64e-ac29-444c-86bf-8a462fcea133",
 			"key": "server_context",
 			"value": "analysis",
 			"type": "string"
 		},
 		{
-			"id": "9939ace8-865a-4bc6-80fb-f522ad33644d",
+			"id": "8c630351-8b7d-41f3-8c21-af33942536cf",
 			"key": "compilation_provider",
 			"value": "http://localhost:8081/compilation",
 			"type": "string"
