@@ -134,7 +134,7 @@ public class AutomationPlanDefinition {
 			adapterSpecific.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));	
 			adapterSpecific.setHidden(true);
 			adapterSpecific.setReadOnly(true);
-			adapterSpecific.setDefaultValue("-nc");
+			adapterSpecific.setDefaultValue("-nc --no-pager");
 			adapterSpecific.setCommandlinePosition(1);	// has to be 1+ (zero is taken by tool command)
 			
 			// create the autoPlan
