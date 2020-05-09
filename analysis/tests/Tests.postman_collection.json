@@ -2246,7 +2246,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationPlans/1\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>collect -c perun -w \"--help\" time -w 0 -r 1</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationPlans/1\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>collect -c ./my_echo -w \"text\" time -w 0 -r 1</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
 									"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
@@ -2318,7 +2318,7 @@
 											"});",
 											"pm.test(\"AutomationResult analysis stdout should have the expected value\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"># Analysis completed successfully\")",
-											"    pm.expect(pm.response.text()).to.include(\"[!] Overall Profiling [DONE] in 0.00s [!]\\n[!] Prerun [DONE] in 0.00s [!]\\n[!] Batch Job Run [DONE] in 0.00s [!]\\nLoading workload generator specifications ...[DONE]\\n\\nCollecting profiles for perun\\n = processing generator \\\"--help\\\"\\n[100%] Collecting data by time\\nExecuting the warmup-phase \\nBegin timing of perun time.\\nSuccessfully collected data from perun\");",
+											"    pm.expect(pm.response.text()).to.include(\"[!] Overall Profiling [DONE] in 0.00s [!]\\n[!] Prerun [DONE] in 0.00s [!]\\n[!] Batch Job Run [DONE] in 0.00s [!]\\nLoading workload generator specifications ...[DONE]\\n\\nCollecting profiles for ./my_echo\\n = processing generator \\\"text\\\"\\n[100%] Collecting data by time\\nExecuting the warmup-phase \\nBegin timing of ./my_echo time.\\nSuccessfully collected data from ./my_echo\");",
 											"});",
 											"pm.test(\"AutomationResult should contain analysis stderr\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Analysis stderr</dcterms:title>\");",
@@ -2327,7 +2327,7 @@
 											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 											"});",
 											"pm.test(\"AutomationResult should contain a perf profile contribution\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">time-perun-\");",
+											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">time-my_echo-\");",
 											"    pm.expect(pm.response.text()).to.include(\".perf</dcterms:title>\");",
 											"});",
 											"pm.test(\"AutomationResult should contain contributions for new files\", function () {",
@@ -3660,25 +3660,25 @@
 	],
 	"variable": [
 		{
-			"id": "1ec82630-e55f-435f-951e-81fadc76e52f",
+			"id": "8d517f7a-ef2f-4881-ae5e-d6db8e83e6fb",
 			"key": "server_address",
 			"value": "http://localhost:8080",
 			"type": "string"
 		},
 		{
-			"id": "d6bcb1bf-c591-4c70-b7c8-08fe77168481",
+			"id": "f8d2f78a-1442-4f84-9865-fdef5bdcd9b0",
 			"key": "result_wait_time",
 			"value": "2000",
 			"type": "string"
 		},
 		{
-			"id": "42d0f64e-ac29-444c-86bf-8a462fcea133",
+			"id": "626c66e7-6273-42b4-8717-03ffe0b09420",
 			"key": "server_context",
 			"value": "analysis",
 			"type": "string"
 		},
 		{
-			"id": "8c630351-8b7d-41f3-8c21-af33942536cf",
+			"id": "923f80f0-b6c7-4c3b-8aca-884bdfd25568",
 			"key": "compilation_provider",
 			"value": "http://localhost:8081/compilation",
 			"type": "string"
