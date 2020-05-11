@@ -55,8 +55,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.wink.client.ClientResponse;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -67,8 +65,6 @@ import java.util.stream.Stream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.regex.Pattern;
 import java.util.NoSuchElementException;
 import java.util.Map;
@@ -214,6 +210,18 @@ public class VeriFitAnalysisManager {
 			SUT.setHidden(false);
 			SUT.setReadOnly(false);
 			newResource.addParameterDefinition(SUT);
+
+			ParameterDefinition addOutputsRegex = new ParameterDefinition();
+			addOutputsRegex.setDescription("Files that change during execution and match this regex will "
+					+ "be added as contributions to the Automation Result. The regex needs to match the "
+					+ "whole filename."); //TODO
+			addOutputsRegex.setName("addOutputsRegex");
+			addOutputsRegex.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
+			addOutputsRegex.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
+			addOutputsRegex.setHidden(false);
+			addOutputsRegex.setReadOnly(false);
+			addOutputsRegex.setDefaultValue(".^");
+			newResource.addParameterDefinition(addOutputsRegex);
 			
 			/* TODO later
 			ParameterDefinition extraParams = new ParameterDefinition();

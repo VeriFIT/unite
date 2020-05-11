@@ -78,7 +78,7 @@ public class SutAnalyse extends RequestRunner
 	 * @param serviceProviderId	ID of the service provider
 	 * @param execAutoRequest	Executed AutomationRequest resource object
 	 * @param execSUT			Executed SUT resource object
-	 * @param inputParamsMap	Input parameters as a "name" => "value" map
+	 * @param inputParamsMap	Input parameters as a map of "name" => "(value, position)"
 	 */
 	public SutAnalyse(String serviceProviderId, AutomationRequest execAutoRequest, SUT execSut, Map<String, Pair<String,Integer>> inputParamsMap) 
 	{
@@ -101,6 +101,7 @@ public class SutAnalyse extends RequestRunner
 	{
 		
 		try {
+			final String outputRegex = inputParamsMap.get("addOutputsRegex").getLeft();
 			
 			// Build the string to execute from the input parameters based on their positions TODO maybe move somewhere else
 			String buildStringToExecute = "";
@@ -110,9 +111,11 @@ public class SutAnalyse extends RequestRunner
 			{
 				if (param.getRight() != -1) // skip the non commandline input params
 					buildStringToExecute += param.getLeft() + " ";
+				
 			}
 			final String stringToExecute = buildStringToExecute;
 			
+
 			//create the autoResult as inProgress
 			AutomationResult propAutoResult = new AutomationResult();
 			propAutoResult.setTitle("Result - " + execAutoRequest.getTitle());
@@ -142,7 +145,7 @@ public class SutAnalyse extends RequestRunner
 			
 		    
 		    // take a snapshot of SUT files modification times before executing the analysis
-		    Map<String, Long> snapshotBeforeAnalysis = takeDirSnapshot(execSut.getSUTdirectoryPath());
+		    Map<String, Long> snapshotBeforeAnalysis = takeDirSnapshot(execSut.getSUTdirectoryPath(), outputRegex);
 		    
 			// analyse SUT
 		    String executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_PASSED;
@@ -177,7 +180,7 @@ public class SutAnalyse extends RequestRunner
 	    	
 		    // take a snapshot of SUT files modification times after executing the analysis
 	    	// and add all the new ones / modified ones as contributions
-		    Map<String, Long> snapshotAfterAnalysis = takeDirSnapshot(execSut.getSUTdirectoryPath());
+		    Map<String, Long> snapshotAfterAnalysis = takeDirSnapshot(execSut.getSUTdirectoryPath(), outputRegex);
 		    for (Map.Entry<String,Long> newFile : snapshotAfterAnalysis.entrySet())
 		    {
 		    	if (snapshotBeforeAnalysis.containsKey(newFile.getKey()))

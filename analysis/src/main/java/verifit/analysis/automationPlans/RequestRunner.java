@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.Base64.Decoder;
 
 import org.apache.commons.io.FileUtils;
@@ -97,9 +98,10 @@ public abstract class RequestRunner extends Thread
 	/**
 	 * Takes a snapshot of all file names and their modification times
 	 * @param folderPath	Directory to take a snapshot of 
+	 * @param fileRegex 	Only files matching this regex will be snapshoted
 	 * @return	A map of (key: file_path; value: file_modification_time)
 	 */
-	protected Map<String, Long> takeDirSnapshot(String folderPath)
+	protected Map<String, Long> takeDirSnapshot(String folderPath, String fileRegex)
 	{
 		Map<String, Long> files = new HashMap<String, Long>();
 		
@@ -109,9 +111,7 @@ public abstract class RequestRunner extends Thread
 		{
             File currFile = it.next();
         	// TODO do I need read permissions to check the modification date?
-        	if (   !currFile.getAbsolutePath().contains("/.git/")	// TODO ignores /.git/
-        		&& !currFile.getAbsolutePath().contains(".log") 	// TODO ignores .log
-        		&& !currFile.getAbsolutePath().contains(".index")) 	// TODO ignores .index
+        	if (Pattern.matches(fileRegex, currFile.getName()))  
         	{
 	        	String path = currFile.getAbsolutePath();
 	        	Long timestamp = currFile.lastModified();
