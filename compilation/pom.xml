@@ -1,27 +1,43 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<properties>
-	
-		<!-- ########## CONFIGURATION HERE ########## -->
-	 	<adapter_host>http://localhost</adapter_host>
-	 	<adapter_port>8081</adapter_port>
-	 	<!-- ########## ################## ########## -->
-	 	
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<version.lyo>2.4.0.M1</version.lyo>
-	</properties>
-	
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  
+	 <properties> 
+	  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	  <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	  <maven.compiler.source>1.8</maven.compiler.source>
+	  <maven.compiler.target>1.8</maven.compiler.target>
+	  <version.lyo>2.4.0.M1</version.lyo>
+	 </properties>
+  
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>verifit</groupId>
 	<artifactId>compilation</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-
 	<name>Verifit OSLC Compilation</name>
+  
+	 <repositories>
+	  <repository>
+	    <id>lyo-releases</id>
+	    <name>Eclipse Lyo Releases</name>
+	    <url>https://repo.eclipse.org/content/repositories/lyo-releases/</url>
+	    <snapshots>
+	      <enabled>false</enabled>
+	    </snapshots>
+	  </repository>
+	  
+	  <repository>
+	    <id>lyo-snapshots</id>
+	    <name>Eclipse Lyo Snapshots</name>
+	    <url>https://repo.eclipse.org/content/repositories/lyo-snapshots/</url>
+	    <releases>
+	      <enabled>false</enabled>
+	    </releases>
+	  </repository>
+	 </repositories>
+  
 	<dependencies>
+	
 		<!-- Adaptor-specific dependencies -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -34,7 +50,7 @@
 		  <artifactId>swagger-jaxrs</artifactId>
 		  <version>1.5.17</version>
 		</dependency>
-
+	
 		<!-- Lyo dependencies -->
 		<dependency>
 			<groupId>org.eclipse.lyo.oslc4j.core</groupId>
@@ -82,7 +98,7 @@
 			<artifactId>store-core</artifactId>
 			<version>4.0.0-SNAPSHOT</version>
 		</dependency>
-
+		
 		<!-- Servlet-related dependencies -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -95,14 +111,7 @@
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
-
-		<!-- GIT dependencies https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
-		<dependency>
-		    <groupId>org.eclipse.jgit</groupId>
-		    <artifactId>org.eclipse.jgit</artifactId>
-		    <version>4.8.0.201706111038-r</version>
-		</dependency>
-
+	
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -110,9 +119,59 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- GIT dependencies https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
+		<dependency>
+		    <groupId>org.eclipse.jgit</groupId>
+		    <artifactId>org.eclipse.jgit</artifactId>
+		    <version>4.8.0.201706111038-r</version>
+		</dependency>
 	</dependencies>
+
 	<build>
 		<plugins>
+			<!-- load & set properties -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<id>load</id>
+						<phase>initialize</phase>
+						<goals>
+						<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+						<files>
+							<file>${project.basedir}/VeriFitCompilation.properties</file>
+						</files>
+						</configuration>
+					</execution>
+					<execution>
+						<id>set</id>
+						<goals>
+							<goal>set-system-properties</goal>
+						</goals>
+						<configuration>
+							<properties>
+								<property>
+									<name>jetty.port</name>
+									<value>${adapter_port}</value>
+								</property>
+								<!-- add this for HTTPS
+								<property>
+									<name>https.port</name>
+									<value>${adapter_port}</value>
+								</property>
+								-->
+							</properties>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- jetty server -->
 			<plugin>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
@@ -122,17 +181,14 @@
 						<contextPath>/compilation</contextPath>
 					</webAppConfig>
 					<reload>automatic</reload>
-					<scanIntervalSeconds>5</scanIntervalSeconds>
-					<systemProperties>
-						<systemProperty>
-							<name>jetty.port</name>
-							<value>${adapter_port}</value>
-						</systemProperty>
-					</systemProperties>
-					<stopKey />
-					<stopPort />
+					<scanIntervalSeconds>5</scanIntervalSeconds>					
+					<jettyXml>
+				      ${project.basedir}/src/main/webapp/jetty-config/jetty.xml,${project.basedir}/src/main/webapp/jetty-config/jetty-http.xml
+				      <!-- add this for HTTPS ,${project.basedir}/src/main/webapp/jetty-config/jetty-ssl.xml,${project.basedir}/src/main/webapp/jetty-config/jetty-https.xml-->
+				    </jettyXml>
 				</configuration>
       		</plugin>
+			<!-- .war creation -->
       		<plugin>
 			    <groupId>org.apache.maven.plugins</groupId>
 			    <artifactId>maven-war-plugin</artifactId>
@@ -150,24 +206,27 @@
 			        <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
 			    </configuration>
 			</plugin>
+		
+			<!-- loading properties -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+				<execution>
+					<phase>initialize</phase>
+					<goals>
+					<goal>read-project-properties</goal>
+					</goals>
+					<configuration>
+					<files>
+						<file>${project.basedir}/VeriFitCompilation.properties</file>
+					</files>
+					</configuration>
+				</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-	<repositories>
-		<repository>
-			<id>lyo-releases</id>
-			<name>Eclipse Lyo Releases</name>
-			<url>https://repo.eclipse.org/content/repositories/lyo-releases/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>lyo-snapshots</id>
-			<name>Eclipse Lyo Snapshots</name>
-			<url>https://repo.eclipse.org/content/repositories/lyo-snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</repository>
-	</repositories>
+
 </project>
