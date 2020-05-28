@@ -34,8 +34,10 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.Base64.Decoder;
 
@@ -235,29 +237,24 @@ public abstract class RequestRunner extends Thread
 	 * TODO
 	 * @param folderPath
 	 * @param filename
-	 * @source https://stackabuse.com/working-with-zip-files-in-java/
+	 * @throws IOException
 	 */
-	protected void unzipFile(Path folderPath, String filename)
+	protected void unzipFile(Path folderPath, String filename) throws IOException
 	{
 		Path pathToFile = folderPath.resolve(filename);
 
-	    try (ZipFile zf = new ZipFile(pathToFile.toFile())) {
-	        Enumeration<? extends ZipEntry> zipEntries = zf.entries();
-	        zipEntries.asIterator().forEachRemaining(entry -> {
-	            try {
-	                if (entry.isDirectory()) {
-	                    Path dirToCreate = folderPath.resolve(entry.getName());
-	                    Files.createDirectories(dirToCreate);
-	                } else {
-	                	Path fileToCreate = folderPath.resolve(entry.getName());
-	                    Files.copy(zf.getInputStream(entry), fileToCreate);
-	                }
-	            } catch(IOException ei) {
-	                ei.printStackTrace();
-	            }
-	         });
-	    } catch(IOException e) {
-	        e.printStackTrace();
-	    }
+    	ZipFile zf = new ZipFile(pathToFile.toFile());
+        Enumeration<? extends ZipEntry> zipEntries = zf.entries();
+        for (Iterator<? extends ZipEntry> it = zipEntries.asIterator(); it.hasNext(); )
+        {
+        	ZipEntry entry = it.next();
+        	if (entry.isDirectory()) {
+                Path dirToCreate = folderPath.resolve(entry.getName());
+                Files.createDirectories(dirToCreate);
+            } else {
+            	Path fileToCreate = folderPath.resolve(entry.getName());
+                Files.copy(zf.getInputStream(entry), fileToCreate);
+            }
+        }
 	}
 } 
