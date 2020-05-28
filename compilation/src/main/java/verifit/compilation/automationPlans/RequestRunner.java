@@ -27,11 +27,16 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.Base64.Decoder;
 
 import org.apache.commons.lang3.tuple.Triple;
@@ -65,10 +70,10 @@ public abstract class RequestRunner extends Thread
 	 * @return Triple of (return_code, stdout, stderr)
 	 * @throws IOException when the command execution fails (error)
 	 */
-	protected Triple<Integer,String,String> compileSUT(File folderPath, String buildCommand) throws IOException
+	protected Triple<Integer,String,String> compileSUT(Path folderPath, String buildCommand) throws IOException
 	{
 		Process process;
-		process = Runtime.getRuntime().exec(buildCommand, null, folderPath.getAbsoluteFile());
+		process = Runtime.getRuntime().exec(buildCommand, null, folderPath.toFile());
 		InputStream stdout = process.getInputStream();
 		InputStream stderr = process.getErrorStream();
 		InputStreamReader stdoutReader = new InputStreamReader(stdout);
@@ -100,16 +105,20 @@ public abstract class RequestRunner extends Thread
 	 * Source - https://onecompiler.com/posts/3sqk5x3td/how-to-clone-a-git-repository-programmatically-using-java
 	 * @param url	URL of the repository
 	 * @param folderPath	Path to the folder to clone into
+	 * @return Name of the new directory / file
 	 * @throws IOException 
 	 */
-	protected void gitClonePublic(String url, File folderPath) throws IOException
+	protected String gitClonePublic(String url, Path folderPath) throws IOException
 	{
 		try {
 		    Git.cloneRepository()
 		        .setURI(url)
-		        .setDirectory(folderPath)
+		        .setDirectory(folderPath.toFile())
 		        .call();
-		} catch (GitAPIException | JGitInternalException e) {
+		    
+		    return VeriFitCompilationManager.getResourceIdFromUri(new URI (url)); // gets the last part of the URL
+		
+		} catch (GitAPIException | JGitInternalException | URISyntaxException e) {
 			throw new IOException("Git clone failed: " + e.getMessage());
 		}
 	}
@@ -119,35 +128,42 @@ public abstract class RequestRunner extends Thread
 	 * Source - https://stackoverflow.com/a/921400
 	 * @param url	URL of the file to download
 	 * @param folderPath	Path to the folder where to  save the file
+	 * @return Name of the new directory / file
 	 * @throws IOException 
 	 */
-	protected void downloadFileFromUrl(String url, File folderPath) throws IOException
+	protected String downloadFileFromUrl(String url, Path folderPath) throws IOException
 	{
 		try {
 			String fileName = VeriFitCompilationManager.getResourceIdFromUri(new URI (url)); // gets the last part of the URL
-			String pathToFile = folderPath.getAbsolutePath().toString() + "/" + fileName;
+			Path pathToFile = folderPath.resolve(fileName);
 			
 			URL website = new URL(url);
 			ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-			FileOutputStream fos = new FileOutputStream(pathToFile);
+			FileOutputStream fos = new FileOutputStream(pathToFile.toFile());
 			fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 			fos.close();
+			
+			return fileName;
 		} catch (FileNotFoundException | URISyntaxException e) {
 			throw new IOException("Download from url failed: " + e.getMessage());
 		}
 	}
 	
 	/**
-	 * Copy a file from the file system as a byte stream. 
+	 * Copy a file from the file system as a byte stream. TODO add dir copy aswell
 	 * @param pathToSource Path to the source file
-	 * @param pathToFile	Path where to create the file including its name
+	 * @param folderPath	Path to the folder where to  save the file
+	 * @return Name of the new directory / file
 	 * @throws IOException
 	 */
-	protected void createFileFromFilesystem(String pathToSource, String pathToFile) throws IOException
+	protected void createFileFromFilesystem(String pathToSource, Path folderPath) throws IOException
 	{
 		byte[] buffer = new byte[64]; // TODO random size
 		FileInputStream fileInputStream = new FileInputStream(pathToSource);
-		FileOutputStream fileOutStream = new FileOutputStream(pathToFile);
+
+		String fileName = Path.of(pathToSource).getFileName().toString();
+		Path pathToFile = Path.of(pathToSource).resolve(fileName);
+		FileOutputStream fileOutStream = new FileOutputStream(pathToFile.toFile());
 
 		int nBytes = 0;
 		while ((nBytes = fileInputStream.read(buffer)) != -1)
@@ -161,45 +177,87 @@ public abstract class RequestRunner extends Thread
 	
 	/**
 	 * Decode a base64 encoded string into bytes and write them into a file as a byte stream.
-	 * @param base64EncProgram Base64 encoded file to decode and write
-	 * @param pathToFile	Path where to create the file including its name
+	 * @param base64EncProgram Base64 encoded file to decode and write. First line is the name of the file, second line is the base64 string.
+	 * @param folderPath	Path to the folder where to  save the file
 	 * @throws IOException
+	 * @throws IllegalArgumentException	When the base64EncProgram is invalid
 	 */
-	protected void createFileFromBase64(String base64EncProgram, String pathToFile) throws IOException
+	protected String createFileFromBase64(String base64EncProgram, Path folderPath) throws IOException, IllegalArgumentException
 	{
-		Decoder decoder = Base64.getDecoder();
-		byte[] decodedProgram = decoder.decode(base64EncProgram);
+		int idxSplit = base64EncProgram.indexOf('\n');
+		if (idxSplit == -1)
+			throw new IllegalArgumentException("Invalid format of sourceBase64 value. No \"\\n\" delimiter found. Expected format: filename\\nbase64");
 		
-		FileOutputStream fileOutStream = new FileOutputStream(pathToFile);
+		String filename = base64EncProgram.substring(0, base64EncProgram.indexOf('\n'));
+		String base64 = base64EncProgram.substring(base64EncProgram.indexOf('\n') + 1);
+		
+		Decoder decoder = Base64.getDecoder();
+		byte[] decodedProgram = decoder.decode(base64);
+		
+		Path pathToFile = folderPath.resolve(filename);
+		FileOutputStream fileOutStream = new FileOutputStream(pathToFile.toFile());
 		fileOutStream.write(decodedProgram, 0, decodedProgram.length);
 		fileOutStream.flush();
 		fileOutStream.close();
+		
+		return filename;
 	}
 	
 	/**
 	 * Creates a folder in the "tmp/" adapter folder
 	 * @param subfolder How to name the subfolder
 	 * @return	Path to the new folder
+	 * @throws IOException 
 	 */
-	protected File createTmpDir(String subfolder)
+	protected Path createTmpDir(String subfolder) throws IOException
 	{
-		File programDir = new File("tmp/" + subfolder);
-	    if (!programDir.exists())
-	    {
-	    	programDir.mkdirs();
-	    }
+		Path subfolderPath = Path.of("tmp").resolve(subfolder);
 	    
-	    return new File("tmp/" + subfolder).getAbsoluteFile();
+	    if (!Files.exists(subfolderPath))
+	    {   
+            Files.createDirectory(subfolderPath);
+	    }
+	    return subfolderPath.toAbsolutePath();
 	}
-	
+
 	/**
-	 * Generate a filename for a program to execute in an AutomationRequest
+	 * Generate a filename for an SUT
 	 * @param autoRequestId ID of the executed AutomationRequest
 	 * @return Name for the new file
 	 */
 	protected String genFileName(String autoRequestId)
 	{
 	    String currentDate = new Date().toString().replace(' ', '-');
-	    return "req" + autoRequestId + "." + currentDate + ".cpp";
+	    return "req" + autoRequestId + "." + currentDate;
+	}
+	
+	/**
+	 * TODO
+	 * @param folderPath
+	 * @param filename
+	 * @source https://stackabuse.com/working-with-zip-files-in-java/
+	 */
+	protected void unzipFile(Path folderPath, String filename)
+	{
+		Path pathToFile = folderPath.resolve(filename);
+
+	    try (ZipFile zf = new ZipFile(pathToFile.toFile())) {
+	        Enumeration<? extends ZipEntry> zipEntries = zf.entries();
+	        zipEntries.asIterator().forEachRemaining(entry -> {
+	            try {
+	                if (entry.isDirectory()) {
+	                    Path dirToCreate = folderPath.resolve(entry.getName());
+	                    Files.createDirectories(dirToCreate);
+	                } else {
+	                	Path fileToCreate = folderPath.resolve(entry.getName());
+	                    Files.copy(zf.getInputStream(entry), fileToCreate);
+	                }
+	            } catch(IOException ei) {
+	                ei.printStackTrace();
+	            }
+	         });
+	    } catch(IOException e) {
+	        e.printStackTrace();
+	    }
 	}
 } 

@@ -28,6 +28,7 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.CharBuffer;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Date;
@@ -90,9 +91,11 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			
 			// get the input parameters
 			final String paramSourceGit = inputParamsMap.get("sourceGit");
-			final String paramSourceFileUrl = inputParamsMap.get("sourceFileUrl");
+			final String paramSourceUrl = inputParamsMap.get("sourceUrl");
+			final String paramSourceBase64 = inputParamsMap.get("sourceBase64");
 			final String paramBuildCommand = inputParamsMap.get("buildCommand");
 			final String paramLaunchCommand = inputParamsMap.get("launchCommand");
+			final String paramUnpackZip = inputParamsMap.get("unpackZip");
 
 			// check wich one of the source parameters was used 
 			String ProgramDefinition = "";	//TODO use something else than a string (speed)
@@ -102,10 +105,15 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 				ProgramDefinition = "sourceGit";
 				ProgramSource = paramSourceGit;
 			}
-			else if (paramSourceFileUrl != null)
+			else if (paramSourceUrl != null)
 			{
-				ProgramDefinition = "sourceFileUrl";
-				ProgramSource = paramSourceFileUrl;
+				ProgramDefinition = "sourceUrl";
+				ProgramSource = paramSourceUrl;
+			}
+			else if (paramSourceBase64 != null)
+			{
+				ProgramDefinition = "sourceBase64";
+				ProgramSource = paramSourceBase64;
 			}
 				
 			
@@ -142,26 +150,42 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 		    compStderrLog.setTitle("Compilation stderr");
 			
 		    
-			// create the program path and name
-			final File folderPath = createTmpDir(execAutoRequestId);
+			
 		  
 		    Boolean performCompilation = true;	// flag to disable a part of the execution in case of an error
 			String executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_PASSED;
 		    
 			// fetch source file
+			Path folderPath = Path.of("");
 			try {
+				// create the program path and name
+				folderPath = createTmpDir(execAutoRequestId);
+				String filenameSUT = "";	// used for optional unpacking later
+				
 			    // get the source file depending on the ProgramDefinition
 			    switch (ProgramDefinition)
 			    {
 			    case "sourceGit":
-			    	gitClonePublic(ProgramSource, folderPath);
+			    	filenameSUT = gitClonePublic(ProgramSource, folderPath);
 			    	break;
 			    	
-			    case "sourceFileUrl":
-			    	downloadFileFromUrl(ProgramSource, folderPath);
+			    case "sourceUrl":
+			    	filenameSUT = downloadFileFromUrl(ProgramSource, folderPath);
 			    	break;
+			    	
+			    case "sourceBase64":
+			    	filenameSUT = createFileFromBase64(ProgramSource, folderPath);
+			    	break;
+			    default:
+			    	System.out.println("This should never happen!!");
 			    }
-
+			    
+			    // unzip the SUT if requested
+			    if (paramUnpackZip.equals("true") || paramUnpackZip.equals("True"))
+			    {
+			    	unzipFile(folderPath, filenameSUT);
+			    }
+			    
 				fetchLog.setValue("# SUT fetch successful\n");
 				
 			} catch (UnknownHostException e) {	// TODO
@@ -169,16 +193,17 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 				fetchLog.setValue("# SUT fetch failed\nUnknown host or host unreachable: " + e.getMessage());
 	    		performCompilation = false;
 	    		
-			} catch (IOException e) {
+			} catch (IOException | IllegalArgumentException e) {
 				executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_ERROR;
 				fetchLog.setValue("# SUT fetch failed\n" + e.getMessage());
 	    		performCompilation = false;
-	    		
+
 			} finally {
 				// create the fetching log Contribution and add it to the AutomationResult
 				fetchLog = VeriFitCompilationManager.createTextOut(fetchLog, serviceProviderId);
 		    	newAutoResult.addContribution(fetchLog);
 			}
+			
 			    
 			// compile source file if the fetching did not fail
 			if (performCompilation)
@@ -220,7 +245,7 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 				newSut.setTitle("SUT - " + execAutoRequest.getTitle());
 				newSut.setLaunchCommand(paramLaunchCommand);
 				newSut.setBuildCommand(paramBuildCommand);
-				newSut.setSUTdirectoryPath(folderPath.getAbsolutePath().toString());
+				newSut.setSUTdirectoryPath(folderPath.toAbsolutePath().toString());
 				newSut.setCreator(execAutoRequest.getCreator());
 				newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(serviceProviderId, execAutoRequestId));
 				VeriFitCompilationManager.createSUT(newSut, serviceProviderId, execAutoRequestId); // TODO

@@ -49,8 +49,8 @@
 											"pm.test(\"AutomationPlan should contain a sourceGit parameter definition\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>sourceGit</oslc:name>\");",
 											"});",
-											"pm.test(\"AutomationPlan should contain a sourceFileUrl parameter definition\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>sourceFileUrl</oslc:name>\");",
+											"pm.test(\"AutomationPlan should contain a sourceUrl parameter definition\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>sourceUrl</oslc:name>\");",
 											"});"
 										],
 										"type": "text/javascript"
@@ -1077,7 +1077,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFileUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>asdfasdf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>asdfasdf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
 									"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
@@ -1310,7 +1310,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFileUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
@@ -1363,7 +1363,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFileUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
@@ -1416,7 +1416,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationPlans/23452346342\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFileUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationPlans/23452346342\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
@@ -1468,7 +1468,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFileURL</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceURL</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
@@ -1572,7 +1572,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>invalid input</oslc:name>\n\t\t\t<rdf:value>invalid value</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFileUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>invalid input</oslc:name>\n\t\t\t<rdf:value>invalid value</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
@@ -1624,7 +1624,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFileUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
@@ -1676,7 +1676,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFileUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
@@ -1761,7 +1761,7 @@
 			"name": "Test compilation methods",
 			"item": [
 				{
-					"name": "sourceFileUrl",
+					"name": "sourceUrl",
 					"item": [
 						{
 							"name": "basic function",
@@ -1816,7 +1816,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFileUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
 											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
@@ -2046,7 +2046,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFileUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgramError.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgramError.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgramError.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgramError.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
 											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
@@ -2263,7 +2263,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFileUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/NonExistentFile</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/NonExistentFile</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
 											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
@@ -2496,7 +2496,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFileUrl</oslc:name>\n\t\t\t<rdf:value>http://www.UnreachableServerXXasdfasdfagwer.cz</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.UnreachableServerXXasdfasdfagwer.cz</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
 											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
@@ -2700,6 +2700,1041 @@
 							"listen": "test",
 							"script": {
 								"id": "5a4dd37a-ffd0-4a3e-8801-381b2a805da2",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "sourceBase64",
+					"item": [
+						{
+							"name": "basic function",
+							"item": [
+								{
+									"name": "basic",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "59e5d465-a6cc-4867-9b84-0f9c9950eaaf",
+												"exec": [
+													"// save the request ID as a global variable for later tests to use",
+													"const response = xml2Json(pm.response.text());",
+													"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+													"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
+													"pm.globals.set('requestId', resourceId);",
+													"",
+													"pm.test(\"Response code should be 201 (created)\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "5c41fa71-fc00-4103-88ef-819dc64a4789",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/xml"
+											},
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+										},
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"createAutoRequest"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check the result",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "ed0d6330-0cea-4303-883b-c9aa037bac1c",
+												"exec": [
+													"var requestId = pm.globals.get('requestId');",
+													"var serverAddr = pm.variables.get(\"server_address\");",
+													"var server_context = pm.variables.get(\"server_context\");",
+													"",
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Should be produced by the expected AutoRequest\", function () {",
+													"    ",
+													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/automationRequests/\" + requestId);",
+													"});",
+													"",
+													"pm.test(\"State should be complete\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+													"});",
+													"",
+													"pm.test(\"Verdict should be passed\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
+													"});",
+													"",
+													"pm.test(\"Should contain an SUT refference ID \" + requestId, function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\" + requestId);",
+													"});",
+													"",
+													"",
+													"pm.test(\"Should contain the Compilation stdout\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
+													"});",
+													"pm.test(\"Check the Compilation stdout\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"# Compilation completed successfully\");",
+													"});",
+													"pm.test(\"Should contain the Compilation stderr\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"Compilation stderr\");",
+													"});",
+													"pm.test(\"Check the Compilation stderr\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
+													"});",
+													"",
+													"pm.test(\"Should contain the program Fetching Output\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"});",
+													"pm.test(\"Check program fetching output\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch successful\");",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "532b3123-1bca-4cdc-b2fb-586af326db87",
+												"exec": [
+													"// wait for the request execution to finish",
+													"var result_wait_time = pm.variables.get('result_wait_time');",
+													"setTimeout(function(){}, [result_wait_time]);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check the SUT",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "c5970448-8f94-46ac-832a-b11fb4c61994",
+												"exec": [
+													"// get global variable to use in this test",
+													"var requestId = pm.globals.get('requestId');",
+													"var serverAddr = pm.variables.get(\"server_address\");",
+													"var server_context = pm.variables.get(\"server_context\");",
+													"",
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"pm.test(\"SUT should have the expected ID: \" + requestId, function () {",
+													"    pm.expect(pm.response.text()).to.include(\"fit:SUT rdf:about=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\" + requestId);",
+													"});",
+													"pm.test(\"SUT producedByAutomationRequest should match the AutomationRequest with ID \" + requestId, function () {",
+													"    pm.expect(pm.response.text()).to.include(\"oslc_auto:producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/automationRequests/\" + requestId);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "62b2a5d6-45dd-4d2e-85fc-fe42a439d510",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/sUTs/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"sUTs",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "invalid characters error",
+							"item": [
+								{
+									"name": "invalid chars",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "0a81d386-53df-42a0-b6ed-ebd87d104a6d",
+												"exec": [
+													"// save the request ID as a global variable for later tests to use",
+													"const response = xml2Json(pm.response.text());",
+													"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+													"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
+													"pm.globals.set('requestId', resourceId);",
+													"",
+													"var serverAddr = pm.variables.get(\"server_address\");",
+													"",
+													"pm.test(\"Response code should be 201 (created)\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/xml"
+											},
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\n\t\t\tI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+										},
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"createAutoRequest"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check the result error",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "c6c73b7d-b49f-4d6e-993d-c9742a565693",
+												"exec": [
+													"var requestId = pm.globals.get('requestId');",
+													"var serverAddr = pm.variables.get(\"server_address\");",
+													"var server_context = pm.variables.get(\"server_context\");",
+													"",
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Should be produced by the expected AutoRequest\", function () {",
+													"    ",
+													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/automationRequests/\" + requestId);",
+													"});",
+													"",
+													"pm.test(\"State should be complete\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+													"});",
+													"",
+													"pm.test(\"Verdict should be error\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
+													"});",
+													"",
+													"pm.test(\"Should not contain an SUT refference\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\");",
+													"});",
+													"",
+													"pm.test(\"Should not contain the Compilation stdout\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stdout\");",
+													"});",
+													"pm.test(\"Should not contain the Compilation stderr\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stderr\");",
+													"});",
+													"",
+													"pm.test(\"Should contain the program Fetching Output\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"});",
+													"pm.test(\"Check program fetching output\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch failed\\nIllegal base64 character \");",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "438fa926-415d-4643-b15d-6f7ae4506720",
+												"exec": [
+													"// wait for the request execution to finish",
+													" var result_wait_time = pm.variables.get('result_wait_time'); setTimeout(function(){}, [result_wait_time]);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that SUT does not exist",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "5cab5f68-d3b2-4d5f-8ba4-2b6ad87f8c23",
+												"exec": [
+													"pm.test(\"Response code should be 404 (not found)\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "f9408115-69c4-479f-b857-28472f0a37c6",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/sUTs/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"sUTs",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "327ce6f0-e824-47f5-a2ed-80deda142496",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "4531ccca-fdf7-4331-aa84-a990c74d77d4",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "missing new line error",
+							"item": [
+								{
+									"name": "missing new line",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "4e3bd89f-ee45-49a5-90de-5f80e2b4d655",
+												"exec": [
+													"// save the request ID as a global variable for later tests to use",
+													"const response = xml2Json(pm.response.text());",
+													"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+													"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
+													"pm.globals.set('requestId', resourceId);",
+													"",
+													"var serverAddr = pm.variables.get(\"server_address\");",
+													"",
+													"pm.test(\"Response code should be 201 (created)\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/xml"
+											},
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cppI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+										},
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"createAutoRequest"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "base64 no newline",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/xml"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cppI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+										},
+										"url": {
+											"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/createAutoRequest",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8081",
+											"path": [
+												"compilation",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"createAutoRequest"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check the result error",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "4397257d-e02b-4c76-99a4-ab196e836080",
+												"exec": [
+													"var requestId = pm.globals.get('requestId');",
+													"var serverAddr = pm.variables.get(\"server_address\");",
+													"var server_context = pm.variables.get(\"server_context\");",
+													"",
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Should be produced by the expected AutoRequest\", function () {",
+													"    ",
+													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/automationRequests/\" + requestId);",
+													"});",
+													"",
+													"pm.test(\"State should be complete\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+													"});",
+													"",
+													"pm.test(\"Verdict should be error\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
+													"});",
+													"",
+													"pm.test(\"Should not contain an SUT refference\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\");",
+													"});",
+													"",
+													"pm.test(\"Should not contain the Compilation stdout\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stdout\");",
+													"});",
+													"pm.test(\"Should not contain the Compilation stderr\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stderr\");",
+													"});",
+													"",
+													"pm.test(\"Should contain the program Fetching Output\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"});",
+													"pm.test(\"Check program fetching output\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch failed\\nInvalid format of sourceBase64 value. No \\\"\\\\n\\\" delimiter found. Expected format: filename\\\\nbase64\");",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "9eb81b3d-12bc-4d39-9ad1-e0979d882a10",
+												"exec": [
+													"// wait for the request execution to finish",
+													" var result_wait_time = pm.variables.get('result_wait_time'); setTimeout(function(){}, [result_wait_time]);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that SUT does not exist",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "c09a661c-9d99-44ab-8009-aaee510e7f9c",
+												"exec": [
+													"pm.test(\"Response code should be 404 (not found)\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "6f56c7f8-3ebd-4afe-994e-1fc03ad583b6",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/sUTs/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"sUTs",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "826beb25-2188-49cd-adc1-35558f152bea",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "eab8e484-3037-48c1-a1d7-79b5901b7632",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "34ad82de-6a41-4f5d-b224-1dc7ac8887a3",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "bff444ad-e1ea-445a-9926-9932a494f04a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "sourceUrl ZIP",
+					"item": [
+						{
+							"name": "basic function",
+							"item": [
+								{
+									"name": "basic",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "bebc04bc-1e58-4571-a6df-ca044ca4cdf0",
+												"exec": [
+													"// save the request ID as a global variable for later tests to use",
+													"const response = xml2Json(pm.response.text());",
+													"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+													"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
+													"pm.globals.set('requestId', resourceId);",
+													"",
+													"pm.test(\"Response code should be 201 (created)\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "e44a97d4-3d37-4f44-bdc2-e38b7263d24e",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/xml"
+											},
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.zip</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>unpackZip</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+										},
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"createAutoRequest"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check the result",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3d8c565b-61ad-4f7e-b263-43a48e13fb9c",
+												"exec": [
+													"var requestId = pm.globals.get('requestId');",
+													"var serverAddr = pm.variables.get(\"server_address\");",
+													"var server_context = pm.variables.get(\"server_context\");",
+													"",
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Should be produced by the expected AutoRequest\", function () {",
+													"    ",
+													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/automationRequests/\" + requestId);",
+													"});",
+													"",
+													"pm.test(\"State should be complete\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+													"});",
+													"",
+													"pm.test(\"Verdict should be passed\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
+													"});",
+													"",
+													"pm.test(\"Should contain an SUT refference ID \" + requestId, function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\" + requestId);",
+													"});",
+													"",
+													"",
+													"pm.test(\"Should contain the Compilation stdout\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
+													"});",
+													"pm.test(\"Check the Compilation stdout\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"# Compilation completed successfully\");",
+													"});",
+													"pm.test(\"Should contain the Compilation stderr\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"Compilation stderr\");",
+													"});",
+													"pm.test(\"Check the Compilation stderr\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
+													"});",
+													"",
+													"pm.test(\"Should contain the program Fetching Output\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"});",
+													"pm.test(\"Check program fetching output\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch successful\");",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "4026caf3-e206-4a7d-9009-d085e77de33f",
+												"exec": [
+													"// wait for the request execution to finish",
+													"var result_wait_time = pm.variables.get('result_wait_time');",
+													"setTimeout(function(){}, [result_wait_time]);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check the SUT",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "99db6ee8-3465-4aea-b2bd-50c232ab396a",
+												"exec": [
+													"// get global variable to use in this test",
+													"var requestId = pm.globals.get('requestId');",
+													"var serverAddr = pm.variables.get(\"server_address\");",
+													"var server_context = pm.variables.get(\"server_context\");",
+													"",
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"pm.test(\"SUT should have the expected ID: \" + requestId, function () {",
+													"    pm.expect(pm.response.text()).to.include(\"fit:SUT rdf:about=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\" + requestId);",
+													"});",
+													"pm.test(\"SUT producedByAutomationRequest should match the AutomationRequest with ID \" + requestId, function () {",
+													"    pm.expect(pm.response.text()).to.include(\"oslc_auto:producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/automationRequests/\" + requestId);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"id": "97a4cdcd-0339-46c6-9812-8bbeaad34e4c",
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/sUTs/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0",
+												"resources",
+												"sUTs",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"protocolProfileBehavior": {},
+							"_postman_isSubFolder": true
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "80697eff-c402-43b3-868f-cebb18114e86",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "d49dd370-8c36-4aea-a262-7343d69e4697",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -4927,25 +5962,25 @@
 	],
 	"variable": [
 		{
-			"id": "7edf176b-bb0a-4aa5-875e-731e5ef1ddee",
+			"id": "612e025b-99bb-45f7-88f6-45398e42b173",
 			"key": "server_address",
 			"value": "http://localhost:8081",
 			"type": "string"
 		},
 		{
-			"id": "9d4c457e-b536-46bf-91c7-5000a57a9ae2",
+			"id": "2f87debd-d513-48c1-839d-9483b55ae4f2",
 			"key": "result_wait_time",
 			"value": "2000",
 			"type": "string"
 		},
 		{
-			"id": "e03b513b-6c47-4213-87a2-83b153cde884",
+			"id": "cdb6e9a1-6bfa-4385-927d-c50f8cc82699",
 			"key": "server_context",
 			"value": "compilation",
 			"type": "string"
 		},
 		{
-			"id": "d185b6ad-0fc7-44d2-b658-d82a2f753c6c",
+			"id": "6e8af545-00b3-44e9-866e-074396ea64ec",
 			"key": "sut_folder",
 			"value": "/home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/tmp",
 			"type": "string"
