@@ -101,7 +101,7 @@
     <requiredAdaptors xsi:type="oslc4j_ai:GenericRequiredAdaptor" serviceProviderCatalogURI="http://your.host.com/adaptor/services/catalog/singleton" name="GenericRequiredAdaptor"/>
   </adaptorInterfaces>
   <specification>
-    <domainSpecifications name="Verifit" namespaceURI="http://verifit/fit#" namespacePrefix="//@specification/@domainPrefixes.0">
+    <domainSpecifications name="VeriFit" namespaceURI="http://verifit/fit#" namespacePrefix="//@specification/@domainPrefixes.0">
       <resources name="SUT">
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.8"/>
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.3"/>
