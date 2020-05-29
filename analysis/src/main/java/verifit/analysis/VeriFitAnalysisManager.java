@@ -35,11 +35,11 @@ import verifit.analysis.ServiceProviderInfo;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
+import org.eclipse.lyo.oslc.domains.auto.Contribution;
 import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc.domains.Person;
 import verifit.analysis.resources.SUT;
-import verifit.analysis.resources.TextOut;
 
 
 // Start of user code imports
@@ -280,6 +280,35 @@ public class VeriFitAnalysisManager {
     }
     
     /**
+     * Updates an AutomationResult in the Adapter's catalog. The old resource is replaced with the new one.
+     * @param changedResource		This resource will be used as replacement for the old resource.
+     * @param serviceProviderId		ID of the service provider for the updated resource.
+     * @param automationResultId	ID of the AutomationResult to update
+     * @return						The updated resource.
+     */
+    public static AutomationResult updateAutomationResult(AutomationResult changedResource, final String serviceProviderId, final String automationResultId)
+    {
+    	AutomationResult updatedResource = null;
+
+    	changedResource.setModified(new Date());
+  
+    	try {
+    		
+			store.updateResources(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), changedResource);
+			
+		} catch (StoreAccessException e) {
+			System.out.println("WARNING: AutomationResult update failed: " + e.getMessage());
+			
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+		}
+    	updatedResource = changedResource;
+    	
+        return updatedResource;
+    }
+    
+    /**
      * Creates an AutomationResult resource with the specified properties, and stores in the Adapter's catalog.
      * @param aResource			The new resource will copy properties from the specified aResource.
      * @param serviceProviderId	ID of the service provider for the new resource.
@@ -328,15 +357,15 @@ public class VeriFitAnalysisManager {
     }
     
     /**
-	 * Creates a TextOut resource with the specified properties, and stores in the Adapter's catalog.
+	 * Creates a Contribution resource with the specified properties.
 	 * @param aResource			The new resource will copy properties from the specified aResource.
 	 * @param serviceProviderId	ID of the service provider for the new resource.
 	 * @param newID				ID for the new resource
 	 * @return					The newly created resource. Or null if one of the required properties was missing.
 	 */
-    public static TextOut createTextOut(final TextOut aResource, final String serviceProviderId)
+    public static Contribution createContribution(final Contribution aResource, final String serviceProviderId)
     {
-    	TextOut newResource = null;
+    	Contribution newResource = null;
 
     	// check that required properties are specified in the input parameter
     	if (aResource == null)
@@ -743,17 +772,16 @@ public class VeriFitAnalysisManager {
         // End of user code
         return newResource;
     }
-    
-    public static TextOut createTextOut(HttpServletRequest httpServletRequest, final TextOut aResource, final String serviceProviderId) throws OslcResourceException
+    public static Contribution createContribution(HttpServletRequest httpServletRequest, final Contribution aResource, final String serviceProviderId) throws OslcResourceException
     {
-        TextOut newResource = null;
+        Contribution newResource = null;
         
-        // Start of user code createTextOut
+        // Start of user code createContribution
         
         // Check that all the required properties are set
         if (aResource == null || aResource.getAbsolutePath() == null || aResource.getTitle() == null)
         {
-        	throw new OslcResourceException("Failed to write a TextOut file - absolutePath or Title property missing");        	
+        	throw new OslcResourceException("Failed to write a Contribution file - absolutePath or Title property missing");        	
         }
         
         // write the file - path is getAbsolutePath and content is getValue
@@ -762,11 +790,10 @@ public class VeriFitAnalysisManager {
 		    out.print(aResource.getValue());
 		} catch (IOException e)
 		{
-			throw new OslcResourceException("WARNING: Failed to write a TextOut file: " + e.getMessage());
+			throw new OslcResourceException("WARNING: Failed to write a Contribution file: " + e.getMessage());
 		}
 		
 		newResource = aResource;	// TODO not changed and has no URI because its not GETable
-		
         // End of user code
         return newResource;
     }
@@ -787,19 +814,17 @@ public class VeriFitAnalysisManager {
         // End of user code
         return newResource;
     }
-    public static TextOut createTextOutFromDialog(HttpServletRequest httpServletRequest, final TextOut aResource, final String serviceProviderId)
+    public static Contribution createContributionFromDialog(HttpServletRequest httpServletRequest, final Contribution aResource, final String serviceProviderId)
     {
-        TextOut newResource = null;
+        Contribution newResource = null;
         
-        // Start of user code createTextOutFromDialog
-        
+        // Start of user code createContributionFromDialog
         try {
-			newResource = createTextOut(httpServletRequest,aResource, serviceProviderId);
+			newResource = createContribution(httpServletRequest,aResource, serviceProviderId);
 		} catch (OslcResourceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
         // End of user code
         return newResource;
     }
@@ -885,29 +910,6 @@ public class VeriFitAnalysisManager {
     }
 
 
-    public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, final AutomationResult aResource, final String serviceProviderId, final String automationResultId) {
-        AutomationResult updatedResource = null;
-        // Start of user code updateAutomationResult
-    	
-        AutomationResult changedResource = aResource;
-        aResource.setAbout(VeriFitAnalysisResourcesFactory.constructURIForAutomationResult(serviceProviderId, automationResultId));
-    	changedResource.setModified(new Date());
-    	
-    	try {
-    		
-			store.updateResources(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), changedResource);
-			
-		} catch (URISyntaxException e) {
-			// TODO should never be thrown (URI syntax)
-			e.printStackTrace();
-			
-		} catch (Exception e) {
-			System.out.println("WARNING: AutomationResult update failed: " + e.getMessage());
-		}
-
-        // End of user code
-        return updatedResource;
-    }
 
 
 
@@ -945,10 +947,10 @@ public class VeriFitAnalysisManager {
         // End of user code
         return eTag;
     }
-    public static String getETagFromTextOut(final TextOut aResource)
+    public static String getETagFromContribution(final Contribution aResource)
     {
         String eTag = null;
-        // Start of user code getETagFromTextOut
+        // Start of user code getETagFromContribution
         // TODO Implement code to return an ETag for a particular resource
         // End of user code
         return eTag;

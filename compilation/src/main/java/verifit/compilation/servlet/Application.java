@@ -59,11 +59,11 @@ import verifit.compilation.services.ResourceShapeService;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
+import org.eclipse.lyo.oslc.domains.auto.Contribution;
 import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc.domains.Person;
 import verifit.compilation.resources.SUT;
-import verifit.compilation.resources.TextOut;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
@@ -123,11 +123,11 @@ public class Application extends OslcWinkApplication {
         RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(Oslc_autoDomainConstants.AUTOMATIONPLAN_PATH, AutomationPlan.class);
         RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(Oslc_autoDomainConstants.AUTOMATIONREQUEST_PATH, AutomationRequest.class);
         RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(Oslc_autoDomainConstants.AUTOMATIONRESULT_PATH, AutomationResult.class);
+        RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(Oslc_autoDomainConstants.CONTRIBUTION_PATH, Contribution.class);
         RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(Oslc_autoDomainConstants.PARAMETERDEFINITION_PATH, ParameterDefinition.class);
         RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(Oslc_autoDomainConstants.PARAMETERINSTANCE_PATH, ParameterInstance.class);
         RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(FoafDomainConstants.PERSON_PATH, Person.class);
         RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(FitDomainConstants.SUT_PATH, SUT.class);
-        RESOURCE_SHAPE_PATH_TO_RESOURCE_CLASS_MAP.put(FitDomainConstants.TEXTOUT_PATH, TextOut.class);
     }
 
     public Application()

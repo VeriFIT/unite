@@ -47,7 +47,7 @@ import org.eclipse.lyo.store.StoreFactory;
 
 import verifit.compilation.VeriFitCompilationProperties;
 import verifit.compilation.resources.SUT;
-import verifit.compilation.resources.TextOut;
+import org.eclipse.lyo.oslc.domains.auto.Contribution;
 
 /**
  * A wrapper class for the Lyo Store.
@@ -229,7 +229,7 @@ public class Persistence {
 				{
 					store.updateResources(namedGraph, output);
 				}
-				for (TextOut log : res.getContribution())
+				for (Contribution log : res.getContribution())
 				{
 					// encode the output log to be XML storable
 					String plainOutput = log.getValue();
@@ -286,7 +286,7 @@ public class Persistence {
 			urisToDelete.add(resToDelete.getProducedByAutomationRequest().getValue());
 			
 			// delte all inlined resources (outputlog, input and output parameters)
-			/*for (TextOut log : resToDelete.getContribution())
+			/*for (Contribution log : resToDelete.getContribution())
 			{
 				urisToDelete.add(log.getAbout());
 			}

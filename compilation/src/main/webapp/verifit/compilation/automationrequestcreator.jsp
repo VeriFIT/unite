@@ -45,7 +45,7 @@ To revert to the default generated content, delete all content in this file, and
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title>CreationDialog3</title>
+    <title>CreatorAutoRequest</title>
     <script type="text/javascript" src="<%=UriBuilder.fromUri(OSLC4JUtils.getPublicURI()).path("delegatedUI.js").build().toString()%>"></script>
   </head>
   <body style="padding: 10px;">
@@ -93,6 +93,9 @@ To revert to the default generated content, delete all content in this file, and
           </tr>
           <tr>
             <td><%= AutomationRequest.executesAutomationPlanToHtmlForCreation1(request, serviceProviderId)%></td>
+          </tr>
+          <tr>
+            <td><%= AutomationRequest.producedAutomationResultToHtmlForCreation1(request, serviceProviderId)%></td>
           </tr>
           <tr>
             <td></td>

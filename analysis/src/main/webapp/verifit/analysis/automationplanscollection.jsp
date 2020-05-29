@@ -50,7 +50,7 @@ To revert to the default generated content, delete all content in this file, and
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Query capability QueryCapability1</title>
+  <title>Query capability QueryAutoPlan</title>
 
   <link href="<c:url value="/static/css/bootstrap-4.0.0-beta.min.css"/>" rel="stylesheet">
   <link href="<c:url value="/static/css/adaptor.css"/>" rel="stylesheet">
@@ -71,7 +71,7 @@ To revert to the default generated content, delete all content in this file, and
   <!-- Begin page content -->
   <div class="container">
     <div class="page-header">
-      <h1>Query Capability &quot;QueryCapability1&quot; results</h1>
+      <h1>Query Capability &quot;QueryAutoPlan&quot; results</h1>
       <div class="alert alert-secondary" role="alert">
           Number of elements:&nbsp;
           <%= resources.size()%>

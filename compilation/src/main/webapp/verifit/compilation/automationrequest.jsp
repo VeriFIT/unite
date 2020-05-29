@@ -137,6 +137,10 @@ To revert to the default generated content, delete all content in this file, and
             <dt  class="col-sm-2 text-right">executesAutomationPlan</dt>
             <dd class="col-sm-9"><%= aAutomationRequest.executesAutomationPlanToHtml()%></dd>
           </dl>
+          <dl class="row">
+            <dt  class="col-sm-2 text-right">producedAutomationResult</dt>
+            <dd class="col-sm-9"><%= aAutomationRequest.producedAutomationResultToHtml()%></dd>
+          </dl>
         </div>
       </div>
     </div>

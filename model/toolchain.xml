@@ -8,7 +8,9 @@
           <creationFactories title="CreateAutoRequest" label="CreateAutoRequest" creationURI="createAutoRequest">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.1"/>
           </creationFactories>
-          <creationFactories title="WriteTextOut" label="WriteTextOut" creationURI="writeTextOut" resourceTypes="//@specification/@domainSpecifications.0/@resources.0"/>
+          <creationFactories title="WriteContribution" label="WriteContribution" creationURI="writeContribution">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.5"/>
+          </creationFactories>
           <queryCapabilities title="QueryAutoPlan" label="QueryAutoPlan" queryBaseURI="queryAutoPlan">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.0"/>
           </queryCapabilities>
@@ -30,22 +32,26 @@
           <creationDialogs title="CreatorAutoRequest" label="CreatorAutoRequest" dialogURI="creatorAutoRequest">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.1"/>
           </creationDialogs>
-          <creationDialogs title="WriterTextOut" label="WriterTextOut" dialogURI="writerTextOut" resourceTypes="//@specification/@domainSpecifications.0/@resources.0"/>
+          <creationDialogs title="WriterContribution" label="WriterContribution" dialogURI="writerContribution">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.5"/>
+          </creationDialogs>
           <basicCapabilities>
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.0"/>
           </basicCapabilities>
           <basicCapabilities>
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.1"/>
           </basicCapabilities>
-          <basicCapabilities update="true">
+          <basicCapabilities>
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.3"/>
           </basicCapabilities>
-          <basicCapabilities resourceTypes="//@specification/@domainSpecifications.0/@resources.0" read="false"/>
+          <basicCapabilities read="false">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.5"/>
+          </basicCapabilities>
         </services>
       </serviceProviders>
     </serviceProviderCatalog>
     <specification/>
-    <requiredAdaptors xsi:type="oslc4j_ai:GenericRequiredAdaptor" serviceProviderCatalogURI="http://your.host.com/adaptor/services/catalog/singleton" name="GenericRequiredAdaptor" servicedResources="//@specification/@domainSpecifications.0/@resources.1"/>
+    <requiredAdaptors xsi:type="oslc4j_ai:GenericRequiredAdaptor" serviceProviderCatalogURI="http://your.host.com/adaptor/services/catalog/singleton" name="GenericRequiredAdaptor" servicedResources="//@specification/@domainSpecifications.0/@resources.0"/>
   </adaptorInterfaces>
   <adaptorInterfaces name="VeriFit Compilation" javaClassBaseNamespace="verifit.compilation" javaFilesBasePath="compilation/src/main/java/" jspFilesBasePath="compilation/src/main/webapp/" javascriptFilesBasePath="compilation/src/main/webapp/">
     <serviceProviderCatalog title="Service Provider Catalog" description="Service Provider Catalog">
@@ -55,7 +61,7 @@
           <creationFactories title="CreateAutoRequest" label="CreateAutoRequest" creationURI="createAutoRequest">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.1"/>
           </creationFactories>
-          <queryCapabilities title="QuerySUT" label="QuerySUT" queryBaseURI="querySUT" resourceTypes="//@specification/@domainSpecifications.0/@resources.1"/>
+          <queryCapabilities title="QuerySUT" label="QuerySUT" queryBaseURI="querySUT" resourceTypes="//@specification/@domainSpecifications.0/@resources.0"/>
           <queryCapabilities title="QueryAutoRequest" label="QueryAutoRequest" queryBaseURI="queryAutoRequest">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.1"/>
           </queryCapabilities>
@@ -65,7 +71,7 @@
           <queryCapabilities title="QueryAutoPlan" label="QueryAutoPlan" queryBaseURI="queryAutoPlan">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.0"/>
           </queryCapabilities>
-          <selectionDialogs title="SelectSUT" label="SelectSUT" dialogURI="selectSUT" resourceTypes="//@specification/@domainSpecifications.0/@resources.1"/>
+          <selectionDialogs title="SelectSUT" label="SelectSUT" dialogURI="selectSUT" resourceTypes="//@specification/@domainSpecifications.0/@resources.0"/>
           <selectionDialogs title="SelectAutoRequest" label="SelectAutoRequest" dialogURI="selectAutoRequest">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.1"/>
           </selectionDialogs>
@@ -81,11 +87,11 @@
           <basicCapabilities>
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.0"/>
           </basicCapabilities>
-          <basicCapabilities resourceTypes="//@specification/@domainSpecifications.0/@resources.1"/>
+          <basicCapabilities resourceTypes="//@specification/@domainSpecifications.0/@resources.0" delete="true"/>
           <basicCapabilities>
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.1"/>
           </basicCapabilities>
-          <basicCapabilities update="true">
+          <basicCapabilities>
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.12/@resources.3"/>
           </basicCapabilities>
         </services>
@@ -96,15 +102,6 @@
   </adaptorInterfaces>
   <specification>
     <domainSpecifications name="Verifit" namespaceURI="http://verifit/fit#" namespacePrefix="//@specification/@domainPrefixes.0">
-      <resources name="TextOut">
-        <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.8"/>
-        <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.3"/>
-        <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.2/@resourceProperties.0"/>
-        <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.2/@resourceProperties.1"/>
-        <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.2"/>
-        <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.1"/>
-        <resourceProperties href="#//@specification/@domainSpecifications.0/@resourceProperties.5"/>
-      </resources>
       <resources name="SUT">
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.8"/>
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications.0/@resourceProperties.3"/>
@@ -120,7 +117,7 @@
       <resourceProperties title="" name="launchCommand" valueType="XMLLiteral" description="How to launch the SUT. The specified command will be launched from the root directory of the downloaded SUT. Examples: make run | ./run.sh | ./my_sut"/>
       <resourceProperties name="buildCommand" valueType="XMLLiteral" description="How to build the SUT. The specified command will be launched from the root directory of the downloaded SUT. Examples: make | ./build.sh | gcc -g -o my_sut"/>
       <resourceProperties name="SUTdirectoryPath" readOnly="true" valueType="XMLLiteral" description="Path to the root directory of the SUT. Used to launch and compile the SUT."/>
-      <resourceProperties name="createdSUT" occurs="zeroOrOne" valueType="Resource" representation="reference" range="//@specification/@domainSpecifications.0/@resources.1"/>
+      <resourceProperties name="createdSUT" occurs="zeroOrOne" valueType="Resource" representation="reference" range="//@specification/@domainSpecifications.0/@resources.0"/>
       <resourceProperties name="commandlinePosition" occurs="zeroOrOne" valueType="Integer" description="Specifies the order of parameters for an Automation Plan (ie. commandline parameters for a tool). If a parameter has no position, then it will not be used in the command line. If there is more then one parameter with the same position, then their relative position is undefined (but still valid relative to other positions)."/>
       <resourceProperties name="absolutePath" occurs="zeroOrOne" valueType="XMLLiteral"/>
     </domainSpecifications>

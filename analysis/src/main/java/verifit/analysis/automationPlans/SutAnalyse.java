@@ -58,7 +58,7 @@ import verifit.analysis.VeriFitAnalysisManager;
 import verifit.analysis.VeriFitAnalysisProperties;
 import verifit.analysis.VeriFitAnalysisResourcesFactory;
 import verifit.analysis.resources.SUT;
-import verifit.analysis.resources.TextOut;
+import org.eclipse.lyo.oslc.domains.auto.Contribution;
 /**
  * A thread for executing analysis of an SUT.
  * @author od42
@@ -136,10 +136,10 @@ public class SutAnalyse extends RequestRunner
 			
 			
 		    // prepare stdin & stdout contributions
-		    TextOut analysisStdoutLog = new TextOut();
+			Contribution analysisStdoutLog = new Contribution();
 		    analysisStdoutLog.setDescription("Standard output of the analysis. Provider messages are prefixed with #.");
 		    analysisStdoutLog.setTitle("Analysis stdout");
-		    TextOut analysisStderrLog = new TextOut();
+		    Contribution analysisStderrLog = new Contribution();
 		    analysisStderrLog.setDescription("Error output of the analysis. Provider messages are prefixed with #.");
 		    analysisStderrLog.setTitle("Analysis stderr");
 			
@@ -173,8 +173,8 @@ public class SutAnalyse extends RequestRunner
 			}
 
 			// create the compilation Contributions and add them to the Automation Result
-			analysisStdoutLog = VeriFitAnalysisManager.createTextOut(analysisStdoutLog, serviceProviderId);
-			analysisStderrLog = VeriFitAnalysisManager.createTextOut(analysisStderrLog, serviceProviderId);
+			analysisStdoutLog = VeriFitAnalysisManager.createContribution(analysisStdoutLog, serviceProviderId);
+			analysisStderrLog = VeriFitAnalysisManager.createContribution(analysisStderrLog, serviceProviderId);
 	    	newAutoResult.addContribution(analysisStdoutLog);
 	    	newAutoResult.addContribution(analysisStderrLog);
 	    	
@@ -194,17 +194,17 @@ public class SutAnalyse extends RequestRunner
 
 		    	// the file did not exist before analysis OR was modified --> add it as contribution to the AutoResult
 			    File currFile = new File(newFile.getKey());
-		    	TextOut newOrModifFile = new TextOut();
+			    Contribution newOrModifFile = new Contribution();
 			    newOrModifFile.setAbsolutePath(currFile.getAbsolutePath());
 			    newOrModifFile.setDescription("This file was modified or created during execution of this Automation Request. "
-			    		+ "If you want to modify the file (eg. its a configuration file), then post this fit:TextOut resource to the TextOut creation factory."); // TODO
+			    		+ "If you want to modify the file (eg. its a configuration file), then post this oslc_autoContribution resource to the Contribution creation factory."); // TODO
 			    newOrModifFile.setTitle(currFile.getName());
 			    try {
 					newOrModifFile.setValue(Files.readString(currFile.toPath(), StandardCharsets.US_ASCII));	// TODO
 				} catch (IOException e) {
 					newOrModifFile.setValue(e.getMessage());
 				}
-			    newOrModifFile = VeriFitAnalysisManager.createTextOut(newOrModifFile, serviceProviderId);
+			    newOrModifFile = VeriFitAnalysisManager.createContribution(newOrModifFile, serviceProviderId);
 		    	newAutoResult.addContribution(newOrModifFile);
 		    }
 		
@@ -213,7 +213,7 @@ public class SutAnalyse extends RequestRunner
 			newAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
 			newAutoResult.setVerdict(new HashSet<Link>());
 			newAutoResult.addVerdict(new Link(new URI(executionVerdict)));
-			VeriFitAnalysisManager.updateAutomationResult(null, newAutoResult, serviceProviderId, VeriFitAnalysisManager.getResourceIdFromUri(newAutoResult.getAbout()));
+			VeriFitAnalysisManager.updateAutomationResult(newAutoResult, serviceProviderId, VeriFitAnalysisManager.getResourceIdFromUri(newAutoResult.getAbout()));
 			
 			// update the autoRequest state
 			execAutoRequest.setState(new HashSet<Link>());

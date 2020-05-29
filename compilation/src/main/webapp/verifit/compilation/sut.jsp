@@ -105,6 +105,22 @@ To revert to the default generated content, delete all content in this file, and
             <dt  class="col-sm-2 text-right">identifier</dt>
             <dd class="col-sm-9"><%= aSUT.identifierToHtml()%></dd>
           </dl>
+          <dl class="row">
+            <dt  class="col-sm-2 text-right">launchCommand</dt>
+            <dd class="col-sm-9"><%= aSUT.launchCommandToHtml()%></dd>
+          </dl>
+          <dl class="row">
+            <dt  class="col-sm-2 text-right">SUTdirectoryPath</dt>
+            <dd class="col-sm-9"><%= aSUT.sUTdirectoryPathToHtml()%></dd>
+          </dl>
+          <dl class="row">
+            <dt  class="col-sm-2 text-right">buildCommand</dt>
+            <dd class="col-sm-9"><%= aSUT.buildCommandToHtml()%></dd>
+          </dl>
+          <dl class="row">
+            <dt  class="col-sm-2 text-right">producedByAutomationRequest</dt>
+            <dd class="col-sm-9"><%= aSUT.producedByAutomationRequestToHtml()%></dd>
+          </dl>
         </div>
       </div>
     </div>

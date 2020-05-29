@@ -52,6 +52,10 @@ public interface Oslc_autoDomainConstants
     public static String AUTOMATIONRESULT_NAMESPACE = AUTOMATION_NAMSPACE; //namespace of the rdfs:class the resource describes
     public static String AUTOMATIONRESULT_LOCALNAME = "AutomationResult"; //localName of the rdfs:class the resource describes
     public static String AUTOMATIONRESULT_TYPE = AUTOMATIONRESULT_NAMESPACE + AUTOMATIONRESULT_LOCALNAME; //fullname of the rdfs:class the resource describes
+    public static String CONTRIBUTION_PATH = "contribution";
+    public static String CONTRIBUTION_NAMESPACE = AUTOMATION_NAMSPACE; //namespace of the rdfs:class the resource describes
+    public static String CONTRIBUTION_LOCALNAME = "Contribution"; //localName of the rdfs:class the resource describes
+    public static String CONTRIBUTION_TYPE = CONTRIBUTION_NAMESPACE + CONTRIBUTION_LOCALNAME; //fullname of the rdfs:class the resource describes
     public static String PARAMETERDEFINITION_PATH = "parameterDefinition";
     public static String PARAMETERDEFINITION_NAMESPACE = AUTOMATION_NAMSPACE; //namespace of the rdfs:class the resource describes
     public static String PARAMETERDEFINITION_LOCALNAME = "ParameterDefinition"; //localName of the rdfs:class the resource describes

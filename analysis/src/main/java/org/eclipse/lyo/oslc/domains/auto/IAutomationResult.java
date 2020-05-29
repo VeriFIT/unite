@@ -71,7 +71,7 @@ import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
 import verifit.analysis.resources.FitDomainConstants;
-import verifit.analysis.resources.ITextOut;
+import org.eclipse.lyo.oslc.domains.auto.IContribution;
 import org.eclipse.lyo.oslc.domains.IPerson;
 import verifit.analysis.resources.ISUT;
 import org.eclipse.lyo.oslc.domains.IPerson;
@@ -81,7 +81,6 @@ import org.eclipse.lyo.oslc.domains.auto.IAutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.IAutomationPlan;
 
 // Start of user code imports
-import verifit.analysis.resources.TextOut;
 // End of user code
 
 @OslcNamespace(Oslc_autoDomainConstants.AUTOMATIONRESULT_NAMESPACE)
@@ -97,7 +96,7 @@ public interface IAutomationResult
     public void addServiceProvider(final URI serviceProvider );
     public void addState(final Link state );
     public void addVerdict(final Link verdict );
-    public void addContribution(final TextOut contribution );
+    public void addContribution(final Contribution contribution );
     public void addInputParameter(final ParameterInstance inputParameter );
     public void addOutputParameter(final ParameterInstance outputParameter );
 
@@ -212,9 +211,9 @@ public interface IAutomationResult
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.LocalResource)
     @OslcRepresentation(Representation.Inline)
-    @OslcRange({FitDomainConstants.TEXTOUT_TYPE})
+    @OslcRange({Oslc_autoDomainConstants.CONTRIBUTION_TYPE})
     @OslcReadOnly(false)
-    public Set<TextOut> getContribution();
+    public Set<Contribution> getContribution();
 
     @OslcName("inputParameter")
     @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "inputParameter")
@@ -279,7 +278,7 @@ public interface IAutomationResult
     public void setState(final Set<Link> state );
     public void setDesiredState(final Link desiredState );
     public void setVerdict(final Set<Link> verdict );
-    public void setContribution(final Set<TextOut> contribution );
+    public void setContribution(final Set<Contribution> contribution );
     public void setInputParameter(final Set<ParameterInstance> inputParameter );
     public void setOutputParameter(final Set<ParameterInstance> outputParameter );
     public void setProducedByAutomationRequest(final Link producedByAutomationRequest );

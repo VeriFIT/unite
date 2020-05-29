@@ -35,11 +35,11 @@ import verifit.compilation.ServiceProviderInfo;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
+import org.eclipse.lyo.oslc.domains.auto.Contribution;
 import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc.domains.Person;
 import verifit.compilation.resources.SUT;
-import verifit.compilation.resources.TextOut;
 
 
 // Start of user code imports
@@ -217,6 +217,35 @@ public class VeriFitCompilationManager {
     	
         return updatedResource;
     }
+
+    /**
+     * Updates an AutomationResult in the Adapter's catalog. The old resource is replaced with the new one.
+     * @param changedResource		This resource will be used as replacement for the old resource.
+     * @param serviceProviderId		ID of the service provider for the updated resource.
+     * @param automationResultId	ID of the AutomationResult to update
+     * @return						The updated resource.
+     */
+    public static AutomationResult updateAutomationResult(AutomationResult changedResource, final String serviceProviderId, final String automationResultId)
+    {
+    	AutomationResult updatedResource = null;
+
+    	changedResource.setModified(new Date());
+  
+    	try {
+    		
+			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), changedResource);
+			
+		} catch (StoreAccessException e) {
+			System.out.println("WARNING: AutomationResult update failed: " + e.getMessage());
+			
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+		}
+    	updatedResource = changedResource;
+    	
+        return updatedResource;
+    }
     
     /**
      * Creates an AutomationResult resource with the specified properties, and stores in the Adapter's catalog.
@@ -267,15 +296,15 @@ public class VeriFitCompilationManager {
     }
     
     /**
-	 * Creates a TextOut resource with the specified properties, and stores in the Adapter's catalog.
+	 * Creates a Contribution resource with the specified properties.
 	 * @param aResource			The new resource will copy properties from the specified aResource.
 	 * @param serviceProviderId	ID of the service provider for the new resource.
 	 * @param newID				ID for the new resource
 	 * @return					The newly created resource. Or null if one of the required properties was missing.
 	 */
-    public static TextOut createTextOut(final TextOut aResource, final String serviceProviderId)
+    public static Contribution createContribution(final Contribution aResource, final String serviceProviderId)
     {
-    	TextOut newResource = null;
+    	Contribution newResource = null;
 
     	// check that required properties are specified in the input parameter
     	if (aResource == null)
@@ -810,6 +839,14 @@ public class VeriFitCompilationManager {
         return aResource;
     }
 
+    public static Boolean deleteSUT(HttpServletRequest httpServletRequest, final String serviceProviderId, final String sUTId)
+    {
+        Boolean deleted = false;
+        // Start of user code deleteSUT
+        // TODO Implement code to delete a resource
+        // End of user code
+        return deleted;
+    }
 
     public static AutomationRequest getAutomationRequest(HttpServletRequest httpServletRequest, final String serviceProviderId, final String automationRequestId)
     {
@@ -865,29 +902,6 @@ public class VeriFitCompilationManager {
     }
 
 
-    public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, final AutomationResult aResource, final String serviceProviderId, final String automationResultId) {
-        AutomationResult updatedResource = null;
-        // Start of user code updateAutomationResult
-    	
-        AutomationResult changedResource = aResource;
-        aResource.setAbout(VeriFitCompilationResourcesFactory.constructURIForAutomationResult(serviceProviderId, automationResultId));
-    	changedResource.setModified(new Date());
-    	
-    	try {
-    		
-			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), changedResource);
-			
-		} catch (URISyntaxException e) {
-			// TODO should never be thrown (URI syntax)
-			e.printStackTrace();
-			
-		} catch (Exception e) {
-			System.out.println("WARNING: AutomationResult update failed: " + e.getMessage());
-		}
-
-        // End of user code
-        return updatedResource;
-    }
 
 
     public static String getETagFromAutomationPlan(final AutomationPlan aResource)

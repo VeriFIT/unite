@@ -44,7 +44,7 @@ To revert to the default generated content, delete all content in this file, and
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title>SelectionDialog1</title>
+    <title>SelectSUT</title>
     <script type="text/javascript" src="<%=UriBuilder.fromUri(OSLC4JUtils.getPublicURI()).path("delegatedUI.js").build().toString()%>"></script>
   </head>
   <body style="padding: 10px;">

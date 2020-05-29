@@ -85,11 +85,11 @@ import verifit.compilation.servlet.ServiceProviderCatalogSingleton;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
+import org.eclipse.lyo.oslc.domains.auto.Contribution;
 import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc.domains.Person;
 import verifit.compilation.resources.SUT;
-import verifit.compilation.resources.TextOut;
 
 // Start of user code imports
 import verifit.compilation.exceptions.OslcResourceException;
@@ -1138,6 +1138,28 @@ public class ServiceProviderService1
 
         throw new WebApplicationException(Status.NOT_FOUND);
     }
+    @DELETE
+    @Path("sUTs/{sUTId}")
+    public Response deleteSUT(
+                @PathParam("serviceProviderId") final String serviceProviderId, @PathParam("sUTId") final String sUTId
+        ) throws IOException, ServletException, URISyntaxException
+    {
+        // Start of user code deleteSUT_init
+        // End of user code
+        final SUT aResource = VeriFitCompilationManager.getSUT(httpServletRequest, serviceProviderId, sUTId);
+
+        if (aResource != null) {
+            // Start of user code deleteSUT
+            // End of user code
+            boolean deleted = VeriFitCompilationManager.deleteSUT(httpServletRequest, serviceProviderId, sUTId);
+            if (deleted)
+                return Response.ok().header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();
+            else
+                throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+        }
+        throw new WebApplicationException(Status.NOT_FOUND);
+    }
+
     @GET
     @Path("automationRequests/{automationRequestId}")
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
@@ -1420,43 +1442,4 @@ public class ServiceProviderService1
 
         throw new WebApplicationException(Status.NOT_FOUND);
     }
-    @PUT
-    @Path("automationResults/{automationResultId}")
-    @Consumes({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
-    public Response updateAutomationResult(
-            @HeaderParam("If-Match") final String eTagHeader,
-            @PathParam("serviceProviderId") final String serviceProviderId, @PathParam("automationResultId") final String automationResultId ,
-            final AutomationResult aResource
-        ) throws IOException, ServletException
-    {
-        // Start of user code updateAutomationResult_init
-        // End of user code
-        final AutomationResult originalResource = VeriFitCompilationManager.getAutomationResult(httpServletRequest, serviceProviderId, automationResultId);
-
-        if (originalResource != null) {
-            try {
-                final String originalETag = VeriFitCompilationManager.getETagFromAutomationResult(originalResource);
-
-                if ((eTagHeader == null) || (originalETag.equals(eTagHeader))) {
-                    // Start of user code updateAutomationResult
-                    // End of user code
-                    final AutomationResult updatedResource = VeriFitCompilationManager.updateAutomationResult(httpServletRequest, aResource, serviceProviderId, automationResultId);
-                    httpServletResponse.setHeader("ETag", VeriFitCompilationManager.getETagFromAutomationResult(updatedResource));
-                    return Response.ok().header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();
-                }
-                else {
-                    throw new WebApplicationException(Status.PRECONDITION_FAILED);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new WebApplicationException(e);
-            }
-
-        }
-        else {
-            throw new WebApplicationException(Status.NOT_FOUND);
-        }
-    }
-
 }

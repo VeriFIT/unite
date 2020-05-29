@@ -26,7 +26,7 @@
  *******************************************************************************/
 // End of user code
 
-package verifit.analysis.resources;
+package org.eclipse.lyo.oslc.domains.auto;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -70,7 +70,7 @@ import org.eclipse.lyo.oslc4j.core.model.ValueType;
 import org.eclipse.lyo.oslc4j.core.model.ResourceShape;
 import org.eclipse.lyo.oslc4j.core.model.ResourceShapeFactory;
 
-import verifit.analysis.resources.FitDomainConstants;
+import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 
 
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
@@ -87,12 +87,12 @@ import org.eclipse.lyo.oslc.domains.Person;
 
 // Start of user code classAnnotations
 // End of user code
-@OslcNamespace(FitDomainConstants.TEXTOUT_NAMESPACE)
-@OslcName(FitDomainConstants.TEXTOUT_LOCALNAME)
-@OslcResourceShape(title = "TextOut Resource Shape", describes = FitDomainConstants.TEXTOUT_TYPE)
-public class TextOut
+@OslcNamespace(Oslc_autoDomainConstants.CONTRIBUTION_NAMESPACE)
+@OslcName(Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME)
+@OslcResourceShape(title = "Contribution Resource Shape", describes = Oslc_autoDomainConstants.CONTRIBUTION_TYPE)
+public class Contribution
     extends AbstractResource
-    implements ITextOut
+    implements IContribution
 {
     // Start of user code attributeAnnotation:title
     // End of user code
@@ -120,7 +120,7 @@ public class TextOut
     // End of user code
     // Start of user code classMethods
     // End of user code
-    public TextOut()
+    public Contribution()
            throws URISyntaxException
     {
         super();
@@ -129,7 +129,7 @@ public class TextOut
         // End of user code
     }
     
-    public TextOut(final URI about)
+    public Contribution(final URI about)
            throws URISyntaxException
     {
         super(about);
@@ -138,57 +138,12 @@ public class TextOut
         // End of user code
     }
     
-    /**
-    * @deprecated Use the methods in class {@link verifit.analysis.VeriFitAnalysisResourcesFactory} instead.
-    */
-    @Deprecated
-    public TextOut(final String serviceProviderId, final String textOutId)
-           throws URISyntaxException
-    {
-        this (constructURI(serviceProviderId, textOutId));
-        // Start of user code constructor3
-        // End of user code
-    }
-    
-    /**
-    * @deprecated Use the methods in class {@link verifit.analysis.VeriFitAnalysisResourcesFactory} instead.
-    */
-    @Deprecated
-    public static URI constructURI(final String serviceProviderId, final String textOutId)
-    {
-        String basePath = OSLC4JUtils.getServletURI();
-        Map<String, Object> pathParameters = new HashMap<String, Object>();
-        pathParameters.put("serviceProviderId", serviceProviderId);
-        pathParameters.put("textOutId", textOutId);
-        String instanceURI = "serviceProviders/{serviceProviderId}/resources/textOuts/{textOutId}";
-    
-        final UriBuilder builder = UriBuilder.fromUri(basePath);
-        return builder.path(instanceURI).buildFromMap(pathParameters);
-    }
-    
-    /**
-    * @deprecated Use the methods in class {@link verifit.analysis.VeriFitAnalysisResourcesFactory} instead.
-    */
-    @Deprecated
-    public static Link constructLink(final String serviceProviderId, final String textOutId , final String label)
-    {
-        return new Link(constructURI(serviceProviderId, textOutId), label);
-    }
-    
-    /**
-    * @deprecated Use the methods in class {@link verifit.analysis.VeriFitAnalysisResourcesFactory} instead.
-    */
-    @Deprecated
-    public static Link constructLink(final String serviceProviderId, final String textOutId)
-    {
-        return new Link(constructURI(serviceProviderId, textOutId));
-    }
     
     public static ResourceShape createResourceShape() throws OslcCoreApplicationException, URISyntaxException {
         return ResourceShapeFactory.createResourceShape(OSLC4JUtils.getServletURI(),
         OslcConstants.PATH_RESOURCE_SHAPES,
-        FitDomainConstants.TEXTOUT_PATH,
-        TextOut.class);
+        Oslc_autoDomainConstants.CONTRIBUTION_PATH,
+        Contribution.class);
     }
     
     
@@ -204,7 +159,7 @@ public class TextOut
         // End of user code
     
         if (asLocalResource) {
-            result = result + "{a Local TextOut Resource} - update TextOut.toString() to present resource as desired.";
+            result = result + "{a Local Contribution Resource} - update Contribution.toString() to present resource as desired.";
             // Start of user code toString_bodyForLocalResource
             // End of user code
         }
@@ -476,25 +431,6 @@ public class TextOut
     }
     
     @Deprecated
-    static public String titleToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:titleToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"title\">title: </LABEL>";
-    
-        // Start of user code "Mid:titleToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s= s + "<input name=\"title\" type=\"text\" style=\"width: 400px\" id=\"title\" >";
-        // Start of user code "Finalize:titleToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
-    @Deprecated
     static public String descriptionToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
         String s = "";
@@ -515,25 +451,6 @@ public class TextOut
     }
     
     @Deprecated
-    static public String descriptionToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:descriptionToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"description\">description: </LABEL>";
-    
-        // Start of user code "Mid:descriptionToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s= s + "<input name=\"description\" type=\"text\" style=\"width: 400px\" id=\"description\" >";
-        // Start of user code "Finalize:descriptionToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
-    @Deprecated
     static public String typeToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
         String s = "";
@@ -552,24 +469,6 @@ public class TextOut
         return s;
     }
     
-    @Deprecated
-    static public String typeToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:typeToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"type\">type: </LABEL>";
-    
-        // Start of user code "Mid:typeToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        // Start of user code "Finalize:typeToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
     @Deprecated
     static public String valueToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
@@ -591,25 +490,6 @@ public class TextOut
     }
     
     @Deprecated
-    static public String valueToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:valueToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"value\">value: </LABEL>";
-    
-        // Start of user code "Mid:valueToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s= s + "<input name=\"value\" type=\"text\" style=\"width: 400px\" id=\"value\" >";
-        // Start of user code "Finalize:valueToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
-    @Deprecated
     static public String createdToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
         String s = "";
@@ -630,25 +510,6 @@ public class TextOut
     }
     
     @Deprecated
-    static public String createdToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:createdToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"created\">created: </LABEL>";
-    
-        // Start of user code "Mid:createdToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s= s + "<input name=\"created\" type=\"text\" style=\"width: 400px\" id=\"created\" >";
-        // Start of user code "Finalize:createdToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
-    @Deprecated
     static public String creatorToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
         String s = "";
@@ -667,24 +528,6 @@ public class TextOut
         return s;
     }
     
-    @Deprecated
-    static public String creatorToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:creatorToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"creator\">creator: </LABEL>";
-    
-        // Start of user code "Mid:creatorToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        // Start of user code "Finalize:creatorToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
     @Deprecated
     static public String absolutePathToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
@@ -705,25 +548,6 @@ public class TextOut
         return s;
     }
     
-    @Deprecated
-    static public String absolutePathToHtmlForCreation1 (final HttpServletRequest httpServletRequest, final String serviceProviderId)
-    {
-        String s = "";
-    
-        // Start of user code "Init:absolutePathToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s = s + "<label for=\"absolutePath\">absolutePath: </LABEL>";
-    
-        // Start of user code "Mid:absolutePathToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        s= s + "<input name=\"absolutePath\" type=\"text\" style=\"width: 400px\" id=\"absolutePath\" >";
-        // Start of user code "Finalize:absolutePathToHtmlForCreation1(...final String serviceProviderId)"
-        // End of user code
-    
-        return s;
-    }
     
     @Deprecated
     public String titleToHtml()

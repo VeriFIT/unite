@@ -24,7 +24,7 @@
  *******************************************************************************/
 // End of user code
 
-package verifit.compilation.resources;
+package org.eclipse.lyo.oslc.domains.auto;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -64,7 +64,7 @@ import org.eclipse.lyo.oslc4j.core.model.OslcConstants;
 import org.eclipse.lyo.oslc4j.core.model.Representation;
 import org.eclipse.lyo.oslc4j.core.model.ValueType;
 
-import verifit.compilation.resources.FitDomainConstants;
+import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
@@ -74,10 +74,10 @@ import org.eclipse.lyo.oslc.domains.IPerson;
 // Start of user code imports
 // End of user code
 
-@OslcNamespace(FitDomainConstants.TEXTOUT_NAMESPACE)
-@OslcName(FitDomainConstants.TEXTOUT_LOCALNAME)
-@OslcResourceShape(title = "TextOut Resource Shape", describes = FitDomainConstants.TEXTOUT_TYPE)
-public interface ITextOut
+@OslcNamespace(Oslc_autoDomainConstants.CONTRIBUTION_NAMESPACE)
+@OslcName(Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME)
+@OslcResourceShape(title = "Contribution Resource Shape", describes = Oslc_autoDomainConstants.CONTRIBUTION_TYPE)
+public interface IContribution
 {
 
     public void addType(final Link type );

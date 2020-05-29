@@ -136,6 +136,10 @@ To revert to the default generated content, delete all content in this file, and
             <dt>reportsOnAutomationPlan</dt>
             <dd><%= aAutomationResult.reportsOnAutomationPlanToHtml()%></dd>
           </dl>
+          <dl class="dl-horizontal">
+            <dt>createdSUT</dt>
+            <dd><%= aAutomationResult.createdSUTToHtml()%></dd>
+          </dl>
         </div>
       </div>
 </body>

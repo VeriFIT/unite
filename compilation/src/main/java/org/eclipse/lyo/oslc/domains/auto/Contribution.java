@@ -26,7 +26,7 @@
  *******************************************************************************/
 // End of user code
 
-package verifit.compilation.resources;
+package org.eclipse.lyo.oslc.domains.auto;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -70,7 +70,7 @@ import org.eclipse.lyo.oslc4j.core.model.ValueType;
 import org.eclipse.lyo.oslc4j.core.model.ResourceShape;
 import org.eclipse.lyo.oslc4j.core.model.ResourceShapeFactory;
 
-import verifit.compilation.resources.FitDomainConstants;
+import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 
 
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
@@ -87,12 +87,12 @@ import org.eclipse.lyo.oslc.domains.Person;
 
 // Start of user code classAnnotations
 // End of user code
-@OslcNamespace(FitDomainConstants.TEXTOUT_NAMESPACE)
-@OslcName(FitDomainConstants.TEXTOUT_LOCALNAME)
-@OslcResourceShape(title = "TextOut Resource Shape", describes = FitDomainConstants.TEXTOUT_TYPE)
-public class TextOut
+@OslcNamespace(Oslc_autoDomainConstants.CONTRIBUTION_NAMESPACE)
+@OslcName(Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME)
+@OslcResourceShape(title = "Contribution Resource Shape", describes = Oslc_autoDomainConstants.CONTRIBUTION_TYPE)
+public class Contribution
     extends AbstractResource
-    implements ITextOut
+    implements IContribution
 {
     // Start of user code attributeAnnotation:title
     // End of user code
@@ -120,7 +120,7 @@ public class TextOut
     // End of user code
     // Start of user code classMethods
     // End of user code
-    public TextOut()
+    public Contribution()
            throws URISyntaxException
     {
         super();
@@ -129,7 +129,7 @@ public class TextOut
         // End of user code
     }
     
-    public TextOut(final URI about)
+    public Contribution(final URI about)
            throws URISyntaxException
     {
         super(about);
@@ -142,8 +142,8 @@ public class TextOut
     public static ResourceShape createResourceShape() throws OslcCoreApplicationException, URISyntaxException {
         return ResourceShapeFactory.createResourceShape(OSLC4JUtils.getServletURI(),
         OslcConstants.PATH_RESOURCE_SHAPES,
-        FitDomainConstants.TEXTOUT_PATH,
-        TextOut.class);
+        Oslc_autoDomainConstants.CONTRIBUTION_PATH,
+        Contribution.class);
     }
     
     
@@ -159,7 +159,7 @@ public class TextOut
         // End of user code
     
         if (asLocalResource) {
-            result = result + "{a Local TextOut Resource} - update TextOut.toString() to present resource as desired.";
+            result = result + "{a Local Contribution Resource} - update Contribution.toString() to present resource as desired.";
             // Start of user code toString_bodyForLocalResource
             // End of user code
         }

@@ -35,12 +35,12 @@ To revert to the default generated content, delete all content in this file, and
 
 <%@page import="org.eclipse.lyo.oslc4j.core.model.ServiceProvider"%>
 <%@page import="java.util.List" %>
-<%@page import="verifit.analysis.resources.TextOut"%>
+<%@page import="org.eclipse.lyo.oslc.domains.auto.Contribution"%>
 
 <%@ page contentType="text/html" language="java" pageEncoding="UTF-8" %>
 
 <%
-  TextOut aTextOut = (TextOut) request.getAttribute("aTextOut");
+  Contribution aContribution = (Contribution) request.getAttribute("aContribution");
 %>
 
 <html lang="en">
@@ -49,7 +49,7 @@ To revert to the default generated content, delete all content in this file, and
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title><%= aTextOut.toString(false) %></title>
+  <title><%= aContribution.toString(false) %></title>
 
   <link href="<c:url value="/static/css/bootstrap-4.0.0-beta.min.css"/>" rel="stylesheet">
   <link href="<c:url value="/static/css/adaptor.css"/>" rel="stylesheet">
@@ -66,31 +66,31 @@ To revert to the default generated content, delete all content in this file, and
         <div>
           <dl class="dl-horizontal">
             <dt>title</dt>
-            <dd><%= aTextOut.titleToHtml()%></dd>
+            <dd><%= aContribution.titleToHtml()%></dd>
           </dl>
           <dl class="dl-horizontal">
             <dt>description</dt>
-            <dd><%= aTextOut.descriptionToHtml()%></dd>
+            <dd><%= aContribution.descriptionToHtml()%></dd>
           </dl>
           <dl class="dl-horizontal">
             <dt>type</dt>
-            <dd><%= aTextOut.typeToHtml()%></dd>
+            <dd><%= aContribution.typeToHtml()%></dd>
           </dl>
           <dl class="dl-horizontal">
             <dt>value</dt>
-            <dd><%= aTextOut.valueToHtml()%></dd>
+            <dd><%= aContribution.valueToHtml()%></dd>
           </dl>
           <dl class="dl-horizontal">
             <dt>created</dt>
-            <dd><%= aTextOut.createdToHtml()%></dd>
+            <dd><%= aContribution.createdToHtml()%></dd>
           </dl>
           <dl class="dl-horizontal">
             <dt>creator</dt>
-            <dd><%= aTextOut.creatorToHtml()%></dd>
+            <dd><%= aContribution.creatorToHtml()%></dd>
           </dl>
           <dl class="dl-horizontal">
             <dt>absolutePath</dt>
-            <dd><%= aTextOut.absolutePathToHtml()%></dd>
+            <dd><%= aContribution.absolutePathToHtml()%></dd>
           </dl>
         </div>
       </div>

@@ -44,8 +44,4 @@ public interface FitDomainConstants
     public static String SUT_NAMESPACE = VERIFIT_NAMSPACE; //namespace of the rdfs:class the resource describes
     public static String SUT_LOCALNAME = "SUT"; //localName of the rdfs:class the resource describes
     public static String SUT_TYPE = SUT_NAMESPACE + SUT_LOCALNAME; //fullname of the rdfs:class the resource describes
-    public static String TEXTOUT_PATH = "textOut";
-    public static String TEXTOUT_NAMESPACE = VERIFIT_NAMSPACE; //namespace of the rdfs:class the resource describes
-    public static String TEXTOUT_LOCALNAME = "TextOut"; //localName of the rdfs:class the resource describes
-    public static String TEXTOUT_TYPE = TEXTOUT_NAMESPACE + TEXTOUT_LOCALNAME; //fullname of the rdfs:class the resource describes
 }

@@ -30,11 +30,11 @@ import org.eclipse.lyo.oslc4j.core.OSLC4JUtils;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
+import org.eclipse.lyo.oslc.domains.auto.Contribution;
 import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc.domains.Person;
 import verifit.analysis.resources.SUT;
-import verifit.analysis.resources.TextOut;
 
 // Start of user code imports
 // End of user code
@@ -140,33 +140,33 @@ public class VeriFitAnalysisResourcesFactory {
     }
     
 
-    //methods for TextOut resource
-    public static TextOut createTextOut(final String serviceProviderId, final String textOutId)
+    //methods for Contribution resource
+    public static Contribution createContribution(final String serviceProviderId, final String contributionId)
            throws URISyntaxException
     {
-        return new TextOut(constructURIForTextOut(serviceProviderId, textOutId));
+        return new Contribution(constructURIForContribution(serviceProviderId, contributionId));
     }
     
-    public static URI constructURIForTextOut(final String serviceProviderId, final String textOutId)
+    public static URI constructURIForContribution(final String serviceProviderId, final String contributionId)
     {
         String basePath = OSLC4JUtils.getServletURI();
         Map<String, Object> pathParameters = new HashMap<String, Object>();
         pathParameters.put("serviceProviderId", serviceProviderId);
-        pathParameters.put("textOutId", textOutId);
-        String instanceURI = "serviceProviders/{serviceProviderId}/resources/textOuts/{textOutId}";
+        pathParameters.put("contributionId", contributionId);
+        String instanceURI = "serviceProviders/{serviceProviderId}/resources/contributions/{contributionId}";
     
         final UriBuilder builder = UriBuilder.fromUri(basePath);
         return builder.path(instanceURI).buildFromMap(pathParameters);
     }
     
-    public static Link constructLinkForTextOut(final String serviceProviderId, final String textOutId , final String label)
+    public static Link constructLinkForContribution(final String serviceProviderId, final String contributionId , final String label)
     {
-        return new Link(constructURIForTextOut(serviceProviderId, textOutId), label);
+        return new Link(constructURIForContribution(serviceProviderId, contributionId), label);
     }
     
-    public static Link constructLinkForTextOut(final String serviceProviderId, final String textOutId)
+    public static Link constructLinkForContribution(final String serviceProviderId, final String contributionId)
     {
-        return new Link(constructURIForTextOut(serviceProviderId, textOutId));
+        return new Link(constructURIForContribution(serviceProviderId, contributionId));
     }
     
 

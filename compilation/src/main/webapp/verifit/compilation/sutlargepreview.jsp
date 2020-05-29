@@ -88,6 +88,22 @@ To revert to the default generated content, delete all content in this file, and
             <dt>identifier</dt>
             <dd><%= aSUT.identifierToHtml()%></dd>
           </dl>
+          <dl class="dl-horizontal">
+            <dt>launchCommand</dt>
+            <dd><%= aSUT.launchCommandToHtml()%></dd>
+          </dl>
+          <dl class="dl-horizontal">
+            <dt>SUTdirectoryPath</dt>
+            <dd><%= aSUT.sUTdirectoryPathToHtml()%></dd>
+          </dl>
+          <dl class="dl-horizontal">
+            <dt>buildCommand</dt>
+            <dd><%= aSUT.buildCommandToHtml()%></dd>
+          </dl>
+          <dl class="dl-horizontal">
+            <dt>producedByAutomationRequest</dt>
+            <dd><%= aSUT.producedByAutomationRequestToHtml()%></dd>
+          </dl>
         </div>
       </div>
 </body>

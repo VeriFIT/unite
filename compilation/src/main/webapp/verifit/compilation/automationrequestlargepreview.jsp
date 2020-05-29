@@ -120,6 +120,10 @@ To revert to the default generated content, delete all content in this file, and
             <dt>executesAutomationPlan</dt>
             <dd><%= aAutomationRequest.executesAutomationPlanToHtml()%></dd>
           </dl>
+          <dl class="dl-horizontal">
+            <dt>producedAutomationResult</dt>
+            <dd><%= aAutomationRequest.producedAutomationResultToHtml()%></dd>
+          </dl>
         </div>
       </div>
 </body>

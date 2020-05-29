@@ -50,7 +50,7 @@ import verifit.compilation.VeriFitCompilationConstants;
 import verifit.compilation.VeriFitCompilationManager;
 import verifit.compilation.VeriFitCompilationResourcesFactory;
 import verifit.compilation.resources.SUT;
-import verifit.compilation.resources.TextOut;
+import org.eclipse.lyo.oslc.domains.auto.Contribution;
 /**
  * A thread for executing the Deploy SUT Automation Plan.
  * @author od42
@@ -137,15 +137,15 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			
 			
 		    // prepare result contributions - program fetching, compilation
-		    TextOut fetchLog = new TextOut();
+			Contribution fetchLog = new Contribution();
 		    fetchLog.setDescription("Output of the program fetching process. Provider messages are prefixed with #.");
 		    fetchLog.setTitle("Fetching Output");
 		    //fetchLog.addType(new Link(new URI("http://purl.org/dc/dcmitype/Text"))); //TODO
 		    
-		    TextOut compStdoutLog = new TextOut();
+		    Contribution compStdoutLog = new Contribution();
 		    compStdoutLog.setDescription("Standard output of the compilation. Provider messages are prefixed with #.");
 		    compStdoutLog.setTitle("Compilation stdout");
-		    TextOut compStderrLog = new TextOut();
+		    Contribution compStderrLog = new Contribution();
 		    compStderrLog.setDescription("Error output of the compilation. Provider messages are prefixed with #.");
 		    compStderrLog.setTitle("Compilation stderr");
 			
@@ -200,7 +200,7 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 
 			} finally {
 				// create the fetching log Contribution and add it to the AutomationResult
-				fetchLog = VeriFitCompilationManager.createTextOut(fetchLog, serviceProviderId);
+				fetchLog = VeriFitCompilationManager.createContribution(fetchLog, serviceProviderId);
 		    	newAutoResult.addContribution(fetchLog);
 			}
 			
@@ -231,8 +231,8 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 		    		
 				} finally {
 					// create the compilation Contributions and add them to the Automation Result
-					compStdoutLog = VeriFitCompilationManager.createTextOut(compStdoutLog, serviceProviderId);
-					compStderrLog = VeriFitCompilationManager.createTextOut(compStderrLog, serviceProviderId);
+					compStdoutLog = VeriFitCompilationManager.createContribution(compStdoutLog, serviceProviderId);
+					compStderrLog = VeriFitCompilationManager.createContribution(compStderrLog, serviceProviderId);
 			    	newAutoResult.addContribution(compStdoutLog);
 			    	newAutoResult.addContribution(compStderrLog);
 				}
@@ -257,7 +257,7 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			newAutoResult.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));
 			newAutoResult.setVerdict(new HashSet<Link>());
 			newAutoResult.addVerdict(new Link(new URI(executionVerdict)));
-			VeriFitCompilationManager.updateAutomationResult(null, newAutoResult, serviceProviderId, VeriFitCompilationManager.getResourceIdFromUri(newAutoResult.getAbout()));
+			VeriFitCompilationManager.updateAutomationResult(newAutoResult, serviceProviderId, VeriFitCompilationManager.getResourceIdFromUri(newAutoResult.getAbout()));
 			
 			// update the autoRequest state
 			execAutoRequest.setState(new HashSet<Link>());

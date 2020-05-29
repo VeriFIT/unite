@@ -31,7 +31,7 @@ To revert to the default generated content, delete all content in this file, and
 
 <%@page import="org.eclipse.lyo.oslc4j.core.model.ServiceProvider"%>
 <%@page import="java.util.List" %>
-<%@page import="verifit.analysis.resources.TextOut"%>
+<%@page import="org.eclipse.lyo.oslc.domains.auto.Contribution"%>
 <%@page import="org.eclipse.lyo.oslc4j.core.OSLC4JUtils"%>
 <%@page import="javax.ws.rs.core.UriBuilder"%>
 
@@ -45,7 +45,7 @@ To revert to the default generated content, delete all content in this file, and
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title>CreatorTextOut</title>
+    <title>WriterContribution</title>
     <script type="text/javascript" src="<%=UriBuilder.fromUri(OSLC4JUtils.getPublicURI()).path("delegatedUI.js").build().toString()%>"></script>
   </head>
   <body style="padding: 10px;">
@@ -53,25 +53,25 @@ To revert to the default generated content, delete all content in this file, and
     <form id="Create" method="POST" class="enter_bug_form">
         <table style="clear: both;">
           <tr>
-            <td><%= TextOut.titleToHtmlForCreation1(request, serviceProviderId)%></td>
+            <td><%= Contribution.titleToHtmlForCreation(request)%></td>
           </tr>
           <tr>
-            <td><%= TextOut.descriptionToHtmlForCreation1(request, serviceProviderId)%></td>
+            <td><%= Contribution.descriptionToHtmlForCreation(request)%></td>
           </tr>
           <tr>
-            <td><%= TextOut.typeToHtmlForCreation1(request, serviceProviderId)%></td>
+            <td><%= Contribution.typeToHtmlForCreation(request)%></td>
           </tr>
           <tr>
-            <td><%= TextOut.valueToHtmlForCreation1(request, serviceProviderId)%></td>
+            <td><%= Contribution.valueToHtmlForCreation(request)%></td>
           </tr>
           <tr>
-            <td><%= TextOut.createdToHtmlForCreation1(request, serviceProviderId)%></td>
+            <td><%= Contribution.createdToHtmlForCreation(request)%></td>
           </tr>
           <tr>
-            <td><%= TextOut.creatorToHtmlForCreation1(request, serviceProviderId)%></td>
+            <td><%= Contribution.creatorToHtmlForCreation(request)%></td>
           </tr>
           <tr>
-            <td><%= TextOut.absolutePathToHtmlForCreation1(request, serviceProviderId)%></td>
+            <td><%= Contribution.absolutePathToHtmlForCreation(request)%></td>
           </tr>
           <tr>
             <td></td>

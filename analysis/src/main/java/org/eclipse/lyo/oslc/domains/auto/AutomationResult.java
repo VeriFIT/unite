@@ -79,7 +79,7 @@ import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
 import verifit.analysis.resources.FitDomainConstants;
-import verifit.analysis.resources.TextOut;
+import org.eclipse.lyo.oslc.domains.auto.Contribution;
 import org.eclipse.lyo.oslc.domains.Person;
 import verifit.analysis.resources.SUT;
 import org.eclipse.lyo.oslc.domains.Person;
@@ -144,7 +144,7 @@ public class AutomationResult
     private HashSet<Link> verdict = new HashSet<Link>();
     // Start of user code attributeAnnotation:contribution
     // End of user code
-    private HashSet<TextOut> contribution = new HashSet<TextOut>();
+    private HashSet<Contribution> contribution = new HashSet<Contribution>();
     // Start of user code attributeAnnotation:inputParameter
     // End of user code
     private HashSet<ParameterInstance> inputParameter = new HashSet<ParameterInstance>();
@@ -326,7 +326,7 @@ public class AutomationResult
         this.verdict.add(verdict);
     }
     
-    public void addContribution(final TextOut contribution)
+    public void addContribution(final Contribution contribution)
     {
         this.contribution.add(contribution);
     }
@@ -546,9 +546,9 @@ public class AutomationResult
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.LocalResource)
     @OslcRepresentation(Representation.Inline)
-    @OslcRange({FitDomainConstants.TEXTOUT_TYPE})
+    @OslcRange({Oslc_autoDomainConstants.CONTRIBUTION_TYPE})
     @OslcReadOnly(false)
-    public Set<TextOut> getContribution()
+    public Set<Contribution> getContribution()
     {
         // Start of user code getterInit:contribution
         // End of user code
@@ -826,7 +826,7 @@ public class AutomationResult
     
     // Start of user code setterAnnotation:contribution
     // End of user code
-    public void setContribution(final Set<TextOut> contribution )
+    public void setContribution(final Set<Contribution> contribution )
     {
         // Start of user code setterInit:contribution
         // End of user code
@@ -1637,7 +1637,7 @@ public class AutomationResult
     
         try {
             s = s + "<ul>";
-            for(TextOut next : contribution) {
+            for(Contribution next : contribution) {
                 s = s + "<li>";
                 s = s + next.toHtml(true);
                 s = s + "</li>";

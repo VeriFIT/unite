@@ -80,16 +80,16 @@ import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
-import verifit.analysis.resources.FitDomainConstants;
+import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import verifit.analysis.servlet.ServiceProviderCatalogSingleton;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
+import org.eclipse.lyo.oslc.domains.auto.Contribution;
 import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc.domains.Person;
 import verifit.analysis.resources.SUT;
-import verifit.analysis.resources.TextOut;
 
 // Start of user code imports
 import verifit.analysis.exceptions.OslcResourceException;
@@ -534,31 +534,31 @@ public class ServiceProviderService1
     }
 
     /**
-     * Create a single TextOut via RDF/XML, XML or JSON POST
+     * Create a single Contribution via RDF/XML, XML or JSON POST
      *
      * @throws IOException
      * @throws ServletException
      */
     @OslcCreationFactory
     (
-         title = "WriteTextOut",
-         label = "WriteTextOut",
-         resourceShapes = {OslcConstants.PATH_RESOURCE_SHAPES + "/" + FitDomainConstants.TEXTOUT_PATH},
-         resourceTypes = {FitDomainConstants.TEXTOUT_TYPE},
+         title = "WriteContribution",
+         label = "WriteContribution",
+         resourceShapes = {OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.CONTRIBUTION_PATH},
+         resourceTypes = {Oslc_autoDomainConstants.CONTRIBUTION_TYPE},
          usages = {}
     )
     @POST
-    @Path("writeTextOut")
+    @Path("writeContribution")
     @Consumes({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
-    public Response createTextOut(
+    public Response createContribution(
             @PathParam("serviceProviderId") final String serviceProviderId ,
-            final TextOut aResource
+            final Contribution aResource
         ) throws IOException, ServletException
     {
         try {
-            TextOut newResource = VeriFitAnalysisManager.createTextOut(httpServletRequest, aResource, serviceProviderId);
-            httpServletResponse.setHeader("ETag", VeriFitAnalysisManager.getETagFromTextOut(newResource));
+            Contribution newResource = VeriFitAnalysisManager.createContribution(httpServletRequest, aResource, serviceProviderId);
+            httpServletResponse.setHeader("ETag", VeriFitAnalysisManager.getETagFromContribution(newResource));
             return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();
         } catch (OslcResourceException e) {
                Error errorResource = new Error();
@@ -775,19 +775,19 @@ public class ServiceProviderService1
      * @throws ServletException
      */
     @GET
-    @Path("writerTextOut")
+    @Path("writerContribution")
     @Consumes({MediaType.WILDCARD})
-    public void TextOutCreator(
+    public void ContributionCreator(
                 @PathParam("serviceProviderId") final String serviceProviderId
         ) throws IOException, ServletException
     {
-        // Start of user code TextOutCreator
+        // Start of user code ContributionCreator
         // End of user code
 
         httpServletRequest.setAttribute("creatorUri", UriBuilder.fromUri(OSLC4JUtils.getServletURI()).path(uriInfo.getPath()).build().toString());
         httpServletRequest.setAttribute("serviceProviderId", serviceProviderId);
 
-        RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/verifit/analysis/textoutcreator.jsp");
+        RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/verifit/analysis/contributioncreator.jsp");
         rd.forward(httpServletRequest, httpServletResponse);
     }
 
@@ -798,24 +798,24 @@ public class ServiceProviderService1
      */
     @OslcDialog
     (
-         title = "WriterTextOut",
-         label = "WriterTextOut",
-         uri = "serviceProviders/{serviceProviderId}/resources/writerTextOut",
+         title = "WriterContribution",
+         label = "WriterContribution",
+         uri = "serviceProviders/{serviceProviderId}/resources/writerContribution",
          hintWidth = "0px",
          hintHeight = "0px",
-         resourceTypes = {FitDomainConstants.TEXTOUT_TYPE},
+         resourceTypes = {Oslc_autoDomainConstants.CONTRIBUTION_TYPE},
          usages = {}
     )
     @POST
-    @Path("writerTextOut")
+    @Path("writerContribution")
     @Consumes({ MediaType.APPLICATION_FORM_URLENCODED})
-    public void createTextOutFromDialog(
+    public void createContributionFromDialog(
             @PathParam("serviceProviderId") final String serviceProviderId
         ) {
         try {
-            TextOut newResource = null;
+            Contribution newResource = null;
 
-            TextOut aResource = new TextOut();
+            Contribution aResource = new Contribution();
 
             String[] paramValues;
 
@@ -877,7 +877,7 @@ public class ServiceProviderService1
 
             }
 
-            newResource = VeriFitAnalysisManager.createTextOutFromDialog(httpServletRequest, aResource, serviceProviderId);
+            newResource = VeriFitAnalysisManager.createContributionFromDialog(httpServletRequest, aResource, serviceProviderId);
 
             if (newResource != null) {
                 httpServletRequest.setAttribute("newResource", newResource);
@@ -1328,43 +1328,4 @@ public class ServiceProviderService1
 
         throw new WebApplicationException(Status.NOT_FOUND);
     }
-    @PUT
-    @Path("automationResults/{automationResultId}")
-    @Consumes({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON, OslcMediaType.TEXT_TURTLE})
-    public Response updateAutomationResult(
-            @HeaderParam("If-Match") final String eTagHeader,
-            @PathParam("serviceProviderId") final String serviceProviderId, @PathParam("automationResultId") final String automationResultId ,
-            final AutomationResult aResource
-        ) throws IOException, ServletException
-    {
-        // Start of user code updateAutomationResult_init
-        // End of user code
-        final AutomationResult originalResource = VeriFitAnalysisManager.getAutomationResult(httpServletRequest, serviceProviderId, automationResultId);
-
-        if (originalResource != null) {
-            try {
-                final String originalETag = VeriFitAnalysisManager.getETagFromAutomationResult(originalResource);
-
-                if ((eTagHeader == null) || (originalETag.equals(eTagHeader))) {
-                    // Start of user code updateAutomationResult
-                    // End of user code
-                    final AutomationResult updatedResource = VeriFitAnalysisManager.updateAutomationResult(httpServletRequest, aResource, serviceProviderId, automationResultId);
-                    httpServletResponse.setHeader("ETag", VeriFitAnalysisManager.getETagFromAutomationResult(updatedResource));
-                    return Response.ok().header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();
-                }
-                else {
-                    throw new WebApplicationException(Status.PRECONDITION_FAILED);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new WebApplicationException(e);
-            }
-
-        }
-        else {
-            throw new WebApplicationException(Status.NOT_FOUND);
-        }
-    }
-
 }
