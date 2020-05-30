@@ -19,6 +19,9 @@ The adapters need a SPARQL triplestore. Start the triplestore before launching t
 - Fuseki SPARQL triplestore 
 	- in *sparql_triplestore/jetty-distribution/start.ini* change *jetty.http.host* and *jetty.http.port*
 
+#### Run all at once
+Use the run_all.sh script to run everything at once. Use ctrl+c to kill it once youre done. Or launch everything by yourself using the commands below. 
+
 #### Adapters
 Analysis adapter
 ```

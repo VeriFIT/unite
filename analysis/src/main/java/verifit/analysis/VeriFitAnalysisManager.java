@@ -163,10 +163,11 @@ public class VeriFitAnalysisManager {
 	 * Creates an AutomationPlan resource with the specified properties, and stores in the Adapter's catalog.
 	 * @param aResource			The new resource will copy properties from the specified aResource.
 	 * @param toolCommand		What command should be used to launch the tool associated with this AutomationPlan.
+	 * @param adapterSpecificParams		What parameters should always be included when launching the tool (e.g. to make the output xml readable)
 	 * @return					The newly created resource. Or null if one of the required properties was missing.
 	 * @throws StoreAccessException 
 	 */
-    public static AutomationPlan createAutomationPlan(final AutomationPlan aResource, final String toolCommand) throws StoreAccessException
+    public static AutomationPlan createAutomationPlan(final AutomationPlan aResource, final String toolCommand, final String adapterSpecificParams) throws StoreAccessException
     {    	
     	AutomationPlan newResource = null;
     	
@@ -190,17 +191,28 @@ public class VeriFitAnalysisManager {
 			//newResource.addServiceProvider(new URI(VeriFitAnalysisProperties.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
 			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationPlan"));
 			
-			// add default parameters for all tools
+			// add default parameterDefinitions for all tools
 			ParameterDefinition toolCommandDef = new ParameterDefinition();
 			toolCommandDef.setDescription("How should the tool be called.");
 			toolCommandDef.setName("toolCommand");
-			toolCommandDef.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ONE)));
+			toolCommandDef.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
 			toolCommandDef.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
 			toolCommandDef.setHidden(true);
 			toolCommandDef.setReadOnly(true);
 			toolCommandDef.setDefaultValue(toolCommand);
 			toolCommandDef.setCommandlinePosition(0);
 			newResource.addParameterDefinition(toolCommandDef);
+
+			ParameterDefinition adapterSpecific = new ParameterDefinition();
+			adapterSpecific.setDescription("Parameters needed by the adapter in order for the tools output to be xml readable.");
+			adapterSpecific.setName("adapterSpecific");
+			adapterSpecific.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
+			adapterSpecific.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));	
+			adapterSpecific.setHidden(true);
+			adapterSpecific.setReadOnly(true);
+			adapterSpecific.setDefaultValue(adapterSpecificParams);
+			adapterSpecific.setCommandlinePosition(1);	
+			newResource.addParameterDefinition(adapterSpecific);
 			
 			ParameterDefinition SUT = new ParameterDefinition();
 			SUT.setDescription("Refference to an SUT resource to analyse. SUTs are created using the compilation provider."); //TODO
@@ -222,19 +234,7 @@ public class VeriFitAnalysisManager {
 			addOutputsRegex.setReadOnly(false);
 			addOutputsRegex.setDefaultValue(".^");
 			newResource.addParameterDefinition(addOutputsRegex);
-			
-			/* TODO later
-			ParameterDefinition extraParams = new ParameterDefinition();
-			extraParams.setDescription("How should the tool be called.");
-			extraParams.setName("extraParameters");
-			extraParams.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ONE)));
-			extraParams.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
-			extraParams.setHidden(false);
-			extraParams.setReadOnly(false);
-			newResource.addParameterDefinition(extraParams);
-			*/
-			
-			
+						
 			// persist in the triplestore
 			store.updateResources(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
 
