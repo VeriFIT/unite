@@ -101,7 +101,7 @@ public class SutAnalyse extends RequestRunner
 	{
 		
 		try {
-			final String outputRegex = inputParamsMap.get("addOutputsRegex").getLeft();
+			final String outputRegex = inputParamsMap.get("outputFileRegex").getLeft();
 			
 			// Build the string to execute from the input parameters based on their positions TODO maybe move somewhere else
 			String buildStringToExecute = "";
