@@ -131,12 +131,12 @@ public interface IContribution
     @OslcReadOnly(false)
     public Set<Link> getCreator();
 
-    @OslcName("absolutePath")
-    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "absolutePath")
+    @OslcName("fileURI")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "fileURI")
+    @OslcDescription("URI of a file. Send a GET accepting application/octet-stream to download the file.")
     @OslcOccurs(Occurs.ZeroOrOne)
-    @OslcValueType(ValueType.XMLLiteral)
     @OslcReadOnly(false)
-    public String getAbsolutePath();
+    public URI getFileURI();
 
 
     public void setTitle(final String title );
@@ -145,6 +145,6 @@ public interface IContribution
     public void setValue(final String value );
     public void setCreated(final Date created );
     public void setCreator(final Set<Link> creator );
-    public void setAbsolutePath(final String absolutePath );
+    public void setFileURI(final URI fileURI );
 }
 

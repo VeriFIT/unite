@@ -59,6 +59,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
@@ -157,7 +158,6 @@ public class VeriFitAnalysisManager {
 		String uriPath = uri.getPath();
 		return uriPath.substring(uriPath.lastIndexOf('/') + 1);
 	}
-	
 	
 	/**
 	 * Creates an AutomationPlan resource with the specified properties, and stores in the Adapter's catalog.
@@ -360,7 +360,6 @@ public class VeriFitAnalysisManager {
 	 * Creates a Contribution resource with the specified properties.
 	 * @param aResource			The new resource will copy properties from the specified aResource.
 	 * @param serviceProviderId	ID of the service provider for the new resource.
-	 * @param newID				ID for the new resource
 	 * @return					The newly created resource. Or null if one of the required properties was missing.
 	 */
     public static Contribution createContribution(final Contribution aResource, final String serviceProviderId)
@@ -372,17 +371,15 @@ public class VeriFitAnalysisManager {
     	{
     		return null;
     	}
-    	
-		newResource = aResource;
+    	newResource = aResource;    	    	
 		newResource.setCreated(new Date());
-		// TODO set about / id
 
 		return newResource;
     }
     
 
 	/**
-	 * Check that the AutomationRequest contains the neccesary input parameters based on its AutoPlan
+	 * Check that the AutomationRequest contains the necessary input parameters based on its AutoPlan
 	 * and returns a map of them
 	 * @param serviceProviderId			serviceProviderId passed by the HTTP request
 	 * @param execAutoRequest			The AutomationRequest to execute. Needs to have a valid
@@ -485,6 +482,60 @@ public class VeriFitAnalysisManager {
 		
 		return inputParamsMap;
 	}    
+    
+	/**
+     * TODO handmade because its abnormal (not as intended by lyo)
+	 * @param httpServletRequest
+	 * @param serviceProviderId
+	 * @param contributionId
+	 * @return
+	 */
+    public static File getContribution(HttpServletRequest httpServletRequest, final String serviceProviderId, final String contributionId)
+    {
+    	File aResource = null;
+
+    	// decode slashes in the file path
+		String filePath = contributionId.replaceAll("%2F", "/");
+		
+    	aResource = new File(filePath);
+
+        return aResource;
+    }
+    
+    /**
+     * TODO handmade because its abnormal (not as intended by lyo)
+     * @param httpServletRequest
+     * @param aResource
+     * @param serviceProviderId
+     * @param contributionId
+     * @return
+     * @throws OslcResourceException
+     */
+    public static Contribution updateContribution(HttpServletRequest httpServletRequest, final Contribution aResource, final String serviceProviderId, final String contributionId) throws OslcResourceException {
+        Contribution updatedResource = null;
+        
+        // Check that all the required properties are set
+        if (aResource == null || aResource.getValue() == null)
+        {
+        	throw new OslcResourceException("Failed to write a Contribution file - Value missing");        	
+        }
+
+    	// decode slashes in the file path
+		String filePath = contributionId.replaceAll("%2F", "/");
+		
+        // write the file - path is getAbsolutePath and content is getValue
+		try (PrintWriter out = new PrintWriter(filePath))
+		{
+		    out.print(aResource.getValue());
+		} catch (IOException e)
+		{
+			throw new OslcResourceException("WARNING: Failed to write a Contribution file: " + e.getMessage());
+		}
+		
+		updatedResource = aResource;	// TODO not changed and has no URI because its not GETable
+		
+        return updatedResource;
+    }
     
     // End of user code
 
@@ -772,31 +823,6 @@ public class VeriFitAnalysisManager {
         // End of user code
         return newResource;
     }
-    public static Contribution createContribution(HttpServletRequest httpServletRequest, final Contribution aResource, final String serviceProviderId) throws OslcResourceException
-    {
-        Contribution newResource = null;
-        
-        // Start of user code createContribution
-        
-        // Check that all the required properties are set
-        if (aResource == null || aResource.getAbsolutePath() == null || aResource.getTitle() == null)
-        {
-        	throw new OslcResourceException("Failed to write a Contribution file - absolutePath or Title property missing");        	
-        }
-        
-        // write the file - path is getAbsolutePath and content is getValue
-		try (PrintWriter out = new PrintWriter(aResource.getAbsolutePath()))
-		{
-		    out.print(aResource.getValue());
-		} catch (IOException e)
-		{
-			throw new OslcResourceException("WARNING: Failed to write a Contribution file: " + e.getMessage());
-		}
-		
-		newResource = aResource;	// TODO not changed and has no URI because its not GETable
-        // End of user code
-        return newResource;
-    }
 
     public static AutomationRequest createAutomationRequestFromDialog(HttpServletRequest httpServletRequest, final AutomationRequest aResource, final String serviceProviderId)
     {
@@ -811,20 +837,6 @@ public class VeriFitAnalysisManager {
 			e.printStackTrace();
 		}
         
-        // End of user code
-        return newResource;
-    }
-    public static Contribution createContributionFromDialog(HttpServletRequest httpServletRequest, final Contribution aResource, final String serviceProviderId)
-    {
-        Contribution newResource = null;
-        
-        // Start of user code createContributionFromDialog
-        try {
-			newResource = createContribution(httpServletRequest,aResource, serviceProviderId);
-		} catch (OslcResourceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
         // End of user code
         return newResource;
     }

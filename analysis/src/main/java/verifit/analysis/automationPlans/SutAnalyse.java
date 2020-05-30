@@ -195,9 +195,11 @@ public class SutAnalyse extends RequestRunner
 		    	// the file did not exist before analysis OR was modified --> add it as contribution to the AutoResult
 			    File currFile = new File(newFile.getKey());
 			    Contribution newOrModifFile = new Contribution();
-			    newOrModifFile.setAbsolutePath(currFile.getAbsolutePath());
+	    		String fileId = currFile.getAbsolutePath().replaceAll("/", "%2F"); // encode slashes in the file path
+			    newOrModifFile.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(serviceProviderId, fileId));
 			    newOrModifFile.setDescription("This file was modified or created during execution of this Automation Request. "
-			    		+ "If you want to modify the file (eg. its a configuration file), then post this oslc_autoContribution resource to the Contribution creation factory."); // TODO
+			    		+ "To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property. "
+			    		+ "To modify the file send a regular OSLC update PUT request for a Contribution resource to the URI in fit:fileURI."); // TODO
 			    newOrModifFile.setTitle(currFile.getName());
 			    try {
 					newOrModifFile.setValue(Files.readString(currFile.toPath(), StandardCharsets.US_ASCII));	// TODO

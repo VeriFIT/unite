@@ -112,9 +112,9 @@ public class Contribution
     // Start of user code attributeAnnotation:creator
     // End of user code
     private HashSet<Link> creator = new HashSet<Link>();
-    // Start of user code attributeAnnotation:absolutePath
+    // Start of user code attributeAnnotation:fileURI
     // End of user code
-    private String absolutePath;
+    private URI fileURI;
     
     // Start of user code classAttributes
     // End of user code
@@ -302,18 +302,18 @@ public class Contribution
         return creator;
     }
     
-    // Start of user code getterAnnotation:absolutePath
+    // Start of user code getterAnnotation:fileURI
     // End of user code
-    @OslcName("absolutePath")
-    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "absolutePath")
+    @OslcName("fileURI")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "fileURI")
+    @OslcDescription("URI of a file. Send a GET accepting application/octet-stream to download the file.")
     @OslcOccurs(Occurs.ZeroOrOne)
-    @OslcValueType(ValueType.XMLLiteral)
     @OslcReadOnly(false)
-    public String getAbsolutePath()
+    public URI getFileURI()
     {
-        // Start of user code getterInit:absolutePath
+        // Start of user code getterInit:fileURI
         // End of user code
-        return absolutePath;
+        return fileURI;
     }
     
     
@@ -397,15 +397,15 @@ public class Contribution
         // End of user code
     }
     
-    // Start of user code setterAnnotation:absolutePath
+    // Start of user code setterAnnotation:fileURI
     // End of user code
-    public void setAbsolutePath(final String absolutePath )
+    public void setFileURI(final URI fileURI )
     {
-        // Start of user code setterInit:absolutePath
+        // Start of user code setterInit:fileURI
         // End of user code
-        this.absolutePath = absolutePath;
+        this.fileURI = fileURI;
     
-        // Start of user code setterFinalize:absolutePath
+        // Start of user code setterFinalize:fileURI
         // End of user code
     }
     
@@ -529,20 +529,20 @@ public class Contribution
     }
     
     @Deprecated
-    static public String absolutePathToHtmlForCreation (final HttpServletRequest httpServletRequest)
+    static public String fileURIToHtmlForCreation (final HttpServletRequest httpServletRequest)
     {
         String s = "";
     
-        // Start of user code "Init:absolutePathToHtmlForCreation(...)"
+        // Start of user code "Init:fileURIToHtmlForCreation(...)"
         // End of user code
     
-        s = s + "<label for=\"absolutePath\">absolutePath: </LABEL>";
+        s = s + "<label for=\"fileURI\">fileURI: </LABEL>";
     
-        // Start of user code "Mid:absolutePathToHtmlForCreation(...)"
+        // Start of user code "Mid:fileURIToHtmlForCreation(...)"
         // End of user code
     
-        s= s + "<input name=\"absolutePath\" type=\"text\" style=\"width: 400px\" id=\"absolutePath\" >";
-        // Start of user code "Finalize:absolutePathToHtmlForCreation(...)"
+        s= s + "<input name=\"fileURI\" type=\"text\" style=\"width: 400px\" id=\"fileURI\" >";
+        // Start of user code "Finalize:fileURIToHtmlForCreation(...)"
         // End of user code
     
         return s;
@@ -707,25 +707,25 @@ public class Contribution
     }
     
     @Deprecated
-    public String absolutePathToHtml()
+    public String fileURIToHtml()
     {
         String s = "";
     
-        // Start of user code absolutePathtoHtml_mid
+        // Start of user code fileURItoHtml_mid
         // End of user code
     
         try {
-            if (absolutePath == null) {
+            if (fileURI == null) {
                 s = s + "<em>null</em>";
             }
             else {
-                s = s + absolutePath.toString();
+                s = s + fileURI.toString();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     
-        // Start of user code absolutePathtoHtml_finalize
+        // Start of user code fileURItoHtml_finalize
         // End of user code
     
         return s;
