@@ -223,17 +223,17 @@ public class VeriFitAnalysisManager {
 			SUT.setReadOnly(false);
 			newResource.addParameterDefinition(SUT);
 
-			ParameterDefinition addOutputsRegex = new ParameterDefinition();
-			addOutputsRegex.setDescription("Files that change during execution and match this regex will "
+			ParameterDefinition outputFileRegex = new ParameterDefinition();
+			outputFileRegex.setDescription("Files that change during execution and match this regex will "
 					+ "be added as contributions to the Automation Result. The regex needs to match the "
 					+ "whole filename."); //TODO
-			addOutputsRegex.setName("addOutputsRegex");
-			addOutputsRegex.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
-			addOutputsRegex.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
-			addOutputsRegex.setHidden(false);
-			addOutputsRegex.setReadOnly(false);
-			addOutputsRegex.setDefaultValue(".^");
-			newResource.addParameterDefinition(addOutputsRegex);
+			outputFileRegex.setName("outputFileRegex");
+			outputFileRegex.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
+			outputFileRegex.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
+			outputFileRegex.setHidden(false);
+			outputFileRegex.setReadOnly(false);
+			outputFileRegex.setDefaultValue(".^");
+			newResource.addParameterDefinition(outputFileRegex);
 						
 			// persist in the triplestore
 			store.updateResources(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
