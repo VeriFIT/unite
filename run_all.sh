@@ -15,7 +15,7 @@ killall() {
 
 
 echo "Starting the Triplestore"
-cd ../sparql_triplestore
+cd sparql_triplestore
 ./run.sh 2>&1 | grep "Started ServerConnector" &
 
 echo "Starting the Compilation adapter"
