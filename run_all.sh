@@ -27,6 +27,6 @@ cd ../analysis
 mvn jetty:run-exploded 2>&1 | grep "Started ServerConnector" &
 
 echo
-echo "Wait till startup finishes..."
+echo "Wait till startup finishes (3 messages with address:host at the end)"
 
 cat # wait forever

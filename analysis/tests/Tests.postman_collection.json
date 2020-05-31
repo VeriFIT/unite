@@ -3658,25 +3658,25 @@
 	],
 	"variable": [
 		{
-			"id": "a76cf55a-609a-4820-9fb2-e1d40a78fc54",
+			"id": "db052f37-24c2-44e2-aa4e-f709afcc28f2",
 			"key": "server_address",
 			"value": "http://localhost:8080",
 			"type": "string"
 		},
 		{
-			"id": "352ef603-2cd0-4c7b-81f5-2d0b75e13ec0",
+			"id": "e5d61f0a-0fb2-49a9-9db2-6bba1f145521",
 			"key": "result_wait_time",
-			"value": "2000",
+			"value": "3000",
 			"type": "string"
 		},
 		{
-			"id": "ffcb76c0-deb3-4c41-93f9-334023e44dad",
+			"id": "048610b2-208c-42fe-b59c-52205c221856",
 			"key": "server_context",
 			"value": "analysis",
 			"type": "string"
 		},
 		{
-			"id": "30cb636f-762c-4c46-88d1-c4f31cabeab2",
+			"id": "35f0516e-15d3-4b26-b72b-3ad91fb7a0ea",
 			"key": "compilation_provider",
 			"value": "http://localhost:8081/compilation",
 			"type": "string"
