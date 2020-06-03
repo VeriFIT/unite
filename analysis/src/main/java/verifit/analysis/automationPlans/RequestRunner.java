@@ -33,8 +33,11 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import java.util.Base64.Decoder;
 
 import org.apache.commons.io.FileUtils;
@@ -115,7 +118,7 @@ public abstract class RequestRunner extends Thread
         	// TODO do I need read permissions to check the modification date?
         	if (Pattern.matches(fileRegex, currFile.getName()))  
         	{
-	        	String path = currFile.getAbsolutePath();
+	        	String path = currFile.getPath();
 	        	Long timestamp = currFile.lastModified();
 	        	
 	        	files.put(path, timestamp);
@@ -123,5 +126,41 @@ public abstract class RequestRunner extends Thread
 		}
 		
 		return files;
+	}
+
+	/**
+	 * ZIPs all specified files into a new ZIP file from the perspective of a directory.
+	 * All files have to be inside of that directory.
+	 * 
+	 * @param filesToZip List of files to zip (no directories)
+	 * @param dirToZipFrom  This path will be used to make the filesToZip paths relative
+	 * @param pathToZip  Path where to place the new ZIP file
+	 * @throws IOException
+	 */
+	protected void zipFiles(List<File> filesToZip, Path dirToZipFrom, Path pathToZip) throws IOException
+	{
+		FileOutputStream fileOutStream = new FileOutputStream(pathToZip.toString());
+		ZipOutputStream zipOutStream = new ZipOutputStream(fileOutStream);
+
+		for (File currFile : filesToZip)
+		{
+			// relativize the file path to the dir path
+			String relativeFilePath = new File(dirToZipFrom.toString()).toURI().relativize(new File(currFile.getPath()).toURI()).getPath();
+
+			byte[] buffer = new byte[1024];
+			FileInputStream fileInStream = new FileInputStream(currFile);
+			zipOutStream.putNextEntry(new ZipEntry(relativeFilePath));
+			int length;
+			while ((length = fileInStream.read(buffer)) > 0) {
+				zipOutStream.write(buffer, 0, length);
+			}
+			zipOutStream.closeEntry();
+			fileInStream.close();
+		}
+		
+		zipOutStream.flush();
+		fileOutStream.flush();
+		zipOutStream.close();
+		fileOutStream.close();
 	}
 } 

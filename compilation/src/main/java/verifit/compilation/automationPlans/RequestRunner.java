@@ -219,7 +219,7 @@ public abstract class RequestRunner extends Thread
 	    {   
             Files.createDirectory(subfolderPath);
 	    }
-	    return subfolderPath.toAbsolutePath();
+	    return subfolderPath;
 	}
 
 	/**

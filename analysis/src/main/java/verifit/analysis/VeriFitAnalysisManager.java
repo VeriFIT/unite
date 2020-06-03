@@ -224,6 +224,16 @@ public class VeriFitAnalysisManager {
 			outputFileRegex.setReadOnly(false);
 			outputFileRegex.setDefaultValue(".^");
 			newResource.addParameterDefinition(outputFileRegex);
+
+			ParameterDefinition zipOutputs = new ParameterDefinition();
+			zipOutputs.setDescription("If set to true, then all file contributions will be ZIPed and provided as a single zip contribution");
+			zipOutputs.setName("zipOutputs");
+			zipOutputs.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
+			zipOutputs.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_BOOL)));
+			zipOutputs.setHidden(false);
+			zipOutputs.setReadOnly(false);
+			zipOutputs.setDefaultValue("false");
+			newResource.addParameterDefinition(zipOutputs);
 						
 			// persist in the triplestore
 			store.updateResources(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
@@ -513,7 +523,7 @@ public class VeriFitAnalysisManager {
     	// decode slashes in the file path
 		String filePath = contributionId.replaceAll("%2F", "/");
 		
-        // write the file - path is getAbsolutePath and content is getValue
+        // write the file - path is getPath and content is getValue
 		try (PrintWriter out = new PrintWriter(filePath))
 		{
 		    out.print(aResource.getValue());
@@ -781,10 +791,10 @@ public class VeriFitAnalysisManager {
 			SUT executedSUT = response.getEntity(SUT.class);
 			
 			// check if the SUT launch command should be used and get it from the SUT
-			Pair<String,Integer> callSut = inputParamsMap.get("callSUT");
-			if (callSut != null)
+			Pair<String,Integer> launchSUT = inputParamsMap.get("launchSUT");
+			if (launchSUT != null)
 			{
-				inputParamsMap.put("callSUT", Pair.of(executedSUT.getLaunchCommand(), callSut.getRight()));
+				inputParamsMap.put("launchSUT", Pair.of(executedSUT.getLaunchCommand(), launchSUT.getRight()));
 			}
 			
 			// persist in the triplestore

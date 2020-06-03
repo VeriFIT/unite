@@ -102,6 +102,7 @@ public class SutAnalyse extends RequestRunner
 		
 		try {
 			final String outputRegex = inputParamsMap.get("outputFileRegex").getLeft();
+			final String zipOutputs = inputParamsMap.get("zipOutputs").getLeft();
 			
 			// Build the string to execute from the input parameters based on their positions TODO maybe move somewhere else
 			String buildStringToExecute = "";
@@ -181,7 +182,8 @@ public class SutAnalyse extends RequestRunner
 	    	
 		    // take a snapshot of SUT files modification times after executing the analysis
 	    	// and add all the new ones / modified ones as contributions
-		    Map<String, Long> snapshotAfterAnalysis = takeDirSnapshot(execSut.getSUTdirectoryPath(), outputRegex);
+			Map<String, Long> snapshotAfterAnalysis = takeDirSnapshot(execSut.getSUTdirectoryPath(), outputRegex);
+			List<File> modifFiles = new ArrayList<File>(); // for optional zip later
 		    for (Map.Entry<String,Long> newFile : snapshotAfterAnalysis.entrySet())
 		    {
 		    	if (snapshotBeforeAnalysis.containsKey(newFile.getKey()))
@@ -194,9 +196,10 @@ public class SutAnalyse extends RequestRunner
 		    	}
 
 		    	// the file did not exist before analysis OR was modified --> add it as contribution to the AutoResult
-			    File currFile = new File(newFile.getKey());
+				File currFile = new File(newFile.getKey());
+				modifFiles.add(currFile);
 			    Contribution newOrModifFile = new Contribution();
-	    		String fileId = currFile.getAbsolutePath().replaceAll("/", "%2F"); // encode slashes in the file path
+	    		String fileId = currFile.getPath().replaceAll("/", "%2F"); // encode slashes in the file path
 			    newOrModifFile.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(serviceProviderId, fileId));
 			    newOrModifFile.setDescription("This file was modified or created during execution of this Automation Request. "
 			    		+ "To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property. "
@@ -209,7 +212,31 @@ public class SutAnalyse extends RequestRunner
 				}
 			    newOrModifFile = VeriFitAnalysisManager.createContribution(newOrModifFile, serviceProviderId);
 		    	newAutoResult.addContribution(newOrModifFile);
-		    }
+			}
+			
+			// create a zip of all file contributions if needed
+			if (zipOutputs.equals("true") || zipOutputs.equals("True"))
+			{
+				Contribution zipedContribs = new Contribution();
+				String zipName = "out" + execAutoRequestId + ".zip";
+				Path pathToDir = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
+				Path pathToZip = pathToDir.resolve(zipName);;
+
+				try {
+					zipFiles(modifFiles, pathToDir, pathToZip);
+	
+					String fileId =  pathToZip.toString().replaceAll("/", "%2F"); // encode slashes in the file path
+					zipedContribs.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(serviceProviderId, fileId));
+					zipedContribs.setDescription("This is a ZIP of all other file contributions. "
+							+ "To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property."); // TODO
+					zipedContribs.setTitle(zipName);
+					zipedContribs = VeriFitAnalysisManager.createContribution(zipedContribs, serviceProviderId);
+					newAutoResult.addContribution(zipedContribs);
+				} catch (Exception e)
+				{
+					System.out.println("WARNING failed to ZIP outputs: " + e.getMessage());
+				}
+			}
 		
 			// update the autoResult state, contribution, verdict
 			newAutoResult.setState(new HashSet<Link>());

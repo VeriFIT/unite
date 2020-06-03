@@ -205,6 +205,10 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			}
 			
 			    
+			// Do not compile if there was no buildCommand (e.g. for static analysis)
+			if (paramBuildCommand == null || paramBuildCommand.equals("")) //TODO
+				performCompilation = false;
+
 			// compile source file if the fetching did not fail
 			if (performCompilation)
 			{
@@ -244,7 +248,8 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 				SUT newSut = new SUT();
 				newSut.setTitle("SUT - " + execAutoRequest.getTitle());
 				newSut.setLaunchCommand(paramLaunchCommand);
-				newSut.setBuildCommand(paramBuildCommand);
+				if (paramBuildCommand == null || paramBuildCommand.equals("")) //TODO
+					newSut.setBuildCommand(paramBuildCommand);
 				newSut.setSUTdirectoryPath(folderPath.toAbsolutePath().toString());
 				newSut.setCreator(execAutoRequest.getCreator());
 				newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(serviceProviderId, execAutoRequestId));

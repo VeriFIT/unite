@@ -94,9 +94,10 @@ public class AutomationPlanDefinition {
 			ParameterDefinition buildCommand = new ParameterDefinition();
 			buildCommand.setDescription("How to build the SUT. "
 					+ "The specified command will be launched from the root directory of the downloaded SUT. "
-					+ "Examples: make | ./build.sh | gcc -g -o my_sut"); 
+					+ "Examples: make | ./build.sh | gcc -g -o my_sut. "
+					+ "If this command is missing or empty then compilation will not be performed (e.g. for static analysis tools)"); //TODO
 			buildCommand.setName("buildCommand");
-			buildCommand.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ONE)));
+			buildCommand.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ZEROorONE)));
 			buildCommand.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
 
 			ParameterDefinition launchCommand = new ParameterDefinition();

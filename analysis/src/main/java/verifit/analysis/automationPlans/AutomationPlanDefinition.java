@@ -39,6 +39,7 @@ public class AutomationPlanDefinition {
 	{
 		createAnacondaAutomationPlan();
 		createPerrunAutomationPlan();
+		createHiliteAutomationPlan();
 	}	
 	
 	/**
@@ -48,7 +49,8 @@ public class AutomationPlanDefinition {
 	public static boolean checkPredefinedAutomationPlans()
 	{
     	if (VeriFitAnalysisManager.getAutomationPlan(null, VeriFitAnalysisConstants.AUTOMATION_PROVIDER_ID, "0") == null
-			|| VeriFitAnalysisManager.getAutomationPlan(null, VeriFitAnalysisConstants.AUTOMATION_PROVIDER_ID, "1") == null)
+			|| VeriFitAnalysisManager.getAutomationPlan(null, VeriFitAnalysisConstants.AUTOMATION_PROVIDER_ID, "1") == null
+			|| VeriFitAnalysisManager.getAutomationPlan(null, VeriFitAnalysisConstants.AUTOMATION_PROVIDER_ID, "2") == null)
     		return false;
     	else
     		return true;
@@ -73,13 +75,13 @@ public class AutomationPlanDefinition {
 			analyser.setCommandlinePosition(2);	// has to be 2+ (zero is taken by tool command; one by adapterSpecific tool params)	
 			
 			// special paramDefinition specifying that the SUT call command should be placed at this position
-			ParameterDefinition callSUT = new ParameterDefinition();
-			callSUT.setDescription("This parameter definitions tells the Automation Plan to place the SUT call command at this command line position"); //TODO
-			callSUT.setName("callSUT");
-			callSUT.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
-			callSUT.setHidden(true);
-			callSUT.setReadOnly(true);
-			callSUT.setCommandlinePosition(3);
+			ParameterDefinition launchSUT = new ParameterDefinition();
+			launchSUT.setDescription("This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position"); //TODO
+			launchSUT.setName("launchSUT");
+			launchSUT.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
+			launchSUT.setHidden(true);
+			launchSUT.setReadOnly(true);
+			launchSUT.setCommandlinePosition(3);
 			
 			ParameterDefinition executionParameters = new ParameterDefinition();
 			executionParameters.setDescription("Set the execution parameters for the analyzed program. Write down all parameters as you would in a console.");
@@ -97,7 +99,7 @@ public class AutomationPlanDefinition {
 			propertiesPlan.setDescription("Analyse an SUT using ANaConDA");
 			propertiesPlan.addParameterDefinition(analyser);
 			propertiesPlan.addParameterDefinition(executionParameters);
-			propertiesPlan.addParameterDefinition(callSUT);
+			propertiesPlan.addParameterDefinition(launchSUT);
 			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
 			propertiesPlan.addUsesExecutionEnvironment(new Link(new URI("https://pajda.fit.vutbr.cz/anaconda/anaconda")));
 			VeriFitAnalysisManager.createAutomationPlan(propertiesPlan, VeriFitAnalysisProperties.ANACONDA_PATH, "");
@@ -133,6 +135,38 @@ public class AutomationPlanDefinition {
 			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
 			propertiesPlan.addUsesExecutionEnvironment(new Link(new URI("https://github.com/tfiedor/perun")));
 			VeriFitAnalysisManager.createAutomationPlan(propertiesPlan, VeriFitAnalysisProperties.PERUN_PATH, "-nc --no-pager");
+	
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+		}
+	}
+
+	
+	/**
+	 * TODO
+	 * @throws StoreAccessException 
+	 */
+	private static void createHiliteAutomationPlan() throws StoreAccessException
+	{ 
+		try {			
+			// special paramDefinition specifying that the SUT call command should be placed at this position
+			ParameterDefinition launchSUT = new ParameterDefinition();
+			launchSUT.setDescription("This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position"); //TODO
+			launchSUT.setName("launchSUT");
+			launchSUT.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
+			launchSUT.setHidden(true);
+			launchSUT.setReadOnly(true);
+			launchSUT.setCommandlinePosition(2); // has to be 2+ (zero is taken by tool command; one by adapterSpecific tool params)
+			
+			// create the autoPlan
+			AutomationPlan propertiesPlan = new AutomationPlan();
+			propertiesPlan.setTitle("Hilite");
+			propertiesPlan.setDescription("Analyse an SUT using Hilite");
+			propertiesPlan.addParameterDefinition(launchSUT);
+			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
+			propertiesPlan.addUsesExecutionEnvironment(new Link(new URI("https://github.com/tfiedor/perun")));
+			VeriFitAnalysisManager.createAutomationPlan(propertiesPlan, "C:\\power42\\matrix\\dummyHilite.bat", "");
 	
 		} catch (URISyntaxException e) {
 			// TODO should never be thrown (URI syntax)
