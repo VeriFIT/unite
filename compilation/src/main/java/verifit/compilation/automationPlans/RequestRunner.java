@@ -10,7 +10,6 @@
  * (hopefully did not miss any)
  */
 
-
 package verifit.compilation.automationPlans;
 
 import java.io.BufferedReader;
@@ -27,6 +26,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -163,8 +163,8 @@ public abstract class RequestRunner extends Thread
 		byte[] buffer = new byte[64]; // TODO random size
 		FileInputStream fileInputStream = new FileInputStream(pathToSource);
 
-		String fileName = Path.of(pathToSource).getFileName().toString();
-		Path pathToFile = Path.of(pathToSource).resolve(fileName);
+		String fileName = FileSystems.getDefault().getPath(pathToSource).getFileName().toString();
+		Path pathToFile = FileSystems.getDefault().getPath(pathToSource).resolve(fileName);
 		FileOutputStream fileOutStream = new FileOutputStream(pathToFile.toFile());
 
 		int nBytes = 0;
@@ -213,7 +213,7 @@ public abstract class RequestRunner extends Thread
 	 */
 	protected Path createTmpDir(String subfolder) throws IOException
 	{
-		Path subfolderPath = Path.of("tmp").resolve(subfolder);
+		Path subfolderPath = FileSystems.getDefault().getPath("tmp").resolve(subfolder);
 	    
 	    if (!Files.exists(subfolderPath))
 	    {   
@@ -245,9 +245,9 @@ public abstract class RequestRunner extends Thread
 
     	ZipFile zf = new ZipFile(pathToFile.toFile());
         Enumeration<? extends ZipEntry> zipEntries = zf.entries();
-        for (Iterator<? extends ZipEntry> it = zipEntries.asIterator(); it.hasNext(); )
+        while(zipEntries.hasMoreElements())
         {
-        	ZipEntry entry = it.next();
+        	ZipEntry entry = zipEntries.nextElement();
         	if (entry.isDirectory()) {
                 Path dirToCreate = folderPath.resolve(entry.getName());
                 Files.createDirectories(dirToCreate);

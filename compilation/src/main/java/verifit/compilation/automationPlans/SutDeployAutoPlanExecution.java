@@ -156,7 +156,7 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			String executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_PASSED;
 		    
 			// fetch source file
-			Path folderPath = Path.of("");
+			Path folderPath = null;
 			try {
 				// create the program path and name
 				folderPath = createTmpDir(execAutoRequestId);

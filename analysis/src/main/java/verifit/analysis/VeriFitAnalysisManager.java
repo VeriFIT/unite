@@ -101,16 +101,6 @@ public class VeriFitAnalysisManager {
 	}
 	
 	/**
-	 * Deletes the tmp directory to cleanup
-	 * @throws IOException
-	 */
-	private static void deleteTmpDir() throws IOException
-	{
-		File programDir = new File("tmp/");
-		FileUtils.deleteDirectory(programDir);
-	}
-	
-	/**
 	 * Used to generate IDs for new resources in a synchronized way (datarace free)
 	 * @author od42
 	 */
@@ -543,7 +533,7 @@ public class VeriFitAnalysisManager {
     {
         
         // Start of user code contextInitializeServletListener
-    	
+	
     	// load configuration
     	try {
     		VeriFitAnalysisProperties.loadProperties();
@@ -600,8 +590,9 @@ public class VeriFitAnalysisManager {
 		}		
 		AutoRequestIdGen = new ResourceIdGen(initReqId);
     	
+		/*
     	// check that anaconda is accessible TODO
-    	String anacondaPath = VeriFitAnalysisProperties.ANACONDA_PATH;
+		String anacondaPath = VeriFitAnalysisProperties.ANACONDA_PATH;
     	File anaconda = new File(anacondaPath);
     	if (! (anaconda.exists() && anaconda.isFile() && anaconda.canExecute()))
     	{
@@ -612,7 +603,7 @@ public class VeriFitAnalysisManager {
     			System.exit(1);
     		}
     	}
-    	
+    	*/
         // End of user code
     }
 
@@ -620,12 +611,6 @@ public class VeriFitAnalysisManager {
     {
         
         // Start of user code contextDestroyed
-    	try {
-			deleteTmpDir();
-		} catch (IOException e) {
-			System.out.println("ERROR: Adapter context destroy: Failed to get delete the TMP folder: " + e.getMessage());
-			System.exit(1);
-		}
         // End of user code
     }
 

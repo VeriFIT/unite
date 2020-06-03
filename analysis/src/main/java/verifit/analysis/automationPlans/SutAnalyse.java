@@ -10,7 +10,6 @@
  * (hopefully did not miss any)
  */
 
-
 package verifit.analysis.automationPlans;
 
 import java.io.BufferedReader;
@@ -28,6 +27,7 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -150,24 +150,25 @@ public class SutAnalyse extends RequestRunner
 			// analyse SUT
 		    String executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_PASSED;
 			try {
+				analysisStdoutLog.setValue("# Executing: " + stringToExecute + "\n");
 		    	Triple<Integer, String, String> analysisRes = analyseSUT(execSut.getSUTdirectoryPath(), stringToExecute);
 		    	
 		    	if (analysisRes.getLeft() != 0) // get return code
 		    	{
 					executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_ERROR;
-			    	analysisStdoutLog.setValue("# Analysis failed (returned non-zero: " + analysisRes.getLeft() + ")\n"
+			    	analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis failed (returned non-zero: " + analysisRes.getLeft() + ")\n"
 			    							+ analysisRes.getMiddle());	// get stdout
 		    	}
 		    	else
 		    	{
-		    		analysisStdoutLog.setValue("# Analysis completed successfully\n" + analysisRes.getMiddle());	// get stdout
+		    		analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis completed successfully\n" + analysisRes.getMiddle());	// get stdout
 		    	}
 		    	analysisStderrLog.setValue(analysisRes.getRight());		// get stderr
 			    
 			} catch (IOException e) {
 				// there was an error
 				executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_ERROR;
-				analysisStdoutLog.setValue("# Analysis error");	// get stdout
+				analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis error");	// get stdout
 				analysisStderrLog.setValue(e.getMessage());	// get stderr
 	    		
 			}
@@ -202,7 +203,7 @@ public class SutAnalyse extends RequestRunner
 			    		+ "To modify the file send a regular OSLC update PUT request for a Contribution resource to the URI in fit:fileURI."); // TODO
 			    newOrModifFile.setTitle(currFile.getName());
 			    try {
-					newOrModifFile.setValue(Files.readString(currFile.toPath(), StandardCharsets.US_ASCII));	// TODO
+					newOrModifFile.setValue(new String(Files.readAllBytes(FileSystems.getDefault().getPath(currFile.toString()))));
 				} catch (IOException e) {
 					newOrModifFile.setValue(e.getMessage());
 				}

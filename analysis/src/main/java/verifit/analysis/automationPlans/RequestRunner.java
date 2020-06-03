@@ -10,7 +10,6 @@
  * (hopefully did not miss any)
  */
 
-
 package verifit.analysis.automationPlans;
 
 import java.io.BufferedReader;
@@ -27,6 +26,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Date;
@@ -68,7 +69,8 @@ public abstract class RequestRunner extends Thread
 	protected Triple<Integer,String,String> analyseSUT(String folderPath, String stringToExecute) throws IOException
 	{
 		Process process;
-		process = Runtime.getRuntime().exec(stringToExecute, null, new File(folderPath));
+		Path pathAsPath = FileSystems.getDefault().getPath(folderPath);
+		process = Runtime.getRuntime().exec(stringToExecute, null, pathAsPath.toFile());
 		InputStream stdout = process.getInputStream();
 		InputStream stderr = process.getErrorStream();
 		InputStreamReader stdoutReader = new InputStreamReader(stdout);

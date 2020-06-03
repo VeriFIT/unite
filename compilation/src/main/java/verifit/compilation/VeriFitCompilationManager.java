@@ -41,7 +41,6 @@ import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc.domains.Person;
 import verifit.compilation.resources.SUT;
 
-
 // Start of user code imports
 import verifit.compilation.persistance.Persistence;
 import verifit.compilation.automationPlans.AutomationPlanDefinition;
@@ -50,6 +49,7 @@ import verifit.compilation.exceptions.OslcResourceException;
 
 import org.eclipse.lyo.store.StoreAccessException;
 import org.eclipse.lyo.oslc4j.core.model.Link;
+import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
@@ -101,8 +101,8 @@ public class VeriFitCompilationManager {
 	 */
 	private static void deleteTmpDir() throws IOException
 	{
-		File programDir = new File("tmp/");
-		FileUtils.deleteDirectory(programDir);
+		File programDir = new File("tmp");
+		FileDeleteStrategy.FORCE.delete(programDir);
 	}
 	
 	/**
@@ -483,6 +483,12 @@ public class VeriFitCompilationManager {
         
         // Start of user code contextInitializeServletListener
     	
+		// make sure the TMP directory doesnt exist
+    	try {
+			deleteTmpDir();
+		} catch (IOException e) {
+		}
+
     	// load configuration
     	try {
     		VeriFitCompilationProperties.loadProperties();
@@ -548,8 +554,7 @@ public class VeriFitCompilationManager {
     	try {
 			deleteTmpDir();
 		} catch (IOException e) {
-			System.out.println("ERROR: Adapter context destroy: Failed to get delete the TMP folder: " + e.getMessage());
-			System.exit(1);
+			System.out.println("WARNING: Adapter context destroy: Failed to delete the TMP folder: " + e.getMessage());
 		}
         // End of user code
     }
