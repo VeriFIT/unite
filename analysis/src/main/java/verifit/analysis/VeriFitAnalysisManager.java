@@ -389,15 +389,15 @@ public class VeriFitAnalysisManager {
     
 
 	/**
-	 * Check that the AutomationRequest contains the necessary input parameters based on its AutoPlan
-	 * and returns a map of them
+	 * Check that the AutomationRequest contains the necessary input parameters based on its AutoPlan, fill the AutomationResult with output parameters (default values),
+	 * and return a simplified map of parameters (TODO refactor the map)
 	 * @param serviceProviderId			serviceProviderId passed by the HTTP request
-	 * @param execAutoRequest			The AutomationRequest to execute. Needs to have a valid
-	 * 									executesAutomationPlan property.
+	 * @param execAutoRequest			The AutomationRequest to execute. Needs to have a valid executesAutomationPlan property.
+	 * @param newAutoResult				The AutomationResult created by the AutoRequest.
 	 * @throws OslcResourceException 	When the executed AutomationRequest properties are invalid or missing
 	 * @return	A map of input parameters [ name, Pair(value,position) ]; position -1 means there was no position
 	 */
-	private static Map<String, Pair<String,Integer>> getAutoReqInputParams(String serviceProviderId, AutomationRequest execAutoRequest) throws OslcResourceException
+	private static Map<String, Pair<String,Integer>> processAutoReqInputParams(String serviceProviderId, AutomationRequest execAutoRequest, AutomationResult newAutoResult) throws OslcResourceException
 	{
 		// get the executed AutomationPlan resource			
 		String execAutoPlanId = getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue());
@@ -420,11 +420,9 @@ public class VeriFitAnalysisManager {
 			{
 				paramPosition = -1;
 			}
-			
-			// set the default value (will be overwritten later), may be null if not set
-			inputParamsMap.put(definedParam.getName(), Pair.of(definedParam.getDefaultValue(), paramPosition));
 				
 			// find the corresponding autoRequest input parameter
+			boolean matched = false;
 			for (ParameterInstance submittedParam : execAutoRequest.getInputParameter())
 			{				
 				if (definedParam.getName().equals(submittedParam.getName()))
@@ -450,7 +448,21 @@ public class VeriFitAnalysisManager {
 					}
 					
 					inputParamsMap.put(definedParam.getName(), Pair.of(submittedParam.getValue(),paramPosition));
+					matched = true;
 				}
+			}
+			// try to use the default value if no matching input param found
+			if (!matched && definedParam.getDefaultValue() != null)
+			{
+				inputParamsMap.put(definedParam.getName(), Pair.of(definedParam.getDefaultValue(), paramPosition));
+				matched = true;
+
+				// add the default value as an output parameter to the Automation Result
+				ParameterInstance outputParameter = null;
+				try { outputParameter = new ParameterInstance(); } catch (URISyntaxException e) { /* should never be thrown --> just to make the compiler happy */}
+				outputParameter.setName(definedParam.getName());
+				outputParameter.setValue(definedParam.getDefaultValue());
+				newAutoResult.addOutputParameter(outputParameter);
 			}
 			
 			// check parameter occurrences
@@ -460,7 +472,7 @@ public class VeriFitAnalysisManager {
 			case VeriFitAnalysisConstants.OSLC_OCCURS_ONE:
 				// TODO check for more then one when there should be exactly one
 			case VeriFitAnalysisConstants.OSLC_OCCURS_ONEorMany:
-				if (inputParamsMap.get(definedParam.getName()).getLeft() == null)
+				if (!matched)
 					paramMissing = true;
 				break;
 				
@@ -787,10 +799,25 @@ public class VeriFitAnalysisManager {
 			newResource.setDesiredState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
 			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationRequest"));
 			
-			// when a request is created - get its executed autoPlan, check parameters and make an input map
-			// throws an exception if the autoRequest is not valid
-			Map<String, Pair<String,Integer>> inputParamsMap = getAutoReqInputParams(serviceProviderId, newResource);
+
+			// create an AutomationResult for this AutoRequest; output parameters will be set by processAutoReqInputParams()
+			AutomationResult propAutoResult = new AutomationResult();
+			propAutoResult.setTitle("Result - " + newResource.getTitle());
+			propAutoResult.setReportsOnAutomationPlan(newResource.getExecutesAutomationPlan());
+			propAutoResult.setProducedByAutomationRequest(VeriFitAnalysisResourcesFactory.constructLinkForAutomationRequest(serviceProviderId, newID));
+			propAutoResult.setInputParameter(newResource.getInputParameter());
+			propAutoResult.setContributor(newResource.getContributor());
+			propAutoResult.setCreator(newResource.getCreator());
+			propAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_NEW)));
+			propAutoResult.addVerdict(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_VERDICT_UNAVAILABLE)));
 			
+			// get the executed autoPlan, check input parameters, add output parameters to the AutoResult, and make an input map for the runner
+			Map<String, Pair<String,Integer>> inputParamsMap = processAutoReqInputParams(serviceProviderId, newResource, propAutoResult);
+			
+			// persist the AutomationResult and set the setProducedAutomationResult() link for the AutoRequest
+		    AutomationResult newAutoResult = VeriFitAnalysisManager.createAutomationResult(propAutoResult, serviceProviderId, newID);
+			newResource.setProducedAutomationResult(new Link(newAutoResult.getAbout())); // TODO
+
 			// check that the SUT to be executed exists
 			OslcClient client = new OslcClient();
 			ClientResponse response = client.getResource(inputParamsMap.get("SUT").getLeft());
@@ -811,8 +838,9 @@ public class VeriFitAnalysisManager {
 			store.updateResources(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
 			
 			// create a new thread to execute the automation request
-			new SutAnalyse(serviceProviderId, newResource, executedSUT, inputParamsMap);
+			new SutAnalyse(serviceProviderId, newResource, newAutoResult, executedSUT, inputParamsMap);
 
+			
 		} catch (OslcResourceException | RuntimeException | IOException e) {
 			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
 			

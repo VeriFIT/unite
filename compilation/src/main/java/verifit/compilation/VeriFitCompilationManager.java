@@ -321,37 +321,34 @@ public class VeriFitCompilationManager {
     
 
 	/**
-	 * Check that the AutomationRequest contains the neccesary input parameters based on its AutoPlan
-	 * and return a map of them.
+	 * Check that the AutomationRequest contains the necessary input parameters based on its AutoPlan, fill the AutomationResult with output parameters (default values),
+	 * and return a simplified map of parameters (TODO refactor the map)
 	 * @param serviceProviderId			serviceProviderId passed by the HTTP request
-	 * @param execAutoRequest			The AutomationRequest to execute. Needs to have a valid
-	 * 									executesAutomationPlan property.
+	 * @param execAutoRequest			The AutomationRequest to execute. Needs to have a valid executesAutomationPlan property.
+	 * @param newAutoResult				The AutomationResult created by the AutoRequest.
 	 * @throws OslcResourceException 	When the executed AutomationRequest properties are invalid or missing
+	 * @return	A map of input parameters [ name, value ]
 	 */
-	private static Map<String, String> getAutoReqInputParams(String serviceProviderId, AutomationRequest execAutoRequest) throws OslcResourceException
+	private static Map<String, String> processAutoReqInputParams(String serviceProviderId, AutomationRequest execAutoRequest, AutomationResult newAutoResult) throws OslcResourceException
 	{
 		// get the executed AutomationPlan resource			
 		String execAutoPlanId = getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue());
 		AutomationPlan execAutoPlan = getAutomationPlan(null, serviceProviderId, execAutoPlanId);
 		if (execAutoPlan == null)
 			throw new OslcResourceException("AutomationPlan not found (id: " + execAutoPlanId + ")");
-		
-		/// check the input parameters and create a map of "name" -> "value"
+
+		/// check the input parameters and create a map of "name" -> ("value", position)
 		Map<String, String> inputParamsMap = new HashMap<String, String>();
-		int countMatchedParams = 0;
 		
 		// loop through autoPlan defined parameters to match them with the input params
 		for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
-		{
-			// set the default value (will be overwritten later), may be null if not set
-			inputParamsMap.put(definedParam.getName(), definedParam.getDefaultValue());
-				
+		{		
 			// find the corresponding autoRequest input parameter
+			boolean matched = false;
 			for (ParameterInstance submittedParam : execAutoRequest.getInputParameter())
 			{				
 				if (definedParam.getName().equals(submittedParam.getName()))
 				{
-					countMatchedParams++;
 					
 					// check if the value is allowed
 					Boolean validValue = true;
@@ -373,7 +370,21 @@ public class VeriFitCompilationManager {
 					}
 					
 					inputParamsMap.put(definedParam.getName(), submittedParam.getValue());
+					matched = true;
 				}
+			}
+			// try to use the default value if no matching input param found
+			if (!matched && definedParam.getDefaultValue() != null)
+			{
+				inputParamsMap.put(definedParam.getName(), definedParam.getDefaultValue());
+				matched = true;
+
+				// add the default value as an output parameter to the Automation Result
+				ParameterInstance outputParameter = null;
+				try { outputParameter = new ParameterInstance(); } catch (URISyntaxException e) { /* should never be thrown --> just to make the compiler happy */}
+				outputParameter.setName(definedParam.getName());
+				outputParameter.setValue(definedParam.getDefaultValue());
+				newAutoResult.addOutputParameter(outputParameter);
 			}
 			
 			// check parameter occurrences
@@ -383,7 +394,7 @@ public class VeriFitCompilationManager {
 			case VeriFitCompilationConstants.OSLC_OCCURS_ONE:
 				// TODO check for more then one when there should be exactly one
 			case VeriFitCompilationConstants.OSLC_OCCURS_ONEorMany:
-				if (inputParamsMap.get(definedParam.getName()) == null)
+				if (!matched)
 					paramMissing = true;
 				break;
 				
@@ -400,13 +411,21 @@ public class VeriFitCompilationManager {
 		}
 		
 		// check that there were no unknown input parameters
-		if (countMatchedParams != execAutoRequest.getInputParameter().size())
-		{
-			throw new OslcResourceException("unrecognized input parameters");
+		for (ParameterInstance submittedParam : execAutoRequest.getInputParameter())
+		{				
+			boolean matched = false;
+			for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
+			{
+				if (definedParam.getName().equals(submittedParam.getName()))
+					matched = true;
+			}
+			
+			if (!matched)
+				throw new OslcResourceException("'" + submittedParam.getName() + "' input parameter not recognized");
 		}
 		
 		return inputParamsMap;
-	}
+	}    
 	
 	
     /**
@@ -743,10 +762,23 @@ public class VeriFitCompilationManager {
 			newResource.setDesiredState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));
 			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationRequest"));
 
+			// create an AutomationResult for this AutoRequest; output parameters will be set by processAutoReqInputParams()
+			AutomationResult propAutoResult = new AutomationResult();
+			propAutoResult.setTitle("Result - " + newResource.getTitle());
+			propAutoResult.setReportsOnAutomationPlan(newResource.getExecutesAutomationPlan());
+			propAutoResult.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(serviceProviderId, newID));
+			propAutoResult.setInputParameter(newResource.getInputParameter());
+			propAutoResult.setContributor(newResource.getContributor());
+			propAutoResult.setCreator(newResource.getCreator());
+			propAutoResult.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_NEW)));
+			propAutoResult.addVerdict(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_VERDICT_UNAVAILABLE)));
 			
-			// when a request is created - get its executed autoPlan, check parameters and make an input map
-			// throws an exception if the autoRequest is not valid
-			Map<String, String> inputParamsMap = getAutoReqInputParams(serviceProviderId, newResource);
+			// get the executed autoPlan, check input parameters, add output parameters to the AutoResult, and make an input map for the runner
+			Map<String, String> inputParamsMap = processAutoReqInputParams(serviceProviderId, newResource, propAutoResult);
+			
+			// persist the AutomationResult and set the setProducedAutomationResult() link for the AutoRequest
+		    AutomationResult newAutoResult = VeriFitCompilationManager.createAutomationResult(propAutoResult, serviceProviderId, newID);
+			newResource.setProducedAutomationResult(new Link(newAutoResult.getAbout())); // TODO
 			
 			// check that the request contains exactly one "source.*" parameter (can not be checked automatically based on the AutoPlan
 			// throws an exception if the Inputs are not OK
@@ -756,7 +788,7 @@ public class VeriFitCompilationManager {
 			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
 			
 			// create a new thread to execute the automation request // TODO
-			new SutDeployAutoPlanExecution(serviceProviderId, newResource, inputParamsMap);	
+			new SutDeployAutoPlanExecution(serviceProviderId, newResource, propAutoResult, inputParamsMap);	
 
 		} catch (OslcResourceException e) {
 			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());

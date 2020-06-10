@@ -60,16 +60,19 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 {
 	final private String serviceProviderId;
 	final private String execAutoRequestId;
-	final private AutomationRequest execAutoRequest;
+	private AutomationRequest execAutoRequest;
+	final private String resAutoResultId;
+	private AutomationResult resAutoResult;
 	final private Map<String, String> inputParamsMap;
 	
 	/**
 	 * Creating the thread automatically starts the execution
 	 * @param serviceProviderId	ID of the service provider
 	 * @param execAutoRequest	Executed AutomationRequest resource object
+	 * @param execAutoResult	Result AutomationResult resource object
 	 * @param inputParamsMap	Input parameters as a "name" => "value" map
 	 */
-	public SutDeployAutoPlanExecution(String serviceProviderId, AutomationRequest execAutoRequest, Map<String, String> inputParamsMap) 
+	public SutDeployAutoPlanExecution(String serviceProviderId, AutomationRequest execAutoRequest, AutomationResult resAutoResult, Map<String, String> inputParamsMap) 
 	{
 		super();
 		
@@ -77,6 +80,8 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 		this.inputParamsMap = inputParamsMap;
 		this.execAutoRequestId = VeriFitCompilationManager.getResourceIdFromUri(execAutoRequest.getAbout());
 		this.execAutoRequest = execAutoRequest;
+		this.resAutoResultId = VeriFitCompilationManager.getResourceIdFromUri(resAutoResult.getAbout());
+		this.resAutoResult = resAutoResult;
 		
 		this.start();
 	}
@@ -115,24 +120,13 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 				ProgramDefinition = "sourceBase64";
 				ProgramSource = paramSourceBase64;
 			}
-				
 			
-			//create the autoResult as inProgress
-			AutomationResult propAutoResult = new AutomationResult();
-			propAutoResult.setTitle("Result - " + execAutoRequest.getTitle());
-			propAutoResult.setReportsOnAutomationPlan(execAutoRequest.getExecutesAutomationPlan());
-			propAutoResult.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(serviceProviderId, execAutoRequestId));
-			propAutoResult.setInputParameter(execAutoRequest.getInputParameter());
-			propAutoResult.setContributor(execAutoRequest.getContributor());
-			propAutoResult.setCreator(execAutoRequest.getCreator());
-			propAutoResult.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_INPROGRESS)));
-			propAutoResult.addVerdict(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_VERDICT_UNAVAILABLE)));
-		    AutomationResult newAutoResult = VeriFitCompilationManager.createAutomationResult(propAutoResult, serviceProviderId, execAutoRequestId);
-	    	
-			// set the autoRequest's state to in progress and link the autoResult
+			// set the states of the Automation Result and Request to "inProgress"
+			resAutoResult.setState(new HashSet<Link>());
+			resAutoResult.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_INPROGRESS)));
+			VeriFitCompilationManager.updateAutomationResult(resAutoResult, serviceProviderId, resAutoResultId);
 			execAutoRequest.setState(new HashSet<Link>());
 			execAutoRequest.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_INPROGRESS)));
-			execAutoRequest.setProducedAutomationResult(new Link(newAutoResult.getAbout()));
 			VeriFitCompilationManager.updateAutomationRequest(execAutoRequest, serviceProviderId, execAutoRequestId);
 			
 			
@@ -201,7 +195,7 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			} finally {
 				// create the fetching log Contribution and add it to the AutomationResult
 				fetchLog = VeriFitCompilationManager.createContribution(fetchLog, serviceProviderId);
-		    	newAutoResult.addContribution(fetchLog);
+		    	resAutoResult.addContribution(fetchLog);
 			}
 			
 			    
@@ -237,8 +231,8 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 					// create the compilation Contributions and add them to the Automation Result
 					compStdoutLog = VeriFitCompilationManager.createContribution(compStdoutLog, serviceProviderId);
 					compStderrLog = VeriFitCompilationManager.createContribution(compStderrLog, serviceProviderId);
-			    	newAutoResult.addContribution(compStdoutLog);
-			    	newAutoResult.addContribution(compStderrLog);
+			    	resAutoResult.addContribution(compStdoutLog);
+			    	resAutoResult.addContribution(compStderrLog);
 				}
 			}
 	    	
@@ -248,23 +242,21 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 				SUT newSut = new SUT();
 				newSut.setTitle("SUT - " + execAutoRequest.getTitle());
 				newSut.setLaunchCommand(paramLaunchCommand);
-				if (paramBuildCommand == null || paramBuildCommand.equals("")) //TODO
+				if (!(paramBuildCommand == null || paramBuildCommand.equals(""))) //TODO
 					newSut.setBuildCommand(paramBuildCommand);
 				newSut.setSUTdirectoryPath(folderPath.toAbsolutePath().toString());
 				newSut.setCreator(execAutoRequest.getCreator());
 				newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(serviceProviderId, execAutoRequestId));
 				VeriFitCompilationManager.createSUT(newSut, serviceProviderId, execAutoRequestId); // TODO
-				newAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(serviceProviderId, VeriFitCompilationManager.getResourceIdFromUri(newSut.getAbout()))); // TODO
+				resAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(serviceProviderId, VeriFitCompilationManager.getResourceIdFromUri(newSut.getAbout()))); // TODO
 			}
 			
-			// update the autoResult state, contribution, verdict
-			newAutoResult.setState(new HashSet<Link>());
-			newAutoResult.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));
-			newAutoResult.setVerdict(new HashSet<Link>());
-			newAutoResult.addVerdict(new Link(new URI(executionVerdict)));
-			VeriFitCompilationManager.updateAutomationResult(newAutoResult, serviceProviderId, VeriFitCompilationManager.getResourceIdFromUri(newAutoResult.getAbout()));
-			
-			// update the autoRequest state
+			// update the AutoResult state and verdict, and AutoRequest state
+			resAutoResult.setState(new HashSet<Link>());
+			resAutoResult.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));
+			resAutoResult.setVerdict(new HashSet<Link>());
+			resAutoResult.addVerdict(new Link(new URI(executionVerdict)));
+			VeriFitCompilationManager.updateAutomationResult(resAutoResult, serviceProviderId, VeriFitCompilationManager.getResourceIdFromUri(resAutoResult.getAbout()));
 			execAutoRequest.setState(new HashSet<Link>());
 			execAutoRequest.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));
 			VeriFitCompilationManager.updateAutomationRequest(execAutoRequest, serviceProviderId, execAutoRequestId);

@@ -68,19 +68,22 @@ public class SutAnalyse extends RequestRunner
 {
 	final private String serviceProviderId;
 	final private String execAutoRequestId;
-	final private AutomationRequest execAutoRequest;
+	private AutomationRequest execAutoRequest;
+	final private String resAutoResultId;
+	private AutomationResult resAutoResult;
 	final private String execSutId;
-	final private SUT execSut;
+	private SUT execSut;
 	final private Map<String, Pair<String,Integer>> inputParamsMap;
 	
 	/**
 	 * Creating the thread automatically starts the execution
 	 * @param serviceProviderId	ID of the service provider
 	 * @param execAutoRequest	Executed AutomationRequest resource object
+	 * @param execAutoResult	Result AutomationResult resource object
 	 * @param execSUT			Executed SUT resource object
 	 * @param inputParamsMap	Input parameters as a map of "name" => "(value, position)"
 	 */
-	public SutAnalyse(String serviceProviderId, AutomationRequest execAutoRequest, SUT execSut, Map<String, Pair<String,Integer>> inputParamsMap) 
+	public SutAnalyse(String serviceProviderId, AutomationRequest execAutoRequest, AutomationResult resAutoResult, SUT execSut, Map<String, Pair<String,Integer>> inputParamsMap) 
 	{
 		super();
 		
@@ -88,6 +91,8 @@ public class SutAnalyse extends RequestRunner
 		this.inputParamsMap = inputParamsMap;
 		this.execAutoRequestId = VeriFitAnalysisManager.getResourceIdFromUri(execAutoRequest.getAbout());
 		this.execAutoRequest = execAutoRequest;
+		this.resAutoResultId = VeriFitAnalysisManager.getResourceIdFromUri(resAutoResult.getAbout());
+		this.resAutoResult = resAutoResult;
 		this.execSutId = VeriFitAnalysisManager.getResourceIdFromUri(execSut.getAbout());;
 		this.execSut = execSut;
 		
@@ -119,22 +124,12 @@ public class SutAnalyse extends RequestRunner
 			final String stringToExecute = buildStringToExecute;
 			
 
-			//create the autoResult as inProgress
-			AutomationResult propAutoResult = new AutomationResult();
-			propAutoResult.setTitle("Result - " + execAutoRequest.getTitle());
-			propAutoResult.setReportsOnAutomationPlan(execAutoRequest.getExecutesAutomationPlan());
-			propAutoResult.setProducedByAutomationRequest(VeriFitAnalysisResourcesFactory.constructLinkForAutomationRequest(serviceProviderId, execAutoRequestId));
-			propAutoResult.setInputParameter(execAutoRequest.getInputParameter());
-			propAutoResult.setContributor(execAutoRequest.getContributor());
-			propAutoResult.setCreator(execAutoRequest.getCreator());
-			propAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS)));
-			propAutoResult.addVerdict(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_VERDICT_UNAVAILABLE)));
-		    AutomationResult newAutoResult = VeriFitAnalysisManager.createAutomationResult(propAutoResult, serviceProviderId, execAutoRequestId);
-	    	
-			// set the autoRequest's state to in progress and link the autoResult
+			// set the states of the Automation Result and Request to "inProgress"
+			resAutoResult.setState(new HashSet<Link>());
+			resAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS)));
+			VeriFitAnalysisManager.updateAutomationResult(resAutoResult, serviceProviderId, resAutoResultId);
 			execAutoRequest.setState(new HashSet<Link>());
 			execAutoRequest.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS)));
-			execAutoRequest.setProducedAutomationResult(new Link(newAutoResult.getAbout()));
 			VeriFitAnalysisManager.updateAutomationRequest(execAutoRequest, serviceProviderId, execAutoRequestId);
 			
 			
@@ -185,8 +180,8 @@ public class SutAnalyse extends RequestRunner
 			// create the compilation Contributions and add them to the Automation Result
 			analysisStdoutLog = VeriFitAnalysisManager.createContribution(analysisStdoutLog, serviceProviderId);
 			analysisStderrLog = VeriFitAnalysisManager.createContribution(analysisStderrLog, serviceProviderId);
-	    	newAutoResult.addContribution(analysisStdoutLog);
-	    	newAutoResult.addContribution(analysisStderrLog);
+	    	resAutoResult.addContribution(analysisStdoutLog);
+	    	resAutoResult.addContribution(analysisStderrLog);
 	    	
 		    // take a snapshot of SUT files modification times after executing the analysis
 	    	// and add all the new ones / modified ones as contributions
@@ -219,7 +214,7 @@ public class SutAnalyse extends RequestRunner
 					newOrModifFile.setValue(e.getMessage());
 				}
 			    newOrModifFile = VeriFitAnalysisManager.createContribution(newOrModifFile, serviceProviderId);
-		    	newAutoResult.addContribution(newOrModifFile);
+		    	resAutoResult.addContribution(newOrModifFile);
 			}
 			
 			// create a zip of all file contributions if needed
@@ -239,21 +234,19 @@ public class SutAnalyse extends RequestRunner
 							+ "To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property."); // TODO
 					zipedContribs.setTitle(zipName);
 					zipedContribs = VeriFitAnalysisManager.createContribution(zipedContribs, serviceProviderId);
-					newAutoResult.addContribution(zipedContribs);
+					resAutoResult.addContribution(zipedContribs);
 				} catch (Exception e)
 				{
 					System.out.println("WARNING failed to ZIP outputs: " + e.getMessage());
 				}
 			}
 		
-			// update the autoResult state, contribution, verdict
-			newAutoResult.setState(new HashSet<Link>());
-			newAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
-			newAutoResult.setVerdict(new HashSet<Link>());
-			newAutoResult.addVerdict(new Link(new URI(executionVerdict)));
-			VeriFitAnalysisManager.updateAutomationResult(newAutoResult, serviceProviderId, VeriFitAnalysisManager.getResourceIdFromUri(newAutoResult.getAbout()));
-			
-			// update the autoRequest state
+			// update the AutoResult state and verdict, and AutoRequest state
+			resAutoResult.setState(new HashSet<Link>());
+			resAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
+			resAutoResult.setVerdict(new HashSet<Link>());
+			resAutoResult.addVerdict(new Link(new URI(executionVerdict)));
+			VeriFitAnalysisManager.updateAutomationResult(resAutoResult, serviceProviderId, VeriFitAnalysisManager.getResourceIdFromUri(resAutoResult.getAbout()));
 			execAutoRequest.setState(new HashSet<Link>());
 			execAutoRequest.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
 			VeriFitAnalysisManager.updateAutomationRequest(execAutoRequest, serviceProviderId, execAutoRequestId);
