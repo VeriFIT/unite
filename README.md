@@ -12,7 +12,9 @@ TODO brief
 ## How to Install and Run
 The adapters need a SPARQL triplestore. Start the triplestore before launching the Adapter. A Fuseki jetty server is included in this repository but feel free to use any other.
 
-#### Configuration 
+#### Configuration files
+Things that need to be configured - analysis host&port, compilation host&port, triplestore host&port, and optionally dataset endpoints.
+Defaults are "localhost" and ports "8080, 8081, 8082".
 - Adapters configuration
 	- in *analysis/VeriFitAnalysis.properties* configure all properties (adapter host and port, sparql, ...)
 	- in *compilation/VeriFitCompilation.properties* configure all properties (adapter host and port, sparql, ...)
@@ -43,7 +45,7 @@ $ ./run.sh
 
 server online at - http://*host*:*port*/fuseki/
 ```
-Then create a two new datasets using Fuseki's Web UI.
+The triplestore comes with two non-persistent datasets. If you want persistent ones, create two new datasets using Fuseki's Web UI.
 1) open a Web browser at *host*:*port*/fuseki/
 2) go to "manage datasets -> add new dataset"
-3) create a two new datasets (one for each adapter) type "In-memory" or "Persistent" and name them based on your configuration in the .properties files.
+3) create a two new datasets (one for each adapter) type "Persistent" and name them based on your configuration in the .properties files.
