@@ -101,10 +101,12 @@ public class SutAnalyse extends RequestRunner
 	{
 		
 		try {
+			// get non-commandline input parameters (dont have commandline position - getRight() == -1)
 			final String outputRegex = inputParamsMap.get("outputFileRegex").getLeft();
 			final String zipOutputs = inputParamsMap.get("zipOutputs").getLeft();
+			final String timeout = inputParamsMap.get("timeout").getLeft();
 			
-			// Build the string to execute from the input parameters based on their positions TODO maybe move somewhere else
+			// Build the string to execute from commandline input parameters based on their positions TODO maybe move somewhere else
 			String buildStringToExecute = "";
 			List<Pair<String,Integer>> inputParamsList = new ArrayList<Pair<String,Integer>>(inputParamsMap.values());
 			inputParamsList.sort((Pair<String,Integer> a, Pair<String,Integer> b) -> a.getRight().compareTo(b.getRight()));
@@ -152,24 +154,30 @@ public class SutAnalyse extends RequestRunner
 		    String executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_PASSED;
 			try {
 				analysisStdoutLog.setValue("# Executing: " + stringToExecute + "\n");
-		    	Triple<Integer, String, String> analysisRes = analyseSUT(execSut.getSUTdirectoryPath(), stringToExecute);
-		    	
-		    	if (analysisRes.getLeft() != 0) // get return code
+		    	analyseSUTres analysisRes = analyseSUT(execSut.getSUTdirectoryPath(), stringToExecute, Integer.parseInt(timeout));
+				
+				if (analysisRes.timeouted)
+				{
+					executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_FAILED;
+			    	analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis aborted due to  timeout (" + timeout + " seconds)\n" //TODO
+			    							+ analysisRes.stdout);
+				}
+		    	else if (analysisRes.retCode != 0)
 		    	{
 					executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_ERROR;
-			    	analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis failed (returned non-zero: " + analysisRes.getLeft() + ")\n"
-			    							+ analysisRes.getMiddle());	// get stdout
-		    	}
+			    	analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis failed (returned non-zero: " + analysisRes.retCode + ")\n"
+			    							+ analysisRes.stdout);
+				}
 		    	else
 		    	{
-		    		analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis completed successfully\n" + analysisRes.getMiddle());	// get stdout
+		    		analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis completed successfully\n" + analysisRes.stdout);
 		    	}
-		    	analysisStderrLog.setValue(analysisRes.getRight());		// get stderr
+		    	analysisStderrLog.setValue(analysisRes.stderr);
 			    
 			} catch (IOException e) {
 				// there was an error
 				executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_ERROR;
-				analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis error");	// get stdout
+				analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis error");
 				analysisStderrLog.setValue(e.getMessage());	// get stderr
 	    		
 			}

@@ -29,6 +29,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Struct;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,8 +40,14 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import java.util.Base64.Decoder;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
@@ -52,25 +59,34 @@ import verifit.analysis.VeriFitAnalysisResourcesFactory;
 
 /**
  * A thread designed to execute an AutomationRequest.
+ * 
  * @author Ondřej Vašíček
  *
  */
-public abstract class RequestRunner extends Thread
-{
-	public RequestRunner()
-	{
+public abstract class RequestRunner extends Thread {
+	public RequestRunner() {
 		super();
 	}
-	
+
+	public class analyseSUTres {
+		public int retCode;
+		public String stdout;
+		public String stderr;
+		public Boolean timeouted;
+	};
+
 	/**
 	 * Analyses an SUT
-	 * @param folderPath Path to the directory
-	 * @param stringToExecute 	... TODO
-	 * @return Triple of (return_code, stdout, stderr)
+	 * 
+	 * @param folderPath      Path to the directory
+	 * @param stringToExecute ... TODO
+	 * @param timeout         Time limit for analysis execution in seconds. Zero
+	 *                        means no time limit
+	 * @return a "analyseSUTres" object that holds the stdout, stderr, return code,
+	 *         and timeout flag
 	 * @throws IOException when the command execution fails (error)
 	 */
-	protected Triple<Integer,String,String> analyseSUT(String folderPath, String stringToExecute) throws IOException
-	{
+	protected analyseSUTres analyseSUT(String folderPath, String stringToExecute, int timeout) throws IOException {
 		Process process;
 		Path pathAsPath = FileSystems.getDefault().getPath(folderPath);
 		process = Runtime.getRuntime().exec(stringToExecute, null, pathAsPath.toFile());
@@ -80,24 +96,60 @@ public abstract class RequestRunner extends Thread
 		BufferedReader stdoutBuffReader = new BufferedReader(stdoutReader);
 		InputStreamReader stderrReader = new InputStreamReader(stderr);
 		BufferedReader stderrBuffReader = new BufferedReader(stderrReader);
-		String line, stdoutLog = "", stderrLog = "";
-		
-		while ((line = stdoutBuffReader.readLine()) != null) {
-			stdoutLog = stdoutLog.concat(line + "\n");
-		}
-		while ((line = stderrBuffReader.readLine()) != null) {
-			stderrLog = stderrLog.concat(line + "\n");
-		}
-		
+
+		// spawn two threads to capture stdout and stderr while this thread takes care of the timeout
+		ExecutorService outCaptureThreads = Executors.newFixedThreadPool(2);
+		Future<String> stdoutLog = outCaptureThreads.submit(() -> {
+			String line, output = "";		
+			while ((line = stdoutBuffReader.readLine()) != null) {
+				output = output.concat(line + "\n");
+			}
+			return output;
+		});
+		Future<String> stderrLog = outCaptureThreads.submit(() -> {
+			String line, output = "";		
+			while ((line = stderrBuffReader.readLine()) != null) {
+				output = output.concat(line + "\n");
+			}
+			return output;
+		});
+		outCaptureThreads.shutdown();
+
 		// wait for the process to exit
+		Boolean exitedInTime = true;
 		try {
-			process.waitFor();
+			// with timeout
+			if (timeout > 0) {
+				System.out.println("timeout waitfor");
+				exitedInTime = process.waitFor(timeout, TimeUnit.SECONDS);
+				if (!exitedInTime) {
+					System.out.println("timeouted");
+					process.destroy();
+				}
+				else
+					System.out.println("not timeouted");
+			}
+			// no timeout
+			else {
+				process.waitFor();
+			}
+
 		} catch (InterruptedException e) {
 			// TODO Dont know what that means really
 			e.printStackTrace();
 		}
 
-		return Triple.of(process.exitValue(), stdoutLog, stderrLog);
+		analyseSUTres res = new analyseSUTres();
+		res.retCode = process.exitValue();
+		res.timeouted = !exitedInTime;
+		try {
+			res.stdout = stdoutLog.get();
+			res.stderr = stderrLog.get();
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace(); // TODO
+		}
+
+		return res;
 	}
 	
 	/**

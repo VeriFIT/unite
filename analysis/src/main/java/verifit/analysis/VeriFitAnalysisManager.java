@@ -234,6 +234,16 @@ public class VeriFitAnalysisManager {
 			zipOutputs.setReadOnly(false);
 			zipOutputs.setDefaultValue("false");
 			newResource.addParameterDefinition(zipOutputs);
+
+			ParameterDefinition timeout = new ParameterDefinition();
+			timeout.setDescription("Timeout for the analysis. Zero means no timeout.");
+			timeout.setName("timeout");
+			timeout.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
+			timeout.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_INTEGER)));
+			timeout.setHidden(false);
+			timeout.setReadOnly(false);
+			timeout.setDefaultValue("0");
+			newResource.addParameterDefinition(timeout);
 						
 			// persist in the triplestore
 			store.updateResources(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
