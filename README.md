@@ -22,7 +22,10 @@ Defaults are "localhost" and ports "8080, 8081, 8082".
 	- in *sparql_triplestore/jetty-distribution/start.ini* change *jetty.http.host* and *jetty.http.port*
 
 #### Run all at once
-Use the run_all.sh script to run everything at once. Use ctrl+c to kill it once youre done. Or launch everything by yourself using the commands below. 
+##### Linux
+Use the run_all.sh script. Then use ctrl+c to exit.
+##### Windows
+Use the run_all.bat script. Then press any key to exit. Do not use ctrl+c otherwise subprocesses will not be terminated (they run in their own consoles so they will be visible and can be closed manualy)
 
 #### Adapters
 Analysis adapter
