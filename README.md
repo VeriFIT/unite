@@ -25,9 +25,9 @@ Defaults are "localhost" and ports "8080, 8081, 8082".
 ##### Linux
 Use the run_all.sh script. Then use ctrl+c to exit.
 ##### Windows
-Use the run_all.bat script. Then press any key to exit. Do not use ctrl+c otherwise subprocesses will not be terminated (they run in their own consoles so they will be visible and can be closed manualy)
+Use the run_all.bat script. Then press any key to exit. Do not use ctrl+c otherwise subprocesses will not be terminated (they run in their own consoles so they will be visible and can be closed manually)
 
-#### Adapters
+#### Run manually
 Analysis adapter
 ```
 $ cd *cloned_repo*/analysis
