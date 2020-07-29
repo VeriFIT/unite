@@ -54,6 +54,17 @@ public class VeriFitAnalysisProperties
 		if (analysers == null)
 			throw new IOException("anaconda_analysers missing");
 		ANACONDA_ANALYSERS = new HashSet<String>(Arrays.asList(analysers.split(",")));
+
+		// perun
+		PERUN_PATH = VeriFitAnalysisProperties.getProperty("perun_path");	
+		if (PERUN_PATH == null)
+			throw new IOException("perun_path missing");
+		
+		// hilite
+		HILITE_PATH = VeriFitAnalysisProperties.getProperty("hilite_path");	
+		if (HILITE_PATH == null)
+			throw new IOException("hilite_path missing");
+		
 		
 		updateConstants();
 	}
@@ -79,8 +90,10 @@ public class VeriFitAnalysisProperties
 	public static String ANACONDA_PATH;
     public static Set<String> ANACONDA_ANALYSERS = new HashSet<String>();
 
-	public static String PERUN_PATH = "perun";	// TODO
+	public static String PERUN_PATH;
 	
+	public static String HILITE_PATH;
+
     public static String SPARQL_SERVER_NAMED_GRAPH_RESOURCES;
     public static String SPARQL_SERVER_QUERY_ENDPOINT;
     public static String SPARQL_SERVER_UPDATE_ENDPOINT;

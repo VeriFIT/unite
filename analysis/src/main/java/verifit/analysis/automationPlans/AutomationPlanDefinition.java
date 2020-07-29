@@ -165,8 +165,8 @@ public class AutomationPlanDefinition {
 			propertiesPlan.setDescription("Analyse an SUT using Hilite");
 			propertiesPlan.addParameterDefinition(launchSUT);
 			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
-			propertiesPlan.addUsesExecutionEnvironment(new Link(new URI("https://github.com/tfiedor/perun")));
-			VeriFitAnalysisManager.createAutomationPlan(propertiesPlan, "C:\\power42\\matrix\\dummyHilite.bat", "");
+			propertiesPlan.addUsesExecutionEnvironment(new Link(new URI("https://hilite.TODO"))); // TODO hilite url
+			VeriFitAnalysisManager.createAutomationPlan(propertiesPlan, VeriFitAnalysisProperties.HILITE_PATH, "");
 	
 		} catch (URISyntaxException e) {
 			// TODO should never be thrown (URI syntax)
