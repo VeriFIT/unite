@@ -66,8 +66,10 @@ import java.util.stream.Stream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.regex.Pattern;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.Map;
 import org.eclipse.lyo.client.oslc.OslcClient;
 // End of user code
@@ -813,10 +815,6 @@ public class VeriFitAnalysisManager {
 			
 			// get the executed autoPlan, check input parameters, add output parameters to the AutoResult, and make an input map for the runner
 			Map<String, Pair<String,Integer>> inputParamsMap = processAutoReqInputParams(serviceProviderId, newResource, propAutoResult);
-			
-			// persist the AutomationResult and set the setProducedAutomationResult() link for the AutoRequest
-		    AutomationResult newAutoResult = VeriFitAnalysisManager.createAutomationResult(propAutoResult, serviceProviderId, newID);
-			newResource.setProducedAutomationResult(new Link(newAutoResult.getAbout())); // TODO
 
 			// check that the SUT to be executed exists
 			OslcClient client = new OslcClient();
@@ -832,9 +830,26 @@ public class VeriFitAnalysisManager {
 			if (launchSUT != null)
 			{
 				inputParamsMap.put("launchSUT", Pair.of(executedSUT.getLaunchCommand(), launchSUT.getRight()));
+				
+				// modify the output parameter of the automation result (was added by processAutoReqInputParams)
+				Set<ParameterInstance> outputParams = new HashSet<ParameterInstance>();
+				for (ParameterInstance param : propAutoResult.getOutputParameter())
+				{
+					if (param.getName().equals("launchSUT"))
+					{
+						param.setValue(executedSUT.getLaunchCommand());
+						outputParams.add(param);
+					}
+					else
+						outputParams.add(param);
+				}
 			}
 			
-			// persist in the triplestore
+			// persist the AutomationResult and set the setProducedAutomationResult() link for the AutoRequest
+		    AutomationResult newAutoResult = VeriFitAnalysisManager.createAutomationResult(propAutoResult, serviceProviderId, newID);
+			newResource.setProducedAutomationResult(new Link(newAutoResult.getAbout())); // TODO
+
+			// persist the new AutoRequest in the triplestore
 			store.updateResources(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
 			
 			// create a new thread to execute the automation request

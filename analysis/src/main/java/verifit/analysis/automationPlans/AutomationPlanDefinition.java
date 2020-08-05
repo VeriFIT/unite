@@ -78,6 +78,7 @@ public class AutomationPlanDefinition {
 			ParameterDefinition launchSUT = new ParameterDefinition();
 			launchSUT.setDescription("This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position"); //TODO
 			launchSUT.setName("launchSUT");
+			launchSUT.setDefaultValue("");
 			launchSUT.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
 			launchSUT.setHidden(true);
 			launchSUT.setReadOnly(true);
@@ -154,6 +155,7 @@ public class AutomationPlanDefinition {
 			ParameterDefinition launchSUT = new ParameterDefinition();
 			launchSUT.setDescription("This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position"); //TODO
 			launchSUT.setName("launchSUT");
+			launchSUT.setDefaultValue("");
 			launchSUT.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
 			launchSUT.setHidden(true);
 			launchSUT.setReadOnly(true);
