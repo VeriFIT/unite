@@ -161,11 +161,24 @@ public class AutomationPlanDefinition {
 			launchSUT.setReadOnly(true);
 			launchSUT.setCommandlinePosition(2); // has to be 2+ (zero is taken by tool command; one by adapterSpecific tool params)
 			
+
+			// create parameter definitions
+			ParameterDefinition arguments = new ParameterDefinition();
+			arguments.setDescription("Specify which arguments should be passed to Hilite on the command line.");
+			arguments.setName("arguments");
+			arguments.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
+			arguments.setDefaultValue("");
+			arguments.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));	
+			arguments.setHidden(false);
+			arguments.setReadOnly(false);
+			arguments.setCommandlinePosition(3);	// has to be 2+ (zero is taken by tool command; one by adapterSpecific tool params)
+			
 			// create the autoPlan
 			AutomationPlan propertiesPlan = new AutomationPlan();
 			propertiesPlan.setTitle("Hilite");
 			propertiesPlan.setDescription("Analyse an SUT using Hilite");
 			propertiesPlan.addParameterDefinition(launchSUT);
+			propertiesPlan.addParameterDefinition(arguments);
 			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
 			propertiesPlan.addUsesExecutionEnvironment(new Link(new URI("https://hilite.TODO"))); // TODO hilite url
 			VeriFitAnalysisManager.createAutomationPlan(propertiesPlan, VeriFitAnalysisProperties.HILITE_PATH, "");
