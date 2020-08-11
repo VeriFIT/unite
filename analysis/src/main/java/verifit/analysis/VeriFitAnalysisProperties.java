@@ -5,9 +5,13 @@ package verifit.analysis;
 
 // Start of user code imports
 import java.util.Set;
+
+import org.apache.commons.lang.SystemUtils;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
 // End of user code
@@ -65,6 +69,11 @@ public class VeriFitAnalysisProperties
 		if (HILITE_PATH == null)
 			throw new IOException("hilite_path missing");
 		
+		// dummy
+		if (SystemUtils.IS_OS_LINUX)
+			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.sh").toAbsolutePath().toString();
+		else if (SystemUtils.IS_OS_WINDOWS)
+			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.bat").toAbsolutePath().toString();
 		
 		updateConstants();
 	}
@@ -87,6 +96,8 @@ public class VeriFitAnalysisProperties
 	public static String ADAPTER_HOST;
 	public static String ADAPTER_PORT;
 	
+	public static String DUMMYTOOL_PATH;
+
 	public static String ANACONDA_PATH;
     public static Set<String> ANACONDA_ANALYSERS = new HashSet<String>();
 

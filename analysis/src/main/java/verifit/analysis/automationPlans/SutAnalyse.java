@@ -154,7 +154,7 @@ public class SutAnalyse extends RequestRunner
 				if (analysisRes.timeouted)
 				{
 					executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_FAILED;
-			    	analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis aborted due to  timeout (" + timeout + " seconds)\n" //TODO
+			    	analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis aborted due to a " + analysisRes.timeoutType + " timeout (" + timeout + " seconds)\n" //TODO
 			    							+ analysisRes.stdout);
 				}
 		    	else if (analysisRes.retCode != 0)

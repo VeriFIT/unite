@@ -40,6 +40,7 @@ public class AutomationPlanDefinition {
 		createAnacondaAutomationPlan();
 		createPerrunAutomationPlan();
 		createHiliteAutomationPlan();
+		createDummyAutomationPlan();
 	}	
 	
 	/**
@@ -56,6 +57,49 @@ public class AutomationPlanDefinition {
     		return true;
 	}
 
+	/**
+	 * TODO
+	 * @throws StoreAccessException 
+	 */
+	private static void createDummyAutomationPlan() throws StoreAccessException
+	{ 
+		try {			
+			// create parameter definitions
+			ParameterDefinition arguments = new ParameterDefinition();
+			arguments.setDescription("Specify which arguments should be passed to the command line.");
+			arguments.setName("arguments");
+			arguments.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ONE)));
+			arguments.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));	
+			arguments.setHidden(false);
+			arguments.setReadOnly(false);
+			arguments.setCommandlinePosition(2);	// has to be 2+ (zero is taken by tool command; one by adapterSpecific tool params)
+
+			// special paramDefinition specifying that the SUT call command should be placed at this position
+			ParameterDefinition launchSUT = new ParameterDefinition();
+			launchSUT.setDescription("This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position"); //TODO
+			launchSUT.setName("launchSUT");
+			launchSUT.setDefaultValue("");
+			launchSUT.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
+			launchSUT.setHidden(true);
+			launchSUT.setReadOnly(true);
+			launchSUT.setCommandlinePosition(3);
+			
+			// create the autoPlan
+			AutomationPlan propertiesPlan = new AutomationPlan();
+			propertiesPlan.setTitle("Dummy Tool");
+			propertiesPlan.setDescription("Used for to test the funcionality of this adapter.");
+			propertiesPlan.addParameterDefinition(arguments);
+			propertiesPlan.addParameterDefinition(launchSUT);
+			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
+			propertiesPlan.addUsesExecutionEnvironment(new Link(new URI("https://dummy_tool"))); // TODO 
+			VeriFitAnalysisManager.createAutomationPlan(propertiesPlan, VeriFitAnalysisProperties.DUMMYTOOL_PATH, "");
+	
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * TODO
 	 * @throws StoreAccessException 

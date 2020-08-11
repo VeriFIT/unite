@@ -67,12 +67,13 @@ public abstract class RequestRunner extends Thread {
 	public RequestRunner() {
 		super();
 	}
-
+	
 	public class analyseSUTres {
 		public int retCode;
 		public String stdout;
 		public String stderr;
 		public Boolean timeouted;
+		public String timeoutType;
 	};
 
 	/**
@@ -117,17 +118,22 @@ public abstract class RequestRunner extends Thread {
 
 		// wait for the process to exit
 		Boolean exitedInTime = true;
+		String timeoutType = "";
 		try {
 			// with timeout
 			if (timeout > 0) {
-				System.out.println("timeout waitfor");
 				exitedInTime = process.waitFor(timeout, TimeUnit.SECONDS);
 				if (!exitedInTime) {
-					System.out.println("timeouted");
+					// try to kill gracefully
+					timeoutType = "graceful";
 					process.destroy();
+					Boolean killedInTime = process.waitFor(1, TimeUnit.SECONDS); // TODO one second to die
+					if (!killedInTime) {
+						// kill forcefully
+						timeoutType = "forceful";
+						process.destroyForcibly();
+					}
 				}
-				else
-					System.out.println("not timeouted");
 			}
 			// no timeout
 			else {
@@ -142,6 +148,7 @@ public abstract class RequestRunner extends Thread {
 		analyseSUTres res = new analyseSUTres();
 		res.retCode = process.exitValue();
 		res.timeouted = !exitedInTime;
+		res.timeoutType = timeoutType;
 		try {
 			res.stdout = stdoutLog.get();
 			res.stderr = stderrLog.get();
