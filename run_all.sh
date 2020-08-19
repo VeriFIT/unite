@@ -24,6 +24,8 @@ echo -e "\n####################################################n## New run start
 echo "Starting the Triplestore"
 cd sparql_triplestore
 ./run.sh 2>&1 | tee -a $USRPATH/triplestore.log | grep "Started ServerConnector" &
+# wait a while to let the triplestore start
+sleep 3
 
 echo "Starting the Compilation adapter"
 cd ../compilation
