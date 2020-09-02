@@ -45,6 +45,7 @@ import verifit.analysis.resources.SUT;
 // Start of user code imports
 import verifit.analysis.persistance.Persistence;
 import verifit.analysis.automationPlans.AutomationPlanDefinition;
+import verifit.analysis.automationPlans.RequestRunner;
 import verifit.analysis.automationPlans.SutAnalyse;
 import verifit.analysis.exceptions.OslcResourceException;
 
@@ -67,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.regex.Pattern;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -85,6 +87,8 @@ public class VeriFitAnalysisManager {
 	
 	static ResourceIdGen AutoPlanIdGen;
 	static ResourceIdGen AutoRequestIdGen;
+	
+	static RequestRunnerQueues AutoRequestQueues = new RequestRunnerQueues();
 
     // End of user code
     
@@ -561,6 +565,86 @@ public class VeriFitAnalysisManager {
         return updatedResource;
     }
     
+    /**
+     * A map of queues of Automation Request runners. Each queue is meant to be used for a different Automation Plan (key to the map).
+     * The first runner in each queue will be started. 
+     */
+    public static class RequestRunnerQueues {
+    	
+    	private Map<String,List<RequestRunner>> queueMap;
+    	
+    	public RequestRunnerQueues()
+    	{
+    		queueMap = new HashMap<String,List<RequestRunner>>();
+    	}
+
+    	public synchronized Boolean queueExists(String queueName) 
+    	{
+    		return (queueMap.get(queueName) != null);
+    	}
+    	
+    	public synchronized Boolean empty(String queueName) 
+    	{
+    		List<RequestRunner> queue = queueMap.get(queueName);
+    		if(queue == null)
+    			return true;
+    		else
+    			return queue.isEmpty();
+    	}
+    	
+    	/**
+    	 * Adds a runner into a named queue. The runner will be started when it reaches the front of the queue (immediately if the queue is empty).
+    	 * @param queueName
+    	 * @param runner
+    	 */
+    	public synchronized void queueUp(String queueName, RequestRunner runner)
+    	{	
+    		// check if the queue exists - create it if it doesnt
+    		if (queueMap.get(queueName) == null)
+    		{
+    			queueMap.put(queueName, new LinkedList<RequestRunner>());
+    		}
+    		
+    		// queue up
+    		queueMap.get(queueName).add(runner);
+    		
+    		// start execution if first in line
+    		if (queueMap.get(queueName).size() == 1)
+    			runner.start();
+    	}
+    	
+    	/**
+    	 * Removes the first runner from a named queue. Meant to be called after the runner has finished execution. Will start the next runner in line.
+    	 * @param queueName
+    	 */
+    	public synchronized void popFirst(String queueName)
+    	{
+    		List<RequestRunner> queue = queueMap.get(queueName);
+    		if (!(queue == null)) // make sure the queue exists
+    		{
+    			queue.remove(0);
+    			if (!(queue.isEmpty()))	// start the next runner if there is one
+    				queue.get(0).start();
+    		}
+    	}
+    };
+    
+    /**
+     * Call this function at the end of an Automation Requests execution. If the request is part of a queue, then it will be removed from it and the next requets will start its execution.
+     * @param req
+     */
+    public static void finishedAutomationRequestExecution(AutomationRequest req)
+    {
+    	String autoPlanId = getResourceIdFromUri(req.getExecutesAutomationPlan().getValue());
+    	
+    	// if there is a request queue for this requests Automation Plan, then it means this request execution is currently
+    	// at the front of the queue and needs to be removed
+    	if (AutoRequestQueues.queueExists(autoPlanId))
+    	{
+    		AutoRequestQueues.popFirst(autoPlanId);
+    	}
+    }
+    
     // End of user code
 
     public static void contextInitializeServletListener(final ServletContextEvent servletContextEvent)
@@ -797,7 +881,6 @@ public class VeriFitAnalysisManager {
 			newResource.setModified(timestamp);
 			//newResource.setInstanceShape(new URI(AnacondaAdapterConstants.PATH_RESOURCE_SHAPES + "automationRequest"));
 			//newResource.addServiceProvider(new URI(AnacondaAdapterConstants.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
-			newResource.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_NEW)));
 			newResource.setDesiredState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
 			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationRequest"));
 			
@@ -810,7 +893,6 @@ public class VeriFitAnalysisManager {
 			propAutoResult.setInputParameter(newResource.getInputParameter());
 			propAutoResult.setContributor(newResource.getContributor());
 			propAutoResult.setCreator(newResource.getCreator());
-			propAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_NEW)));
 			propAutoResult.addVerdict(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_VERDICT_UNAVAILABLE)));
 			
 			// get the executed autoPlan, check input parameters, add output parameters to the AutoResult, and make an input map for the runner
@@ -845,6 +927,21 @@ public class VeriFitAnalysisManager {
 				}
 			}
 			
+			// check whether the new Auto Request can start execution immediately or needs to wait in a queue
+			// and set its state accordingly (same for the Auto Result)
+			String requestState;
+			if (inputParamsMap.get("oneInstanceOnly") == null
+				|| inputParamsMap.get("oneInstanceOnly").getLeft().equalsIgnoreCase("false")) // no instance restrictions --> can run
+			{
+				requestState = VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS;
+			}
+			else	// only one instance allowed at a time --> check queue
+			{
+				requestState = VeriFitAnalysisConstants.AUTOMATION_STATE_QUEUED;
+			}			
+			newResource.addState(new Link(new URI(requestState)));
+			propAutoResult.addState(new Link(new URI(requestState)));
+			
 			// persist the AutomationResult and set the setProducedAutomationResult() link for the AutoRequest
 		    AutomationResult newAutoResult = VeriFitAnalysisManager.createAutomationResult(propAutoResult, serviceProviderId, newID);
 			newResource.setProducedAutomationResult(new Link(newAutoResult.getAbout())); // TODO
@@ -852,9 +949,19 @@ public class VeriFitAnalysisManager {
 			// persist the new AutoRequest in the triplestore
 			store.updateResources(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
 			
-			// create a new thread to execute the automation request
-			new SutAnalyse(serviceProviderId, newResource, newAutoResult, executedSUT, inputParamsMap);
-
+			// create a new thread to execute the automation request - and start it OR queue it up
+			SutAnalyse runner = new SutAnalyse(serviceProviderId, newResource, newAutoResult, executedSUT, inputParamsMap);
+			if (requestState.equals(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS))
+			{
+				runner.start();
+			}
+			else	
+			{
+				AutoRequestQueues.queueUp(
+						getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue()),
+						runner);
+			}
+			
 			
 		} catch (OslcResourceException | RuntimeException | IOException e) {
 			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());

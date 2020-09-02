@@ -195,18 +195,7 @@ public class AutomationPlanDefinition {
 	private static void createHiliteAutomationPlan() throws StoreAccessException
 	{ 
 		try {			
-			// special paramDefinition specifying that the SUT call command should be placed at this position
-			ParameterDefinition launchSUT = new ParameterDefinition();
-			launchSUT.setDescription("This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position"); //TODO
-			launchSUT.setName("launchSUT");
-			launchSUT.setDefaultValue("");
-			launchSUT.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
-			launchSUT.setHidden(true);
-			launchSUT.setReadOnly(true);
-			launchSUT.setCommandlinePosition(2); // has to be 2+ (zero is taken by tool command; one by adapterSpecific tool params)
-			
-
-			// create parameter definitions
+			// client parameters
 			ParameterDefinition arguments = new ParameterDefinition();
 			arguments.setDescription("Specify which arguments should be passed to Hilite on the command line.");
 			arguments.setName("arguments");
@@ -217,12 +206,31 @@ public class AutomationPlanDefinition {
 			arguments.setReadOnly(false);
 			arguments.setCommandlinePosition(3);	// has to be 2+ (zero is taken by tool command; one by adapterSpecific tool params)
 			
+			// special param. definitions for the adapter
+			ParameterDefinition launchSUT = new ParameterDefinition();
+			launchSUT.setDescription("This parameter definitions tells the Automation Provider to place the SUT launch command at this command line position"); //TODO
+			launchSUT.setName("launchSUT");
+			launchSUT.setDefaultValue("");
+			launchSUT.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
+			launchSUT.setHidden(true);
+			launchSUT.setReadOnly(true);
+			launchSUT.setCommandlinePosition(2); // has to be 2+ (zero is taken by tool command; one by adapterSpecific tool params)
+			
+			ParameterDefinition oneInstanceOnly = new ParameterDefinition();
+			oneInstanceOnly.setDescription("This parameter definitions tells the Automation Provider to only allow one Automation Request at a time to execute this Automation Plan. Requests created while an instance is already running will be placed in a queue.");
+			oneInstanceOnly.setName("oneInstanceOnly");
+			oneInstanceOnly.setDefaultValue("True");
+			oneInstanceOnly.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
+			oneInstanceOnly.setHidden(true);
+			oneInstanceOnly.setReadOnly(true);
+			
 			// create the autoPlan
 			AutomationPlan propertiesPlan = new AutomationPlan();
 			propertiesPlan.setTitle("Hilite");
 			propertiesPlan.setDescription("Analyse an SUT using Hilite");
-			propertiesPlan.addParameterDefinition(launchSUT);
 			propertiesPlan.addParameterDefinition(arguments);
+			propertiesPlan.addParameterDefinition(launchSUT);
+			propertiesPlan.addParameterDefinition(oneInstanceOnly);
 			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
 			propertiesPlan.addUsesExecutionEnvironment(new Link(new URI("https://hilite.TODO"))); // TODO hilite url
 			VeriFitAnalysisManager.createAutomationPlan(propertiesPlan, VeriFitAnalysisProperties.HILITE_PATH, "");

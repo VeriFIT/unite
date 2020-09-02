@@ -76,7 +76,6 @@ public class SutAnalyse extends RequestRunner
 	final private Map<String, Pair<String,Integer>> inputParamsMap;
 	
 	/**
-	 * Creating the thread automatically starts the execution
 	 * @param serviceProviderId	ID of the service provider
 	 * @param execAutoRequest	Executed AutomationRequest resource object
 	 * @param execAutoResult	Result AutomationResult resource object
@@ -95,8 +94,6 @@ public class SutAnalyse extends RequestRunner
 		this.resAutoResult = resAutoResult;
 		this.execSutId = VeriFitAnalysisManager.getResourceIdFromUri(execSut.getAbout());;
 		this.execSut = execSut;
-		
-		this.start();
 	}
 
 	/**
@@ -124,14 +121,17 @@ public class SutAnalyse extends RequestRunner
 			final String stringToExecute = buildStringToExecute;
 			
 
-			// set the states of the Automation Result and Request to "inProgress"
-			resAutoResult.setState(new HashSet<Link>());
-			resAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS)));
-			VeriFitAnalysisManager.updateAutomationResult(resAutoResult, serviceProviderId, resAutoResultId);
-			execAutoRequest.setState(new HashSet<Link>());
-			execAutoRequest.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS)));
-			VeriFitAnalysisManager.updateAutomationRequest(execAutoRequest, serviceProviderId, execAutoRequestId);
-			
+			// set the states of the Automation Result and Request to "inProgress" - if they are not that already
+			if (!(execAutoRequest.getState().iterator().next().getValue()
+					.toASCIIString().equals(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS)))
+			{
+				resAutoResult.setState(new HashSet<Link>());
+				resAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS)));
+				VeriFitAnalysisManager.updateAutomationResult(resAutoResult, serviceProviderId, resAutoResultId);
+				execAutoRequest.setState(new HashSet<Link>());
+				execAutoRequest.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS)));
+				VeriFitAnalysisManager.updateAutomationRequest(execAutoRequest, serviceProviderId, execAutoRequestId);
+			}
 			
 		    // prepare stdin & stdout contributions
 			Contribution analysisStdoutLog = new Contribution();
@@ -250,6 +250,9 @@ public class SutAnalyse extends RequestRunner
 			execAutoRequest.setState(new HashSet<Link>());
 			execAutoRequest.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
 			VeriFitAnalysisManager.updateAutomationRequest(execAutoRequest, serviceProviderId, execAutoRequestId);
+			
+			// end the request execution (in case it is part of a request queue)
+			VeriFitAnalysisManager.finishedAutomationRequestExecution(execAutoRequest);
 				
 		} catch (URISyntaxException e) {
 			// TODO should never be thrown (URI syntax)
