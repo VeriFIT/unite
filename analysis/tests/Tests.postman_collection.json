@@ -198,9 +198,9 @@
 											"pm.test(\"Response body should contain an AutomationRequest\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:AutomationRequest rdf:about=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/automationRequests/\" + requestId);",
 											"});",
-											"pm.test(\"AutomationRequest state should be #new\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
-											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
+											"pm.test(\"AutomationRequest state should be #inProgress\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
 											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 											"});",
 											"pm.test(\"AutomationRequest desiredState should be #complete\", function () {",
@@ -4524,28 +4524,24 @@
 	],
 	"variable": [
 		{
-			"id": "2b266273-edf5-4516-9800-c406af32b520",
+			"id": "bbaf2ce3-c4b3-441e-9d93-ce406af680b1",
 			"key": "server_address",
-			"value": "http://localhost:8080",
-			"type": "string"
+			"value": "http://localhost:8080"
 		},
 		{
-			"id": "0f7f2616-f32c-4061-8cda-5644f0977e16",
+			"id": "088430d3-c8ea-4994-af6b-d090de706145",
 			"key": "result_wait_time",
-			"value": "5000",
-			"type": "string"
+			"value": "5000"
 		},
 		{
-			"id": "d5487ba7-cb71-4de0-a365-4748f80682b9",
+			"id": "278c53a9-e8a8-4641-8379-78f2ff0b7897",
 			"key": "server_context",
-			"value": "analysis",
-			"type": "string"
+			"value": "analysis"
 		},
 		{
-			"id": "4c829c9b-bc44-44fb-87ed-6b4b2945d399",
+			"id": "032ed245-0b6b-44f5-8595-e25da1ccca2b",
 			"key": "compilation_provider",
-			"value": "http://localhost:8081/compilation",
-			"type": "string"
+			"value": "http://localhost:8081/compilation"
 		}
 	],
 	"protocolProfileBehavior": {}
