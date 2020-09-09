@@ -50,25 +50,6 @@ public class VeriFitAnalysisProperties
 		if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
 			throw new IOException("sparql_graph missing");
 		
-		// TODO anaconda
-		ANACONDA_PATH = VeriFitAnalysisProperties.getProperty("anaconda_path");	
-		if (ANACONDA_PATH == null)
-			throw new IOException("anaconda_path missing");
-		String analysers = VeriFitAnalysisProperties.getProperty("anaconda_analysers");	
-		if (analysers == null)
-			throw new IOException("anaconda_analysers missing");
-		ANACONDA_ANALYSERS = new HashSet<String>(Arrays.asList(analysers.split(",")));
-
-		// perun
-		PERUN_PATH = VeriFitAnalysisProperties.getProperty("perun_path");	
-		if (PERUN_PATH == null)
-			throw new IOException("perun_path missing");
-		
-		// hilite
-		HILITE_PATH = VeriFitAnalysisProperties.getProperty("hilite_path");	
-		if (HILITE_PATH == null)
-			throw new IOException("hilite_path missing");
-		
 		// dummy
 		if (SystemUtils.IS_OS_LINUX)
 			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.sh").toAbsolutePath().toString();
@@ -97,13 +78,6 @@ public class VeriFitAnalysisProperties
 	public static String ADAPTER_PORT;
 	
 	public static String DUMMYTOOL_PATH;
-
-	public static String ANACONDA_PATH;
-    public static Set<String> ANACONDA_ANALYSERS = new HashSet<String>();
-
-	public static String PERUN_PATH;
-	
-	public static String HILITE_PATH;
 
     public static String SPARQL_SERVER_NAMED_GRAPH_RESOURCES;
     public static String SPARQL_SERVER_QUERY_ENDPOINT;

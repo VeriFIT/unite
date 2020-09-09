@@ -51,12 +51,16 @@ import verifit.analysis.exceptions.OslcResourceException;
 
 import org.eclipse.lyo.store.StoreAccessException;
 import org.eclipse.lyo.oslc4j.core.model.Link;
+import org.eclipse.lyo.oslc4j.core.model.OslcMediaType;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.wink.client.ClientResponse;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -74,7 +78,11 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Map;
 import org.eclipse.lyo.client.oslc.OslcClient;
+import org.eclipse.lyo.oslc4j.provider.jena.JenaModelHelper;
+import org.eclipse.lyo.oslc4j.provider.jena.LyoJenaModelException;
+import org.apache.jena.rdf.model.Model;
 // End of user code
+import org.apache.jena.rdf.model.ModelFactory;
 
 // Start of user code pre_class_code
 // End of user code
@@ -158,23 +166,21 @@ public class VeriFitAnalysisManager {
 	/**
 	 * Creates an AutomationPlan resource with the specified properties, and stores in the Adapter's catalog.
 	 * @param aResource			The new resource will copy properties from the specified aResource.
-	 * @param toolCommand		What command should be used to launch the tool associated with this AutomationPlan.
-	 * @param adapterSpecificParams		What parameters should always be included when launching the tool (e.g. to make the output xml readable)
 	 * @return					The newly created resource. Or null if one of the required properties was missing.
 	 * @throws StoreAccessException 
 	 */
-    public static AutomationPlan createAutomationPlan(final AutomationPlan aResource, final String toolCommand, final String adapterSpecificParams) throws StoreAccessException
+    public static AutomationPlan createAutomationPlan(final AutomationPlan aResource) throws StoreAccessException
     {    	
     	AutomationPlan newResource = null;
     	
     	// check that required properties are specified in the input parameter
-    	if (aResource == null || aResource.getTitle() == null || aResource.getTitle().isEmpty())
+    	if (aResource == null || aResource.getTitle() == null || aResource.getTitle().isEmpty() || aResource.getIdentifier().isEmpty())
     	{
-    		return null;
+    		return null; //TODO
     	}
         
 		try {
-			String newID = AutoPlanIdGen.getId();
+			String newID = aResource.getIdentifier();
 			newResource = aResource;
 			newResource.setAbout(VeriFitAnalysisResourcesFactory.constructURIForAutomationPlan(VeriFitAnalysisConstants.AUTOMATION_PROVIDER_ID, newID));
 			
@@ -186,29 +192,6 @@ public class VeriFitAnalysisManager {
 			//newResource.setInstanceShape(new URI(VeriFitAnalysisProperties.PATH_RESOURCE_SHAPES + "automationPlan"));
 			//newResource.addServiceProvider(new URI(VeriFitAnalysisProperties.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
 			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationPlan"));
-			
-			// add default parameterDefinitions for all tools
-			ParameterDefinition toolCommandDef = new ParameterDefinition();
-			toolCommandDef.setDescription("How should the tool be called.");
-			toolCommandDef.setName("toolCommand");
-			toolCommandDef.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
-			toolCommandDef.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
-			toolCommandDef.setHidden(true);
-			toolCommandDef.setReadOnly(true);
-			toolCommandDef.setDefaultValue(toolCommand);
-			toolCommandDef.setCommandlinePosition(0);
-			newResource.addParameterDefinition(toolCommandDef);
-
-			ParameterDefinition adapterSpecific = new ParameterDefinition();
-			adapterSpecific.setDescription("Parameters needed by the adapter in order for the tools output to be xml readable.");
-			adapterSpecific.setName("adapterSpecific");
-			adapterSpecific.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
-			adapterSpecific.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));	
-			adapterSpecific.setHidden(true);
-			adapterSpecific.setReadOnly(true);
-			adapterSpecific.setDefaultValue(adapterSpecificParams);
-			adapterSpecific.setCommandlinePosition(1);	
-			newResource.addParameterDefinition(adapterSpecific);
 			
 			ParameterDefinition SUT = new ParameterDefinition();
 			SUT.setDescription("Refference to an SUT resource to analyse. SUTs are created using the compilation provider."); //TODO
@@ -413,6 +396,10 @@ public class VeriFitAnalysisManager {
 
 		/// check the input parameters and create a map of "name" -> ("value", position)
 		Map<String, Pair<String,Integer>> inputParamsMap = new HashMap<String, Pair<String,Integer>>();
+		
+		// insert the toolCommand at commandline position 0
+		String toolCommand = execAutoPlan.getUsesExecutionEnvironment().iterator().next().getValue().getPath();
+		inputParamsMap.put("toolCommand", Pair.of(toolCommand,0));
 		
 		// loop through autoPlan defined parameters to match them with the input params
 		for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
@@ -660,6 +647,21 @@ public class VeriFitAnalysisManager {
 			System.exit(1);
 		}    	 
     	
+    	AutomationPlan[] autoPlans = null;
+    	// load automation plans
+    	try {
+	    	InputStream inStream = new FileInputStream(new File("AutomationPlanConf.rdf"));
+	    	Model model = ModelFactory.createDefaultModel();
+	    	model.read(inStream, null);
+	    	autoPlans = JenaModelHelper.unmarshal(model, AutomationPlan.class);
+    	} catch (FileNotFoundException e) {
+			System.out.println("ERROR: Loading AutomationPlan: Failed to open the conf. xml file: " + e.getMessage());
+			System.exit(1);
+    	} catch (LyoJenaModelException e) {
+			System.out.println("ERROR: Loading AutomationPlan: Failed to parse the conf. xml file: " + e.getMessage());
+			System.exit(1);
+		}
+    	
     	// create the tmp directory
     	createTmpDir();
 
@@ -673,15 +675,11 @@ public class VeriFitAnalysisManager {
 			System.exit(1);
 		}
 
-    	// create predefined AutomationPlans
+    	// create AutomationPlans
 		try {
-			AutoPlanIdGen = new ResourceIdGen();
-			if (!AutomationPlanDefinition.checkPredefinedAutomationPlans())
-			{
-				AutomationPlanDefinition.createPredefinedAutomationPlans();
-			}
+			AutomationPlanDefinition.createPredefinedAutomationPlans(autoPlans);
 		} catch (StoreAccessException e) {
-			System.out.println("ERROR: Adapter initialization: Predefined AutomationPlan creation: " + e.getMessage());
+			System.out.println("ERROR: Adapter initialization: AutomationPlan creation: " + e.getMessage());
 			System.exit(1);
 		}
 		
@@ -847,16 +845,6 @@ public class VeriFitAnalysisManager {
         AutomationRequest newResource = null;
         
         // Start of user code createAutomationRequest
-
-        /*
-         * Check that the predefined AutomationPlans exist
-         * If not then the triplestore is not running or is broken 
-         */
-        if (!AutomationPlanDefinition.checkPredefinedAutomationPlans())
-		{
-        	throw new OslcResourceException("Failed to get AutomationPlans. Is the triplestore still online?"
-        			+ " If yes, then it may be corrupted. Try restarting the Adapter.");
-		}
  
 		try {
 			// error response on empty creation POST
@@ -897,7 +885,7 @@ public class VeriFitAnalysisManager {
 			
 			// get the executed autoPlan, check input parameters, add output parameters to the AutoResult, and make an input map for the runner
 			Map<String, Pair<String,Integer>> inputParamsMap = processAutoReqInputParams(serviceProviderId, newResource, propAutoResult);
-
+			
 			// check that the SUT to be executed exists
 			OslcClient client = new OslcClient();
 			ClientResponse response = client.getResource(inputParamsMap.get("SUT").getLeft());
@@ -911,7 +899,7 @@ public class VeriFitAnalysisManager {
 			Pair<String,Integer> launchSUT = inputParamsMap.get("launchSUT");
 			if (launchSUT != null)
 			{
-				inputParamsMap.put("launchSUT", Pair.of(executedSUT.getLaunchCommand(), launchSUT.getRight()));
+				inputParamsMap.put("launchSUT", Pair.of(executedSUT.getLaunchCommand(), Integer.parseInt(launchSUT.getLeft())));
 				
 				// modify the output parameter of the automation result (was added by processAutoReqInputParams)
 				Set<ParameterInstance> outputParams = new HashSet<ParameterInstance>();

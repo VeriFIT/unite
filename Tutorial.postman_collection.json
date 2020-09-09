@@ -762,7 +762,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>Tutorial title</dcterms:title>\n\t<dcterms:description>Tutorial description</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{analysis_port}}/analysis/services/serviceProviders/A0/resources/automationPlans/3\" />\n\t<dcterms:creator rdf:resource=\"Title-creator\"/>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value>HelloWorld</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{server_address}}:{{compilation_port}}/compilation/services/serviceProviders/A0/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>",
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>Tutorial title</dcterms:title>\n\t<dcterms:description>Tutorial description</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{analysis_port}}/analysis/services/serviceProviders/A0/resources/automationPlans/dummy\" />\n\t<dcterms:creator rdf:resource=\"Title-creator\"/>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value>HelloWorld</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{server_address}}:{{compilation_port}}/compilation/services/serviceProviders/A0/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>",
 									"options": {
 										"raw": {}
 									}
@@ -1189,17 +1189,17 @@
 	],
 	"variable": [
 		{
-			"id": "c4e7e9ef-f7db-4776-a893-d83c18e5f2b4",
+			"id": "d38e4011-42aa-4232-bacc-54f4983589ae",
 			"key": "server_address",
 			"value": "http://localhost"
 		},
 		{
-			"id": "d24397ff-f559-4c58-a27e-9fe6c662c314",
+			"id": "6f58b933-3b3c-4e3a-b31a-21cda644cdcd",
 			"key": "analysis_port",
 			"value": "8080"
 		},
 		{
-			"id": "e5d0e95a-0e47-405d-ae6f-b13a93353674",
+			"id": "39d6b164-4f81-45b7-9ad6-684622c557e7",
 			"key": "compilation_port",
 			"value": "8081"
 		}
