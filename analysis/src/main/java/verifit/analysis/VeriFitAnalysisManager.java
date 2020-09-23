@@ -167,16 +167,24 @@ public class VeriFitAnalysisManager {
 	 * Creates an AutomationPlan resource with the specified properties, and stores in the Adapter's catalog.
 	 * @param aResource			The new resource will copy properties from the specified aResource.
 	 * @return					The newly created resource. Or null if one of the required properties was missing.
-	 * @throws StoreAccessException 
+	 * @throws StoreAccessException If the triplestore is not accessible
+	 * @throws OslcResourceException If the AutomationPlan to be created is missing some properties or is invalid
 	 */
-    public static AutomationPlan createAutomationPlan(final AutomationPlan aResource) throws StoreAccessException
+    public static AutomationPlan createAutomationPlan(final AutomationPlan aResource) throws StoreAccessException, OslcResourceException
     {    	
     	AutomationPlan newResource = null;
     	
-    	// check that required properties are specified in the input parameter
-    	if (aResource == null || aResource.getTitle() == null || aResource.getTitle().isEmpty() || aResource.getIdentifier().isEmpty())
+    	// check that required properties are specified
+    	if (aResource == null)
+    		throw new OslcResourceException("AutomationPlan creation failed: aResource was null");
+    	
+    	if (aResource.getTitle() == null || aResource.getTitle().isEmpty())
     	{
-    		return null; //TODO
+    		throw new OslcResourceException("AutomationPlan creation failed: dcterms:title missing or empty.");
+    	}
+    	if (aResource.getIdentifier() == null || aResource.getIdentifier().isEmpty())
+    	{
+    		throw new OslcResourceException("AutomationPlan creation failed: Title \"" + aResource.getTitle() + "\"- dcterms:identifier missing or empty.");
     	}
         
 		try {
@@ -632,6 +640,21 @@ public class VeriFitAnalysisManager {
     	}
     }
     
+    /**
+     * Parses resources <T> from an XML file and returns them as an array.
+     * @param pathToFile	Path to the XML file to load from
+     * @param clazz	<T>.class of the resource to be parsed from the XML file
+     * @return An array of <T> resources
+     * @throws FileNotFoundException Error accessing the XML file
+     * @throws LyoJenaModelException Error parsing the XML file
+     */
+    public static <T> T[] parseResourcesFromXmlFile(String pathToFile, Class<T> clazz) throws FileNotFoundException, LyoJenaModelException
+    {
+	    InputStream inStream = new FileInputStream(new File(pathToFile));
+		Model model = ModelFactory.createDefaultModel();
+		model.read(inStream, null);
+		return JenaModelHelper.unmarshal(model, clazz);
+    }
     // End of user code
 
     public static void contextInitializeServletListener(final ServletContextEvent servletContextEvent)
@@ -650,10 +673,7 @@ public class VeriFitAnalysisManager {
     	AutomationPlan[] autoPlans = null;
     	// load automation plans
     	try {
-	    	InputStream inStream = new FileInputStream(new File("AutomationPlanConf.rdf"));
-	    	Model model = ModelFactory.createDefaultModel();
-	    	model.read(inStream, null);
-	    	autoPlans = JenaModelHelper.unmarshal(model, AutomationPlan.class);
+    		autoPlans = parseResourcesFromXmlFile("AutomationPlanConf.rdf", AutomationPlan.class);
     	} catch (FileNotFoundException e) {
 			System.out.println("ERROR: Loading AutomationPlan: Failed to open the conf. xml file: " + e.getMessage());
 			System.exit(1);
@@ -706,20 +726,6 @@ public class VeriFitAnalysisManager {
 		}		
 		AutoRequestIdGen = new ResourceIdGen(initReqId);
     	
-		/*
-    	// check that anaconda is accessible TODO
-		String anacondaPath = VeriFitAnalysisProperties.ANACONDA_PATH;
-    	File anaconda = new File(anacondaPath);
-    	if (! (anaconda.exists() && anaconda.isFile() && anaconda.canExecute()))
-    	{
-    		// check if the path is a command (find in PATH)
-    		if (!isInPath(anacondaPath))
-    		{
-    			System.out.println("ERROR: Adapter configuration: Anaconda Path is invalid: '" + anacondaPath + "' not found or not executable");
-    			System.exit(1);
-    		}
-    	}
-    	*/
         // End of user code
     }
 

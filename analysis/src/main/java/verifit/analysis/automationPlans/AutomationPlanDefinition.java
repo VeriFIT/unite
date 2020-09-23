@@ -23,6 +23,7 @@ import org.eclipse.lyo.store.StoreAccessException;
 import verifit.analysis.VeriFitAnalysisConstants;
 import verifit.analysis.VeriFitAnalysisManager;
 import verifit.analysis.VeriFitAnalysisProperties;
+import verifit.analysis.exceptions.OslcResourceException;
 
 /**
  * This class defines AutomationPlans predefined for the adapter.
@@ -39,7 +40,11 @@ public class AutomationPlanDefinition {
 	{
 		for (AutomationPlan plan : autoPlans)
 		{
-			VeriFitAnalysisManager.createAutomationPlan(plan);
+			try {
+				VeriFitAnalysisManager.createAutomationPlan(plan);
+			} catch (OslcResourceException e) {
+				System.out.println("WARNING: " + e.getMessage());
+			}
 		}
 	}	
 //
