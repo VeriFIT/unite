@@ -16,7 +16,7 @@
     -->
     <oslc_auto:AutomationPlan>
         <dcterms:identifier>dummy</dcterms:identifier> <!-- What the last part of this AutoPlan's URI will contain -->
-        <oslc_auto:usesExecutionEnvironment rdf:resource="/home/od42/matrix/proj_praxe/generic-analysis-adapter/analysis/tests/dummy_tool.sh"/> <!-- Path to the tool executable -->
+        <oslc_auto:usesExecutionEnvironment rdf:resource="tests/dummy_tool.sh"/> <!-- Path to the tool executable -->
 
         <dcterms:title rdf:parseType="Literal">Dummy Tool</dcterms:title>   <!-- Non-functional. Title of the Automation Plan -->
         <dcterms:description rdf:parseType="Literal">Used to test the funcionality of this adapter.</dcterms:description> <!-- Non-functional. Description of the Automation Plan -->
@@ -196,5 +196,49 @@
         </oslc_auto:parameterDefinition>
 
     </oslc_auto:AutomationPlan>
+
+
+
+    <oslc_auto:AutomationPlan>
+        <dcterms:identifier>valgrind</dcterms:identifier>
+        <oslc_auto:usesExecutionEnvironment rdf:resource="/usr/bin/valgrind"/>
+        <dcterms:title rdf:parseType="Literal">Valgrind</dcterms:title>
+        <dcterms:creator rdf:resource="https://pajda.fit.vutbr.cz/xvasic"/>
+        <dcterms:description rdf:parseType="Literal">Analyse an SUT using Valgrind</dcterms:description>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>arguments</oslc:name>
+                <oslc:defaultValue></oslc:defaultValue>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+                <dcterms:description rdf:parseType="Literal">Specify which arguments should be passed to Valgrind on the command line.</dcterms:description>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+        
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>launchSUT</oslc:name>
+                <oslc:defaultValue>2</oslc:defaultValue>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Provider to place the SUT launch command at this command line position</dcterms:description>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</fit:commandlinePosition>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+                <dcterms:description rdf:parseType="Literal">Set the execution parameters for the analyzed program. Write down all parameters as you would in a console.</dcterms:description>
+                <oslc:defaultValue></oslc:defaultValue>
+                <oslc:name>executionParameters</oslc:name>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+    </oslc_auto:AutomationPlan>
+
+
 
 </rdf:RDF>
