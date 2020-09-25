@@ -1,3 +1,6 @@
 .metadata
 */target
 *.lost
+/.recommenders/
+*.log
+
