@@ -502,12 +502,6 @@ public class VeriFitCompilationManager {
         
         // Start of user code contextInitializeServletListener
     	
-		// make sure the TMP directory doesnt exist
-    	try {
-			deleteTmpDir();
-		} catch (IOException e) {
-		}
-
     	// load configuration
     	try {
     		VeriFitCompilationProperties.loadProperties();
@@ -517,6 +511,14 @@ public class VeriFitCompilationManager {
 		}    	 
     	
     	// create the tmp directory
+    	if (VeriFitCompilationProperties.PERSIST_SUT_DIRS == false) // make sure it was deleted if not persistent
+    	{
+    		try {
+				deleteTmpDir();
+			} catch (IOException e) {
+				// ignore
+			}
+    	}
     	createTmpDir();
 
     	// connect to the triplestore
@@ -563,6 +565,7 @@ public class VeriFitCompilationManager {
 			e.printStackTrace();
 		}		
 		AutoRequestIdGen = new ResourceIdGen(initReqId);
+		
         // End of user code
     }
 
@@ -570,12 +573,16 @@ public class VeriFitCompilationManager {
     {
         
         // Start of user code contextDestroyed
-    	try {
-			deleteTmpDir();
-		} catch (IOException e) {
-			System.out.println("WARNING: Adapter context destroy: Failed to delete the TMP folder: " + e.getMessage());
-		}
-        // End of user code
+    	
+    	// delete the TMP directory, if persistency is not enabled
+    	if (VeriFitCompilationProperties.PERSIST_SUT_DIRS == false)
+    	{	try {
+				deleteTmpDir();
+			} catch (IOException e) {
+				System.out.println("WARNING: Adapter context destroy: Failed to delete the TMP folder: " + e.getMessage());
+			}
+    	}
+    	// End of user code
     }
 
     public static ServiceProviderInfo[] getServiceProviderInfos(HttpServletRequest httpServletRequest)

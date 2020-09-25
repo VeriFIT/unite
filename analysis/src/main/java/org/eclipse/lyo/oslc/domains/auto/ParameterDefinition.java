@@ -189,6 +189,22 @@ public class ParameterDefinition
         if (asLocalResource) {
             result = result + "{a Local ParameterDefinition Resource} - update ParameterDefinition.toString() to present resource as desired.";
             // Start of user code toString_bodyForLocalResource
+            result = (name != null ? "--name=" + name + "<br>" : "") + (maxSize != null ? "maxSize=" + maxSize + "<br>" : "")
+            		+ (title != null ? "--title=" + title + "<br>" : "")
+            		+ (description != null ? "--description=" + description + "<br>" : "")
+            		+ (occurs != null ? "--occurs=" + occurs.getValue() + "<br>" : "")
+            		+ (defaultValue != null ? "--defaultValue=" + defaultValue + "<br>" : "")
+    				+ (commandlinePosition != null ? "--commandlinePosition=" + commandlinePosition + "<br>" : "")
+    				+ (valueType != null && !valueType.isEmpty()? "--valueType=" + valueType.iterator().next().getValue() + "<br>" : "")
+    				+ (allowedValues != null && allowedValues.getValue() != null ? "--allowedValues=" + allowedValues.getValue() + "<br>" : "")
+    				+ (allowedValue != null && !allowedValue.isEmpty() ? "--allowedValue=" + allowedValue + "<br>" : "")
+    				+ (hidden != null ? "--hidden=" + hidden + "<br>" : "")
+    				+ (readOnly != null ? "--readOnly=" + readOnly + "<br>" : "")
+    				+ (isMemberProperty != null ? "--isMemberProperty=" + isMemberProperty + "<br>" : "")
+    				+ (propertyDefinition != null && propertyDefinition.getValue() != null ? "--propertyDefinition=" + propertyDefinition.getValue() + "<br>" : "")
+    				+ (range != null && !range.isEmpty() ? "--range=" + range + "<br>" : "")
+    				+ (representation != null && representation.getValue() != null ? "--representation=" + representation.getValue() + "<br>" : "")
+    				+ (valueShape != null && valueShape.getValue() != null ? "--valueShape=" + valueShape.getValue() : "");
             // End of user code
         }
         else {

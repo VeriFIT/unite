@@ -46,6 +46,12 @@ public class VeriFitCompilationProperties
 		if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
 			throw new IOException("sparql_graph missing");
 		
+		String str_PERSIST_SUT_DIRS;
+		str_PERSIST_SUT_DIRS = VeriFitCompilationProperties.getProperty("persist_sut_dirs");	
+		if (str_PERSIST_SUT_DIRS == null)
+			throw new IOException("persist_sut_dirs missing");
+		PERSIST_SUT_DIRS = Boolean.parseBoolean(str_PERSIST_SUT_DIRS);
+		
 		updateConstants();
 	}
 	
@@ -70,6 +76,8 @@ public class VeriFitCompilationProperties
     public static String SPARQL_SERVER_NAMED_GRAPH_RESOURCES;
     public static String SPARQL_SERVER_QUERY_ENDPOINT;
     public static String SPARQL_SERVER_UPDATE_ENDPOINT;
+    
+    public static Boolean PERSIST_SUT_DIRS;
     
     
     /*

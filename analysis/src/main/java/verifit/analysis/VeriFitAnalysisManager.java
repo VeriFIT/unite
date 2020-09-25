@@ -102,17 +102,6 @@ public class VeriFitAnalysisManager {
     
     
     // Start of user code class_methods
-	/**
-	 * Creates the tmp directory for saving programs to analyze
-	 */
-	private static void createTmpDir()
-	{
-		File programDir = new File("tmp/");
-	    if (!programDir.exists())
-	    {
-	    	programDir.mkdirs();
-	    }
-	}
 	
 	/**
 	 * Used to generate IDs for new resources in a synchronized way (datarace free)
@@ -681,9 +670,6 @@ public class VeriFitAnalysisManager {
 			System.out.println("ERROR: Loading AutomationPlan: Failed to parse the conf. xml file: " + e.getMessage());
 			System.exit(1);
 		}
-    	
-    	// create the tmp directory
-    	createTmpDir();
 
     	// connect to the triplestore
     	String sparqlQueryEndpoint = VeriFitAnalysisProperties.SPARQL_SERVER_QUERY_ENDPOINT;
