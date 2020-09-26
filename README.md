@@ -24,6 +24,7 @@ Defaults are "localhost" and ports "8080, 8081, 8082".
         1) open a Web browser at *host*:*port*/fuseki/
         2) go to "manage datasets -> add new dataset"
         3) create a two new datasets (one for each adapter) type "Persistent" and name them based on your configuration in the .properties files.
+        4) in *compilation/VeriFitCompilation.properties* set *persist_sut_dirs=true*
 
 
 #### Run all at once
@@ -48,6 +49,6 @@ server online at - http://*host*:*port*/compilation/
 Fuseki SPARQL jetty 
 ```
 $ cd *cloned_repo*/sparql_triplestore
-$ ./run.sh
+$ ./run.[sh/bat] 
 server online at - http://*host*:*port*/fuseki/
 ```
