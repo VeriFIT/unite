@@ -15,7 +15,7 @@ elif [ "$#" -eq 1 ]; then
     if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
         echo "$HELP"
         exit 0
-    elif [ "$1" -eq "$1" ] 2> /dev/null; then # if isnumber 
+    elif [ "$1" -eq "$1" ] &> /dev/null; then # if isnumber 
         SLEEP="$1"
     else
         echo -e " Argument has to be a number\n Usage: run_all.sh [triplestore_sleep_seconds]"
@@ -41,26 +41,27 @@ killall() {
     exit
 }
 
-# append headings to .log files
-CURTIME=$(date)
-echo -e "\n####################################################n## New run started at: $CURTIME" >> $USRPATH/triplestore.log
-echo -e "\n####################################################n## New run started at: $CURTIME" >> $USRPATH/compilation.log
-echo -e "\n####################################################n## New run started at: $CURTIME" >> $USRPATH/analysis.log
+# create log files and append headings
+mkdir $USRPATH/logs &> /dev/null
+CURTIME=$(date +%F_%T)
+echo -e "####################################################\n## Run started at: $CURTIME" > "$USRPATH/logs/triplestore_$CURTIME.log"
+echo -e "####################################################\n## Run started at: $CURTIME" > "$USRPATH/logs/compilation_$CURTIME.log"
+echo -e "####################################################\n## Run started at: $CURTIME" > "$USRPATH/logs/analysis_$CURTIME.log"
 
 # start all 3 processes
 echo "Starting the Triplestore"
 cd sparql_triplestore
-./run.sh 2>&1 | tee -a $USRPATH/triplestore.log | grep "Started ServerConnector" &
+./run.sh 2>&1 | tee -a "$USRPATH/logs/triplestore_$CURTIME.log" | grep "Started ServerConnector" &
 # wait a while to let the triplestore start
 sleep "$SLEEP"
 
 echo "Starting the Compilation adapter"
 cd ../compilation
-mvn jetty:run-exploded 2>&1 | tee -a $USRPATH/compilation.log | grep "Started ServerConnector" &
+mvn jetty:run-exploded 2>&1 | tee -a "$USRPATH/logs/compilation_$CURTIME.log" | grep "Started ServerConnector" &
 
 echo "Starting the Analysis adapter"
 cd ../analysis
-mvn jetty:run-exploded 2>&1 | tee -a $USRPATH/analysis.log | grep "Started ServerConnector" &
+mvn jetty:run-exploded 2>&1 | tee -a "$USRPATH/logs/analysis_$CURTIME.log" | grep "Started ServerConnector" &
 
 echo -e "\nWait till startup finishes (3 messages with address:host at the end)\nUse ctrl+c to exit..."
 
