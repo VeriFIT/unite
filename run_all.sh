@@ -1,5 +1,32 @@
 #!/bin/bash
 
+HELP=" Launches the sparql triplestore, and then the analysis adapter and the compilation adapter.
+ The triplestore needs to finish startup before both adapters, which is controled by giving
+ the triplestore a headstart. Duration of the headstart in seconds is controlled using an
+ optional argument (default 3).
+
+ Usage: run_all.sh [triplestore_sleep_seconds]"
+
+# process arguments
+SLEEP=3
+if [ "$#" -eq 0 ]; then
+    echo "Using default 3s sleep for triplestore to startup"
+elif [ "$#" -eq 1 ]; then
+    if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+        echo "$HELP"
+        exit 0
+    elif [ "$1" -eq "$1" ] 2> /dev/null; then # if isnumber 
+        SLEEP="$1"
+    else
+        echo -e " Argument has to be a number\n Usage: run_all.sh [triplestore_sleep_seconds]"
+        exit 1
+    fi
+else
+    echo -e " Invalid arguments\n Usage: run_all.sh [triplestore_sleep_seconds]"
+    exit 1
+fi
+
+
 USRPATH=$PWD # get the call directory
 cd "${BASH_SOURCE%/*}" # move to the script directory
 
@@ -25,7 +52,7 @@ echo "Starting the Triplestore"
 cd sparql_triplestore
 ./run.sh 2>&1 | tee -a $USRPATH/triplestore.log | grep "Started ServerConnector" &
 # wait a while to let the triplestore start
-sleep 3
+sleep "$SLEEP"
 
 echo "Starting the Compilation adapter"
 cd ../compilation
