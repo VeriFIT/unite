@@ -25,6 +25,8 @@ Defaults are "localhost" and ports "8080, 8081, 8082".
         2) go to "manage datasets -> add new dataset"
         3) create a two new datasets (one for each adapter) type "Persistent" and name them based on your configuration in the .properties files.
         4) in *compilation/VeriFitCompilation.properties* set *persist_sut_dirs=true*
+- Analysis tool definition
+    - in *analysis/AutomationPlanConf.rdf* define an AutomationPlan for every tool that you want to run using the adapter. See the first AutomationPlan called "Dummy tool" as an example on how to define your own. For more details refer to the [wiki](https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis/-/wikis/Usage-Guide/2.-Analysis-Tool-Definition)
 
 
 #### Run all at once
