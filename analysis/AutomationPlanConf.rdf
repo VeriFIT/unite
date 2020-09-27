@@ -29,7 +29,6 @@
 
             The adapter will add a number of other ParameterDefinitions to the AutoPlan on its own such as timeout, SUT reference, output zit flag, etc..
         -->
-        
         <oslc_auto:parameterDefinition>
             <!--
                 This ParameterDefinition is not expected to be used as an input parameter when creating an Automation Request, but rather the default value is supposed to be used.
@@ -47,12 +46,12 @@
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
 
+        <oslc_auto:parameterDefinition>
         <!--
             This ParameterDefintion stands for inserting any string as the tools arguments. This is the simplest solution. Alternatively, every argument from the tools interface
             can be defined as a separate ParameterDefinition. That would allow the AutoPlan to provide more information to clients such as allowedValues, but this approach is not
             always possible (eg. for complex commanline interfaces).
         -->
-        <oslc_auto:parameterDefinition>
             <oslc_auto:ParameterDefinition>
                 <oslc:name>arguments</oslc:name>
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</fit:commandlinePosition>
@@ -62,13 +61,13 @@
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
 
+        <oslc_auto:parameterDefinition>
         <!--
             launchSUT is a special ParameterDefinition recognized by the adapter. The adapter will place the SUT launch command at the commandline position specified by this
             parameter's value. In case a defaultValue is used and a client wants to not launch the SUT with his AutoRequest, then they need to submit a launchSUT input parameter
             with a negative value.
             Note that this ParameterDefinition does not have a commandlinePosition and thus it's value will not be placed on the commanline.
         -->
-        <oslc_auto:parameterDefinition>
             <oslc_auto:ParameterDefinition>
                 <oslc:name>launchSUT</oslc:name>
                 <oslc:defaultValue>3</oslc:defaultValue>
@@ -76,12 +75,13 @@
                 <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position</dcterms:description>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
+        
+        <oslc_auto:parameterDefinition>
         <!--
             oneInstanceOnly is another special ParameterDefinition recognized by the adapter. If set to true, then only one AutomationRequest executing this AutomationPlan will
             be running at a time and the remaining ones will be placed in a queue.
             Note that this ParameterDefinition does not have a commandlinePosition and thus it's value will not be placed on the commanline.
         -->
-        <oslc_auto:parameterDefinition>
             <oslc_auto:ParameterDefinition>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
                 <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Provider to only allow one Automation Request at a time to execute this Automation Plan. Requests created while an instance is already running will be placed in a queue.</dcterms:description>
@@ -91,7 +91,7 @@
                 <oslc:hidden rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</oslc:hidden>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
-
+        
     </oslc_auto:AutomationPlan>
 
 
