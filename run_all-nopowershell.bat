@@ -1,4 +1,7 @@
 @echo off
+
+set /A SLEEP=1
+
 setlocal EnableDelayedExpansion
 set LF=^
 
@@ -6,14 +9,13 @@ set LF=^
 set HELP= Launches the sparql triplestore, and then the analysis adapter and the compilation adapter.!LF!^
  The triplestore needs to finish startup before both adapters, which is controled by giving!LF!^
  the triplestore a headstart. Duration of the headstart in seconds is controlled using an!LF!^
- optional argument (default 3).!LF!^
+ optional argument (default !SLEEP!).!LF!^
  !LF!^
  Usage: run_all-nopowershell.bat [triplestore_sleep_seconds]!LF!
 
 :: process arguments
-set /A SLEEP=3
 IF "%1" == "" ( 
-  echo  Using default 3s sleep for triplestore to startup
+  echo  Using default %SLEEP%s sleep for triplestore to startup
 ) ELSE (
     IF "%2" == "" ( 
         IF "%1" == "-h" (
