@@ -396,6 +396,7 @@ public class VeriFitAnalysisManager {
 		
 		// insert the toolCommand at commandline position 0
 		String toolCommand = execAutoPlan.getUsesExecutionEnvironment().iterator().next().getValue().getPath();
+		toolCommand = new File(toolCommand).getPath();	// hack for Windows: URI String "/C:/folder/..." --> "C:/folder/..."
 		inputParamsMap.put("toolCommand", Pair.of(toolCommand,0));
 		
 		// loop through autoPlan defined parameters to match them with the input params
