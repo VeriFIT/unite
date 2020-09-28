@@ -41,6 +41,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.Base64.Decoder;
 
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -75,7 +76,10 @@ public abstract class RequestRunner extends Thread
 	protected Triple<Integer,String,String> compileSUT(Path folderPath, String buildCommand) throws IOException
 	{
 		Process process;
-		process = Runtime.getRuntime().exec(buildCommand, null, folderPath.toFile());
+		String shell = (SystemUtils.IS_OS_LINUX ? "/bin/bash" : "cmd");	// TODO assumes that "not linux" means "windows"
+		String shellArg = (SystemUtils.IS_OS_LINUX ? "-c" : "/c");
+		process = Runtime.getRuntime().exec(new String[] {shell, shellArg, buildCommand}, null, folderPath.toFile());	// launch string as "bash -c" or "cmd /c"	
+		
 		InputStream stdout = process.getInputStream();
 		InputStream stderr = process.getErrorStream();
 		InputStreamReader stdoutReader = new InputStreamReader(stdout);
