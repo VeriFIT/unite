@@ -48,6 +48,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
@@ -90,7 +91,10 @@ public abstract class RequestRunner extends Thread {
 	protected analyseSUTres analyseSUT(String folderPath, String stringToExecute, int timeout) throws IOException {
 		Process process;
 		Path pathAsPath = FileSystems.getDefault().getPath(folderPath);
-		process = Runtime.getRuntime().exec(stringToExecute, null, pathAsPath.toFile());
+		String shell = (SystemUtils.IS_OS_LINUX ? "/bin/bash" : "cmd");	// TODO assumes that "not linux" means "windows"
+		String shellArg = (SystemUtils.IS_OS_LINUX ? "-c" : "/c");
+		process = Runtime.getRuntime().exec(new String[] {shell, shellArg, stringToExecute}, null, pathAsPath.toFile());	// launch string as "bash -c" or "cmd /c"	
+		
 		InputStream stdout = process.getInputStream();
 		InputStream stderr = process.getErrorStream();
 		InputStreamReader stdoutReader = new InputStreamReader(stdout);
