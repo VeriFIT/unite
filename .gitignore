@@ -4,4 +4,5 @@
 /.recommenders/
 *.log
 logs/
-
+sparql_triplestore/triplestore/
+compilation/tmp
