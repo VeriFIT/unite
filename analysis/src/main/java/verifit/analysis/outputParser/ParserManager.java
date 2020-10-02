@@ -73,6 +73,11 @@ public final class ParserManager {
     		{
     			System.out.println("WARNING: Output of contribution parser for tool \"" + toolIdentifier + "\" - name missing");
     		}
+    		String value = mapContrib.get("value");
+    		if (value == null)
+    		{
+    			System.out.println("WARNING: Output of contribution parser for tool \"" + toolIdentifier + "\" - value missing");
+    		}
 			String description = mapContrib.get("description");
     		if (description == null)
     		{
@@ -80,23 +85,26 @@ public final class ParserManager {
     		}
     		String fileURI = mapContrib.get("fileURI");
 			String type = mapContrib.get("type");
+			Set<Link> setType = new HashSet<Link>();
     		if (type == null)
     		{
     			System.out.println("WARNING: Output of contribution parser for tool \"" + toolIdentifier + "\" - type missing");
-    		}
-    		Set<Link> setType = new HashSet<Link>();
-    		try {
-				setType.add(new Link(new URI(type)));
-			} catch (URISyntaxException e1) {
-				System.out.println("WARNING: Output of contribution parser for tool \"" + toolIdentifier + "\" - invalid type: " + e1.getMessage());
+			}
+			else {
+				try {
+					setType.add(new Link(new URI(type)));
+				} catch (URISyntaxException e1) {
+					System.out.println("WARNING: Output of contribution parser for tool \"" + toolIdentifier + "\" - invalid type: " + e1.getMessage());
+				}
 			}
     		
     		// create new contribution base on the Map element
 			try {
 				Contribution newContrib = new Contribution();
 				newContrib.setTitle(name);
+				newContrib.setValue(value);
 				newContrib.setDescription(description);
-				newContrib.setFileURI(new URI(fileURI));
+				newContrib.setFileURI((fileURI != null ? new URI(fileURI) : null));
 				newContrib.setType(setType);
 				parsedContributions.add(newContrib);
 			} catch (URISyntaxException e) {
