@@ -126,6 +126,7 @@ public class Contribution
         super();
     
         // Start of user code constructor1
+        this.setCreated(new Date());
         // End of user code
     }
     
@@ -135,6 +136,7 @@ public class Contribution
         super(about);
     
         // Start of user code constructor2
+        this.setCreated(new Date());
         // End of user code
     }
     

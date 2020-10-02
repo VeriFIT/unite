@@ -352,28 +352,6 @@ public class VeriFitAnalysisManager {
 		return newResource;
     }
     
-    /**
-	 * Creates a Contribution resource with the specified properties.
-	 * @param aResource			The new resource will copy properties from the specified aResource.
-	 * @param serviceProviderId	ID of the service provider for the new resource.
-	 * @return					The newly created resource. Or null if one of the required properties was missing.
-	 */
-    public static Contribution createContribution(final Contribution aResource, final String serviceProviderId)
-    {
-    	Contribution newResource = null;
-
-    	// check that required properties are specified in the input parameter
-    	if (aResource == null)
-    	{
-    		return null;
-    	}
-    	newResource = aResource;    	    	
-		newResource.setCreated(new Date());
-
-		return newResource;
-    }
-    
-
 	/**
 	 * Check that the AutomationRequest contains the necessary input parameters based on its AutoPlan, fill the AutomationResult with output parameters (default values),
 	 * and return a simplified map of parameters (TODO refactor the map)
