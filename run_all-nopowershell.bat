@@ -50,7 +50,7 @@ cd %~dp0
 
 :: create log files and append headings
 mkdir %USRPATH%\logs > nul 2>&1
-set CURTIME=%DATE%_%TIME:~0,2%.%TIME:~3,2%.%TIME:~6,2%
+set CURTIME=%DATE:~10,4%-%DATE:~4,2%-%DATE:~7,2%_%TIME:~0,2%.%TIME:~3,2%.%TIME:~6,2%
 set CURTIME=%CURTIME: =0%
 echo ####################################################!LF!## Run started at: %CURTIME% > %USRPATH%\logs\triplestore_%CURTIME%.log
 echo ####################################################!LF!## Run started at: %CURTIME% > %USRPATH%\logs\compilation_%CURTIME%.log
