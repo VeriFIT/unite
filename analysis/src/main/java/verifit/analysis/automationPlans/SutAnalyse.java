@@ -57,6 +57,7 @@ import verifit.analysis.VeriFitAnalysisConstants;
 import verifit.analysis.VeriFitAnalysisManager;
 import verifit.analysis.VeriFitAnalysisProperties;
 import verifit.analysis.VeriFitAnalysisResourcesFactory;
+import verifit.analysis.outputParser.ParserManager;
 import verifit.analysis.resources.SUT;
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
 /**
@@ -177,9 +178,7 @@ public class SutAnalyse extends RequestRunner
 	    		
 			}
 
-			// create the compilation Contributions and add them to the Automation Result
-			analysisStdoutLog = VeriFitAnalysisManager.createContribution(analysisStdoutLog, serviceProviderId);
-			analysisStderrLog = VeriFitAnalysisManager.createContribution(analysisStderrLog, serviceProviderId);
+			// add the compilation Contributions to the Automation Result
 	    	resAutoResult.addContribution(analysisStdoutLog);
 	    	resAutoResult.addContribution(analysisStderrLog);
 	    	
@@ -213,7 +212,6 @@ public class SutAnalyse extends RequestRunner
 				} catch (IOException e) {
 					newOrModifFile.setValue(e.getMessage());
 				}
-			    newOrModifFile = VeriFitAnalysisManager.createContribution(newOrModifFile, serviceProviderId);
 		    	resAutoResult.addContribution(newOrModifFile);
 			}
 			
@@ -233,7 +231,6 @@ public class SutAnalyse extends RequestRunner
 					zipedContribs.setDescription("This is a ZIP of all other file contributions. "
 							+ "To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property."); // TODO
 					zipedContribs.setTitle(zipName);
-					zipedContribs = VeriFitAnalysisManager.createContribution(zipedContribs, serviceProviderId);
 					resAutoResult.addContribution(zipedContribs);
 				} catch (Exception e)
 				{
@@ -241,6 +238,13 @@ public class SutAnalyse extends RequestRunner
 				}
 			}
 		
+			// run the AutoResult contributions through a parser
+			ParserManager parserManagerInst = ParserManager.getInstance();
+			Set<Contribution> parsedContributions = parserManagerInst.parseContributionsForTool(
+					VeriFitAnalysisManager.getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue()), 
+					resAutoResult.getContribution());
+			resAutoResult.setContribution(parsedContributions);
+			
 			// update the AutoResult state and verdict, and AutoRequest state
 			resAutoResult.setState(new HashSet<Link>());
 			resAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));

@@ -54,26 +54,26 @@ set CURTIME=%DATE%_%TIME:~0,2%.%TIME:~3,2%.%TIME:~6,2%
 set CURTIME=%CURTIME: =0%
 set CURTIME=%CURTIME:\=-%
 set CURTIME=%CURTIME:/=-%
-echo ####################################################!LF!## Run started at: %CURTIME% > %USRPATH%\logs\triplestore_%CURTIME%.log
-echo ####################################################!LF!## Run started at: %CURTIME% > %USRPATH%\logs\compilation_%CURTIME%.log
-echo ####################################################!LF!## Run started at: %CURTIME% > %USRPATH%\logs\analysis_%CURTIME%.log
+echo ####################################################!LF!## Run started at: %CURTIME% > %USRPATH%\logs\triplestore_%CURTIME%.txt
+echo ####################################################!LF!## Run started at: %CURTIME% > %USRPATH%\logs\compilation_%CURTIME%.txt
+echo ####################################################!LF!## Run started at: %CURTIME% > %USRPATH%\logs\analysis_%CURTIME%.txt
 
 :: start the triplestore
 echo Starting the Triplestore
 cd sparql_triplestore\jetty-distribution
-START /MIN "Universal VeriFIT OSLC Adapter - Compilation" CMD /C "java -DFUSEKI_BASE=..\triplestore -jar start.jar >> %USRPATH%\logs\triplestore_%CURTIME%.log 2>&1"
+START /MIN "Universal VeriFIT OSLC Adapter - Compilation" CMD /C "java -DFUSEKI_BASE=..\triplestore -jar start.jar >> %USRPATH%\logs\triplestore_%CURTIME%.txt 2>&1"
 :: wait a while to let the triplestore start
 timeout /t %SLEEP% /nobreak > NUL
 
 :: start the compilation adapter
 echo Starting the Compilation adapter
 cd ..\..\compilation
-START /MIN "Universal VeriFIT OSLC Adapter - Compilation" CMD /C "mvn jetty:run-exploded >> %USRPATH%\logs\compilation_%CURTIME%.log 2>&1"  
+START /MIN "Universal VeriFIT OSLC Adapter - Compilation" CMD /C "mvn jetty:run-exploded >> %USRPATH%\logs\compilation_%CURTIME%.txt 2>&1"  
 
 :: start the analysis adapter
 echo Starting the Analysis adapter
 cd ..\analysis
-START /MIN "Universal VeriFIT OSLC Adapter - Analysis" CMD /C "mvn jetty:run-exploded >> %USRPATH%\logs\analysis_%CURTIME%.log 2>&1"  
+START /MIN "Universal VeriFIT OSLC Adapter - Analysis" CMD /C "mvn jetty:run-exploded >> %USRPATH%\logs\analysis_%CURTIME%.txt 2>&1"  
 
 echo.
 echo Wait till startup finishes
