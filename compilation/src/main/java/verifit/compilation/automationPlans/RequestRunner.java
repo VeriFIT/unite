@@ -41,6 +41,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.Base64.Decoder;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.eclipse.jgit.api.Git;
@@ -104,109 +105,6 @@ public abstract class RequestRunner extends Thread
 		}
 
 		return Triple.of(process.exitValue(), stdoutLog, stderrLog);
-	}
-
-	/**
-	 * Clone a public git repository (no usrname and passwd) TODO
-	 * Source - https://onecompiler.com/posts/3sqk5x3td/how-to-clone-a-git-repository-programmatically-using-java
-	 * @param url	URL of the repository
-	 * @param folderPath	Path to the folder to clone into
-	 * @return Name of the new directory / file
-	 * @throws IOException 
-	 */
-	protected String gitClonePublic(String url, Path folderPath) throws IOException
-	{
-		try {
-		    Git.cloneRepository()
-		        .setURI(url)
-		        .setDirectory(folderPath.toFile())
-		        .call();
-		    
-		    return VeriFitCompilationManager.getResourceIdFromUri(new URI (url)); // gets the last part of the URL
-		
-		} catch (GitAPIException | JGitInternalException | URISyntaxException e) {
-			throw new IOException("Git clone failed: " + e.getMessage());
-		}
-	}
-	
-	/**
-	 * Download a file from a URL and save it as a byte stream.
-	 * Source - https://stackoverflow.com/a/921400
-	 * @param url	URL of the file to download
-	 * @param folderPath	Path to the folder where to  save the file
-	 * @return Name of the new directory / file
-	 * @throws IOException 
-	 */
-	protected String downloadFileFromUrl(String url, Path folderPath) throws IOException
-	{
-		try {
-			String fileName = VeriFitCompilationManager.getResourceIdFromUri(new URI (url)); // gets the last part of the URL
-			Path pathToFile = folderPath.resolve(fileName);
-			
-			URL website = new URL(url);
-			ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-			FileOutputStream fos = new FileOutputStream(pathToFile.toFile());
-			fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-			fos.close();
-			
-			return fileName;
-		} catch (FileNotFoundException | URISyntaxException e) {
-			throw new IOException("Download from url failed: " + e.getMessage());
-		}
-	}
-	
-	/**
-	 * Copy a file from the file system as a byte stream. TODO add dir copy aswell
-	 * @param pathToSource Path to the source file
-	 * @param folderPath	Path to the folder where to  save the file
-	 * @return Name of the new directory / file
-	 * @throws IOException
-	 */
-	protected void createFileFromFilesystem(String pathToSource, Path folderPath) throws IOException
-	{
-		byte[] buffer = new byte[64]; // TODO random size
-		FileInputStream fileInputStream = new FileInputStream(pathToSource);
-
-		String fileName = FileSystems.getDefault().getPath(pathToSource).getFileName().toString();
-		Path pathToFile = FileSystems.getDefault().getPath(pathToSource).resolve(fileName);
-		FileOutputStream fileOutStream = new FileOutputStream(pathToFile.toFile());
-
-		int nBytes = 0;
-		while ((nBytes = fileInputStream.read(buffer)) != -1)
-		{
-			fileOutStream.write(buffer, 0, nBytes);
-		}
-		fileOutStream.flush();
-		fileInputStream.close();
-		fileOutStream.close();
-	}
-	
-	/**
-	 * Decode a base64 encoded string into bytes and write them into a file as a byte stream.
-	 * @param base64EncProgram Base64 encoded file to decode and write. First line is the name of the file, second line is the base64 string.
-	 * @param folderPath	Path to the folder where to  save the file
-	 * @throws IOException
-	 * @throws IllegalArgumentException	When the base64EncProgram is invalid
-	 */
-	protected String createFileFromBase64(String base64EncProgram, Path folderPath) throws IOException, IllegalArgumentException
-	{
-		int idxSplit = base64EncProgram.indexOf('\n');
-		if (idxSplit == -1)
-			throw new IllegalArgumentException("Invalid format of sourceBase64 value. No \"\\n\" delimiter found. Expected format: filename\\nbase64");
-		
-		String filename = base64EncProgram.substring(0, base64EncProgram.indexOf('\n'));
-		String base64 = base64EncProgram.substring(base64EncProgram.indexOf('\n') + 1);
-		
-		Decoder decoder = Base64.getDecoder();
-		byte[] decodedProgram = decoder.decode(base64);
-		
-		Path pathToFile = folderPath.resolve(filename);
-		FileOutputStream fileOutStream = new FileOutputStream(pathToFile.toFile());
-		fileOutStream.write(decodedProgram, 0, decodedProgram.length);
-		fileOutStream.flush();
-		fileOutStream.close();
-		
-		return filename;
 	}
 	
 	/**

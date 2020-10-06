@@ -49,6 +49,11 @@ import org.eclipse.lyo.oslc4j.core.model.Link;
 import verifit.compilation.VeriFitCompilationConstants;
 import verifit.compilation.VeriFitCompilationManager;
 import verifit.compilation.VeriFitCompilationResourcesFactory;
+import verifit.compilation.automationPlans.sutFetcher.SutFetchBase64;
+import verifit.compilation.automationPlans.sutFetcher.SutFetchFileSystem;
+import verifit.compilation.automationPlans.sutFetcher.SutFetchGit;
+import verifit.compilation.automationPlans.sutFetcher.SutFetchUrl;
+import verifit.compilation.automationPlans.sutFetcher.SutFetcher;
 import verifit.compilation.resources.SUT;
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
 /**
@@ -98,27 +103,38 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			final String paramSourceGit = inputParamsMap.get("sourceGit");
 			final String paramSourceUrl = inputParamsMap.get("sourceUrl");
 			final String paramSourceBase64 = inputParamsMap.get("sourceBase64");
+			final String paramSourceFilePath = inputParamsMap.get("sourceFilePath");
 			final String paramBuildCommand = inputParamsMap.get("buildCommand");
 			final String paramLaunchCommand = inputParamsMap.get("launchCommand");
 			final String paramUnpackZip = inputParamsMap.get("unpackZip");
 
 			// check wich one of the source parameters was used 
+			SutFetcher sutFetcher = null;
 			String ProgramDefinition = "";	//TODO use something else than a string (speed)
 			String ProgramSource = "";
 			if (paramSourceGit != null)
 			{
-				ProgramDefinition = "sourceGit";
+				sutFetcher = new SutFetchGit();
 				ProgramSource = paramSourceGit;
 			}
 			else if (paramSourceUrl != null)
 			{
-				ProgramDefinition = "sourceUrl";
+				sutFetcher = new SutFetchUrl();
 				ProgramSource = paramSourceUrl;
 			}
 			else if (paramSourceBase64 != null)
 			{
-				ProgramDefinition = "sourceBase64";
+				sutFetcher = new SutFetchBase64();
 				ProgramSource = paramSourceBase64;
+			}
+			else if (paramSourceFilePath != null)
+			{
+				sutFetcher = new SutFetchFileSystem();
+				ProgramSource = paramSourceFilePath;
+			}
+			else
+			{
+		    	System.out.println("This should never happen!!");
 			}
 			
 			// set the states of the Automation Result and Request to "inProgress"
@@ -144,8 +160,6 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 		    compStderrLog.setTitle("Compilation stderr");
 			
 		    
-			
-		  
 		    Boolean performCompilation = true;	// flag to disable a part of the execution in case of an error
 			String executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_PASSED;
 		    
@@ -156,23 +170,8 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 				folderPath = createTmpDir(execAutoRequestId);
 				String filenameSUT = "";	// used for optional unpacking later
 				
-			    // get the source file depending on the ProgramDefinition
-			    switch (ProgramDefinition)
-			    {
-			    case "sourceGit":
-			    	filenameSUT = gitClonePublic(ProgramSource, folderPath);
-			    	break;
-			    	
-			    case "sourceUrl":
-			    	filenameSUT = downloadFileFromUrl(ProgramSource, folderPath);
-			    	break;
-			    	
-			    case "sourceBase64":
-			    	filenameSUT = createFileFromBase64(ProgramSource, folderPath);
-			    	break;
-			    default:
-			    	System.out.println("This should never happen!!");
-			    }
+			    // get the source file
+		    	filenameSUT = sutFetcher.fetchSut(ProgramSource, folderPath);
 			    
 			    // unzip the SUT if requested
 			    if (paramUnpackZip.equals("true") || paramUnpackZip.equals("True"))
@@ -181,13 +180,8 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			    }
 			    
 				fetchLog.setValue("# SUT fetch successful\n");
-				
-			} catch (UnknownHostException e) {	// TODO
-				executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_ERROR;
-				fetchLog.setValue("# SUT fetch failed\nUnknown host or host unreachable: " + e.getMessage());
-	    		performCompilation = false;
-	    		
-			} catch (IOException | IllegalArgumentException e) {
+			
+			} catch (Exception e) {
 				executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_ERROR;
 				fetchLog.setValue("# SUT fetch failed\n" + e.getMessage());
 	    		performCompilation = false;

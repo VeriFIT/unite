@@ -77,12 +77,18 @@ public class AutomationPlanDefinition {
 			
 			ParameterDefinition sourceBase64 = new ParameterDefinition();
 			sourceBase64.setDescription("The SUT is encoded in base64 as this parameter's value. "
-					+ "IMPORTANT the also value needs to specify a filename (to match with buildCommand). "
+					+ "IMPORTANT the value needs to specify a filename (to match with buildCommand). "
 					+ "The filename should be on the first line of the value, then the base64 encoded file as the second line "
 					+ "(separated by a \"\\n\"");
 			sourceBase64.setName("sourceBase64");
 			sourceBase64.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ZEROorONE)));
 			sourceBase64.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
+			
+			ParameterDefinition sourceFilePath = new ParameterDefinition();
+			sourceFilePath.setDescription("The SUT will be copied from a path in the filesystem.");
+			sourceFilePath.setName("sourceFilePath");
+			sourceFilePath.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ZEROorONE)));
+			sourceFilePath.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
 			
 			ParameterDefinition unpackZip = new ParameterDefinition();
 			unpackZip.setDescription("Set this parameter to \"true\" to have the adapter unpack the SUT using ZIP after fetching it."); 
@@ -116,6 +122,7 @@ public class AutomationPlanDefinition {
 			propertiesPlan.addParameterDefinition(sourceUrl);
 			propertiesPlan.addParameterDefinition(sourceGitUrl);
 			propertiesPlan.addParameterDefinition(sourceBase64);
+			propertiesPlan.addParameterDefinition(sourceFilePath);			
 			propertiesPlan.addParameterDefinition(unpackZip);
 			propertiesPlan.addParameterDefinition(buildCommand);
 			propertiesPlan.addParameterDefinition(launchCommand);
