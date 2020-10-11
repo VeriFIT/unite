@@ -22,6 +22,7 @@ public final class ParserManager {
 
     private ParserManager() {
     	this.toolParsers = new HashMap<String,IParser>(); // TODO map implementation ?
+    	loadParsers();
     }
  
     public synchronized static ParserManager getInstance() {
@@ -30,6 +31,10 @@ public final class ParserManager {
 			INSTANCE = new ParserManager();
 		}
 		return INSTANCE;
+    }
+    
+    private void loadParsers() {
+    	this.toolParsers.put("infer", new NoFileValuesParser()); // TODO tmp instead of actual plugins
     }
     
     /**
