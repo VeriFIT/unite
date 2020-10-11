@@ -1,10 +1,5 @@
 #/bin/sh
 
-if [ "$#" -ne 2 ]; then
-  echo "Needs two arguments"
-  exit 1
-fi
-
 echo "Dummy tool!"
 sleep 5
 echo "Your argument: $1"

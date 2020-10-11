@@ -866,23 +866,39 @@ public class VeriFitAnalysisManager {
 			}
 			SUT executedSUT = response.getEntity(SUT.class);
 			
-			// check if the SUT launch command should be used and get it from the SUT
+			// check if the SUT launch command or the SUT build command should be used and get it from the SUT
 			Pair<String,Integer> launchSUT = inputParamsMap.get("launchSUT");
+			Pair<String,Integer> SUTbuildCommand = inputParamsMap.get("SUTbuildCommand");
 			if (launchSUT != null)
 			{
-				inputParamsMap.put("launchSUT", Pair.of(executedSUT.getLaunchCommand(), Integer.parseInt(launchSUT.getLeft())));
-				
-				// modify the output parameter of the automation result (was added by processAutoReqInputParams)
-				Set<ParameterInstance> outputParams = new HashSet<ParameterInstance>();
+				String launchCmd = executedSUT.getLaunchCommand();
+				if (launchCmd == null)
+					throw new OslcResourceException("paramer launchSUT - referenced SUT is missing a launchCommand");
+				else	
+					inputParamsMap.put("launchSUT", Pair.of(launchCmd, Integer.parseInt(launchSUT.getLeft())));
+			}
+			if (SUTbuildCommand != null)
+			{
+				String buildCmd = executedSUT.getBuildCommand();
+				if (buildCmd == null)
+					throw new OslcResourceException("paramer SUTbuildCommand - referenced SUT is missing a buildCommand");
+				else	
+					inputParamsMap.put("SUTbuildCommand", Pair.of(buildCmd, Integer.parseInt(SUTbuildCommand.getLeft())));
+			}
+
+			if (launchSUT != null || SUTbuildCommand != null)
+			{
+				// modify the output parameters of the automation result (was added by processAutoReqInputParams)
 				for (ParameterInstance param : propAutoResult.getOutputParameter())
 				{
 					if (param.getName().equals("launchSUT"))
 					{
 						param.setValue(executedSUT.getLaunchCommand());
-						outputParams.add(param);
 					}
-					else
-						outputParams.add(param);
+					else if (param.getName().equals("SUTbuildCommand"))
+					{
+						param.setValue(executedSUT.getBuildCommand());
+					}
 				}
 			}
 			

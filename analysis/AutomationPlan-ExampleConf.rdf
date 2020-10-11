@@ -29,14 +29,14 @@
         -->
         <oslc_auto:parameterDefinition>
             <!--
-                This ParameterDefinition is not expected to be used as an input parameter when creating an Automation Request, but rather the default value is supposed to be used.
+                This ParameterDefinition is not expected to be used as an input parameter when creating an Automation Request, but rather its default value is supposed to be used.
                 The purpouse is to use some commanline arguments at a specified position for every AutoRequest execution to make the tools behavior compatible with the adapter 
                 (eg. output format, ...).
             -->
             <oslc_auto:ParameterDefinition>
                 <oslc:name>adapterSpecific</oslc:name>
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
-                <oslc:defaultValue></oslc:defaultValue>
+                <oslc:defaultValue></oslc:defaultValue> <!-- your predefined parameters would go here -->
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
 
                 <dcterms:description rdf:parseType="Literal">Parameters needed by the adapter in order for the tools output to be xml readable.</dcterms:description>
@@ -73,6 +73,17 @@
                 <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position</dcterms:description>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
+        <!--
+            SUTbuildCommand is the same as "launchSUT" except that the SUT build command is placed on the command line (useful for static analysis tools)
+            Note that this ParameterDefinition does not have a commandlinePosition and thus it's value will not be placed on the commanline.
+        -->
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>SUTbuildCommand</oslc:name>
+                <oslc:defaultValue>4</oslc:defaultValue>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position</dcterms:description>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
         
         <oslc_auto:parameterDefinition>
         <!--
@@ -89,6 +100,7 @@
                 <oslc:hidden rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</oslc:hidden>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
+        
         
     </oslc_auto:AutomationPlan>
 
