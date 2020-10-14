@@ -358,7 +358,7 @@ public class SUT
     @OslcName("launchCommand")
     @OslcPropertyDefinition(FitDomainConstants.VERIFIT_NAMSPACE + "launchCommand")
     @OslcDescription("How to launch the SUT. The specified command will be launched from the root directory of the downloaded SUT. Examples: make run | ./run.sh | ./my_sut")
-    @OslcOccurs(Occurs.ExactlyOne)
+    @OslcOccurs(Occurs.ZeroOrOne)
     @OslcValueType(ValueType.XMLLiteral)
     @OslcReadOnly(false)
     @OslcTitle("")
