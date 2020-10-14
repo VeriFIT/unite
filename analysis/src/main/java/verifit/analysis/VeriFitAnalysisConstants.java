@@ -62,6 +62,7 @@ public interface VeriFitAnalysisConstants
     public static final String OSLC_VAL_TYPE_STRING = "http://www.w3.org/2001/XMLSchema#string";
     public static final String OSLC_VAL_TYPE_BOOL = "http://www.w3.org/2001/XMLSchema#boolean";
     public static final String OSLC_VAL_TYPE_INTEGER = "http://www.w3.org/2001/XMLSchema#integer";
+    public static final String OSLC_VAL_TYPE_BASE64BINARY = "http://www.w3.org/2001/XMLSchema#base64binary";
     
     // ADD more value types when needed
     // https://archive.open-services.net/bin/view/Main/OSLCCoreSpecAppendixA.html#Representation_Property

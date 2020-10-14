@@ -150,14 +150,17 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			Contribution fetchLog = new Contribution();
 		    fetchLog.setDescription("Output of the program fetching process. Provider messages are prefixed with #.");
 		    fetchLog.setTitle("Fetching Output");
+		    fetchLog.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
 		    //fetchLog.addType(new Link(new URI("http://purl.org/dc/dcmitype/Text"))); //TODO
 		    
 		    Contribution compStdoutLog = new Contribution();
 		    compStdoutLog.setDescription("Standard output of the compilation. Provider messages are prefixed with #.");
 		    compStdoutLog.setTitle("Compilation stdout");
+		    compStdoutLog.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
 		    Contribution compStderrLog = new Contribution();
 		    compStderrLog.setDescription("Error output of the compilation. Provider messages are prefixed with #.");
 		    compStderrLog.setTitle("Compilation stderr");
+		    compStderrLog.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
 			
 		    
 		    Boolean performCompilation = true;	// flag to disable a part of the execution in case of an error

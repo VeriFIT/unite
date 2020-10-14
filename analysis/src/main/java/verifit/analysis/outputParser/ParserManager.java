@@ -34,7 +34,7 @@ public final class ParserManager {
     }
     
     private void loadParsers() {
-    	this.toolParsers.put("infer", new NoFileValuesParser()); // TODO tmp instead of actual plugins
+    	//this.toolParsers.put("infer", new NoFileValuesParser()); // TODO tmp instead of actual plugins
     }
     
     /**
@@ -59,9 +59,9 @@ public final class ParserManager {
     		if (contrib.getFileURI() != null)
     			newMap.put("fileURI", contrib.getFileURI().toString());
     		newMap.put("description", contrib.getDescription());
-    		for (Link type : contrib.getType())	// should contain only one --> iterate anyway just in case, last one overwrites others TODO 
+    		for (Link valueType : contrib.getValueType())	// should contain only one --> iterate anyway just in case, last one overwrites others TODO 
     		{
-        		newMap.put("type", type.getValue().toString());
+        		newMap.put("valueType", valueType.getValue().toString());
     		}
     		parserInput.add(newMap);
     	}
@@ -79,27 +79,16 @@ public final class ParserManager {
     			System.out.println("WARNING: Output of contribution parser for tool \"" + toolIdentifier + "\" - name missing");
     		}
     		String value = mapContrib.get("value");
-    		if (value == null)
-    		{
-    			System.out.println("WARNING: Output of contribution parser for tool \"" + toolIdentifier + "\" - value missing");
-    		}
 			String description = mapContrib.get("description");
-    		if (description == null)
-    		{
-    			System.out.println("WARNING: Output of contribution parser for tool \"" + toolIdentifier + "\" - description missing");
-    		}
     		String fileURI = mapContrib.get("fileURI");
-			String type = mapContrib.get("type");
-			Set<Link> setType = new HashSet<Link>();
-    		if (type == null)
+			String valueType = mapContrib.get("valueType");
+			Set<Link> setValueType = new HashSet<Link>();
+    		if (valueType != null)
     		{
-    			System.out.println("WARNING: Output of contribution parser for tool \"" + toolIdentifier + "\" - type missing");
-			}
-			else {
 				try {
-					setType.add(new Link(new URI(type)));
+					setValueType.add(new Link(new URI(valueType)));
 				} catch (URISyntaxException e1) {
-					System.out.println("WARNING: Output of contribution parser for tool \"" + toolIdentifier + "\" - invalid type: " + e1.getMessage());
+					System.out.println("WARNING: Output of contribution parser for tool \"" + toolIdentifier + "\" - invalid valueType: " + e1.getMessage());
 				}
 			}
     		
@@ -110,7 +99,7 @@ public final class ParserManager {
 				newContrib.setValue(value);
 				newContrib.setDescription(description);
 				newContrib.setFileURI((fileURI != null ? new URI(fileURI) : null));
-				newContrib.setType(setType);
+				newContrib.setValueType(setValueType);
 				parsedContributions.add(newContrib);
 			} catch (URISyntaxException e) {
 				// TODO should never happen

@@ -27,6 +27,7 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Struct;
@@ -226,4 +227,26 @@ public abstract class RequestRunner extends Thread {
 		zipOutStream.close();
 		fileOutStream.close();
 	}
+	
+	/**
+	 * @author https://stackoverflow.com/a/39903784
+	 * @param f
+	 * @return
+	 * @throws IOException
+	 */
+	boolean isBinaryFile(File f) throws IOException {
+        String type = Files.probeContentType(f.toPath());
+        if (type == null) {
+            //type couldn't be determined, assume binary
+            return true;
+        } else if (type.startsWith("text")
+        		|| type.contains("xml")	// TODO text xml inside of an xml property?
+        		|| type.contains("json")
+        		|| type.contains("html")) {
+            return false;
+        } else {
+            //type isn't text
+            return true;
+        }
+    }
 } 

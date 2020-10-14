@@ -57,6 +57,7 @@ import verifit.analysis.VeriFitAnalysisConstants;
 import verifit.analysis.VeriFitAnalysisManager;
 import verifit.analysis.VeriFitAnalysisProperties;
 import verifit.analysis.VeriFitAnalysisResourcesFactory;
+import verifit.analysis.utils;
 import verifit.analysis.outputParser.ParserManager;
 import verifit.analysis.resources.SUT;
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
@@ -138,9 +139,11 @@ public class SutAnalyse extends RequestRunner
 			Contribution analysisStdoutLog = new Contribution();
 		    analysisStdoutLog.setDescription("Standard output of the analysis. Provider messages are prefixed with #.");
 		    analysisStdoutLog.setTitle("Analysis stdout");
+		    analysisStdoutLog.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
 		    Contribution analysisStderrLog = new Contribution();
 		    analysisStderrLog.setDescription("Error output of the analysis. Provider messages are prefixed with #.");
 		    analysisStderrLog.setTitle("Analysis stderr");
+		    analysisStderrLog.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
 			
 		    
 		    // take a snapshot of SUT files modification times before executing the analysis
@@ -208,7 +211,17 @@ public class SutAnalyse extends RequestRunner
 			    		+ "To modify the file send a regular OSLC update PUT request for a Contribution resource to the URI in fit:fileURI."); // TODO
 			    newOrModifFile.setTitle(currFile.getName());
 			    try {
-					newOrModifFile.setValue(new String(Files.readAllBytes(FileSystems.getDefault().getPath(currFile.toString()))));
+			    	byte [] fileContents = Files.readAllBytes(FileSystems.getDefault().getPath(currFile.toString())); // TODO RAM usage
+			    	if (isBinaryFile(currFile))
+			    	{
+			    		newOrModifFile.setValue(utils.base64Encode(fileContents));
+			    		newOrModifFile.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_BASE64BINARY)));
+			    	}
+		    		else
+		    		{
+		    			newOrModifFile.setValue(new String(fileContents));
+		    			newOrModifFile.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
+		    		}
 				} catch (IOException e) {
 					newOrModifFile.setValue(e.getMessage());
 				}
