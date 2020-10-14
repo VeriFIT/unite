@@ -6,3 +6,4 @@
 logs/
 sparql_triplestore/triplestore/
 compilation/tmp
+RemoteSystemsTempFiles/
