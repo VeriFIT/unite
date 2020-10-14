@@ -111,7 +111,7 @@ public class AutomationPlanDefinition {
 					+ "The specified command will be launched from the root directory of the downloaded SUT. "
 					+ "Examples: make run | ./run.sh | ./my_sut"); 
 			launchCommand.setName("launchCommand");
-			launchCommand.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ONE)));
+			launchCommand.setOccurs(new Link(new URI(VeriFitCompilationConstants.OSLC_OCCURS_ZEROorONE)));
 			launchCommand.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
 						
 			// create the autoPlan

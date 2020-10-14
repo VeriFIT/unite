@@ -760,6 +760,12 @@
 											"});",
 											"pm.test(\"AutomationResult compilation stderr be empty (~)\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
+											"});",
+											"pm.test(\"AutomationResult compilation contributions should have valueType string\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"http://www.w3.org/2001/XMLSchema#string\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"http://www.w3.org/2001/XMLSchema#base64binary\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"http://www.w3.org/2001/XMLSchema#boolean\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"http://www.w3.org/2001/XMLSchema#integer\");",
 											"});"
 										],
 										"type": "text/javascript"
@@ -1597,58 +1603,6 @@
 							"options": {
 								"raw": {}
 							}
-						},
-						"url": {
-							"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
-							"host": [
-								"{{server_address}}"
-							],
-							"path": [
-								"{{server_context}}",
-								"services",
-								"serviceProviders",
-								"A0",
-								"resources",
-								"createAutoRequest"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "launchCommand input param missing",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "21c4bb39-da9e-47d6-847e-208290d64fe6",
-								"exec": [
-									"pm.test(\"Response code should be 400 (bad request)\", function () {",
-									"    pm.response.to.have.status(400);",
-									"});",
-									"",
-									"pm.test(\"Error msg should be - AutomationRequest NOT created - unrecognized input parameters\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<oslc:message>AutomationRequest NOT created - 'launchCommand' input parameter missing</oslc:message>\");",
-									"});",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"type": "text",
-								"value": "application/xml"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
@@ -6641,6 +6595,300 @@
 			"protocolProfileBehavior": {}
 		},
 		{
+			"name": "Misc",
+			"item": [
+				{
+					"name": "no launchCommand (static analysis)",
+					"item": [
+						{
+							"name": "create AutomationRequest",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "cb809667-bca0-4ae5-b76d-f368836383e0",
+										"exec": [
+											"// save the request ID as a global variable for later tests to use",
+											"const response = xml2Json(pm.response.text());",
+											"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+											"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+											"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
+											"pm.globals.set('requestId', requestId);",
+											"",
+											"var result_wait_time = pm.variables.get('result_wait_time');",
+											"setTimeout(function(){}, [result_wait_time]);",
+											"",
+											"// get global variable to use in this test",
+											"var serverAddr = pm.variables.get(\"server_address\");",
+											"var server_context = pm.variables.get(\"server_context\");",
+											"",
+											"",
+											"",
+											"pm.test(\"Response code should be 201 (created)\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"AutomationRequest state should be #new\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+											"});",
+											"",
+											"pm.test(\"AutomationRequest should not contain a launchCommand input parameter\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"<oslc:name>launchCommand</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationRequest should contain a producedAutomationResult refference property\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:producedAutomationResult\");",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "2e78c472-2fe9-477b-8904-6a24243f4365",
+										"exec": [
+											"// setup global variables for future requests (GETs)",
+											"// attempt to make this sequence of requests into a template that can then be change in this place to change the test",
+											"",
+											"pm.globals.set(\"AutoPlanId\", \"0\");",
+											"",
+											"pm.globals.set(\"buildCommand\", \"make\");",
+											"pm.globals.set(\"launchCommand\", \"./testEcho\");",
+											"pm.globals.set(\"sourceType\", \"sourceGit\");",
+											"pm.globals.set(\"sourceVal\", \"https://github.com/od42/test.git\");",
+											"",
+											"pm.globals.set(\"reqCreator\", \"https://pajda.fit.vutbr.cz/xvasic\");",
+											"pm.globals.set(\"reqTitle\", \"Test title\");",
+											"pm.globals.set(\"reqDescription\", \"Test description\");"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/xml"
+									},
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>{{reqTitle}}</dcterms:title>\n\t<dcterms:description>{{reqDescription}}</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationPlans/{{AutoPlanId}}\" />\n\t<dcterms:creator rdf:resource=\"{{reqCreator}}\"/>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>{{buildCommand}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>{{sourceType}}</oslc:name>\n\t\t\t<rdf:value>{{sourceVal}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>",
+									"options": {
+										"raw": {}
+									}
+								},
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/createAutoRequest",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"serviceProviders",
+										"A0",
+										"resources",
+										"createAutoRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get AutomatinResult - complete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0aa08546-75b4-41c7-98ac-c51f964169db",
+										"exec": [
+											"// get global variable to use in this test",
+											"var requestId = pm.globals.get('requestId');",
+											"var serverAddr = pm.variables.get(\"server_address\");",
+											"var server_context = pm.variables.get(\"server_context\");",
+											"",
+											"",
+											"pm.test(\"Response code should be 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"AutomationResult should contain a createdSUT refference resource\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\");",
+											"});",
+											"",
+											"pm.test(\"AutomationResult should not contain a launchCommand input parameter\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"<oslc:name>launchCommand</oslc:name>\");",
+											"});",
+											"",
+											"pm.test(\"AutomationResult state should be #complete\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+											"});",
+											"pm.test(\"AutomationResult verdict should be #passed\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#unavailable\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
+											"});",
+											"",
+											"",
+											"pm.test(\"AutomationResult should contain contributions\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:contribution\");",
+											"});",
+											"pm.test(\"AutomationResult should contain the fetching output\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Fetching Output</dcterms:title>\");",
+											"});",
+											"pm.test(\"AutomationResult fetching output should have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"># SUT fetch successful\\n</rdf:value>\");",
+											"});",
+											"pm.test(\"AutomationResult should contain compilation stdout\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Compilation stdout</dcterms:title>\");",
+											"});",
+											"pm.test(\"AutomationResult compilation stdout should have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"># Compilation completed successfully\\n\");",
+											"});",
+											"pm.test(\"AutomationResult should contain compilation stderr\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Compilation stderr</dcterms:title>\");",
+											"});",
+											"pm.test(\"AutomationResult compilation stderr be empty (~)\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "38ab7848-9e0b-45e8-9f0f-ae371206c474",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/automationResults/{{requestId}}",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"serviceProviders",
+										"A0",
+										"resources",
+										"automationResults",
+										"{{requestId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get SUT",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6c516fc4-d814-471f-b488-34e9eeced09d",
+										"exec": [
+											"// get global variable to use in this test",
+											"var requestId = pm.globals.get('requestId');",
+											"var serverAddr = pm.variables.get(\"server_address\");",
+											"var server_context = pm.variables.get(\"server_context\");",
+											"var AutoPlanId = pm.variables.get(\"AutoPlanId\");",
+											"var buildCommand = pm.variables.get(\"buildCommand\");",
+											"var launchCommand= pm.variables.get(\"launchCommand\");",
+											"var sourceType = pm.variables.get(\"sourceType\");",
+											"var sourceVal = pm.variables.get(\"sourceVal\");",
+											"var reqCreator = pm.variables.get(\"reqCreator\");",
+											"var reqTitle = pm.variables.get(\"reqTitle\");",
+											"var reqDescription = pm.variables.get(\"reqDescription\");",
+											"var sut_folder = pm.variables.get(\"sut_folder\");",
+											"",
+											"pm.test(\"Response code should be 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"Response body should contain an SUT\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"fit:SUT rdf:about=\\\"\" + serverAddr + \"/\" + server_context + \"/services/serviceProviders/A0/resources/sUTs/\");",
+											"});",
+											"pm.test(\"SUT should not contain a launchCommand property\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"<fit:launchCommand\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "c67a27eb-062f-4242-b6af-50d1db8eccf9",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0/resources/sUTs/{{requestId}}",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"serviceProviders",
+										"A0",
+										"resources",
+										"sUTs",
+										"{{requestId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
 			"name": "Query Capability",
 			"item": [
 				{
@@ -7856,22 +8104,22 @@
 	],
 	"variable": [
 		{
-			"id": "0cae4244-134f-443c-a72a-6d2e34fe5ef7",
+			"id": "525ce3e4-a8dc-4755-974f-5585e4d64ca2",
 			"key": "server_address",
 			"value": "http://localhost:8081"
 		},
 		{
-			"id": "2d9e9b16-0c22-4bb1-89dc-d4999620a5a2",
+			"id": "f0219a06-b684-4926-b885-d14e6294187d",
 			"key": "result_wait_time",
 			"value": "5000"
 		},
 		{
-			"id": "0ea66e7c-3b23-43ae-a4d6-7974f3971e38",
+			"id": "776d07df-c11e-4fc3-8f77-65cd38113f9e",
 			"key": "server_context",
 			"value": "compilation"
 		},
 		{
-			"id": "7699230e-af82-4f0b-8f7f-e2c87729d8a1",
+			"id": "64f19f71-0601-4e7c-818d-84c08264e912",
 			"key": "sut_folder",
 			"value": "/home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/tmp"
 		}
