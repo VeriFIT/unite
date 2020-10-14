@@ -41,6 +41,7 @@ import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc.domains.Person;
 import verifit.compilation.resources.SUT;
 
+
 // Start of user code imports
 import verifit.compilation.persistance.Persistence;
 import verifit.compilation.automationPlans.AutomationPlanDefinition;

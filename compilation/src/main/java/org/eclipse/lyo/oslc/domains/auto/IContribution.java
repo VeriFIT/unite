@@ -67,6 +67,7 @@ import org.eclipse.lyo.oslc4j.core.model.ValueType;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
+import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
 import verifit.compilation.resources.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.IPerson;
@@ -82,6 +83,7 @@ public interface IContribution
 
     public void addType(final Link type );
     public void addCreator(final Link creator );
+    public void addValueType(final Link valueType );
 
     @OslcName("title")
     @OslcPropertyDefinition(DctermsDomainConstants.DUBLIN_CORE_NAMSPACE + "title")
@@ -138,6 +140,14 @@ public interface IContribution
     @OslcReadOnly(false)
     public URI getFileURI();
 
+    @OslcName("valueType")
+    @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "valueType")
+    @OslcDescription("See below for list of allowed values for oslc:valueType. If this property is omitted, then the value type is unconstrained.")
+    @OslcOccurs(Occurs.ZeroOrMany)
+    @OslcValueType(ValueType.Resource)
+    @OslcReadOnly(false)
+    public Set<Link> getValueType();
+
 
     public void setTitle(final String title );
     public void setDescription(final String description );
@@ -146,5 +156,6 @@ public interface IContribution
     public void setCreated(final Date created );
     public void setCreator(final Set<Link> creator );
     public void setFileURI(final URI fileURI );
+    public void setValueType(final Set<Link> valueType );
 }
 

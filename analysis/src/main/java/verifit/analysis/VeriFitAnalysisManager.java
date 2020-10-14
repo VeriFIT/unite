@@ -81,8 +81,8 @@ import org.eclipse.lyo.client.oslc.OslcClient;
 import org.eclipse.lyo.oslc4j.provider.jena.JenaModelHelper;
 import org.eclipse.lyo.oslc4j.provider.jena.LyoJenaModelException;
 import org.apache.jena.rdf.model.Model;
-// End of user code
 import org.apache.jena.rdf.model.ModelFactory;
+// End of user code
 
 // Start of user code pre_class_code
 // End of user code

@@ -75,6 +75,7 @@ import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
+import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
 import verifit.analysis.resources.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.Person;
@@ -115,6 +116,9 @@ public class Contribution
     // Start of user code attributeAnnotation:fileURI
     // End of user code
     private URI fileURI;
+    // Start of user code attributeAnnotation:valueType
+    // End of user code
+    private HashSet<Link> valueType = new HashSet<Link>();
     
     // Start of user code classAttributes
     // End of user code
@@ -166,10 +170,12 @@ public class Contribution
             result = (title != null ? "--title=" + title + "<br>" : "")
     				+ (description != null ? "--description=" + description + "<br>" : "")
     				+ (value != null ? "--value=" + value + "<br>" : "")
+    				+ (valueType != null && !valueType.isEmpty() ? "--valueType=" + valueType.iterator().next().getValue() + "<br>" : "")
     				+ (fileURI != null ? "--fileURI=" + fileURI + "<br>" : "")
     				+ (type != null && !type.isEmpty() ? "--type=" + type.iterator().next().getValue() + "<br>" : "")
     				+ (created != null ? "--created=" + created + "<br>" : "")
     				+ (creator != null && !creator.isEmpty() ? "--creator=" + creator.iterator().next().getValue() : "");
+
             // End of user code
         }
         else {
@@ -218,6 +224,11 @@ public class Contribution
     public void addCreator(final Link creator)
     {
         this.creator.add(creator);
+    }
+    
+    public void addValueType(final Link valueType)
+    {
+        this.valueType.add(valueType);
     }
     
     
@@ -325,6 +336,21 @@ public class Contribution
         return fileURI;
     }
     
+    // Start of user code getterAnnotation:valueType
+    // End of user code
+    @OslcName("valueType")
+    @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "valueType")
+    @OslcDescription("See below for list of allowed values for oslc:valueType. If this property is omitted, then the value type is unconstrained.")
+    @OslcOccurs(Occurs.ZeroOrMany)
+    @OslcValueType(ValueType.Resource)
+    @OslcReadOnly(false)
+    public Set<Link> getValueType()
+    {
+        // Start of user code getterInit:valueType
+        // End of user code
+        return valueType;
+    }
+    
     
     // Start of user code setterAnnotation:title
     // End of user code
@@ -415,6 +441,22 @@ public class Contribution
         this.fileURI = fileURI;
     
         // Start of user code setterFinalize:fileURI
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:valueType
+    // End of user code
+    public void setValueType(final Set<Link> valueType )
+    {
+        // Start of user code setterInit:valueType
+        // End of user code
+        this.valueType.clear();
+        if (valueType != null)
+        {
+            this.valueType.addAll(valueType);
+        }
+    
+        // Start of user code setterFinalize:valueType
         // End of user code
     }
     
@@ -552,6 +594,25 @@ public class Contribution
     
         s= s + "<input name=\"fileURI\" type=\"text\" style=\"width: 400px\" id=\"fileURI\" >";
         // Start of user code "Finalize:fileURIToHtmlForCreation(...)"
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    static public String valueTypeToHtmlForCreation (final HttpServletRequest httpServletRequest)
+    {
+        String s = "";
+    
+        // Start of user code "Init:valueTypeToHtmlForCreation(...)"
+        // End of user code
+    
+        s = s + "<label for=\"valueType\">valueType: </LABEL>";
+    
+        // Start of user code "Mid:valueTypeToHtmlForCreation(...)"
+        // End of user code
+    
+        // Start of user code "Finalize:valueTypeToHtmlForCreation(...)"
         // End of user code
     
         return s;
@@ -735,6 +796,37 @@ public class Contribution
         }
     
         // Start of user code fileURItoHtml_finalize
+        // End of user code
+    
+        return s;
+    }
+    
+    @Deprecated
+    public String valueTypeToHtml()
+    {
+        String s = "";
+    
+        // Start of user code valueTypetoHtml_mid
+        // End of user code
+    
+        try {
+            s = s + "<ul>";
+            for(Link next : valueType) {
+                s = s + "<li>";
+                if (next.getValue() == null) {
+                    s= s + "<em>null</em>";
+                }
+                else {
+                    s = s + "<a href=\"" + next.getValue().toString() + "\">" + next.getValue().toString() + "</a>";
+                }
+                s = s + "</li>";
+            }
+            s = s + "</ul>";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    
+        // Start of user code valueTypetoHtml_finalize
         // End of user code
     
         return s;
