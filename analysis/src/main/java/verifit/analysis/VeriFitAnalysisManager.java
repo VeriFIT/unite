@@ -28,61 +28,46 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletContextEvent;
 import java.util.List;
 
-import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
-import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
-import verifit.analysis.servlet.ServiceProviderCatalogSingleton;
-import verifit.analysis.ServiceProviderInfo;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
 import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
-import org.eclipse.lyo.oslc.domains.Person;
+import verifit.analysis.automationPlans.AutomationPlanConfManager;
 import verifit.analysis.resources.SUT;
 
 
 // Start of user code imports
 import verifit.analysis.persistance.Persistence;
-import verifit.analysis.automationPlans.AutomationPlanDefinition;
 import verifit.analysis.automationPlans.RequestRunner;
 import verifit.analysis.automationPlans.SutAnalyse;
 import verifit.analysis.exceptions.OslcResourceException;
 
 import org.eclipse.lyo.store.StoreAccessException;
 import org.eclipse.lyo.oslc4j.core.model.Link;
-import org.eclipse.lyo.oslc4j.core.model.OslcMediaType;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.wink.client.ClientResponse;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.Map;
 import org.eclipse.lyo.client.oslc.OslcClient;
-import org.eclipse.lyo.oslc4j.provider.jena.JenaModelHelper;
-import org.eclipse.lyo.oslc4j.provider.jena.LyoJenaModelException;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import verifit.analysis.automationPlans.AutomationPlanLoading;
+
+import static verifit.analysis.utils.getResourceIdFromUri;
 // End of user code
 
 // Start of user code pre_class_code
@@ -141,18 +126,7 @@ public class VeriFitAnalysisManager {
 	{
 		return Stream.of(System.getenv("PATH").split(Pattern.quote(File.pathSeparator))).map(Paths::get).anyMatch(path -> Files.exists(path.resolve(command)));
 	}
-	
-	/**
-	 * Get the ID of an OSLC resource from its URI (About(), or Link)
-	 * @param	uri	OSLC resource uri (eg. from a Link)
-	 * @return 		ID of the OSLC resource
-	 */
-	public static String getResourceIdFromUri(URI uri)
-	{
-		String uriPath = uri.getPath();
-		return uriPath.substring(uriPath.lastIndexOf('/') + 1);
-	}
-	
+
 	/**
 	 * Creates an AutomationPlan resource with the specified properties, and stores in the Adapter's catalog.
 	 * @param aResource			The new resource will copy properties from the specified aResource.
@@ -196,8 +170,6 @@ public class VeriFitAnalysisManager {
 			SUT.setName("SUT");
 			SUT.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ONE)));
 			SUT.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING))); // TODO change to URI
-			SUT.setHidden(false);
-			SUT.setReadOnly(false);
 			newResource.addParameterDefinition(SUT);
 
 			ParameterDefinition outputFileRegex = new ParameterDefinition();
@@ -207,8 +179,6 @@ public class VeriFitAnalysisManager {
 			outputFileRegex.setName("outputFileRegex");
 			outputFileRegex.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
 			outputFileRegex.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
-			outputFileRegex.setHidden(false);
-			outputFileRegex.setReadOnly(false);
 			outputFileRegex.setDefaultValue(".^");
 			newResource.addParameterDefinition(outputFileRegex);
 
@@ -217,8 +187,6 @@ public class VeriFitAnalysisManager {
 			zipOutputs.setName("zipOutputs");
 			zipOutputs.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
 			zipOutputs.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_BOOL)));
-			zipOutputs.setHidden(false);
-			zipOutputs.setReadOnly(false);
 			zipOutputs.setDefaultValue("false");
 			newResource.addParameterDefinition(zipOutputs);
 
@@ -227,8 +195,6 @@ public class VeriFitAnalysisManager {
 			timeout.setName("timeout");
 			timeout.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
 			timeout.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_INTEGER)));
-			timeout.setHidden(false);
-			timeout.setReadOnly(false);
 			timeout.setDefaultValue("0");
 			newResource.addParameterDefinition(timeout);
 						
@@ -365,18 +331,13 @@ public class VeriFitAnalysisManager {
 	private static Map<String, Pair<String,Integer>> processAutoReqInputParams(String serviceProviderId, AutomationRequest execAutoRequest, AutomationResult newAutoResult) throws OslcResourceException
 	{
 		// get the executed AutomationPlan resource			
-		String execAutoPlanId = getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue());
+		String execAutoPlanId = utils.getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue());
 		AutomationPlan execAutoPlan = getAutomationPlan(null, serviceProviderId, execAutoPlanId);
 		if (execAutoPlan == null)
 			throw new OslcResourceException("AutomationPlan not found (id: " + execAutoPlanId + ")");
 
 		/// check the input parameters and create a map of "name" -> ("value", position)
 		Map<String, Pair<String,Integer>> inputParamsMap = new HashMap<String, Pair<String,Integer>>();
-		
-		// insert the toolCommand at commandline position 0
-		String toolCommand = execAutoPlan.getUsesExecutionEnvironment().iterator().next().getValue().getPath();
-		toolCommand = new File(toolCommand).getPath();	// hack for Windows: URI String "/C:/folder/..." --> "C:/folder/..."
-		inputParamsMap.put("toolCommand", Pair.of(toolCommand,0));
 		
 		// loop through autoPlan defined parameters to match them with the input params
 		for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
@@ -599,7 +560,7 @@ public class VeriFitAnalysisManager {
      */
     public static void finishedAutomationRequestExecution(AutomationRequest req)
     {
-    	String autoPlanId = getResourceIdFromUri(req.getExecutesAutomationPlan().getValue());
+    	String autoPlanId = utils.getResourceIdFromUri(req.getExecutesAutomationPlan().getValue());
     	
     	// if there is a request queue for this requests Automation Plan, then it means this request execution is currently
     	// at the front of the queue and needs to be removed
@@ -636,7 +597,7 @@ public class VeriFitAnalysisManager {
 
     	// create AutomationPlans
 		try {
-			AutomationPlanLoading.createPredefinedAutomationPlans();
+			AutomationPlanLoading.loadAutomationPlans();
 		} catch (StoreAccessException e) {
 			System.out.println("ERROR: Adapter initialization: AutomationPlan creation: " + e.getMessage());
 			System.exit(1);
@@ -649,7 +610,7 @@ public class VeriFitAnalysisManager {
 			List<AutomationRequest> listAutoRequests =  store.getResources(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), AutomationRequest.class);
 			for (AutomationRequest autoReq : listAutoRequests)
 			{
-				int reqId = Integer.parseInt(getResourceIdFromUri(autoReq.getAbout()));
+				int reqId = Integer.parseInt(utils.getResourceIdFromUri(autoReq.getAbout()));
 				if ( reqId >= initReqId)
 				{
 					initReqId = reqId + 1;
@@ -875,12 +836,16 @@ public class VeriFitAnalysisManager {
 					}
 				}
 			}
-			
+
+			// load the automation plan's configuration from the conf. manager
+			Boolean oneInstanceOnly = AutomationPlanConfManager.getInstance()
+					.getAutoPlanConf(getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue()))
+					.getOneInstanceOnly();
+
 			// check whether the new Auto Request can start execution immediately or needs to wait in a queue
 			// and set its state accordingly (same for the Auto Result)
 			String requestState;
-			if (inputParamsMap.get("oneInstanceOnly") == null
-				|| inputParamsMap.get("oneInstanceOnly").getLeft().equalsIgnoreCase("false")) // no instance restrictions --> can run
+			if (oneInstanceOnly == false) // no instance restrictions --> can run
 			{
 				requestState = VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS;
 			}
@@ -907,7 +872,7 @@ public class VeriFitAnalysisManager {
 			else	
 			{
 				AutoRequestQueues.queueUp(
-						getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue()),
+						utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue()),
 						runner);
 			}
 			

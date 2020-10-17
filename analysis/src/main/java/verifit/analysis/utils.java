@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Base64;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
@@ -35,11 +36,22 @@ public class utils {
 	 * @throws FileNotFoundException Error accessing the XML file
 	 * @throws LyoJenaModelException Error parsing the XML file
 	 */
-	public static <T> T[] parseResourcesFromXmlFile(String pathToFile, Class<T> clazz) throws FileNotFoundException, LyoJenaModelException
+	public static <T> T[] parseResourcesFromXmlFile(File pathToFile, Class<T> clazz) throws FileNotFoundException, LyoJenaModelException, org.apache.jena.riot.RiotException
 	{
-		InputStream inStream = new FileInputStream(new File(pathToFile));
+		InputStream inStream = new FileInputStream(pathToFile);
 		Model model = ModelFactory.createDefaultModel();
 		model.read(inStream, null);
 		return JenaModelHelper.unmarshal(model, clazz);
+	}
+
+	/**
+	 * Get the ID of an OSLC resource from its URI (About(), or Link)
+	 * @param	uri	OSLC resource uri (eg. from a Link)
+	 * @return 		ID of the OSLC resource
+	 */
+	public static String getResourceIdFromUri(URI uri)
+	{
+		String uriPath = uri.getPath();
+		return uriPath.substring(uriPath.lastIndexOf('/') + 1);
 	}
 }
