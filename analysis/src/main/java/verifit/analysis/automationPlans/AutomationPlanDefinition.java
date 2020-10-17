@@ -31,33 +31,11 @@ import verifit.analysis.exceptions.OslcResourceException;
  *
  */
 public class AutomationPlanDefinition {
-	
-	/**
-	 * Creates all the predefined AutomationPlans making them available in the adapter catalog
-	 * @throws StoreAccessException 
-	 */
-	public static void createPredefinedAutomationPlans(AutomationPlan [] autoPlans) throws StoreAccessException
-	{
-		createDummyAutomationPlan(); // create the dummy tool AutoPlan (independent of xml config)
-		
-		for (AutomationPlan plan : autoPlans)
-		{
-			try {
-				if (plan.getIdentifier().equals("dummy"))
-					System.out.println("WARNING: User defined AutomationPlan with identifier \"dummy\" can not created. Identifier is reserved for the internal testing tool.");
-				else
-					VeriFitAnalysisManager.createAutomationPlan(plan);
-			} catch (OslcResourceException e) {
-				System.out.println("WARNING: " + e.getMessage());
-			}
-		}
-	}	
 
 	/**
 	 * TODO
-	 * @throws StoreAccessException 
 	 */
-	private static void createDummyAutomationPlan() throws StoreAccessException
+	public static AutomationPlan getDummyAutomationPlanDefinition()
 	{ 
 		try {			
 			// create parameter definitions
@@ -101,12 +79,14 @@ public class AutomationPlanDefinition {
 			propertiesPlan.addParameterDefinition(launchSUT);
 			propertiesPlan.addParameterDefinition(SUTbuildCommand);
 			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
-			propertiesPlan.addUsesExecutionEnvironment(new Link(new URI(VeriFitAnalysisProperties.DUMMYTOOL_PATH))); // TODO 
-			VeriFitAnalysisManager.createAutomationPlan(propertiesPlan);
+			propertiesPlan.addUsesExecutionEnvironment(new Link(new URI(VeriFitAnalysisProperties.DUMMYTOOL_PATH))); // TODO
+
+			return propertiesPlan;
 	
-		} catch (URISyntaxException | OslcResourceException e) {
+		} catch (URISyntaxException e) {
 			// TODO should never be thrown
 			e.printStackTrace();
 		}
+		return null;
 	}
 }

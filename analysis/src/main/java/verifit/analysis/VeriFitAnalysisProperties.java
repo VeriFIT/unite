@@ -77,6 +77,7 @@ public class VeriFitAnalysisProperties
 	 *  Java properties
 	 */
 	public static final String PROPERTIES_PATH = "./VeriFitAnalysis.properties";
+	public static final String AUTOPLANS_DEF_PATH = "./AutomationPlanConf.rdf";
 
 	public static String ADAPTER_HOST;
 	public static String ADAPTER_PORT;

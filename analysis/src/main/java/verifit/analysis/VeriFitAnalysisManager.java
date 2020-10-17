@@ -82,6 +82,7 @@ import org.eclipse.lyo.oslc4j.provider.jena.JenaModelHelper;
 import org.eclipse.lyo.oslc4j.provider.jena.LyoJenaModelException;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import verifit.analysis.automationPlans.AutomationPlanLoading;
 // End of user code
 
 // Start of user code pre_class_code
@@ -607,23 +608,8 @@ public class VeriFitAnalysisManager {
     		AutoRequestQueues.popFirst(autoPlanId);
     	}
     }
-    
-    /**
-     * Parses resources <T> from an XML file and returns them as an array.
-     * @param pathToFile	Path to the XML file to load from
-     * @param clazz	<T>.class of the resource to be parsed from the XML file
-     * @return An array of <T> resources
-     * @throws FileNotFoundException Error accessing the XML file
-     * @throws LyoJenaModelException Error parsing the XML file
-     */
-    public static <T> T[] parseResourcesFromXmlFile(String pathToFile, Class<T> clazz) throws FileNotFoundException, LyoJenaModelException
-    {
-	    InputStream inStream = new FileInputStream(new File(pathToFile));
-		Model model = ModelFactory.createDefaultModel();
-		model.read(inStream, null);
-		return JenaModelHelper.unmarshal(model, clazz);
-    }
-    // End of user code
+
+	// End of user code
 
     public static void contextInitializeServletListener(final ServletContextEvent servletContextEvent)
     {
@@ -635,18 +621,6 @@ public class VeriFitAnalysisManager {
     		VeriFitAnalysisProperties.loadProperties();
     	} catch (IOException e) {
 			System.out.println("ERROR: Adapter configuration: Failed to load Java properties: " + e.getMessage());
-			System.exit(1);
-		}    	 
-    	
-    	AutomationPlan[] autoPlans = null;
-    	// load automation plans
-    	try {
-    		autoPlans = parseResourcesFromXmlFile("AutomationPlanConf.rdf", AutomationPlan.class);
-    	} catch (FileNotFoundException e) {
-			System.out.println("ERROR: Loading AutomationPlan: Failed to open the conf. xml file: " + e.getMessage());
-			System.exit(1);
-    	} catch (LyoJenaModelException e) {
-			System.out.println("ERROR: Loading AutomationPlan: Failed to parse the conf. xml file: " + e.getMessage());
 			System.exit(1);
 		}
 
@@ -662,7 +636,7 @@ public class VeriFitAnalysisManager {
 
     	// create AutomationPlans
 		try {
-			AutomationPlanDefinition.createPredefinedAutomationPlans(autoPlans);
+			AutomationPlanLoading.createPredefinedAutomationPlans();
 		} catch (StoreAccessException e) {
 			System.out.println("ERROR: Adapter initialization: AutomationPlan creation: " + e.getMessage());
 			System.exit(1);
