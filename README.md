@@ -9,10 +9,7 @@ TODO brief
 - sparql_triplestore - jetty distribution with an Apache Jena Fuseki SPARQL server WAR 
 - dev_tools - scripts used during the development
 
-## How to Install and Run
-The adapters need a SPARQL triplestore. Start the triplestore before launching the Adapter. A Fuseki jetty server is included in this repository but feel free to use any other.
-
-#### Configuration
+## How To Configure
 Things that need to be configured - analysis host&port, compilation host&port, triplestore host&port, and optionally dataset endpoints.
 Defaults are "localhost" and ports "8080, 8081, 8082".
 - Adapters configuration
@@ -28,29 +25,36 @@ Defaults are "localhost" and ports "8080, 8081, 8082".
 - Analysis tool definition
     - in *analysis/AnalysisToolDefinitions* define an AutomationPlan in a .rdf file and a .properties file for every tool that you want to run using the adapter. Use the "ExampleTool" definition as a guide on how to define your own. For more details refer to the [wiki](https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis/-/wikis/Usage-Guide/2.-Analysis-Tool-Definition)
 
+## How To Run
+#### Option 1) Run all at once
+The easiest way to run the Universal Analysis Adapter. Outputs of all three components of the Adapter will be saved in a ./log directory.
 
-#### Run all at once
+**IMPORTANT** Currently the scripts are a work in progress and rely on timing using a sleep of a fixed duration to ensure that the triplestore finishes its startup before any of the adapters checks its availability. If the sleep is not long enough, which can happen on certain machines, then the startup will fail. For now the solution is that all run scripts have an optional parameter to configure sleep duration.
+
 ##### Linux
-Use the run_all.sh script. Then use ctrl+c to exit.
+- Use the run_all.sh script. Then use ctrl+c to exit.
 ##### Windows
-Use the run_all.bat script. Then press any key to exit. Do not use ctrl+c otherwise subprocesses will not be terminated (they run in their own consoles so they will be visible and can be closed manually)
+- Use the run_all.bat script. Then press any key to exit. Do not use ctrl+c otherwise subprocesses will not be terminated (they run in their own consoles so they will be visible and can be closed manually)
+- There is a run_all-nopowershell.bat as an alternative in case your system does not have powershell.
 
-#### Or run manually
-Analysis adapter
+#### Option 2) Run manually
+This option is mainly used for debugging or simply to have more control. Launch each of the three components in separate terminals. Outputs will be visible directly through stdout and stderr with no implicit logging. The triple store needs to be up and running in order for the Analysis and Compilation adapters to launch successfully. 
+
+##### Fuseki SPARQL jetty 
+```
+$ cd *cloned_repo*/sparql_triplestore
+$ ./run.[sh/bat] 
+server online at - http://*host*:*port*/fuseki/
+```
+##### Analysis adapter
 ```
 $ cd *cloned_repo*/analysis
 $ mvn jetty:run-exploded
 server online at - http://*host*:*port*/analysis/
 ```
-Compilation adapter
+##### Compilation adapter
 ```
 $ cd *cloned_repo*/compilation
 $ mvn jetty:run-exploded
 server online at - http://*host*:*port*/compilation/
-```
-Fuseki SPARQL jetty 
-```
-$ cd *cloned_repo*/sparql_triplestore
-$ ./run.[sh/bat] 
-server online at - http://*host*:*port*/fuseki/
 ```
