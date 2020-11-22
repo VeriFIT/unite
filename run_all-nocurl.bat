@@ -11,7 +11,7 @@ set HELP= Launches the sparql triplestore, and then the analysis adapter and the
  the triplestore a headstart. Duration of the headstart in seconds is controlled using an!LF!^
  optional argument (default !SLEEP!).!LF!^
  !LF!^
- Usage: run_all-nopowershell.bat [triplestore_sleep_seconds]!LF!
+ Usage: run_all.bat [triplestore_sleep_seconds]!LF!
 
 :: process arguments
 IF "%1" == "" ( 
@@ -30,7 +30,7 @@ IF "%1" == "" (
                 SET "notNumber="&for /f "delims=0123456789" %%i in ("%1") do set notNumber=%%i
                 IF defined notNumber (
                     echo  Argument has to be a number
-                    echo  Usage: run_all-nopowershell.bat [triplestore_sleep_seconds]
+                    echo  Usage: run_all.bat [triplestore_sleep_seconds]
                     exit 1
                 ) ELSE (
                     set /A SLEEP=%1
@@ -39,7 +39,7 @@ IF "%1" == "" (
         )
     ) ELSE ( 
         echo  Invalid arguments
-        echo  Usage: run_all-nopowershell.bat [triplestore_sleep_seconds]
+        echo  Usage: run_all.bat [triplestore_sleep_seconds]
         exit 1
     )
 )
@@ -61,22 +61,22 @@ echo ####################################################!LF!## Run started at: 
 :: start the triplestore
 echo Starting the Triplestore
 cd sparql_triplestore\jetty-distribution
-START /MIN "Universal VeriFIT OSLC Adapter - Compilation" CMD /C "java -DFUSEKI_BASE=..\triplestore -jar start.jar >> %USRPATH%\logs\triplestore_%CURTIME%.txt 2>&1"
+START "Universal VeriFIT OSLC Adapter - Triplestore" powershell "java -DFUSEKI_BASE=\""..\triplestore\"" -jar start.jar | tee -a %USRPATH%\logs\triplestore_%CURTIME%.txt"
 :: wait a while to let the triplestore start
 timeout /t %SLEEP% /nobreak > NUL
 
 :: start the compilation adapter
 echo Starting the Compilation adapter
 cd ..\..\compilation
-START /MIN "Universal VeriFIT OSLC Adapter - Compilation" CMD /C "mvn jetty:run-exploded >> %USRPATH%\logs\compilation_%CURTIME%.txt 2>&1"  
+START "Universal VeriFIT OSLC Adapter - Compilation"  powershell "mvn jetty:run-exploded | tee -a %USRPATH%\logs\compilation_%CURTIME%.txt"
 
 :: start the analysis adapter
 echo Starting the Analysis adapter
 cd ..\analysis
-START /MIN "Universal VeriFIT OSLC Adapter - Analysis" CMD /C "mvn jetty:run-exploded >> %USRPATH%\logs\analysis_%CURTIME%.txt 2>&1"  
+START "Universal VeriFIT OSLC Adapter - Analysis" powershell "mvn jetty:run-exploded | tee -a  %USRPATH%\logs\analysis_%CURTIME%.txt"
 
 echo.
-echo Wait till startup finishes
+echo Wait till startup finishes (see the 3 new opened consoles)
 echo Press any key to exit...
 echo (do not use ctrl+c otherwise youll need to kill subprocesses manualy)
 :: sleep until a key is pressed
