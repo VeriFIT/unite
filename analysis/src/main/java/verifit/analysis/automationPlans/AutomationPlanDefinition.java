@@ -31,64 +31,33 @@ import verifit.analysis.exceptions.OslcResourceException;
  *
  */
 public class AutomationPlanDefinition {
-	
-	/**
-	 * Creates all the predefined AutomationPlans making them available in the adapter catalog
-	 * @throws StoreAccessException 
-	 */
-	public static void createPredefinedAutomationPlans(AutomationPlan [] autoPlans) throws StoreAccessException
-	{
-		createDummyAutomationPlan(); // create the dummy tool AutoPlan (independent of xml config)
-		
-		for (AutomationPlan plan : autoPlans)
-		{
-			try {
-				if (plan.getIdentifier().equals("dummy"))
-					System.out.println("WARNING: User defined AutomationPlan with identifier \"dummy\" can not created. Identifier is reserved for the internal testing tool.");
-				else
-					VeriFitAnalysisManager.createAutomationPlan(plan);
-			} catch (OslcResourceException e) {
-				System.out.println("WARNING: " + e.getMessage());
-			}
-		}
-	}	
 
 	/**
 	 * TODO
-	 * @throws StoreAccessException 
 	 */
-	private static void createDummyAutomationPlan() throws StoreAccessException
+	public static AutomationPlan getDummyAutomationPlanDefinition()
 	{ 
 		try {			
 			// create parameter definitions
-	
-			ParameterDefinition adapterSpecific = new ParameterDefinition();
-			adapterSpecific.setDescription("Parameters needed by the adapter in order for the tools output to be xml readable.");
-			adapterSpecific.setName("adapterSpecific");
-			adapterSpecific.setDefaultValue("");
-			adapterSpecific.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
-			adapterSpecific.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
-			adapterSpecific.setCommandlinePosition(1);	// has to be 1+ (zero is taken by tool command)
-			
 			ParameterDefinition arguments = new ParameterDefinition();
 			arguments.setDescription("Specify which arguments should be passed to the command line.");
 			arguments.setName("arguments");
 			arguments.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ONE)));
 			arguments.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));	
-			arguments.setCommandlinePosition(2);
+			arguments.setCommandlinePosition(1);
 	
 			// special paramDefinition specifying that the SUT call command should be placed at this position
 			ParameterDefinition launchSUT = new ParameterDefinition();
 			launchSUT.setDescription("This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position"); //TODO
 			launchSUT.setName("launchSUT");
-			launchSUT.setDefaultValue("3");
+			launchSUT.setDefaultValue("2");
 			launchSUT.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
 			
 			// special paramDefinition specifying that the SUT call command should be placed at this position
 			ParameterDefinition SUTbuildCommand = new ParameterDefinition();
 			SUTbuildCommand.setDescription("This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position"); //TODO
 			SUTbuildCommand.setName("SUTbuildCommand");
-			SUTbuildCommand.setDefaultValue("4");
+			SUTbuildCommand.setDefaultValue("3");
 			SUTbuildCommand.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
 	
 			// create the autoPlan
@@ -96,17 +65,26 @@ public class AutomationPlanDefinition {
 			propertiesPlan.setIdentifier("dummy");
 			propertiesPlan.setTitle("Dummy Tool");
 			propertiesPlan.setDescription("Used for to test the funcionality of this adapter.");
-			propertiesPlan.addParameterDefinition(adapterSpecific);
 			propertiesPlan.addParameterDefinition(arguments);
 			propertiesPlan.addParameterDefinition(launchSUT);
 			propertiesPlan.addParameterDefinition(SUTbuildCommand);
 			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
-			propertiesPlan.addUsesExecutionEnvironment(new Link(new URI(VeriFitAnalysisProperties.DUMMYTOOL_PATH))); // TODO 
-			VeriFitAnalysisManager.createAutomationPlan(propertiesPlan);
+			propertiesPlan.addUsesExecutionEnvironment(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis/-/blob/master/analysis/tests/dummy_tool.sh"))); // TODO
+
+			return propertiesPlan;
 	
-		} catch (URISyntaxException | OslcResourceException e) {
+		} catch (URISyntaxException e) {
 			// TODO should never be thrown
 			e.printStackTrace();
 		}
+		return null;
+	}
+
+	public static AutomationPlanConfManager.AutomationPlanConf getDummyAutomationPlanConf()
+	{
+		return new AutomationPlanConfManager.AutomationPlanConf(
+						VeriFitAnalysisProperties.DUMMYTOOL_PATH,
+						"",
+						false);
 	}
 }

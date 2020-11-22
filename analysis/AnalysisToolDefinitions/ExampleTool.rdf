@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:fit="http://verifit/fit#"
+    xmlns:oslc_data="http://open-services.net/ns/servicemanagement/1.0/"
+    xmlns:oslc="http://open-services.net/ns/core#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:oslc_auto="http://open-services.net/ns/auto#">
+
+    <!--
+        Use this AutomationPlan as an example for defining new ones.
+    -->
+    <oslc_auto:AutomationPlan>
+        <dcterms:identifier>dummy</dcterms:identifier> <!-- What the last part of this AutoPlan's URI will contain -->
+        <oslc_auto:usesExecutionEnvironment rdf:resource="https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis/-/blob/master/analysis/tests/dummy_tool.sh"/>
+
+        <dcterms:title rdf:parseType="Literal">Dummy Tool</dcterms:title>   <!-- Non-functional. Title of the Automation Plan -->
+        <dcterms:description rdf:parseType="Literal">Used to test the funcionality of this adapter and as an example.</dcterms:description> <!-- Non-functional. Description of the Automation Plan -->
+        <dcterms:creator rdf:resource="https://pajda.fit.vutbr.cz/xvasic"/> <!-- Non-functional. Creator of the Automation Plan -->
+        
+        <!--
+            Parameter definitions start here. Each parameter definition defines a possible input parameter for executing an AutoPlan.
+            Use them to define the commandline interface of your tool. When executing an Automation Request, the adapter will place values of input parameters and place them directly
+            on the specified commandline position (starting at 1).
+
+            The adapter will add a number of other ParameterDefinitions to the AutoPlan on its own such as timeout, SUT reference, output zit flag, etc..
+        -->
+
+        <oslc_auto:parameterDefinition>
+            <!--
+                This ParameterDefintion stands for inserting any string as the tools arguments. This is the simplest solution. Alternatively, every argument from the tools interface
+                can be defined as a separate ParameterDefinition. That would allow the AutoPlan to provide more information to clients such as allowedValues, but this approach is not
+                always possible (eg. for complex commanline interfaces).
+            -->
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>arguments</oslc:name>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Exactly-one"/>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+                <dcterms:description rdf:parseType="Literal">Specify which arguments should be passed to the command line.</dcterms:description>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <!--
+                launchSUT is a special ParameterDefinition recognized by the adapter. The adapter will place the SUT launch command at the commandline position specified by this
+                parameter's value. In case a defaultValue is used and a client wants to not launch the SUT with his AutoRequest, then they need to submit a launchSUT input parameter
+                with a negative value.
+                Note that this ParameterDefinition does not have a commandlinePosition and thus it's value will not be placed on the commanline.
+            -->
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>launchSUT</oslc:name>
+                <oslc:defaultValue>2</oslc:defaultValue>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position</dcterms:description>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <!--
+                SUTbuildCommand is the same as "launchSUT" except that the SUT build command is placed on the command line (useful for static analysis tools)
+                Note that this ParameterDefinition does not have a commandlinePosition and thus it's value will not be placed on the commanline.
+            -->
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>SUTbuildCommand</oslc:name>
+                <oslc:defaultValue>3</oslc:defaultValue>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position</dcterms:description>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+    </oslc_auto:AutomationPlan>
+
+</rdf:RDF>

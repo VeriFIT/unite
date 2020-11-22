@@ -53,12 +53,12 @@ public class VeriFitAnalysisProperties
 		// dummy
 		if (SystemUtils.IS_OS_LINUX)
 		{
-			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.sh").toFile().toURI().toString();
+			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.sh").toFile().getAbsolutePath();
 			
 		}
 		else if (SystemUtils.IS_OS_WINDOWS)
 		{
-			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.bat").toFile().toURI().toString();
+			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.bat").toFile().getAbsolutePath();
 		}	
 		updateConstants();
 	}
@@ -77,6 +77,7 @@ public class VeriFitAnalysisProperties
 	 *  Java properties
 	 */
 	public static final String PROPERTIES_PATH = "./VeriFitAnalysis.properties";
+	public static final String AUTOPLANS_DEF_PATH = "./AnalysisToolDefinitions";
 
 	public static String ADAPTER_HOST;
 	public static String ADAPTER_PORT;
