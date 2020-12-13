@@ -784,19 +784,19 @@ public class VeriFitCompilationManager {
 			// get the executed autoPlan, check input parameters, add output parameters to the AutoResult, and make an input map for the runner
 			Map<String, String> inputParamsMap = processAutoReqInputParams(serviceProviderId, newResource, propAutoResult);
 			
-			// persist the AutomationResult and set the setProducedAutomationResult() link for the AutoRequest
-		    AutomationResult newAutoResult = VeriFitCompilationManager.createAutomationResult(propAutoResult, serviceProviderId, newID);
-			newResource.setProducedAutomationResult(new Link(newAutoResult.getAbout())); // TODO
-			
 			// check that the request contains exactly one "source.*" parameter (can not be checked automatically based on the AutoPlan
 			// throws an exception if the Inputs are not OK
 			checkSutDeploySourceInputs(newResource);
+			
+			// persist the AutomationResult and set the setProducedAutomationResult() link for the AutoRequest
+		    AutomationResult newAutoResult = VeriFitCompilationManager.createAutomationResult(propAutoResult, serviceProviderId, newID);
+			newResource.setProducedAutomationResult(new Link(newAutoResult.getAbout())); // TODO
 			
 			// persist in the triplestore
 			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
 			
 			// create a new thread to execute the automation request // TODO
-			new SutDeployAutoPlanExecution(serviceProviderId, newResource, propAutoResult, inputParamsMap);	
+			new SutDeployAutoPlanExecution(serviceProviderId, newResource, newAutoResult, inputParamsMap);	
 
 		} catch (OslcResourceException e) {
 			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());

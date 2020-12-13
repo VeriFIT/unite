@@ -197,6 +197,15 @@ public class VeriFitAnalysisManager {
 			timeout.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_INTEGER)));
 			timeout.setDefaultValue("0");
 			newResource.addParameterDefinition(timeout);
+
+			ParameterDefinition toolCommand = new ParameterDefinition();
+			toolCommand.setDescription("Used to omit the analysis tool launch command while executing analysis. True means the tool " + 
+			"will be used and False means the tool command will not be used. (eg. \"./tool ./sut args\" vs \"/sut args\").");
+			toolCommand.setName("toolCommand");
+			toolCommand.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
+			toolCommand.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_BOOL)));
+			toolCommand.setDefaultValue("true");
+			newResource.addParameterDefinition(toolCommand);
 						
 			// persist in the triplestore
 			store.updateResources(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);

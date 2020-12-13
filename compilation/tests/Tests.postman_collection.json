@@ -8170,22 +8170,22 @@
 	],
 	"variable": [
 		{
-			"id": "ae238f19-5f7b-4a19-9979-3fd3aa649e1d",
+			"id": "62fa61bf-0332-4aaf-a520-8c452cba6e8a",
 			"key": "server_address",
 			"value": "http://localhost:8081"
 		},
 		{
-			"id": "a1abdd04-eef2-424f-aa18-52b4744eef50",
+			"id": "e7654fb0-48ee-4a38-b2db-ff51ac01ffac",
 			"key": "result_wait_time",
 			"value": "5000"
 		},
 		{
-			"id": "5c55a676-f470-4f4c-b25b-b904ec845066",
+			"id": "b78013b7-db20-4230-85fd-ee9ca0d5f083",
 			"key": "server_context",
 			"value": "compilation"
 		},
 		{
-			"id": "50524b6e-183d-4715-9043-993b6613a022",
+			"id": "d1be2466-245a-48b6-878e-67b87bb19005",
 			"key": "sut_folder",
 			"value": "/home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/tmp"
 		}

@@ -96,10 +96,12 @@ public class SutAnalyse extends RequestRunner
 			final String outputRegex = inputParamsMap.get("outputFileRegex").getLeft();
 			final String zipOutputs = inputParamsMap.get("zipOutputs").getLeft();
 			final String timeout = inputParamsMap.get("timeout").getLeft();
+			final String toolCommand = inputParamsMap.get("toolCommand").getLeft();
+			
 
 			// Build the string to execute from commandline input parameters based on their positions TODO maybe move somewhere else
 			String buildStringToExecute = ""
-				+ this.autoPlanConf.getLaunchCommand() + " "
+				+ (toolCommand.equalsIgnoreCase("true") ? this.autoPlanConf.getLaunchCommand() : "") + " "
 				+ this.autoPlanConf.getToolSpecificArgs() + " ";
 			List<Pair<String,Integer>> inputParamsList = new ArrayList<Pair<String,Integer>>(inputParamsMap.values());
 			inputParamsList.sort((Pair<String,Integer> a, Pair<String,Integer> b) -> a.getRight().compareTo(b.getRight()));
@@ -152,7 +154,7 @@ public class SutAnalyse extends RequestRunner
 				}
 		    	else if (analysisRes.retCode != 0)
 		    	{
-					executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_ERROR;
+					executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_FAILED;
 			    	analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis failed (returned non-zero: " + analysisRes.retCode + ")\n"
 			    							+ analysisRes.stdout);
 				}
@@ -218,7 +220,7 @@ public class SutAnalyse extends RequestRunner
 			}
 
 			// create a zip of all file contributions if needed
-			if (zipOutputs.equals("true") || zipOutputs.equals("True"))
+			if (zipOutputs.equalsIgnoreCase("true"))
 			{
 				Contribution zipedContribs = new Contribution();
 				String zipName = "out" + execAutoRequestId + ".zip";
