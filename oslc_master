@@ -1,0 +1,268 @@
+#!/bin/bash
+
+# root dir of this script
+ROOTDIR=$(dirname $(realpath $0))
+# dir path for logs
+LOGDIR=$ROOTDIR/logs
+# filepath of PID file (containing list of pids)
+PIDFILE=$LOGDIR/pid
+
+# number of logs to prevail (last + current)
+LOG_HISTORY=4
+MASTER_LOG=master.log
+
+TRIPLESTORE_INI=$ROOTDIR/sparql_triplestore/jetty-distribution/start.ini
+COMPILATION_INI=$ROOTDIR/compilation/VeriFitCompilation.properties
+ANALYSIS_INI=$ROOTDIR/analysis/VeriFitAnalysis.properties
+
+# duration for polling (via curl)
+SLEEP=3
+
+# $1... = (optional) message
+usage()
+{
+    if [ "$#" -gt 0 ]; then
+        echo "$*"
+    fi
+    cat <<EOF
+usage: $0 (start|stop|status|log)
+
+start:
+    Launches the sparql triplestore, and then the analysis adapter and the
+    compilation adapter.  The triplestore needs to finish startup before
+    both adapters, which is controled by regular polling the triplestore's
+    tcp port.
+
+    Logs are stored in: $LOGDIR
+    
+    PIDs of running services are stored in: $PIDFILE
+EOF
+}
+
+# $1 = (optional) -v = be verbose
+# $2... = log message
+log() {
+    if [ "x$1" = x-v ]; then
+        shift
+        echo "$@"
+    fi
+    echo "[$(date +%F_%T)] $@" >>$LOGDIR/$MASTER_LOG
+}
+
+stop()
+{
+    log -v "Shutting down"
+    pids=$(cat $PIDFILE 2>/dev/null)
+    log -v Killing $pids
+    kill $pids &>/dev/null
+    sleep 2
+    rm $PIDFILE 2>/dev/null
+    log -v "Stop" 
+}
+
+status()
+{
+    log "Checking for status"
+    if [ -s $PIDFILE ]; then
+        for pid in $(cat $PIDFILE); do
+            if cmd=$(ps -p $pid -o comm=); then
+                log -v "Process $pid ($cmd) running"
+            else
+                log -v "Process $pid not running"
+            fi
+        done
+    else
+        echo "stopped"
+    fi
+}
+
+
+# Gets value of a key from INI file
+# $1 = .ini filename
+# $2 = key
+get_inivalue()
+{
+    cat "$1" | grep "^ *$2" | cut -d= -f2
+}
+
+# Rotates (renames) old logs, last log will be deleted.
+#   name.log => name.0.log; name.0.log => name.1.log; name.1.log => name.2.log ...
+# $1 = log dir
+# $2 = logname without .log
+rotate_logs()
+{
+    local last=$((LOG_HISTORY-2))
+    [ $last -lt 0 ] && return
+    local above below
+    for above in $(seq $last -1 1); do
+        below=$((above-1))
+        [ -f "$1/$2.$below.log" ] || continue
+        mv "$1/$2.$below.log" "$1/$2.$above.log"
+    done
+    if [ -f "$1/$2.log" ]; then
+        mv "$1/$2.log" "$1/$2.0.log"
+    fi
+}
+
+# Rotates logs and prepare a new (current) one (in LOGDIR)
+# $2 = logname without .log
+mklog()
+{
+    mkdir -p $LOGDIR || exit 1
+    rotate_logs "$LOGDIR" "$1"
+    (
+    echo "####################################################"
+    echo "## Run started at: $(date +%F_%T)"
+    ) >"$LOGDIR/$1.log"
+}
+
+# Polls an address using curl until the request returns zero (i.e. the address responds)
+# $1 = web address (for curl)
+curl_poll()
+{
+    while ! curl $1 &>/dev/null; do
+        sleep $SLEEP
+        echo -n "."
+    done
+    echo active
+}
+
+start()
+{
+    trap 'stop; exit 0' INT TERM HUP
+
+    # lookup config
+    t_host=$(get_inivalue $TRIPLESTORE_INI jetty.http.host | sed 's|/$||')
+    t_port=$(get_inivalue $TRIPLESTORE_INI jetty.http.port)
+    triplestore_url="$t_host:$t_port/fuseki/"
+
+    c_host=$(get_inivalue $COMPILATION_INI adapter_host | sed 's|/$||')
+    c_port=$(get_inivalue $COMPILATION_INI adapter_port)
+    compilation_url="$c_host:$c_port/compilation"
+
+    a_host=$(get_inivalue $ANALYSIS_INI adapter_host | sed 's|/$||')
+    a_port=$(get_inivalue $ANALYSIS_INI adapter_port)
+    analysis_url="$a_host:$a_port/analysis/"
+
+    mklog triplestore
+    mklog compilation
+    mklog analysis
+    true >$PIDFILE
+
+    log -v "Starting the Triplestore"
+    cd sparql_triplestore
+    ./run.sh &>>"$LOGDIR/triplestore.log" &
+    echo $! >>$PIDFILE
+    disown
+    log -v "Waiting for the Triplestore to finish startup"
+    curl_poll "$triplestore_url"
+    log -v "Triplestore running"
+    cd ..
+
+    # start the compilation adapter
+    log -v "Starting the Compilation adapter"
+    cd compilation
+    mvn jetty:run-exploded &>>"$LOGDIR/compilation.log" &
+    echo $! >>$PIDFILE
+    disown
+    log -v "Waiting for the Compilation adapter to finish startup"
+    curl_poll "$compilation_url"
+    log -v "Compilation adapter running"
+
+    # start the analysis adapter
+    log -v "Starting the Analysis adapter"
+    cd ../analysis
+    mvn jetty:run-exploded &>>"$LOGDIR/analysis.log" &
+    echo $! >>$PIDFILE
+    disown
+    log -v "Waiting for the Analysis adapter to finish startup"
+    curl_poll "$analysis_url"
+    log -v "Analysis adapter running"
+}
+
+monitor_log()
+{
+    cd $LOGDIR
+    trap 'kill $(jobs -p) 2>/dev/null; exit 0' INT TERM HUP EXIT
+    tail -f triplestore.log 2>/dev/null | sed 's/^/[triplestore] /' &
+    tail -f compilation.log 2>/dev/null | sed 's/^/[compilation] /' &
+    tail -f analysis.log 2>/dev/null    | sed 's/^/[analysis]    /' &
+    tail -f $MASTER_LOG 2>/dev/null     | sed 's/^/[master]      /'
+    exit 0
+}
+
+#
+#triplestore_host=$(cat sparql_triplestore/jetty-distribution/start.ini | grep "^ *jetty.http.host=" | sed "s/^ *jetty.http.host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
+#triplestore_port=$(cat sparql_triplestore/jetty-distribution/start.ini | grep "^ *jetty.http.port=" | sed "s/^ *jetty.http.port=//")
+#triplestore_url="$triplestore_host:$triplestore_port/fuseki/"
+## lookup compilation adapter config
+#compilation_host=$(cat compilation/VeriFitCompilation.properties | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
+#compilation_port=$(cat compilation/VeriFitCompilation.properties | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")
+#compilation_url="$compilation_host:$compilation_port/compilation/"
+## lookup analysis adapter config
+#analysis_host=$(cat analysis/VeriFitAnalysis.properties | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
+#analysis_port=$(cat analysis/VeriFitAnalysis.properties | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")
+#analysis_url="$analysis_host:$analysis_port/analysis/"
+
+
+#
+## create log files and append headings
+#mkdir -p $LOGDIR 
+#
+#NOW=$(date +%F_%T)
+#(
+#echo "####################################################"
+#echo "## Run started at: $NOW"
+#) >"$LOGPATH/triplestore_$NOW.log"
+#
+#echo -e "####################################################\n## Run started at: $CURTIME" > "$USRPATH/logs/compilation_$CURTIME.log"
+#echo -e "####################################################\n## Run started at: $CURTIME" > "$USRPATH/logs/analysis_$CURTIME.log"
+#
+## start the triplestore
+#echo "Starting the Triplestore"
+#cd sparql_triplestore
+#./run.sh &> "$USRPATH/logs/triplestore_$CURTIME.log" &
+#echo "Waiting for the Triplestore to finish startup"
+#curl_poll "$triplestore_url"
+#echo -e "Triplestore running\n"
+#
+## start the compilation adapter
+#echo "Starting the Compilation adapter"
+#cd ../compilation
+#mvn jetty:run-exploded &> "$USRPATH/logs/compilation_$CURTIME.log" &
+#echo "Waiting for the Compilation adapter to finish startup"
+#curl_poll "$compilation_url"
+#echo -e "Compilation adapter running\n"
+#
+## start the analysis adapter
+#echo "Starting the Analysis adapter"
+#cd ../analysis
+#mvn jetty:run-exploded &> "$USRPATH/logs/analysis_$CURTIME.log" &
+#echo "Waiting for the Analysis adapter to finish startup"
+#curl_poll "$analysis_url"
+#echo -e "Analysis adapter running\n"
+#
+#jobs -p
+#echo "Ready to go!"
+#echo "Use ctrl+c to exit..."
+#cat # wait forever
+
+# process arguments
+if [ $# -eq 0 ]; then
+    usage "error: Missing arguments"
+    exit 1
+fi
+
+####################################################3
+# Main
+cd $ROOTDIR
+
+case "$1" in
+    start) start;;
+    stop) stop;;
+    status) status;;
+    log) monitor_log;;
+    *)  usage "error: unknown argument(s): $*"
+        exit 1;;
+esac
+

@@ -1,7 +1,5 @@
-#!/bin/bash
+#!/bin/sh
 # launch the Fuseki SPARQL triplestore in Jetty
 
-cd "${BASH_SOURCE%/*}"
-
-cd jetty-distribution
-java -DFUSEKI_BASE="../triplestore" -jar start.jar
+cd $(dirname $0)/jetty-distribution
+exec java -DFUSEKI_BASE="../triplestore" -jar start.jar
