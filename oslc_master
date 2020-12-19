@@ -191,70 +191,14 @@ monitor_log()
     exit 0
 }
 
-#
-#triplestore_host=$(cat sparql_triplestore/jetty-distribution/start.ini | grep "^ *jetty.http.host=" | sed "s/^ *jetty.http.host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
-#triplestore_port=$(cat sparql_triplestore/jetty-distribution/start.ini | grep "^ *jetty.http.port=" | sed "s/^ *jetty.http.port=//")
-#triplestore_url="$triplestore_host:$triplestore_port/fuseki/"
-## lookup compilation adapter config
-#compilation_host=$(cat compilation/VeriFitCompilation.properties | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
-#compilation_port=$(cat compilation/VeriFitCompilation.properties | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")
-#compilation_url="$compilation_host:$compilation_port/compilation/"
-## lookup analysis adapter config
-#analysis_host=$(cat analysis/VeriFitAnalysis.properties | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
-#analysis_port=$(cat analysis/VeriFitAnalysis.properties | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")
-#analysis_url="$analysis_host:$analysis_port/analysis/"
-
-
-#
-## create log files and append headings
-#mkdir -p $LOGDIR 
-#
-#NOW=$(date +%F_%T)
-#(
-#echo "####################################################"
-#echo "## Run started at: $NOW"
-#) >"$LOGPATH/triplestore_$NOW.log"
-#
-#echo -e "####################################################\n## Run started at: $CURTIME" > "$USRPATH/logs/compilation_$CURTIME.log"
-#echo -e "####################################################\n## Run started at: $CURTIME" > "$USRPATH/logs/analysis_$CURTIME.log"
-#
-## start the triplestore
-#echo "Starting the Triplestore"
-#cd sparql_triplestore
-#./run.sh &> "$USRPATH/logs/triplestore_$CURTIME.log" &
-#echo "Waiting for the Triplestore to finish startup"
-#curl_poll "$triplestore_url"
-#echo -e "Triplestore running\n"
-#
-## start the compilation adapter
-#echo "Starting the Compilation adapter"
-#cd ../compilation
-#mvn jetty:run-exploded &> "$USRPATH/logs/compilation_$CURTIME.log" &
-#echo "Waiting for the Compilation adapter to finish startup"
-#curl_poll "$compilation_url"
-#echo -e "Compilation adapter running\n"
-#
-## start the analysis adapter
-#echo "Starting the Analysis adapter"
-#cd ../analysis
-#mvn jetty:run-exploded &> "$USRPATH/logs/analysis_$CURTIME.log" &
-#echo "Waiting for the Analysis adapter to finish startup"
-#curl_poll "$analysis_url"
-#echo -e "Analysis adapter running\n"
-#
-#jobs -p
-#echo "Ready to go!"
-#echo "Use ctrl+c to exit..."
-#cat # wait forever
-
+####################################################3
+# Main
 # process arguments
 if [ $# -eq 0 ]; then
     usage "error: Missing arguments"
     exit 1
 fi
 
-####################################################3
-# Main
 cd $ROOTDIR
 
 case "$1" in
