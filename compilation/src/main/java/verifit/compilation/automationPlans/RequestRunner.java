@@ -1,13 +1,11 @@
-/**
- * Author: Ondrej Vasicek
- * VUT-login: xvasic25
- * VUT-email: xvasic25@stud.fit.vutbr.cz
- * 
- * This file is part of my Bachelor's thesis submitted for my IT degree
- * at the Brno University of Technology, Faculty of Information Technology.
- * 
- * This authors header is included only in the files I have personally modified
- * (hopefully did not miss any)
+/*
+ * Copyright (C) 2020 Ondřej Vašíček <ondrej.vasicek.0@gmail.com>, <xvasic25@stud.fit.vutbr.cz>
+ *
+ * This program and the accompanying materials are made available under
+ * the terms of the Eclipse Public License 2.0 which is available at
+ * https://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
  */
 
 package verifit.compilation.automationPlans;

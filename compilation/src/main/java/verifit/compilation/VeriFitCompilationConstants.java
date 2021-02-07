@@ -1,4 +1,17 @@
 // Start of user code Copyright
+
+/* ## License for manual implementation (enclosed in "// Start of user code ..." and "// End of user code ...") ##
+ *
+ * Copyright (C) 2020 Ondřej Vašíček <ondrej.vasicek.0@gmail.com>, <xvasic25@stud.fit.vutbr.cz>
+ *
+ * This program and the accompanying materials are made available under
+ * the terms of the Eclipse Public License 2.0 which is available at
+ * https://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// ## License for generated code: ##
 /*******************************************************************************
  * Copyright (c) 2012 IBM Corporation and others.
  *
