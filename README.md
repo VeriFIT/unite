@@ -1,12 +1,13 @@
-# Universal OSLC Automation Adapter
+# Universal OSLC Analysis Adapter
 author: Ondrej Vasicek, xvasic25@stud.fit.vutbr.cz
-TODO brief
+
+This is a development repository of the Universal OSLC Analysis Adapter which aims to provide an easy way of adding an OSLC Automation interface to as many analysis tools as possible by leveraging their command-line simmilarities. The adapter consists of two main components - Analysis Adapter and Compilation Adapter. The Compilation Adapter manages SUT resources, and the Analysis Adapter executes analysis on SUT resources using any configured analysis tool. The repository also includes a distibution of Jetty with an Apache Fuseki WAR for user's convenience (to make the setup process easier) which allows the adapter to be connected to a SPARQL triplestore for resource persistence and query capabilities.
 
 ## Directory structure
 - model - Lyo Designer modeling project used to generate base code
 - analysis - eclipse maven project, OSLC analysis adapter as a java webapp
 - compilation - eclipse maven project, OSLC compilation adapter as a java webapp
-- sparql_triplestore - jetty distribution with an Apache Jena Fuseki SPARQL server WAR 
+- sparql_triplestore - [Jetty](https://www.eclipse.org/jetty/) distribution with an [Apache Jena Fuseki](https://jena.apache.org/documentation/fuseki2/) SPARQL server WAR 
 - dev_tools - scripts used during the development
 
 ## How To Configure
@@ -23,19 +24,17 @@ Defaults are "localhost" and ports "8080, 8081, 8082".
         3) create a two new datasets (one for each adapter) type "Persistent" and name them based on your configuration in the .properties files.
         4) in *compilation/VeriFitCompilation.properties* set *persist_sut_dirs=true*
 - Analysis tool definition
-    - in *analysis/AnalysisToolDefinitions* define an AutomationPlan in a .rdf file and a .properties file for every tool that you want to run using the adapter. Use the "ExampleTool" definition as a guide on how to define your own. For more details refer to the [wiki](https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis/-/wikis/Usage-Guide/2.-Analysis-Tool-Definition)
+    - in *analysis/AnalysisToolDefinitions* define an AutomationPlan in a .rdf file and a .properties file for every tool that you want to run using the adapter. Use the "ExampleTool" definition as a guide on how to define your own. For more details refer to the [wiki](https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis/-/wikis/Usage-Guide/2.-Analysis-Tool-Definition).
 
 ## How To Run
 #### Option 1) Run all at once
 The easiest way to run the Universal Analysis Adapter. Outputs of all three components of the Adapter will be saved in a ./log directory.
 
-**IMPORTANT** Currently the scripts are a work in progress and rely on timing using a sleep of a fixed duration to ensure that the triplestore finishes its startup before any of the adapters checks its availability. If the sleep is not long enough, which can happen on certain machines, then the startup will fail. For now the solution is that all run scripts have an optional parameter to configure sleep duration.
-
 ##### Linux
 - Use the run_all.sh script. Then use ctrl+c to exit.
+- Or use the oslc_master script which runs the Adapter as background services. IMPORTANT - the oslc_master handles log files in an incompatible way to the run_all.sh script (so stick to using one or clear the logs before switching).
 ##### Windows
 - Use the run_all.bat script. Then press any key to exit. Do not use ctrl+c otherwise subprocesses will not be terminated (they run in their own consoles so they will be visible and can be closed manually)
-- There is a run_all-nopowershell.bat as an alternative in case your system does not have powershell.
 
 #### Option 2) Run manually
 This option is mainly used for debugging or simply to have more control. Launch each of the three components in separate terminals. Outputs will be visible directly through stdout and stderr with no implicit logging. The triple store needs to be up and running in order for the Analysis and Compilation adapters to launch successfully. 
