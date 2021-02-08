@@ -58,3 +58,6 @@ $ cd *cloned_repo*/compilation
 $ mvn jetty:run-exploded
 server online at - http://*host*:*port*/compilation/
 ```
+
+# Acknowledgement
+This work was supported by the [AuFoVer](https://www.vutbr.cz/en/rad/projects/detail/29833) project.
