@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oslc4j_tc:Toolchain xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:oslc4j_ai="http://org.eclipse.lyo/oslc4j/adaptorInterface" xmlns:oslc4j_tc="http://org.eclipse.lyo/oslc4j/toolChain">
+  <adaptorInterfaces name="VeriFit Analysis">
+    <serviceProviderCatalog title="Service Provider Catalog" description="Service Provider Catalog">
+      <serviceProviders title="Service Provider" description="Service Provider">
+        <services>
+          <domainSpecification href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications[name='Automation']"/>
+          <creationFactories title="CreateAutomationRequest" label="CreateAutomationRequest" creationURI="createAutomationRequest">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
+          </creationFactories>
+          <queryCapabilities title="QueryAutomationPlan" label="QueryAutomationPlan" queryBaseURI="queryAutomationPlan">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pn-SMJUdEeq-KoPaR9_Cfg"/>
+          </queryCapabilities>
+          <queryCapabilities title="QueryAutomationResult" label="QueryAutomationResult" queryBaseURI="queryAutomationResult">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poCjoJUdEeq-KoPaR9_Cfg"/>
+          </queryCapabilities>
+          <queryCapabilities title="QueryAutomationRequest" label="QueryAutomationRequest" queryBaseURI="queryAutomationRequest">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
+          </queryCapabilities>
+          <selectionDialogs title="SelectorAutomationPlan" label="SelectorAutomationPlan" dialogURI="selectorAutomationPlan" hintWidth="250" hintHeight="250">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pn-SMJUdEeq-KoPaR9_Cfg"/>
+          </selectionDialogs>
+          <selectionDialogs title="SelectorAutomationResult" label="SelectorAutomationResult" dialogURI="selectorAutomationResult" hintWidth="250" hintHeight="250">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poCjoJUdEeq-KoPaR9_Cfg"/>
+          </selectionDialogs>
+          <selectionDialogs title="SelectorAutomationRequest" label="SelectorAutomationRequest" dialogURI="selectorAutomationRequest" hintWidth="250" hintHeight="250">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
+          </selectionDialogs>
+          <creationDialogs title="CreatorAutomationRequest" label="CreatorAutomationRequest" dialogURI="creatorAutomationRequest" hintWidth="250" hintHeight="250">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
+          </creationDialogs>
+        </services>
+      </serviceProviders>
+    </serviceProviderCatalog>
+    <webServices name="AutomationRequests" serviceUrlPattern="automationRequests" resourceUrlPattern="[ResourceType]/{id}" delete="true" update="true">
+      <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
+    </webServices>
+    <webServices name="AutomationResults" serviceUrlPattern="automationResults" resourceUrlPattern="[ResourceType]/{id}" delete="true">
+      <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poCjoJUdEeq-KoPaR9_Cfg"/>
+    </webServices>
+    <webServices name="AutomationPlans" serviceUrlPattern="automationPlans" resourceUrlPattern="[ResourceType]/{id}">
+      <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pn-SMJUdEeq-KoPaR9_Cfg"/>
+    </webServices>
+    <webServices name="Contributions" serviceUrlPattern="contributions" resourceUrlPattern="[ResourceType]/{id}" update="true">
+      <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_mBlsMGpGEeuDWZwlSoXo7A"/>
+    </webServices>
+    <specification/>
+    <requiredAdaptors xsi:type="oslc4j_ai:GenericRequiredAdaptor" serviceProviderCatalogURI="http://localhost:8081/compilation/services/catalog/singleton" name="Compilation Adapter" servicedResources="_mBmTQGpGEeuDWZwlSoXo7A"/>
+    <configuration xsi:type="oslc4j_ai:MavenServerConfiguration" rootServerBaseUrl="http://localhost:8080/" applicationContextPath="/analysis" servletUrlPattern="/services/*" jettyPort="8080">
+      <generalConfiguration filesBasePath="analysis" javaBasePackageName="cz.vutbr.fit.group.verifit.oslc.analysis"/>
+      <projectConfiguration xsi:type="oslc4j_ai:MavenProjectConfiguration" lyoVersion="4.0.0" groupId="cz.vutbr.fit.group.verifit.oslc.analysis" artifactId="Analysis" version="0.0.1-SNAPSHOT"/>
+    </configuration>
+  </adaptorInterfaces>
+  <adaptorInterfaces name="VeriFit Compilation">
+    <serviceProviderCatalog title="Service Provider Catalog" description="Service Provider Catalog">
+      <serviceProviders title="Service Provider" description="Service Provider">
+        <services>
+          <domainSpecification href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications[name='Automation']"/>
+          <creationFactories title="CreateAutomationRequest" label="CreateAutomationRequest" creationURI="createAutomationRequest">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
+          </creationFactories>
+          <queryCapabilities title="QuerySUT" label="QuerySUT" queryBaseURI="querySUT" resourceTypes="_mBmTQGpGEeuDWZwlSoXo7A"/>
+          <queryCapabilities title="QueryAutomationResult" label="QueryAutomationResult" queryBaseURI="queryAutomationResult">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poCjoJUdEeq-KoPaR9_Cfg"/>
+          </queryCapabilities>
+          <queryCapabilities title="QueryAutomationPlan" label="QueryAutomationPlan" queryBaseURI="queryAutomationPlan">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pn-SMJUdEeq-KoPaR9_Cfg"/>
+          </queryCapabilities>
+          <queryCapabilities title="QueryAutomationRequest" label="QueryAutomationRequest" queryBaseURI="queryAutomationRequest">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
+          </queryCapabilities>
+          <selectionDialogs title="SelectorSUT" label="SelectorSUT" dialogURI="selectorSUT" hintWidth="250" hintHeight="250" resourceTypes="_mBmTQGpGEeuDWZwlSoXo7A"/>
+          <selectionDialogs title="SelectorAutomationResult" label="SelectorAutomationResult" dialogURI="selectorAutomationResult" hintWidth="250" hintHeight="250">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poCjoJUdEeq-KoPaR9_Cfg"/>
+          </selectionDialogs>
+          <selectionDialogs title="SelectorAutomationPlan" label="SelectorAutomationPlan" dialogURI="selectorAutomationPlan" hintWidth="250" hintHeight="250">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pn-SMJUdEeq-KoPaR9_Cfg"/>
+          </selectionDialogs>
+          <selectionDialogs title="SelectorAutomationRequest" label="SelectorAutomationRequest" dialogURI="selectorAutomationRequest" hintWidth="250" hintHeight="250">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
+          </selectionDialogs>
+          <creationDialogs title="CreatorAutomationRequest" label="CreatorAutomationRequest" dialogURI="creatorAutomationRequest" hintWidth="250" hintHeight="250">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
+          </creationDialogs>
+        </services>
+      </serviceProviders>
+    </serviceProviderCatalog>
+    <webServices name="AutomationRequests" serviceUrlPattern="automationRequest" resourceUrlPattern="[ResourceType]/{id}" delete="true" update="true">
+      <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
+    </webServices>
+    <webServices name="AutomationPlans" serviceUrlPattern="automationPlans" resourceUrlPattern="[ResourceType]/{id}">
+      <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pn-SMJUdEeq-KoPaR9_Cfg"/>
+    </webServices>
+    <webServices name="AutomationResults" serviceUrlPattern="automationResults" resourceUrlPattern="[ResourceType]/{id}">
+      <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poCjoJUdEeq-KoPaR9_Cfg"/>
+    </webServices>
+    <webServices name="SUTs" serviceUrlPattern="SUTs" resourceUrlPattern="[ResourceType]/{id}" resourceTypes="_mBmTQGpGEeuDWZwlSoXo7A"/>
+    <specification/>
+    <configuration xsi:type="oslc4j_ai:MavenServerConfiguration" rootServerBaseUrl="http://localhost:8081/" applicationContextPath="/compilation" servletUrlPattern="/services/*" jettyPort="8081">
+      <generalConfiguration filesBasePath="compilation" javaBasePackageName="cz.vutbr.fit.group.verifit.oslc.compilation"/>
+      <projectConfiguration xsi:type="oslc4j_ai:MavenProjectConfiguration" lyoVersion="4.0.0" groupId="cz.vutbr.fit.group.verifit.oslc.compilation" artifactId="compilation" version="0.0.1-SNAPSHOT"/>
+    </configuration>
+  </adaptorInterfaces>
+  <specification>
+    <domainSpecifications name="VeriFit Universal Analysis" namespaceURI="http://your.organisation.domain/nsp1#" namespacePrefix="//@specification/@domainPrefixes[name='fit']">
+      <resources id="_mBmTQGpGEeuDWZwlSoXo7A" name="SUT">
+        <resourceProperties href="#_tffywGpHEeuDWZwlSoXo7A"/>
+        <resourceProperties href="#_6VLhMGpGEeuDWZwlSoXo7A"/>
+        <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pnZDYJUdEeq-KoPaR9_Cfg"/>
+        <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pnXOMpUdEeq-KoPaR9_Cfg"/>
+        <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pnXOMZUdEeq-KoPaR9_Cfg"/>
+        <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pnYcUJUdEeq-KoPaR9_Cfg"/>
+        <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pnX1QJUdEeq-KoPaR9_Cfg"/>
+        <resourceProperties href="#_tffywWpHEeuDWZwlSoXo7A"/>
+        <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pna4kJUdEeq-KoPaR9_Cfg"/>
+      </resources>
+      <resourceProperties id="_tffywGpHEeuDWZwlSoXo7A" name="launchCommand" occurs="zeroOrOne" valueType="XMLLiteral"/>
+      <resourceProperties id="_6VLhMGpGEeuDWZwlSoXo7A" name="buildCommand" occurs="zeroOrOne" valueType="XMLLiteral"/>
+      <resourceProperties id="_tffywWpHEeuDWZwlSoXo7A" name="SUTdirectoryPath" valueType="XMLLiteral"/>
+      <resourceProperties id="_tffywmpHEeuDWZwlSoXo7A" name="createdSUT" occurs="zeroOrOne" valueType="Resource" range="_mBmTQGpGEeuDWZwlSoXo7A" representation="either"/>
+      <resourceProperties id="_tffyw2pHEeuDWZwlSoXo7A" name="commandlinePosition" occurs="zeroOrOne" valueType="Integer"/>
+      <resourceProperties id="_tffyxGpHEeuDWZwlSoXo7A" name="fileURI" occurs="zeroOrOne" valueType="URI"/>
+      <configuration xsi:type="oslc4j_ai:MavenSpecificationConfiguration">
+        <generalConfiguration filesBasePath="." javaBasePackageName="cz.vutbr.fit.group.verifit.oslc.domain"/>
+        <projectConfiguration xsi:type="oslc4j_ai:MavenProjectConfiguration" lyoVersion="4.0.0" groupId="cz.vutbr.fit.group.verifit.oslc.domain" artifactId="UniversalAnalysis" version="0.0.1-SNAPSHOT"/>
+      </configuration>
+    </domainSpecifications>
+    <domainPrefixes name="fit"/>
+  </specification>
+  <vocabularies/>
+</oslc4j_tc:Toolchain>
