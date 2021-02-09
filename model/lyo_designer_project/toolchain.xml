@@ -29,20 +29,25 @@
           <creationDialogs title="CreatorAutomationRequest" label="CreatorAutomationRequest" dialogURI="creatorAutomationRequest" hintWidth="250" hintHeight="250">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
           </creationDialogs>
+          <persistence store="//@adaptorInterfaces.0/@stores.0"/>
         </services>
       </serviceProviders>
     </serviceProviderCatalog>
     <webServices name="AutomationRequests" serviceUrlPattern="automationRequests" resourceUrlPattern="[ResourceType]/{id}" delete="true" update="true">
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
+      <persistence store="//@adaptorInterfaces.0/@stores.0"/>
     </webServices>
     <webServices name="AutomationResults" serviceUrlPattern="automationResults" resourceUrlPattern="[ResourceType]/{id}" delete="true">
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poCjoJUdEeq-KoPaR9_Cfg"/>
+      <persistence store="//@adaptorInterfaces.0/@stores.0"/>
     </webServices>
     <webServices name="AutomationPlans" serviceUrlPattern="automationPlans" resourceUrlPattern="[ResourceType]/{id}">
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pn-SMJUdEeq-KoPaR9_Cfg"/>
+      <persistence store="//@adaptorInterfaces.0/@stores.0"/>
     </webServices>
     <webServices name="Contributions" serviceUrlPattern="contributions" resourceUrlPattern="[ResourceType]/{id}" update="true">
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_mBlsMGpGEeuDWZwlSoXo7A"/>
+      <persistence store="//@adaptorInterfaces.0/@stores.0"/>
     </webServices>
     <specification/>
     <requiredAdaptors xsi:type="oslc4j_ai:GenericRequiredAdaptor" serviceProviderCatalogURI="http://localhost:8081/compilation/services/catalog/singleton" name="Compilation Adapter" servicedResources="_mBmTQGpGEeuDWZwlSoXo7A"/>
@@ -50,6 +55,7 @@
       <generalConfiguration filesBasePath="analysis" javaBasePackageName="cz.vutbr.fit.group.verifit.oslc.analysis"/>
       <projectConfiguration xsi:type="oslc4j_ai:MavenProjectConfiguration" lyoVersion="4.0.0" groupId="cz.vutbr.fit.group.verifit.oslc.analysis" artifactId="Analysis" version="0.0.1-SNAPSHOT"/>
     </configuration>
+    <stores defaultNamedGraph="verifit_analysis" sparqlQueryEndpoint="http://localhost:8082/fuseki/verifit_analysis/query" sparqlUpdateEndpoint="http://localhost:8082/fuseki/verifit_analysis/update" initialPoolSize="500"/>
   </adaptorInterfaces>
   <adaptorInterfaces name="VeriFit Compilation">
     <serviceProviderCatalog title="Service Provider Catalog" description="Service Provider Catalog">
@@ -82,24 +88,31 @@
           <creationDialogs title="CreatorAutomationRequest" label="CreatorAutomationRequest" dialogURI="creatorAutomationRequest" hintWidth="250" hintHeight="250">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
           </creationDialogs>
+          <persistence store="//@adaptorInterfaces.1/@stores.0"/>
         </services>
       </serviceProviders>
     </serviceProviderCatalog>
     <webServices name="AutomationRequests" serviceUrlPattern="automationRequest" resourceUrlPattern="[ResourceType]/{id}" delete="true" update="true">
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
+      <persistence store="//@adaptorInterfaces.1/@stores.0"/>
     </webServices>
     <webServices name="AutomationPlans" serviceUrlPattern="automationPlans" resourceUrlPattern="[ResourceType]/{id}">
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pn-SMJUdEeq-KoPaR9_Cfg"/>
+      <persistence store="//@adaptorInterfaces.1/@stores.0"/>
     </webServices>
     <webServices name="AutomationResults" serviceUrlPattern="automationResults" resourceUrlPattern="[ResourceType]/{id}">
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poCjoJUdEeq-KoPaR9_Cfg"/>
+      <persistence store="//@adaptorInterfaces.1/@stores.0"/>
     </webServices>
-    <webServices name="SUTs" serviceUrlPattern="SUTs" resourceUrlPattern="[ResourceType]/{id}" resourceTypes="_mBmTQGpGEeuDWZwlSoXo7A"/>
+    <webServices name="SUTs" serviceUrlPattern="SUTs" resourceUrlPattern="[ResourceType]/{id}" resourceTypes="_mBmTQGpGEeuDWZwlSoXo7A">
+      <persistence store="//@adaptorInterfaces.1/@stores.0"/>
+    </webServices>
     <specification/>
     <configuration xsi:type="oslc4j_ai:MavenServerConfiguration" rootServerBaseUrl="http://localhost:8081/" applicationContextPath="/compilation" servletUrlPattern="/services/*" jettyPort="8081">
       <generalConfiguration filesBasePath="compilation" javaBasePackageName="cz.vutbr.fit.group.verifit.oslc.compilation"/>
       <projectConfiguration xsi:type="oslc4j_ai:MavenProjectConfiguration" lyoVersion="4.0.0" groupId="cz.vutbr.fit.group.verifit.oslc.compilation" artifactId="compilation" version="0.0.1-SNAPSHOT"/>
     </configuration>
+    <stores defaultNamedGraph="verifit_compilation" sparqlQueryEndpoint="http://localhost:8082/fuseki/verifit_compilation/query" sparqlUpdateEndpoint="http://localhost:8082/fuseki/verifit_compilation/update" initialPoolSize="500"/>
   </adaptorInterfaces>
   <specification>
     <domainSpecifications name="VeriFit Universal Analysis" namespaceURI="http://your.organisation.domain/nsp1#" namespacePrefix="//@specification/@domainPrefixes[name='fit']">
@@ -122,7 +135,7 @@
       <resourceProperties id="_tffyxGpHEeuDWZwlSoXo7A" name="fileURI" occurs="zeroOrOne" valueType="URI"/>
       <configuration xsi:type="oslc4j_ai:MavenSpecificationConfiguration">
         <generalConfiguration filesBasePath="." javaBasePackageName="cz.vutbr.fit.group.verifit.oslc.domain"/>
-        <projectConfiguration xsi:type="oslc4j_ai:MavenProjectConfiguration" lyoVersion="4.0.0" groupId="cz.vutbr.fit.group.verifit.oslc.domain" artifactId="UniversalAnalysis" version="0.0.1-SNAPSHOT"/>
+        <projectConfiguration xsi:type="oslc4j_ai:MavenProjectConfiguration" doNotGenerateProjectConfigurationFiles="true" lyoVersion="4.0.0" groupId="cz.vutbr.fit.group.verifit.oslc.domain" artifactId="UniversalAnalysis" version="0.0.1-SNAPSHOT"/>
       </configuration>
     </domainSpecifications>
     <domainPrefixes name="fit"/>

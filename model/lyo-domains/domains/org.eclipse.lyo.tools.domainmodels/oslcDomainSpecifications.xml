@@ -441,7 +441,7 @@
     <resourceProperties id="_TYYx4GpFEeuDWZwlSoXo7A" name="propertyDefinition" description="URI of the property whose usage is being described." occurs="zeroOrOne" valueType="Resource"/>
     <configuration xsi:type="oslc4j_ai:MavenSpecificationConfiguration">
       <generalConfiguration filesBasePath="." javaBasePackageName="org.eclipse.lyo.oslc.domains.auto"/>
-      <projectConfiguration xsi:type="oslc4j_ai:MavenProjectConfiguration" lyoVersion="4.0.0" groupId="org.eclipse.lyo.oslc.domains.auto" artifactId="Automation" version="0.0.1-SNAPSHOT"/>
+      <projectConfiguration xsi:type="oslc4j_ai:MavenProjectConfiguration" doNotGenerateProjectConfigurationFiles="true" lyoVersion="4.0.0" groupId="org.eclipse.lyo.oslc.domains.auto" artifactId="Automation" version="0.0.1-SNAPSHOT"/>
     </configuration>
   </domainSpecifications>
   <domainSpecifications name="Jazz Architecture Management " namespaceURI="http://jazz.net/ns/dm/linktypes#" namespacePrefix="//@domainPrefixes[name='jazz_am']">

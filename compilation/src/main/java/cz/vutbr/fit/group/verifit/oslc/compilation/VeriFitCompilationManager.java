@@ -34,6 +34,19 @@ import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc.domains.Person;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
+import java.net.URI;
+import java.util.Properties;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.NoSuchElementException;
+import org.eclipse.lyo.store.ModelUnmarshallingException;
+import org.eclipse.lyo.store.Store;
+import org.eclipse.lyo.store.StorePool;
+import org.eclipse.lyo.store.StoreAccessException;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
+
 
 
 
@@ -47,6 +60,7 @@ public class VeriFitCompilationManager {
 
     private static final Logger log = LoggerFactory.getLogger(VeriFitCompilationManager.class);
 
+    private static StorePool storePool;
     
     // Start of user code class_attributes
     // End of user code
@@ -60,6 +74,34 @@ public class VeriFitCompilationManager {
         
         // Start of user code contextInitializeServletListener
         // TODO Implement code to establish connection to data backbone etc ...
+        // End of user code
+        // Start of user code StoreInitialise
+        // End of user code
+        Properties lyoStoreProperties = new Properties();
+        String lyoStorePropertiesFile = StorePool.class.getResource("/store.properties").getFile();
+        try {
+            lyoStoreProperties.load(new FileInputStream(lyoStorePropertiesFile));
+        } catch (IOException e) {
+            log.error("Failed to initialize Store. properties file for Store configuration could not be loaded.", e);
+            throw new RuntimeException(e);
+        }
+        
+        int initialPoolSize = Integer.parseInt(lyoStoreProperties.getProperty("initialPoolSize"));
+        URI defaultNamedGraph;
+        URI sparqlQueryEndpoint;
+        URI sparqlUpdateEndpoint;
+        try {
+            defaultNamedGraph = new URI(lyoStoreProperties.getProperty("defaultNamedGraph"));
+            sparqlQueryEndpoint = new URI(lyoStoreProperties.getProperty("sparqlQueryEndpoint"));
+            sparqlUpdateEndpoint = new URI(lyoStoreProperties.getProperty("sparqlUpdateEndpoint"));
+        } catch (URISyntaxException e) {
+            log.error("Failed to initialize Store. One of the configuration property ('defaultNamedGraph' or 'sparqlQueryEndpoint' or 'sparqlUpdateEndpoint') is not a valid URI.", e);
+            throw new RuntimeException(e);
+        }
+        String userName = null;
+        String password = null;
+        storePool = new StorePool(initialPoolSize, defaultNamedGraph, sparqlQueryEndpoint, sparqlUpdateEndpoint, userName, password);
+        // Start of user code StoreFinalize
         // End of user code
         
     }
@@ -86,6 +128,19 @@ public class VeriFitCompilationManager {
     {
         List<SUT> resources = null;
         
+        // Start of user code querySUTs_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        try {
+            resources = new ArrayList<SUT>(store.getResources(storePool.getDefaultNamedGraphUri(), SUT.class, prefix, where, "", limit+1, page*limit));
+        } catch (StoreAccessException | ModelUnmarshallingException e) {
+            log.error("Failed to query resources, with where-string '" + where + "'", e);
+            throw new WebApplicationException("Failed to query resources, with where-string '" + where + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        // Start of user code querySUTs_storeFinalize
+        // End of user code
         
         // Start of user code querySUTs
         // TODO Implement code to return a set of resources.
@@ -98,6 +153,19 @@ public class VeriFitCompilationManager {
     {
         List<AutomationResult> resources = null;
         
+        // Start of user code queryAutomationResults_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        try {
+            resources = new ArrayList<AutomationResult>(store.getResources(storePool.getDefaultNamedGraphUri(), AutomationResult.class, prefix, where, "", limit+1, page*limit));
+        } catch (StoreAccessException | ModelUnmarshallingException e) {
+            log.error("Failed to query resources, with where-string '" + where + "'", e);
+            throw new WebApplicationException("Failed to query resources, with where-string '" + where + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        // Start of user code queryAutomationResults_storeFinalize
+        // End of user code
         
         // Start of user code queryAutomationResults
         // TODO Implement code to return a set of resources.
@@ -110,6 +178,19 @@ public class VeriFitCompilationManager {
     {
         List<AutomationPlan> resources = null;
         
+        // Start of user code queryAutomationPlans_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        try {
+            resources = new ArrayList<AutomationPlan>(store.getResources(storePool.getDefaultNamedGraphUri(), AutomationPlan.class, prefix, where, "", limit+1, page*limit));
+        } catch (StoreAccessException | ModelUnmarshallingException e) {
+            log.error("Failed to query resources, with where-string '" + where + "'", e);
+            throw new WebApplicationException("Failed to query resources, with where-string '" + where + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        // Start of user code queryAutomationPlans_storeFinalize
+        // End of user code
         
         // Start of user code queryAutomationPlans
         // TODO Implement code to return a set of resources.
@@ -122,6 +203,19 @@ public class VeriFitCompilationManager {
     {
         List<AutomationRequest> resources = null;
         
+        // Start of user code queryAutomationRequests_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        try {
+            resources = new ArrayList<AutomationRequest>(store.getResources(storePool.getDefaultNamedGraphUri(), AutomationRequest.class, prefix, where, "", limit+1, page*limit));
+        } catch (StoreAccessException | ModelUnmarshallingException e) {
+            log.error("Failed to query resources, with where-string '" + where + "'", e);
+            throw new WebApplicationException("Failed to query resources, with where-string '" + where + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        // Start of user code queryAutomationRequests_storeFinalize
+        // End of user code
         
         // Start of user code queryAutomationRequests
         // TODO Implement code to return a set of resources.
@@ -134,6 +228,19 @@ public class VeriFitCompilationManager {
     {
         List<SUT> resources = null;
         
+        // Start of user code SUTSelector_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        try {
+            resources = new ArrayList<SUT>(store.getResources(storePool.getDefaultNamedGraphUri(), SUT.class, "", "", terms, 20, -1));
+        } catch (StoreAccessException | ModelUnmarshallingException e) {
+            log.error("Failed to search resources, with search-term '" + terms + "'", e);
+            throw new WebApplicationException("Failed to search resources, with search-term '" + terms + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        // Start of user code SUTSelector_storeFinalize
+        // End of user code
         
         // Start of user code SUTSelector
         // TODO Implement code to return a set of resources, based on search criteria 
@@ -146,6 +253,19 @@ public class VeriFitCompilationManager {
     {
         List<AutomationResult> resources = null;
         
+        // Start of user code AutomationResultSelector_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        try {
+            resources = new ArrayList<AutomationResult>(store.getResources(storePool.getDefaultNamedGraphUri(), AutomationResult.class, "", "", terms, 20, -1));
+        } catch (StoreAccessException | ModelUnmarshallingException e) {
+            log.error("Failed to search resources, with search-term '" + terms + "'", e);
+            throw new WebApplicationException("Failed to search resources, with search-term '" + terms + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        // Start of user code AutomationResultSelector_storeFinalize
+        // End of user code
         
         // Start of user code AutomationResultSelector
         // TODO Implement code to return a set of resources, based on search criteria 
@@ -158,6 +278,19 @@ public class VeriFitCompilationManager {
     {
         List<AutomationPlan> resources = null;
         
+        // Start of user code AutomationPlanSelector_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        try {
+            resources = new ArrayList<AutomationPlan>(store.getResources(storePool.getDefaultNamedGraphUri(), AutomationPlan.class, "", "", terms, 20, -1));
+        } catch (StoreAccessException | ModelUnmarshallingException e) {
+            log.error("Failed to search resources, with search-term '" + terms + "'", e);
+            throw new WebApplicationException("Failed to search resources, with search-term '" + terms + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        // Start of user code AutomationPlanSelector_storeFinalize
+        // End of user code
         
         // Start of user code AutomationPlanSelector
         // TODO Implement code to return a set of resources, based on search criteria 
@@ -170,6 +303,19 @@ public class VeriFitCompilationManager {
     {
         List<AutomationRequest> resources = null;
         
+        // Start of user code AutomationRequestSelector_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        try {
+            resources = new ArrayList<AutomationRequest>(store.getResources(storePool.getDefaultNamedGraphUri(), AutomationRequest.class, "", "", terms, 20, -1));
+        } catch (StoreAccessException | ModelUnmarshallingException e) {
+            log.error("Failed to search resources, with search-term '" + terms + "'", e);
+            throw new WebApplicationException("Failed to search resources, with search-term '" + terms + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        // Start of user code AutomationRequestSelector_storeFinalize
+        // End of user code
         
         // Start of user code AutomationRequestSelector
         // TODO Implement code to return a set of resources, based on search criteria 
@@ -208,6 +354,23 @@ public class VeriFitCompilationManager {
     {
         AutomationRequest aResource = null;
         
+        // Start of user code getAutomationRequest_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationRequest(id);
+        try {
+            aResource = store.getResource(storePool.getDefaultNamedGraphUri(), uri, AutomationRequest.class);
+        } catch (NoSuchElementException e) {
+            log.error("Resource: '" + uri + "' not found");
+            throw new WebApplicationException("Failed to get resource: '" + uri + "'", e, Status.NOT_FOUND);
+        } catch (StoreAccessException | ModelUnmarshallingException  e) {
+            log.error("Failed to get resource: '" + uri + "'", e);
+            throw new WebApplicationException("Failed to get resource: '" + uri + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        // Start of user code getAutomationRequest_storeFinalize
+        // End of user code
         
         // Start of user code getAutomationRequest
         // TODO Implement code to return a resource
@@ -241,6 +404,23 @@ public class VeriFitCompilationManager {
     {
         AutomationPlan aResource = null;
         
+        // Start of user code getAutomationPlan_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationPlan(id);
+        try {
+            aResource = store.getResource(storePool.getDefaultNamedGraphUri(), uri, AutomationPlan.class);
+        } catch (NoSuchElementException e) {
+            log.error("Resource: '" + uri + "' not found");
+            throw new WebApplicationException("Failed to get resource: '" + uri + "'", e, Status.NOT_FOUND);
+        } catch (StoreAccessException | ModelUnmarshallingException  e) {
+            log.error("Failed to get resource: '" + uri + "'", e);
+            throw new WebApplicationException("Failed to get resource: '" + uri + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        // Start of user code getAutomationPlan_storeFinalize
+        // End of user code
         
         // Start of user code getAutomationPlan
         // TODO Implement code to return a resource
@@ -255,6 +435,23 @@ public class VeriFitCompilationManager {
     {
         AutomationResult aResource = null;
         
+        // Start of user code getAutomationResult_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationResult(id);
+        try {
+            aResource = store.getResource(storePool.getDefaultNamedGraphUri(), uri, AutomationResult.class);
+        } catch (NoSuchElementException e) {
+            log.error("Resource: '" + uri + "' not found");
+            throw new WebApplicationException("Failed to get resource: '" + uri + "'", e, Status.NOT_FOUND);
+        } catch (StoreAccessException | ModelUnmarshallingException  e) {
+            log.error("Failed to get resource: '" + uri + "'", e);
+            throw new WebApplicationException("Failed to get resource: '" + uri + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        // Start of user code getAutomationResult_storeFinalize
+        // End of user code
         
         // Start of user code getAutomationResult
         // TODO Implement code to return a resource
@@ -269,6 +466,23 @@ public class VeriFitCompilationManager {
     {
         SUT aResource = null;
         
+        // Start of user code getSUT_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForSUT(id);
+        try {
+            aResource = store.getResource(storePool.getDefaultNamedGraphUri(), uri, SUT.class);
+        } catch (NoSuchElementException e) {
+            log.error("Resource: '" + uri + "' not found");
+            throw new WebApplicationException("Failed to get resource: '" + uri + "'", e, Status.NOT_FOUND);
+        } catch (StoreAccessException | ModelUnmarshallingException  e) {
+            log.error("Failed to get resource: '" + uri + "'", e);
+            throw new WebApplicationException("Failed to get resource: '" + uri + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        // Start of user code getSUT_storeFinalize
+        // End of user code
         
         // Start of user code getSUT
         // TODO Implement code to return a resource

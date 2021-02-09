@@ -112,6 +112,11 @@
             <artifactId>oslc4j-json4j-provider</artifactId>
             <version>${version.lyo}</version>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.lyo.store</groupId>
+            <artifactId>store-core</artifactId>
+            <version>${version.lyo}</version>
+        </dependency>
         
         <!-- Swagger dependencies -->
         <dependency>
