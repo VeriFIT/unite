@@ -210,6 +210,25 @@
         
         </dd>
     </dl>
+    <dl class="dl-horizontal">
+        <% method = SUT.class.getMethod("getProducedByAutomationRequest"); %>
+        <dt><a href="<%=method.getAnnotation(OslcPropertyDefinition.class).value() %>"><%=method.getAnnotation(OslcName.class).value()%></a></dt>
+        <dd>
+        <%
+        if ((aSUT.getProducedByAutomationRequest() == null) || (aSUT.getProducedByAutomationRequest().getValue() == null)) {
+            out.write("<em>null</em>");
+        }
+        else {
+            %>
+            <jsp:include page="/cz/vutbr/fit/group/verifit/oslc/compilation/automationrequesttohtml.jsp">
+                <jsp:param name="resourceUri" value="<%=aSUT.getProducedByAutomationRequest().getValue()%>"/> 
+                </jsp:include>
+            <%
+        }
+        %>
+        
+        </dd>
+    </dl>
 </div>
 <%
 Map<QName, Object> extendedProperties = aSUT.getExtendedProperties();

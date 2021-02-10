@@ -53,10 +53,12 @@ import org.eclipse.lyo.oslc4j.core.model.Representation;
 import org.eclipse.lyo.oslc4j.core.model.ValueType;
 
 import cz.vutbr.fit.group.verifit.oslc.domain.FitDomainConstants;
+import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import cz.vutbr.fit.group.verifit.oslc.domain.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsVocabularyConstants;
+import org.eclipse.lyo.oslc.domains.auto.IAutomationRequest;
 import org.eclipse.lyo.oslc.domains.IPerson;
 // Start of user code imports
 // End of user code
@@ -139,6 +141,14 @@ public interface ISUT
     @OslcReadOnly(false)
     public Set<Link> getCreator();
 
+    @OslcName("producedByAutomationRequest")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "producedByAutomationRequest")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.Resource)
+    @OslcRange({Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE})
+    @OslcReadOnly(false)
+    public Link getProducedByAutomationRequest();
+
 
     public void setLaunchCommand(final String launchCommand );
     public void setBuildCommand(final String buildCommand );
@@ -149,5 +159,6 @@ public interface ISUT
     public void setIdentifier(final String identifier );
     public void setSUTdirectoryPath(final String sUTdirectoryPath );
     public void setCreator(final Set<Link> creator );
+    public void setProducedByAutomationRequest(final Link producedByAutomationRequest );
 }
 

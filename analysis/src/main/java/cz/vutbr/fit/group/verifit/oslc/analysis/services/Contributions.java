@@ -87,7 +87,7 @@ import io.swagger.annotations.ApiOperation;
 
 // Start of user code pre_class_code
 // End of user code
-@Path("contributions")
+@Path("resources")
 @Api(value = "Web Service for {" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "}")
 public class Contributions
 {
@@ -118,7 +118,7 @@ public class Contributions
     }
 
     @GET
-    @Path("Contribution/{id}")
+    @Path("contributions/{id}")
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_JSON_LD, OslcMediaType.TEXT_TURTLE, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON})
     @ApiOperation(
         value = "GET for resources of type {'" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "'}",
@@ -147,7 +147,7 @@ public class Contributions
     }
 
     @GET
-    @Path("Contribution/{id}")
+    @Path("contributions/{id}")
     @Produces({ MediaType.TEXT_HTML })
     @ApiOperation(
         value = "GET for resources of type {'" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "'}",
@@ -178,7 +178,7 @@ public class Contributions
     }
 
     @GET
-    @Path("Contribution/{id}")
+    @Path("contributions/{id}")
     @Produces({OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML})
     @ApiOperation(
         value = "GET for resources of type {'" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "'}",
@@ -231,7 +231,7 @@ public class Contributions
     }
 
     @GET
-    @Path("Contribution/{id}/smallPreview")
+    @Path("contributions/{id}/smallPreview")
     @Produces({ MediaType.TEXT_HTML })
     public void getContributionAsHtmlSmallPreview(
         @PathParam("id") final String id
@@ -258,7 +258,7 @@ public class Contributions
     }
 
     @GET
-    @Path("Contribution/{id}/largePreview")
+    @Path("contributions/{id}/largePreview")
     @Produces({ MediaType.TEXT_HTML })
     public void getContributionAsHtmlLargePreview(
         @PathParam("id") final String id
@@ -284,7 +284,7 @@ public class Contributions
         throw new WebApplicationException(Status.NOT_FOUND);
     }
     @PUT
-    @Path("Contribution/{id}")
+    @Path("contributions/{id}")
     @Consumes({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_JSON_LD, OslcMediaType.TEXT_TURTLE, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON })
     @ApiOperation(
         value = "PUT for resources of type {'" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "'}",

@@ -42,9 +42,6 @@ import java.util.Base64.Decoder;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Triple;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
 import org.eclipse.lyo.oslc4j.core.model.Link;
@@ -117,7 +114,7 @@ public abstract class RequestRunner extends Thread
 	    
 	    if (!Files.exists(subfolderPath))
 	    {   
-            Files.createDirectory(subfolderPath);
+            Files.createDirectory(subfolderPath); sdfgsdfgsdf
 	    }
 	    return subfolderPath;
 	}

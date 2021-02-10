@@ -43,10 +43,14 @@ public class AutomationPlanDefinition {
 	 */
 	public static boolean checkPredefinedAutomationPlans()
 	{
+		try {
     	if (VeriFitCompilationManager.getAutomationPlan(null, "0") == null)
     		return false;
     	else
     		return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 	
 	/**

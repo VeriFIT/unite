@@ -87,7 +87,7 @@ import io.swagger.annotations.ApiOperation;
 
 // Start of user code pre_class_code
 // End of user code
-@Path("automationRequest")
+@Path("resources")
 @Api(value = "Web Service for {" + Oslc_autoDomainConstants.AUTOMATIONREQUEST_LOCALNAME + "}")
 public class AutomationRequests
 {
@@ -118,7 +118,7 @@ public class AutomationRequests
     }
 
     @GET
-    @Path("AutomationRequest/{id}")
+    @Path("automationRequests/{id}")
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_JSON_LD, OslcMediaType.TEXT_TURTLE, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON})
     @ApiOperation(
         value = "GET for resources of type {'" + Oslc_autoDomainConstants.AUTOMATIONREQUEST_LOCALNAME + "'}",
@@ -147,7 +147,7 @@ public class AutomationRequests
     }
 
     @GET
-    @Path("AutomationRequest/{id}")
+    @Path("automationRequests/{id}")
     @Produces({ MediaType.TEXT_HTML })
     @ApiOperation(
         value = "GET for resources of type {'" + Oslc_autoDomainConstants.AUTOMATIONREQUEST_LOCALNAME + "'}",
@@ -178,7 +178,7 @@ public class AutomationRequests
     }
 
     @GET
-    @Path("AutomationRequest/{id}")
+    @Path("automationRequests/{id}")
     @Produces({OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML})
     @ApiOperation(
         value = "GET for resources of type {'" + Oslc_autoDomainConstants.AUTOMATIONREQUEST_LOCALNAME + "'}",
@@ -231,7 +231,7 @@ public class AutomationRequests
     }
 
     @GET
-    @Path("AutomationRequest/{id}/smallPreview")
+    @Path("automationRequests/{id}/smallPreview")
     @Produces({ MediaType.TEXT_HTML })
     public void getAutomationRequestAsHtmlSmallPreview(
         @PathParam("id") final String id
@@ -258,7 +258,7 @@ public class AutomationRequests
     }
 
     @GET
-    @Path("AutomationRequest/{id}/largePreview")
+    @Path("automationRequests/{id}/largePreview")
     @Produces({ MediaType.TEXT_HTML })
     public void getAutomationRequestAsHtmlLargePreview(
         @PathParam("id") final String id
@@ -284,7 +284,7 @@ public class AutomationRequests
         throw new WebApplicationException(Status.NOT_FOUND);
     }
     @DELETE
-    @Path("AutomationRequest/{id}")
+    @Path("automationRequests/{id}")
     @ApiOperation(
         value = "DELETE for resources of type {'" + Oslc_autoDomainConstants.AUTOMATIONREQUEST_LOCALNAME + "'}",
         notes = "DELETE for resources of type {'" + "<a href=\"" + Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE + "\">" + Oslc_autoDomainConstants.AUTOMATIONREQUEST_LOCALNAME + "</a>" + "'}" +
@@ -312,7 +312,7 @@ public class AutomationRequests
     }
 
     @PUT
-    @Path("AutomationRequest/{id}")
+    @Path("automationRequests/{id}")
     @Consumes({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_JSON_LD, OslcMediaType.TEXT_TURTLE, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON })
     @ApiOperation(
         value = "PUT for resources of type {'" + Oslc_autoDomainConstants.AUTOMATIONREQUEST_LOCALNAME + "'}",

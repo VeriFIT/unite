@@ -58,7 +58,7 @@ public class VeriFitCompilationResourcesFactory {
         String basePath = OSLC4JUtils.getServletURI();
         Map<String, Object> pathParameters = new HashMap<String, Object>();
         pathParameters.put("id", id);
-        String instanceURI = "automationPlans/AutomationPlan/{id}";
+        String instanceURI = "resources/automationPlans/{id}";
     
         final UriBuilder builder = UriBuilder.fromUri(basePath);
         return builder.path(instanceURI).buildFromMap(pathParameters);
@@ -87,7 +87,7 @@ public class VeriFitCompilationResourcesFactory {
         String basePath = OSLC4JUtils.getServletURI();
         Map<String, Object> pathParameters = new HashMap<String, Object>();
         pathParameters.put("id", id);
-        String instanceURI = "automationRequest/AutomationRequest/{id}";
+        String instanceURI = "resources/automationRequests/{id}";
     
         final UriBuilder builder = UriBuilder.fromUri(basePath);
         return builder.path(instanceURI).buildFromMap(pathParameters);
@@ -116,7 +116,7 @@ public class VeriFitCompilationResourcesFactory {
         String basePath = OSLC4JUtils.getServletURI();
         Map<String, Object> pathParameters = new HashMap<String, Object>();
         pathParameters.put("id", id);
-        String instanceURI = "automationResults/AutomationResult/{id}";
+        String instanceURI = "resources/automationResults/{id}";
     
         final UriBuilder builder = UriBuilder.fromUri(basePath);
         return builder.path(instanceURI).buildFromMap(pathParameters);
@@ -145,7 +145,7 @@ public class VeriFitCompilationResourcesFactory {
         String basePath = OSLC4JUtils.getServletURI();
         Map<String, Object> pathParameters = new HashMap<String, Object>();
         pathParameters.put("id", id);
-        String instanceURI = "SUTs/SUT/{id}";
+        String instanceURI = "resources/sUTs/{id}";
     
         final UriBuilder builder = UriBuilder.fromUri(basePath);
         return builder.path(instanceURI).buildFromMap(pathParameters);

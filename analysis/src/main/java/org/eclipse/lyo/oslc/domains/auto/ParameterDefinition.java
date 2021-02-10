@@ -59,7 +59,6 @@ import org.eclipse.lyo.oslc4j.core.model.ResourceShapeFactory;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 
 
-import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import cz.vutbr.fit.group.verifit.oslc.domain.FitDomainConstants;
@@ -80,9 +79,6 @@ public class ParameterDefinition
     extends AbstractResource
     implements IParameterDefinition
 {
-    // Start of user code attributeAnnotation:propertyDefinition
-    // End of user code
-    private Link propertyDefinition;
     // Start of user code attributeAnnotation:description
     // End of user code
     private String description;
@@ -91,10 +87,10 @@ public class ParameterDefinition
     private String title;
     // Start of user code attributeAnnotation:allowedValue
     // End of user code
-    private Set<Link> allowedValue = new HashSet<Link>();
+    private Set<String> allowedValue = new HashSet<String>();
     // Start of user code attributeAnnotation:defaultValue
     // End of user code
-    private Link defaultValue;
+    private String defaultValue;
     // Start of user code attributeAnnotation:allowedValues
     // End of user code
     private Link allowedValues;
@@ -131,6 +127,9 @@ public class ParameterDefinition
     // Start of user code attributeAnnotation:commandlinePosition
     // End of user code
     private Integer commandlinePosition;
+    // Start of user code attributeAnnotation:propertyDefinition
+    // End of user code
+    private Link propertyDefinition;
     
     // Start of user code classAttributes
     // End of user code
@@ -186,7 +185,7 @@ public class ParameterDefinition
         return result;
     }
     
-    public void addAllowedValue(final Link allowedValue)
+    public void addAllowedValue(final String allowedValue)
     {
         this.allowedValue.add(allowedValue);
     }
@@ -201,21 +200,6 @@ public class ParameterDefinition
         this.valueType.add(valueType);
     }
     
-    
-    // Start of user code getterAnnotation:propertyDefinition
-    // End of user code
-    @OslcName("propertyDefinition")
-    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "propertyDefinition")
-    @OslcDescription("URI of the property whose usage is being described.")
-    @OslcOccurs(Occurs.ZeroOrOne)
-    @OslcValueType(ValueType.Resource)
-    @OslcReadOnly(false)
-    public Link getPropertyDefinition()
-    {
-        // Start of user code getterInit:propertyDefinition
-        // End of user code
-        return propertyDefinition;
-    }
     
     // Start of user code getterAnnotation:description
     // End of user code
@@ -253,9 +237,9 @@ public class ParameterDefinition
     @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "allowedValue")
     @OslcDescription("value allowed for a property")
     @OslcOccurs(Occurs.OneOrMany)
-    @OslcValueType(ValueType.Resource)
+    @OslcValueType(ValueType.String)
     @OslcReadOnly(false)
-    public Set<Link> getAllowedValue()
+    public Set<String> getAllowedValue()
     {
         // Start of user code getterInit:allowedValue
         // End of user code
@@ -268,9 +252,9 @@ public class ParameterDefinition
     @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "defaultValue")
     @OslcDescription("A default value for property, inlined into property definition. ")
     @OslcOccurs(Occurs.ZeroOrOne)
-    @OslcValueType(ValueType.Resource)
+    @OslcValueType(ValueType.String)
     @OslcReadOnly(false)
-    public Link getDefaultValue()
+    public String getDefaultValue()
     {
         // Start of user code getterInit:defaultValue
         // End of user code
@@ -456,18 +440,21 @@ public class ParameterDefinition
         return commandlinePosition;
     }
     
-    
-    // Start of user code setterAnnotation:propertyDefinition
+    // Start of user code getterAnnotation:propertyDefinition
     // End of user code
-    public void setPropertyDefinition(final Link propertyDefinition )
+    @OslcName("propertyDefinition")
+    @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "propertyDefinition")
+    @OslcDescription("URI of the property whose usage is being described.")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.Resource)
+    @OslcReadOnly(false)
+    public Link getPropertyDefinition()
     {
-        // Start of user code setterInit:propertyDefinition
+        // Start of user code getterInit:propertyDefinition
         // End of user code
-        this.propertyDefinition = propertyDefinition;
-    
-        // Start of user code setterFinalize:propertyDefinition
-        // End of user code
+        return propertyDefinition;
     }
+    
     
     // Start of user code setterAnnotation:description
     // End of user code
@@ -495,7 +482,7 @@ public class ParameterDefinition
     
     // Start of user code setterAnnotation:allowedValue
     // End of user code
-    public void setAllowedValue(final Set<Link> allowedValue )
+    public void setAllowedValue(final Set<String> allowedValue )
     {
         // Start of user code setterInit:allowedValue
         // End of user code
@@ -511,7 +498,7 @@ public class ParameterDefinition
     
     // Start of user code setterAnnotation:defaultValue
     // End of user code
-    public void setDefaultValue(final Link defaultValue )
+    public void setDefaultValue(final String defaultValue )
     {
         // Start of user code setterInit:defaultValue
         // End of user code
@@ -670,6 +657,18 @@ public class ParameterDefinition
         this.commandlinePosition = commandlinePosition;
     
         // Start of user code setterFinalize:commandlinePosition
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:propertyDefinition
+    // End of user code
+    public void setPropertyDefinition(final Link propertyDefinition )
+    {
+        // Start of user code setterInit:propertyDefinition
+        // End of user code
+        this.propertyDefinition = propertyDefinition;
+    
+        // Start of user code setterFinalize:propertyDefinition
         // End of user code
     }
     

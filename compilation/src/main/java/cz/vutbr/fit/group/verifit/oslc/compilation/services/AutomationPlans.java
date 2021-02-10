@@ -87,7 +87,7 @@ import io.swagger.annotations.ApiOperation;
 
 // Start of user code pre_class_code
 // End of user code
-@Path("automationPlans")
+@Path("resources")
 @Api(value = "Web Service for {" + Oslc_autoDomainConstants.AUTOMATIONPLAN_LOCALNAME + "}")
 public class AutomationPlans
 {
@@ -118,7 +118,7 @@ public class AutomationPlans
     }
 
     @GET
-    @Path("AutomationPlan/{id}")
+    @Path("automationPlans/{id}")
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_JSON_LD, OslcMediaType.TEXT_TURTLE, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON})
     @ApiOperation(
         value = "GET for resources of type {'" + Oslc_autoDomainConstants.AUTOMATIONPLAN_LOCALNAME + "'}",
@@ -147,7 +147,7 @@ public class AutomationPlans
     }
 
     @GET
-    @Path("AutomationPlan/{id}")
+    @Path("automationPlans/{id}")
     @Produces({ MediaType.TEXT_HTML })
     @ApiOperation(
         value = "GET for resources of type {'" + Oslc_autoDomainConstants.AUTOMATIONPLAN_LOCALNAME + "'}",
@@ -178,7 +178,7 @@ public class AutomationPlans
     }
 
     @GET
-    @Path("AutomationPlan/{id}")
+    @Path("automationPlans/{id}")
     @Produces({OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML})
     @ApiOperation(
         value = "GET for resources of type {'" + Oslc_autoDomainConstants.AUTOMATIONPLAN_LOCALNAME + "'}",
@@ -231,7 +231,7 @@ public class AutomationPlans
     }
 
     @GET
-    @Path("AutomationPlan/{id}/smallPreview")
+    @Path("automationPlans/{id}/smallPreview")
     @Produces({ MediaType.TEXT_HTML })
     public void getAutomationPlanAsHtmlSmallPreview(
         @PathParam("id") final String id
@@ -258,7 +258,7 @@ public class AutomationPlans
     }
 
     @GET
-    @Path("AutomationPlan/{id}/largePreview")
+    @Path("automationPlans/{id}/largePreview")
     @Produces({ MediaType.TEXT_HTML })
     public void getAutomationPlanAsHtmlLargePreview(
         @PathParam("id") final String id

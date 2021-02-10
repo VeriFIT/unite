@@ -54,11 +54,9 @@ import org.eclipse.lyo.oslc4j.core.model.ValueType;
 
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
-import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsVocabularyConstants;
-import org.eclipse.lyo.oslc.domains.FoafVocabularyConstants;
 import org.eclipse.lyo.oslc.domains.RdfVocabularyConstants;
 
 // Start of user code imports
@@ -73,14 +71,6 @@ public interface IParameterInstance
     public void addType(final Link type );
     public void addInstanceShape(final Link instanceShape );
     public void addServiceProvider(final Link serviceProvider );
-
-    @OslcName("name")
-    @OslcPropertyDefinition(FoafVocabularyConstants.FOAF_NAMSPACE + "name")
-    @OslcDescription("The full name of a person expressed as simple text string.")
-    @OslcOccurs(Occurs.ExactlyOne)
-    @OslcValueType(ValueType.String)
-    @OslcReadOnly(false)
-    public String getName();
 
     @OslcName("value")
     @OslcPropertyDefinition(RdfVocabularyConstants.RDF_NAMSPACE + "value")
@@ -123,12 +113,20 @@ public interface IParameterInstance
     @OslcReadOnly(false)
     public Set<Link> getServiceProvider();
 
+    @OslcName("name")
+    @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "name")
+    @OslcDescription("Name of property being defined, i.e. second part of property's Prefixed Name")
+    @OslcOccurs(Occurs.ExactlyOne)
+    @OslcValueType(ValueType.String)
+    @OslcReadOnly(false)
+    public String getName();
 
-    public void setName(final String name );
+
     public void setValue(final String value );
     public void setDescription(final String description );
     public void setType(final Set<Link> type );
     public void setInstanceShape(final Set<Link> instanceShape );
     public void setServiceProvider(final Set<Link> serviceProvider );
+    public void setName(final String name );
 }
 

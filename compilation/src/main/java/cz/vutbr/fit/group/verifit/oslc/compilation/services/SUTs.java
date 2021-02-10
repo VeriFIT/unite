@@ -87,7 +87,7 @@ import io.swagger.annotations.ApiOperation;
 
 // Start of user code pre_class_code
 // End of user code
-@Path("SUTs")
+@Path("resources")
 @Api(value = "Web Service for {" + FitDomainConstants.SUT_LOCALNAME + "}")
 public class SUTs
 {
@@ -118,7 +118,7 @@ public class SUTs
     }
 
     @GET
-    @Path("SUT/{id}")
+    @Path("sUTs/{id}")
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_JSON_LD, OslcMediaType.TEXT_TURTLE, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON})
     @ApiOperation(
         value = "GET for resources of type {'" + FitDomainConstants.SUT_LOCALNAME + "'}",
@@ -147,7 +147,7 @@ public class SUTs
     }
 
     @GET
-    @Path("SUT/{id}")
+    @Path("sUTs/{id}")
     @Produces({ MediaType.TEXT_HTML })
     @ApiOperation(
         value = "GET for resources of type {'" + FitDomainConstants.SUT_LOCALNAME + "'}",
@@ -178,7 +178,7 @@ public class SUTs
     }
 
     @GET
-    @Path("SUT/{id}")
+    @Path("sUTs/{id}")
     @Produces({OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML})
     @ApiOperation(
         value = "GET for resources of type {'" + FitDomainConstants.SUT_LOCALNAME + "'}",
@@ -231,7 +231,7 @@ public class SUTs
     }
 
     @GET
-    @Path("SUT/{id}/smallPreview")
+    @Path("sUTs/{id}/smallPreview")
     @Produces({ MediaType.TEXT_HTML })
     public void getSUTAsHtmlSmallPreview(
         @PathParam("id") final String id
@@ -258,7 +258,7 @@ public class SUTs
     }
 
     @GET
-    @Path("SUT/{id}/largePreview")
+    @Path("sUTs/{id}/largePreview")
     @Produces({ MediaType.TEXT_HTML })
     public void getSUTAsHtmlLargePreview(
         @PathParam("id") final String id

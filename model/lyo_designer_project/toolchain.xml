@@ -29,25 +29,25 @@
           <creationDialogs title="CreatorAutomationRequest" label="CreatorAutomationRequest" dialogURI="creatorAutomationRequest" hintWidth="250" hintHeight="250">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
           </creationDialogs>
-          <persistence store="//@adaptorInterfaces.0/@stores.0"/>
+          <persistence store="//@adaptorInterfaces.0/@stores.0" creationFactory="true"/>
         </services>
       </serviceProviders>
     </serviceProviderCatalog>
-    <webServices name="AutomationRequests" serviceUrlPattern="automationRequests" resourceUrlPattern="[ResourceType]/{id}" delete="true" update="true">
+    <webServices name="AutomationRequests" serviceUrlPattern="resources" resourceUrlPattern="automationRequests/{id}" delete="true" update="true">
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
-      <persistence store="//@adaptorInterfaces.0/@stores.0"/>
+      <persistence store="//@adaptorInterfaces.0/@stores.0" delete="true" update="true"/>
     </webServices>
-    <webServices name="AutomationResults" serviceUrlPattern="automationResults" resourceUrlPattern="[ResourceType]/{id}" delete="true">
+    <webServices name="AutomationResults" serviceUrlPattern="resources" resourceUrlPattern="automationResults/{id}" delete="true" update="true">
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poCjoJUdEeq-KoPaR9_Cfg"/>
-      <persistence store="//@adaptorInterfaces.0/@stores.0"/>
+      <persistence store="//@adaptorInterfaces.0/@stores.0" delete="true" update="true"/>
     </webServices>
-    <webServices name="AutomationPlans" serviceUrlPattern="automationPlans" resourceUrlPattern="[ResourceType]/{id}">
+    <webServices name="AutomationPlans" serviceUrlPattern="resources" resourceUrlPattern="automationPlans/{id}">
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pn-SMJUdEeq-KoPaR9_Cfg"/>
       <persistence store="//@adaptorInterfaces.0/@stores.0"/>
     </webServices>
-    <webServices name="Contributions" serviceUrlPattern="contributions" resourceUrlPattern="[ResourceType]/{id}" update="true">
+    <webServices name="Contributions" serviceUrlPattern="resources" resourceUrlPattern="contributions/{id}" update="true">
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_mBlsMGpGEeuDWZwlSoXo7A"/>
-      <persistence store="//@adaptorInterfaces.0/@stores.0"/>
+      <persistence store="//@adaptorInterfaces.0/@stores.0" update="true"/>
     </webServices>
     <specification/>
     <requiredAdaptors xsi:type="oslc4j_ai:GenericRequiredAdaptor" serviceProviderCatalogURI="http://localhost:8081/compilation/services/catalog/singleton" name="Compilation Adapter" servicedResources="_mBmTQGpGEeuDWZwlSoXo7A"/>
@@ -88,23 +88,23 @@
           <creationDialogs title="CreatorAutomationRequest" label="CreatorAutomationRequest" dialogURI="creatorAutomationRequest" hintWidth="250" hintHeight="250">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
           </creationDialogs>
-          <persistence store="//@adaptorInterfaces.1/@stores.0"/>
+          <persistence store="//@adaptorInterfaces.1/@stores.0" creationFactory="true"/>
         </services>
       </serviceProviders>
     </serviceProviderCatalog>
-    <webServices name="AutomationRequests" serviceUrlPattern="automationRequest" resourceUrlPattern="[ResourceType]/{id}" delete="true" update="true">
+    <webServices name="AutomationRequests" serviceUrlPattern="resources" resourceUrlPattern="automationRequests/{id}" delete="true" update="true">
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
-      <persistence store="//@adaptorInterfaces.1/@stores.0"/>
+      <persistence store="//@adaptorInterfaces.1/@stores.0" delete="true" update="true"/>
     </webServices>
-    <webServices name="AutomationPlans" serviceUrlPattern="automationPlans" resourceUrlPattern="[ResourceType]/{id}">
+    <webServices name="AutomationPlans" serviceUrlPattern="resources" resourceUrlPattern="automationPlans/{id}">
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pn-SMJUdEeq-KoPaR9_Cfg"/>
       <persistence store="//@adaptorInterfaces.1/@stores.0"/>
     </webServices>
-    <webServices name="AutomationResults" serviceUrlPattern="automationResults" resourceUrlPattern="[ResourceType]/{id}">
+    <webServices name="AutomationResults" serviceUrlPattern="resources" resourceUrlPattern="automationResults/{id}" delete="true" update="true">
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poCjoJUdEeq-KoPaR9_Cfg"/>
-      <persistence store="//@adaptorInterfaces.1/@stores.0"/>
+      <persistence store="//@adaptorInterfaces.1/@stores.0" delete="true" update="true"/>
     </webServices>
-    <webServices name="SUTs" serviceUrlPattern="SUTs" resourceUrlPattern="[ResourceType]/{id}" resourceTypes="_mBmTQGpGEeuDWZwlSoXo7A">
+    <webServices name="SUTs" serviceUrlPattern="resources" resourceUrlPattern="sUTs/{id}" resourceTypes="_mBmTQGpGEeuDWZwlSoXo7A">
       <persistence store="//@adaptorInterfaces.1/@stores.0"/>
     </webServices>
     <specification/>

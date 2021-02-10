@@ -87,7 +87,7 @@ import io.swagger.annotations.ApiOperation;
 
 // Start of user code pre_class_code
 // End of user code
-@Path("automationResults")
+@Path("resources")
 @Api(value = "Web Service for {" + Oslc_autoDomainConstants.AUTOMATIONRESULT_LOCALNAME + "}")
 public class AutomationResults
 {
@@ -118,7 +118,7 @@ public class AutomationResults
     }
 
     @GET
-    @Path("AutomationResult/{id}")
+    @Path("automationResults/{id}")
     @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_JSON_LD, OslcMediaType.TEXT_TURTLE, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON})
     @ApiOperation(
         value = "GET for resources of type {'" + Oslc_autoDomainConstants.AUTOMATIONRESULT_LOCALNAME + "'}",
@@ -147,7 +147,7 @@ public class AutomationResults
     }
 
     @GET
-    @Path("AutomationResult/{id}")
+    @Path("automationResults/{id}")
     @Produces({ MediaType.TEXT_HTML })
     @ApiOperation(
         value = "GET for resources of type {'" + Oslc_autoDomainConstants.AUTOMATIONRESULT_LOCALNAME + "'}",
@@ -178,7 +178,7 @@ public class AutomationResults
     }
 
     @GET
-    @Path("AutomationResult/{id}")
+    @Path("automationResults/{id}")
     @Produces({OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML})
     @ApiOperation(
         value = "GET for resources of type {'" + Oslc_autoDomainConstants.AUTOMATIONRESULT_LOCALNAME + "'}",
@@ -231,7 +231,7 @@ public class AutomationResults
     }
 
     @GET
-    @Path("AutomationResult/{id}/smallPreview")
+    @Path("automationResults/{id}/smallPreview")
     @Produces({ MediaType.TEXT_HTML })
     public void getAutomationResultAsHtmlSmallPreview(
         @PathParam("id") final String id
@@ -258,7 +258,7 @@ public class AutomationResults
     }
 
     @GET
-    @Path("AutomationResult/{id}/largePreview")
+    @Path("automationResults/{id}/largePreview")
     @Produces({ MediaType.TEXT_HTML })
     public void getAutomationResultAsHtmlLargePreview(
         @PathParam("id") final String id
@@ -283,4 +283,70 @@ public class AutomationResults
 
         throw new WebApplicationException(Status.NOT_FOUND);
     }
+    @DELETE
+    @Path("automationResults/{id}")
+    @ApiOperation(
+        value = "DELETE for resources of type {'" + Oslc_autoDomainConstants.AUTOMATIONRESULT_LOCALNAME + "'}",
+        notes = "DELETE for resources of type {'" + "<a href=\"" + Oslc_autoDomainConstants.AUTOMATIONRESULT_TYPE + "\">" + Oslc_autoDomainConstants.AUTOMATIONRESULT_LOCALNAME + "</a>" + "'}" +
+            ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.AUTOMATIONRESULT_PATH + "\">" + Oslc_autoDomainConstants.AUTOMATIONRESULT_LOCALNAME + "</a>" + "'}",
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML
+    )
+    public Response deleteAutomationResult(
+                @PathParam("id") final String id
+        ) throws IOException, ServletException, URISyntaxException
+    {
+        // Start of user code deleteAutomationResult_init
+        // End of user code
+        final AutomationResult aResource = VeriFitCompilationManager.getAutomationResult(httpServletRequest, id);
+
+        if (aResource != null) {
+            // Start of user code deleteAutomationResult
+            // End of user code
+            boolean deleted = VeriFitCompilationManager.deleteAutomationResult(httpServletRequest, id);
+            if (deleted)
+                return Response.ok().header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();
+            else
+                throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+        }
+        throw new WebApplicationException(Status.NOT_FOUND);
+    }
+
+    @PUT
+    @Path("automationResults/{id}")
+    @Consumes({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_JSON_LD, OslcMediaType.TEXT_TURTLE, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON })
+    @ApiOperation(
+        value = "PUT for resources of type {'" + Oslc_autoDomainConstants.AUTOMATIONRESULT_LOCALNAME + "'}",
+        notes = "PUT for resources of type {'" + "<a href=\"" + Oslc_autoDomainConstants.AUTOMATIONRESULT_TYPE + "\">" + Oslc_autoDomainConstants.AUTOMATIONRESULT_LOCALNAME + "</a>" + "'}" +
+            ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.AUTOMATIONRESULT_PATH + "\">" + Oslc_autoDomainConstants.AUTOMATIONRESULT_LOCALNAME + "</a>" + "'}",
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML
+    )
+    public Response updateAutomationResult(
+            @HeaderParam("If-Match") final String eTagHeader,
+            @PathParam("id") final String id ,
+            final AutomationResult aResource
+        ) throws IOException, ServletException
+    {
+        // Start of user code updateAutomationResult_init
+        // End of user code
+        final AutomationResult originalResource = VeriFitCompilationManager.getAutomationResult(httpServletRequest, id);
+
+        if (originalResource != null) {
+            final String originalETag = VeriFitCompilationManager.getETagFromAutomationResult(originalResource);
+
+            if ((eTagHeader == null) || (originalETag.equals(eTagHeader))) {
+                // Start of user code updateAutomationResult
+                // End of user code
+                final AutomationResult updatedResource = VeriFitCompilationManager.updateAutomationResult(httpServletRequest, aResource, id);
+                httpServletResponse.setHeader("ETag", VeriFitCompilationManager.getETagFromAutomationResult(updatedResource));
+                return Response.ok().header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();
+            }
+            else {
+                throw new WebApplicationException(Status.PRECONDITION_FAILED);
+            }
+        }
+        else {
+            throw new WebApplicationException(Status.NOT_FOUND);
+        }
+    }
+
 }

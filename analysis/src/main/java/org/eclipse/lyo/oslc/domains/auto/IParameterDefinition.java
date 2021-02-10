@@ -53,7 +53,6 @@ import org.eclipse.lyo.oslc4j.core.model.Representation;
 import org.eclipse.lyo.oslc4j.core.model.ValueType;
 
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
-import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import cz.vutbr.fit.group.verifit.oslc.domain.FitDomainConstants;
@@ -68,17 +67,9 @@ import org.eclipse.lyo.oslc.domains.DctermsVocabularyConstants;
 public interface IParameterDefinition
 {
 
-    public void addAllowedValue(final Link allowedValue );
+    public void addAllowedValue(final String allowedValue );
     public void addRange(final Link range );
     public void addValueType(final Link valueType );
-
-    @OslcName("propertyDefinition")
-    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "propertyDefinition")
-    @OslcDescription("URI of the property whose usage is being described.")
-    @OslcOccurs(Occurs.ZeroOrOne)
-    @OslcValueType(ValueType.Resource)
-    @OslcReadOnly(false)
-    public Link getPropertyDefinition();
 
     @OslcName("description")
     @OslcPropertyDefinition(DctermsVocabularyConstants.DUBLIN_CORE_NAMSPACE + "description")
@@ -100,17 +91,17 @@ public interface IParameterDefinition
     @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "allowedValue")
     @OslcDescription("value allowed for a property")
     @OslcOccurs(Occurs.OneOrMany)
-    @OslcValueType(ValueType.Resource)
+    @OslcValueType(ValueType.String)
     @OslcReadOnly(false)
-    public Set<Link> getAllowedValue();
+    public Set<String> getAllowedValue();
 
     @OslcName("defaultValue")
     @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "defaultValue")
     @OslcDescription("A default value for property, inlined into property definition. ")
     @OslcOccurs(Occurs.ZeroOrOne)
-    @OslcValueType(ValueType.Resource)
+    @OslcValueType(ValueType.String)
     @OslcReadOnly(false)
-    public Link getDefaultValue();
+    public String getDefaultValue();
 
     @OslcName("allowedValues")
     @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "allowedValues")
@@ -207,12 +198,19 @@ public interface IParameterDefinition
     @OslcReadOnly(false)
     public Integer getCommandlinePosition();
 
+    @OslcName("propertyDefinition")
+    @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "propertyDefinition")
+    @OslcDescription("URI of the property whose usage is being described.")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.Resource)
+    @OslcReadOnly(false)
+    public Link getPropertyDefinition();
 
-    public void setPropertyDefinition(final Link propertyDefinition );
+
     public void setDescription(final String description );
     public void setTitle(final String title );
-    public void setAllowedValue(final Set<Link> allowedValue );
-    public void setDefaultValue(final Link defaultValue );
+    public void setAllowedValue(final Set<String> allowedValue );
+    public void setDefaultValue(final String defaultValue );
     public void setAllowedValues(final Link allowedValues );
     public void setHidden(final Boolean hidden );
     public void setIsMemberProperty(final Boolean isMemberProperty );
@@ -225,5 +223,6 @@ public interface IParameterDefinition
     public void setValueType(final Set<Link> valueType );
     public void setValueShape(final Link valueShape );
     public void setCommandlinePosition(final Integer commandlinePosition );
+    public void setPropertyDefinition(final Link propertyDefinition );
 }
 

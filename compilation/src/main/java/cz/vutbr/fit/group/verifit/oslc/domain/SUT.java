@@ -59,10 +59,12 @@ import org.eclipse.lyo.oslc4j.core.model.ResourceShapeFactory;
 import cz.vutbr.fit.group.verifit.oslc.domain.FitDomainConstants;
 
 
+import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import cz.vutbr.fit.group.verifit.oslc.domain.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsVocabularyConstants;
+import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.Person;
 // Start of user code imports
 // End of user code
@@ -106,6 +108,9 @@ public class SUT
     // Start of user code attributeAnnotation:creator
     // End of user code
     private Set<Link> creator = new HashSet<Link>();
+    // Start of user code attributeAnnotation:producedByAutomationRequest
+    // End of user code
+    private Link producedByAutomationRequest;
     
     // Start of user code classAttributes
     // End of user code
@@ -300,6 +305,21 @@ public class SUT
         return creator;
     }
     
+    // Start of user code getterAnnotation:producedByAutomationRequest
+    // End of user code
+    @OslcName("producedByAutomationRequest")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "producedByAutomationRequest")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.Resource)
+    @OslcRange({Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE})
+    @OslcReadOnly(false)
+    public Link getProducedByAutomationRequest()
+    {
+        // Start of user code getterInit:producedByAutomationRequest
+        // End of user code
+        return producedByAutomationRequest;
+    }
+    
     
     // Start of user code setterAnnotation:launchCommand
     // End of user code
@@ -410,6 +430,18 @@ public class SUT
         }
     
         // Start of user code setterFinalize:creator
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:producedByAutomationRequest
+    // End of user code
+    public void setProducedByAutomationRequest(final Link producedByAutomationRequest )
+    {
+        // Start of user code setterInit:producedByAutomationRequest
+        // End of user code
+        this.producedByAutomationRequest = producedByAutomationRequest;
+    
+        // Start of user code setterFinalize:producedByAutomationRequest
         // End of user code
     }
     

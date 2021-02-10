@@ -116,10 +116,10 @@ public class SutAnalyse extends RequestRunner
 			{
 				resAutoResult.setState(new HashSet<Link>());
 				resAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS)));
-				VeriFitAnalysisManager.updateAutomationResult(resAutoResult, resAutoResultId);
+				VeriFitAnalysisManager.updateAutomationResult(null, resAutoResult, resAutoResultId);
 				execAutoRequest.setState(new HashSet<Link>());
 				execAutoRequest.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS)));
-				VeriFitAnalysisManager.updateAutomationRequest(execAutoRequest, execAutoRequestId);
+				VeriFitAnalysisManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
 			}
 
 		    // prepare stdin & stdout contributions
@@ -250,10 +250,10 @@ public class SutAnalyse extends RequestRunner
 			resAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
 			resAutoResult.setVerdict(new HashSet<Link>());
 			resAutoResult.addVerdict(new Link(new URI(executionVerdict)));
-			VeriFitAnalysisManager.updateAutomationResult(resAutoResult, getResourceIdFromUri(resAutoResult.getAbout()));
+			VeriFitAnalysisManager.updateAutomationResult(null, resAutoResult, getResourceIdFromUri(resAutoResult.getAbout()));
 			execAutoRequest.setState(new HashSet<Link>());
 			execAutoRequest.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
-			VeriFitAnalysisManager.updateAutomationRequest(execAutoRequest, execAutoRequestId);
+			VeriFitAnalysisManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
 
 			// end the request execution (in case it is part of a request queue)
 			VeriFitAnalysisManager.finishedAutomationRequestExecution(execAutoRequest);

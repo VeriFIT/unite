@@ -60,11 +60,9 @@ import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 
 
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
-import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsVocabularyConstants;
-import org.eclipse.lyo.oslc.domains.FoafVocabularyConstants;
 import org.eclipse.lyo.oslc.domains.RdfVocabularyConstants;
 
 // Start of user code imports
@@ -82,9 +80,6 @@ public class ParameterInstance
     extends AbstractResource
     implements IParameterInstance
 {
-    // Start of user code attributeAnnotation:name
-    // End of user code
-    private String name;
     // Start of user code attributeAnnotation:value
     // End of user code
     private String value;
@@ -100,6 +95,9 @@ public class ParameterInstance
     // Start of user code attributeAnnotation:serviceProvider
     // End of user code
     private Set<Link> serviceProvider = new HashSet<Link>();
+    // Start of user code attributeAnnotation:name
+    // End of user code
+    private String name;
     
     // Start of user code classAttributes
     // End of user code
@@ -170,21 +168,6 @@ public class ParameterInstance
         this.serviceProvider.add(serviceProvider);
     }
     
-    
-    // Start of user code getterAnnotation:name
-    // End of user code
-    @OslcName("name")
-    @OslcPropertyDefinition(FoafVocabularyConstants.FOAF_NAMSPACE + "name")
-    @OslcDescription("The full name of a person expressed as simple text string.")
-    @OslcOccurs(Occurs.ExactlyOne)
-    @OslcValueType(ValueType.String)
-    @OslcReadOnly(false)
-    public String getName()
-    {
-        // Start of user code getterInit:name
-        // End of user code
-        return name;
-    }
     
     // Start of user code getterAnnotation:value
     // End of user code
@@ -262,18 +245,21 @@ public class ParameterInstance
         return serviceProvider;
     }
     
-    
-    // Start of user code setterAnnotation:name
+    // Start of user code getterAnnotation:name
     // End of user code
-    public void setName(final String name )
+    @OslcName("name")
+    @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "name")
+    @OslcDescription("Name of property being defined, i.e. second part of property's Prefixed Name")
+    @OslcOccurs(Occurs.ExactlyOne)
+    @OslcValueType(ValueType.String)
+    @OslcReadOnly(false)
+    public String getName()
     {
-        // Start of user code setterInit:name
+        // Start of user code getterInit:name
         // End of user code
-        this.name = name;
-    
-        // Start of user code setterFinalize:name
-        // End of user code
+        return name;
     }
+    
     
     // Start of user code setterAnnotation:value
     // End of user code
@@ -344,6 +330,18 @@ public class ParameterInstance
         }
     
         // Start of user code setterFinalize:serviceProvider
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:name
+    // End of user code
+    public void setName(final String name )
+    {
+        // Start of user code setterInit:name
+        // End of user code
+        this.name = name;
+    
+        // Start of user code setterFinalize:name
         // End of user code
     }
     

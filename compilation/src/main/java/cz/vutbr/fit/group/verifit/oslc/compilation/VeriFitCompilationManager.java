@@ -26,7 +26,6 @@ import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 import cz.vutbr.fit.group.verifit.oslc.compilation.servlet.ServiceProviderCatalogSingleton;
 import cz.vutbr.fit.group.verifit.oslc.compilation.ServiceProviderInfo;
-
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
@@ -52,7 +51,6 @@ import javax.ws.rs.core.Response.Status;
 
 
 // Start of user code imports
-import cz.vutbr.fit.group.verifit.oslc.compilation.persistance.Persistence;
 import cz.vutbr.fit.group.verifit.oslc.compilation.automationPlans.AutomationPlanDefinition;
 import cz.vutbr.fit.group.verifit.oslc.compilation.automationPlans.SutDeployAutoPlanExecution;
 import cz.vutbr.fit.group.verifit.oslc.compilation.exceptions.OslcResourceException;
@@ -88,8 +86,6 @@ public class VeriFitCompilationManager {
     private static StorePool storePool;
     
     // Start of user code class_attributes
-	static Persistence store;
-	
 	static ResourceIdGen AutoPlanIdGen;
 	static ResourceIdGen AutoRequestIdGen;
 	
@@ -190,76 +186,27 @@ public class VeriFitCompilationManager {
 			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationPlan"));
 			
 			// persist in the triplestore
-			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
+	        Store store = storePool.getStore();
+	        try {
+	            URI uri = newResource.getAbout();
+	            
+	            aResource.setAbout(uri);
+	            try {
+	                store.updateResources(storePool.getDefaultNamedGraphUri(), aResource);
+	            } catch (StoreAccessException e) {
+	                log.error("Failed to create resource: '" + aResource.getAbout() + "'", e);            
+	                throw new WebApplicationException("Failed to create resource: '" + aResource.getAbout() + "'", e, Status.INTERNAL_SERVER_ERROR);
+	            }
+	        } finally {
+	            storePool.releaseStore(store);
+	        }
+	        newResource = aResource;
 
-		} catch (URISyntaxException e) {
-			// TODO should never be thrown (URI syntax)
-			e.printStackTrace();
-			
-		} catch (StoreAccessException e) {
+		} catch (WebApplicationException e) {
 			throw new StoreAccessException("AutomationPlan creation failed: " + e.getMessage());
 		}
 		
 		return newResource;
-    }
-    
-
-    /**
-     * Updates an AutomationRequest in the Adapter's catalog. The old resource is replaced with the new one.
-     * @param changedResource		This resource will be used as replacement for the old resource.
-     * @param serviceProviderId		ID of the service provider for the updated resource.
-     * @param automationRequestId	ID of the AutomationRequest to update
-     * @return						The updated resource.
-     */
-    public static AutomationRequest updateAutomationRequest(AutomationRequest changedResource, final String serviceProviderId, final String automationRequestId)
-    {
-    	AutomationRequest updatedResource = null;
-
-    	changedResource.setModified(new Date());
-  
-    	try {
-    		
-			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), changedResource);
-			
-		} catch (StoreAccessException e) {
-			System.out.println("WARNING: AutomationRequest update failed: " + e.getMessage());
-			
-		} catch (URISyntaxException e) {
-			// TODO should never be thrown (URI syntax)
-			e.printStackTrace();
-		}
-    	updatedResource = changedResource;
-    	
-        return updatedResource;
-    }
-
-    /**
-     * Updates an AutomationResult in the Adapter's catalog. The old resource is replaced with the new one.
-     * @param changedResource		This resource will be used as replacement for the old resource.
-     * @param serviceProviderId		ID of the service provider for the updated resource.
-     * @param automationResultId	ID of the AutomationResult to update
-     * @return						The updated resource.
-     */
-    public static AutomationResult updateAutomationResult(AutomationResult changedResource, final String serviceProviderId, final String automationResultId)
-    {
-    	AutomationResult updatedResource = null;
-
-    	changedResource.setModified(new Date());
-  
-    	try {
-    		
-			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), changedResource);
-			
-		} catch (StoreAccessException e) {
-			System.out.println("WARNING: AutomationResult update failed: " + e.getMessage());
-			
-		} catch (URISyntaxException e) {
-			// TODO should never be thrown (URI syntax)
-			e.printStackTrace();
-		}
-    	updatedResource = changedResource;
-    	
-        return updatedResource;
     }
     
     /**
@@ -296,13 +243,31 @@ public class VeriFitCompilationManager {
 			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationResult"));
 		
 			// persist in the triplestore
-			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
-			
+	        Store store = storePool.getStore();
+	        try {
+	            URI uri = newResource.getAbout();
+	            
+	            if (store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
+	                log.error("Cannot create a resource that already exists: '" + uri + "'");
+	                throw new WebApplicationException("Cannot create a resource that already exists: '" + uri + "'", Status.SEE_OTHER);
+	            }
+	            aResource.setAbout(uri);
+	            try {
+	                store.appendResource(storePool.getDefaultNamedGraphUri(), aResource);
+	            } catch (StoreAccessException e) {
+	                log.error("Failed to create resource: '" + aResource.getAbout() + "'", e);            
+	                throw new WebApplicationException("Failed to create resource: '" + aResource.getAbout() + "'", e, Status.INTERNAL_SERVER_ERROR);
+	            }
+	        } finally {
+	            storePool.releaseStore(store);
+	        }
+	        newResource = aResource;
+
 		} catch (URISyntaxException e) {
 			// TODO should never be thrown (URI syntax)
 			e.printStackTrace();
 			
-		} catch (StoreAccessException e) {
+		} catch (WebApplicationException e) {
 			System.out.println("WARNING: AutomationResult creation failed: " + e.getMessage());
 		}
 		
@@ -312,11 +277,10 @@ public class VeriFitCompilationManager {
     /**
 	 * Creates a Contribution resource with the specified properties.
 	 * @param aResource			The new resource will copy properties from the specified aResource.
-	 * @param serviceProviderId	ID of the service provider for the new resource.
 	 * @param newID				ID for the new resource
 	 * @return					The newly created resource. Or null if one of the required properties was missing.
 	 */
-    public static Contribution createContribution(final Contribution aResource, final String serviceProviderId)
+    public static Contribution createContribution(final Contribution aResource)
     {
     	Contribution newResource = null;
 
@@ -394,7 +358,7 @@ public class VeriFitCompilationManager {
 
 				// add the default value as an output parameter to the Automation Result
 				ParameterInstance outputParameter = null;
-				try { outputParameter = new ParameterInstance(); } catch (URISyntaxException e) { /* should never be thrown --> just to make the compiler happy */}
+				outputParameter = new ParameterInstance();
 				outputParameter.setName(definedParam.getName());
 				outputParameter.setValue(definedParam.getDefaultValue());
 				newAutoResult.addOutputParameter(outputParameter);
@@ -444,11 +408,10 @@ public class VeriFitCompilationManager {
     /**
 	 * Creates an SUT resource with the specified properties, and stores in the Adapter's catalog.
      * @param aResource			The new resource will copy properties from the specified aResource.
-     * @param serviceProviderId	ID of the service provider for the new resource.
      * @param newID				ID to assign to the new SUT (meant to be the same as the Request ID)
      * @return					The newly created resource. Or null if one of the required properties was missing.
      */
-    public static SUT createSUT(final SUT aResource, final String serviceProviderId, final String newID) 
+    public static SUT createSUT(final SUT aResource, final String newID) 
     {    	
     	SUT newResource = null;
     	
@@ -470,13 +433,27 @@ public class VeriFitCompilationManager {
 			//TODO
 			
 			// persist in the triplestore
-			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
+	        Store store = storePool.getStore();
+	        try {
+	            URI uri = newResource.getAbout();
+	            
+	            if (store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
+	                log.error("Cannot create a resource that already exists: '" + uri + "'");
+	                throw new WebApplicationException("Cannot create a resource that already exists: '" + uri + "'", Status.SEE_OTHER);
+	            }
+	            aResource.setAbout(uri);
+	            try {
+	                store.appendResource(storePool.getDefaultNamedGraphUri(), aResource);
+	            } catch (StoreAccessException e) {
+	                log.error("Failed to create resource: '" + aResource.getAbout() + "'", e);            
+	                throw new WebApplicationException("Failed to create resource: '" + aResource.getAbout() + "'", e, Status.INTERNAL_SERVER_ERROR);
+	            }
+	        } finally {
+	            storePool.releaseStore(store);
+	        }
+	        newResource = aResource;
 
-		} catch (URISyntaxException e) {
-			// TODO should never be thrown (URI syntax)
-			e.printStackTrace();
-			
-		} catch (StoreAccessException e) {
+		} catch (WebApplicationException e) {
 			System.out.println("WARNING: SUT creation failed: " + e.getMessage());
 		}
 		
@@ -537,48 +514,7 @@ public class VeriFitCompilationManager {
     	// connect to the triplestore
     	String sSparqlQueryEndpoint = VeriFitCompilationProperties.SPARQL_SERVER_QUERY_ENDPOINT;
     	String sSparqlUpdateEndpoint = VeriFitCompilationProperties.SPARQL_SERVER_UPDATE_ENDPOINT; 
-		try {
-			store = new Persistence(sSparqlQueryEndpoint, sSparqlUpdateEndpoint);
-		} catch (IOException e) {
-			System.out.println("ERROR: Adapter configuration: " + e.getMessage());
-			System.exit(1);
-		}
-
-    	// create predefined AutomationPlans
-		try {
-			AutoPlanIdGen = new ResourceIdGen();
-			if (!AutomationPlanDefinition.checkPredefinedAutomationPlans())
-			{
-				AutomationPlanDefinition.createPredefinedAutomationPlans();
-			}
-		} catch (StoreAccessException e) {
-			System.out.println("ERROR: Adapter initialization: Predefined AutomationPlan creation: " + e.getMessage());
-			System.exit(1);
-		}
-		
-		// check what the last AutomationRequest ID is
-    	// requests have a numerical ID
-    	int initReqId = 0;
-    	try {
-			List<AutomationRequest> listAutoRequests =  store.getResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), AutomationRequest.class);
-			for (AutomationRequest autoReq : listAutoRequests)
-			{
-				int reqId = Integer.parseInt(getResourceIdFromUri(autoReq.getAbout()));
-				if ( reqId >= initReqId)
-				{
-					initReqId = reqId + 1;
-				}
-			}		
-		} catch (StoreAccessException e) { 
-			System.out.println("ERROR: Adapter initialization: Failed to get latest AutomationRequest ID: " + e.getMessage());
-			System.exit(1);
-			
-		} catch (URISyntaxException e) {
-			// TODO should never be thrown (URI syntax)
-			e.printStackTrace();
-		}		
-		AutoRequestIdGen = new ResourceIdGen(initReqId);
-		
+    	
         // End of user code
         // Start of user code StoreInitialise
         // End of user code
@@ -596,9 +532,9 @@ public class VeriFitCompilationManager {
         URI sparqlQueryEndpoint;
         URI sparqlUpdateEndpoint;
         try {
-            defaultNamedGraph = new URI(lyoStoreProperties.getProperty("defaultNamedGraph"));
-            sparqlQueryEndpoint = new URI(lyoStoreProperties.getProperty("sparqlQueryEndpoint"));
-            sparqlUpdateEndpoint = new URI(lyoStoreProperties.getProperty("sparqlUpdateEndpoint"));
+            defaultNamedGraph = new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES);
+            sparqlQueryEndpoint = new URI(VeriFitCompilationProperties.SPARQL_SERVER_QUERY_ENDPOINT);
+            sparqlUpdateEndpoint = new URI(VeriFitCompilationProperties.SPARQL_SERVER_UPDATE_ENDPOINT);
         } catch (URISyntaxException e) {
             log.error("Failed to initialize Store. One of the configuration property ('defaultNamedGraph' or 'sparqlQueryEndpoint' or 'sparqlUpdateEndpoint') is not a valid URI.", e);
             throw new RuntimeException(e);
@@ -607,6 +543,59 @@ public class VeriFitCompilationManager {
         String password = null;
         storePool = new StorePool(initialPoolSize, defaultNamedGraph, sparqlQueryEndpoint, sparqlUpdateEndpoint, userName, password);
         // Start of user code StoreFinalize
+        
+        // check that the store is online
+        Store store = storePool.getStore();
+		try {
+			// Check the triplestore connection. Dont care if the graph exists or not, will be created later if needed
+			store.namedGraphExists(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES));
+			
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+			
+		} catch (Exception e) {
+			String hint = "Is the triplestore running?";
+			if (e.getMessage() == null)
+				hint = "Are the endpoints correct? (server context, data set, endpoint)";
+	
+			System.out.println("ERROR: Adapter configuration: SPARQL triplestore initialization failed: " + e.getMessage()
+			+ "\n  Current configuration:\n    - query endpoint: " + sparqlQueryEndpoint + "\n    - update endpoint: " + sparqlUpdateEndpoint
+			+ "\n\n  " + hint);
+			System.exit(1);
+		}
+        
+    	// create predefined AutomationPlans
+		try {
+			AutoPlanIdGen = new ResourceIdGen();
+			if (!AutomationPlanDefinition.checkPredefinedAutomationPlans())
+			{
+				AutomationPlanDefinition.createPredefinedAutomationPlans();
+			}
+		} catch (StoreAccessException e) {
+			System.out.println("ERROR: Adapter initialization: Predefined AutomationPlan creation: " + e.getMessage());
+			System.exit(1);
+		}
+		
+		// check what the last AutomationRequest ID is
+    	// requests have a numerical ID
+    	int initReqId = 0;
+    	try {
+			List<AutomationRequest> listAutoRequests = VeriFitCompilationManager.queryAutomationRequests(null, "", "", 0, 100); // TODO check that it works -- should get max ID
+			for (AutomationRequest autoReq : listAutoRequests)
+			{
+				int reqId = Integer.parseInt(getResourceIdFromUri(autoReq.getAbout()));
+				if ( reqId >= initReqId)
+				{
+					initReqId = reqId + 1;
+				}
+			}		
+		} catch (WebApplicationException e) { 
+			System.out.println("ERROR: Adapter initialization: Failed to get latest AutomationRequest ID: " + e.getMessage());
+			System.exit(1);
+		}		
+		AutoRequestIdGen = new ResourceIdGen(initReqId);
+        
         // End of user code
         
     }
@@ -848,8 +837,7 @@ public class VeriFitCompilationManager {
     {
         AutomationRequest newResource = null;
         
-        
-        // Start of user code createAutomationRequest
+        // Start of user code createAutomationRequest_storeInit
 
         /*
          * Check that the predefined AutomationPlans exist
@@ -862,7 +850,9 @@ public class VeriFitCompilationManager {
 			throw new  WebApplicationException("Failed to get AutomationPlans. Is the triplestore still online?"
 					+ " If yes, then it may be corrupted. Try restarting the Adapter.", 400); // TODO
 		}
- 
+        
+        Map<String, String> inputParamsMap = null;
+        AutomationResult newAutoResult = null;
 		try {
 			// error response on empty creation POST
 	        if (aResource == null)
@@ -902,21 +892,16 @@ public class VeriFitCompilationManager {
 			propAutoResult.addVerdict(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_VERDICT_UNAVAILABLE)));
 			
 			// get the executed autoPlan, check input parameters, add output parameters to the AutoResult, and make an input map for the runner
-			Map<String, String> inputParamsMap = processAutoReqInputParams(newResource, propAutoResult);
+			inputParamsMap = processAutoReqInputParams(newResource, propAutoResult);
 			
 			// check that the request contains exactly one "source.*" parameter (can not be checked automatically based on the AutoPlan
 			// throws an exception if the Inputs are not OK
 			checkSutDeploySourceInputs(newResource);
 			
 			// persist the AutomationResult and set the setProducedAutomationResult() link for the AutoRequest
-		    AutomationResult newAutoResult = VeriFitCompilationManager.createAutomationResult(propAutoResult, newID);
+		    newAutoResult = VeriFitCompilationManager.createAutomationResult(propAutoResult, newID);
 			newResource.setProducedAutomationResult(new Link(newAutoResult.getAbout())); // TODO
 			
-			// persist in the triplestore
-			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
-			
-			// create a new thread to execute the automation request // TODO
-			new SutDeployAutoPlanExecution(newResource, newAutoResult, inputParamsMap);	
 
 		} catch (OslcResourceException e) {
 			//throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
@@ -932,6 +917,39 @@ public class VeriFitCompilationManager {
 			throw new  WebApplicationException("AutomationRequest NOT created - " + e.getMessage(), 400); // TODO
 		}
 		
+        // End of user code
+        Store store = storePool.getStore();
+        try {
+            URI uri = null;
+            // Start of user code createAutomationRequest_storeSetUri
+            
+            uri = newResource.getAbout();
+            
+            // End of user code
+            if (store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
+                log.error("Cannot create a resource that already exists: '" + uri + "'");
+                throw new WebApplicationException("Cannot create a resource that already exists: '" + uri + "'", Status.SEE_OTHER);
+            }
+            aResource.setAbout(uri);
+            try {
+                store.appendResource(storePool.getDefaultNamedGraphUri(), aResource);
+            } catch (StoreAccessException e) {
+                log.error("Failed to create resource: '" + aResource.getAbout() + "'", e);            
+                throw new WebApplicationException("Failed to create resource: '" + aResource.getAbout() + "'", e, Status.INTERNAL_SERVER_ERROR);
+            }
+        } finally {
+            storePool.releaseStore(store);
+        }
+        newResource = aResource;
+        // Start of user code createAutomationRequest_storeFinalize
+
+		// create a new thread to execute the automation request
+		new SutDeployAutoPlanExecution(newResource, newAutoResult, inputParamsMap);
+		
+        // End of user code
+        
+        // Start of user code createAutomationRequest
+        
         // End of user code
         return newResource;
     }
@@ -982,6 +1000,19 @@ public class VeriFitCompilationManager {
     public static Boolean deleteAutomationRequest(HttpServletRequest httpServletRequest, final String id)
     {
         Boolean deleted = false;
+        // Start of user code deleteAutomationRequest_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationRequest(id);
+        if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
+            log.error("Cannot delete a resource that does not already exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot delete a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+        }
+        store.deleteResources(storePool.getDefaultNamedGraphUri(), uri);
+        storePool.releaseStore(store);
+        deleted = true;
+        // Start of user code deleteAutomationRequest_storeFinalize
+        // End of user code
         
         // Start of user code deleteAutomationRequest
         // TODO Implement code to delete a resource
@@ -992,10 +1023,31 @@ public class VeriFitCompilationManager {
 
     public static AutomationRequest updateAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource, final String id) {
         AutomationRequest updatedResource = null;
+        // Start of user code updateAutomationRequest_storeInit
+
+        aResource.setModified(new Date());
+        
+        // End of user code
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationRequest(id);
+        if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
+            log.error("Cannot update a resource that does not already exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot update a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+        }
+        aResource.setAbout(uri);
+        try {
+            store.updateResources(storePool.getDefaultNamedGraphUri(), aResource);
+        } catch (StoreAccessException e) {
+            log.error("Failed to update resource: '" + uri + "'", e);
+            throw new WebApplicationException("Failed to update resource: '" + uri + "'", e);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        updatedResource = aResource;
+        // Start of user code updateAutomationRequest_storeFinalize
+        // End of user code
         
         // Start of user code updateAutomationRequest
-        // TODO Implement code to update and return a resource
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code
         return updatedResource;
     }
@@ -1060,7 +1112,60 @@ public class VeriFitCompilationManager {
         return aResource;
     }
 
+    public static Boolean deleteAutomationResult(HttpServletRequest httpServletRequest, final String id)
+    {
+        Boolean deleted = false;
+        // Start of user code deleteAutomationResult_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationResult(id);
+        if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
+            log.error("Cannot delete a resource that does not already exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot delete a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+        }
+        store.deleteResources(storePool.getDefaultNamedGraphUri(), uri);
+        storePool.releaseStore(store);
+        deleted = true;
+        // Start of user code deleteAutomationResult_storeFinalize
+        // End of user code
+        
+        // Start of user code deleteAutomationResult
+        // TODO Implement code to delete a resource
+        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        // End of user code
+        return deleted;
+    }
 
+    public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, final AutomationResult aResource, final String id) {
+        AutomationResult updatedResource = null;
+        // Start of user code updateAutomationResult_storeInit
+
+        aResource.setModified(new Date());
+    	
+        // End of user code
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationResult(id);
+        if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
+            log.error("Cannot update a resource that does not already exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot update a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+        }
+        aResource.setAbout(uri);
+        try {
+            store.updateResources(storePool.getDefaultNamedGraphUri(), aResource);
+        } catch (StoreAccessException e) {
+            log.error("Failed to update resource: '" + uri + "'", e);
+            throw new WebApplicationException("Failed to update resource: '" + uri + "'", e);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        updatedResource = aResource;
+        // Start of user code updateAutomationResult_storeFinalize
+        // End of user code
+        
+        // Start of user code updateAutomationResult
+        // End of user code
+        return updatedResource;
+    }
     public static SUT getSUT(HttpServletRequest httpServletRequest, final String id)
     {
         SUT aResource = null;

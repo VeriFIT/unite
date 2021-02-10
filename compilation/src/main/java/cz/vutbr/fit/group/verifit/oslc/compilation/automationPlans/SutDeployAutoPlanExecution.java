@@ -134,10 +134,10 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			// set the states of the Automation Result and Request to "inProgress"
 			resAutoResult.setState(new HashSet<Link>());
 			resAutoResult.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_INPROGRESS)));
-			VeriFitCompilationManager.updateAutomationResult(resAutoResult, resAutoResultId);
+			VeriFitCompilationManager.updateAutomationResult(null, resAutoResult, resAutoResultId);
 			execAutoRequest.setState(new HashSet<Link>());
 			execAutoRequest.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_INPROGRESS)));
-			VeriFitCompilationManager.updateAutomationRequest(execAutoRequest, execAutoRequestId);
+			VeriFitCompilationManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
 			
 			
 		    // prepare result contributions - program fetching, compilation
@@ -247,10 +247,10 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			resAutoResult.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));
 			resAutoResult.setVerdict(new HashSet<Link>());
 			resAutoResult.addVerdict(new Link(new URI(executionVerdict)));
-			VeriFitCompilationManager.updateAutomationResult(resAutoResult, VeriFitCompilationManager.getResourceIdFromUri(resAutoResult.getAbout()));
+			VeriFitCompilationManager.updateAutomationResult(null, resAutoResult, VeriFitCompilationManager.getResourceIdFromUri(resAutoResult.getAbout()));
 			execAutoRequest.setState(new HashSet<Link>());
 			execAutoRequest.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));
-			VeriFitCompilationManager.updateAutomationRequest(execAutoRequest, execAutoRequestId);
+			VeriFitCompilationManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
 				
 		} catch (URISyntaxException e) {
 			// TODO should never be thrown (URI syntax)
