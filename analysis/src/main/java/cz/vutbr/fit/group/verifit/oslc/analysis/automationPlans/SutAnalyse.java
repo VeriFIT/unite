@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package verifit.analysis.automationPlans;
+package cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,15 +28,15 @@ import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 
-import verifit.analysis.VeriFitAnalysisConstants;
-import verifit.analysis.VeriFitAnalysisManager;
-import verifit.analysis.VeriFitAnalysisResourcesFactory;
-import verifit.analysis.utils;
-import verifit.analysis.outputParser.ParserManager;
-import verifit.analysis.resources.SUT;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisConstants;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisResourcesFactory;
+import cz.vutbr.fit.group.verifit.oslc.analysis.utils;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.ParserManager;
+import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
 
-import static verifit.analysis.utils.getResourceIdFromUri;
+import static cz.vutbr.fit.group.verifit.oslc.analysis.utils.getResourceIdFromUri;
 
 /**
  * A thread for executing analysis of an SUT.
@@ -45,7 +45,6 @@ import static verifit.analysis.utils.getResourceIdFromUri;
  */
 public class SutAnalyse extends RequestRunner
 {
-	final private String serviceProviderId;
 	final private String execAutoRequestId;
 	private AutomationRequest execAutoRequest;
 	final private String resAutoResultId;
@@ -63,11 +62,10 @@ public class SutAnalyse extends RequestRunner
 	 * @param execSut			Executed SUT resource object
 	 * @param inputParamsMap	Input parameters as a map of "name" => "(value, position)"
 	 */
-	public SutAnalyse(String serviceProviderId, AutomationRequest execAutoRequest, AutomationResult resAutoResult, SUT execSut, Map<String, Pair<String,Integer>> inputParamsMap) 
+	public SutAnalyse(AutomationRequest execAutoRequest, AutomationResult resAutoResult, SUT execSut, Map<String, Pair<String,Integer>> inputParamsMap) 
 	{
 		super();
 		
-		this.serviceProviderId = serviceProviderId;
 		this.inputParamsMap = inputParamsMap;
 		this.execAutoRequestId = getResourceIdFromUri(execAutoRequest.getAbout());
 		this.execAutoRequest = execAutoRequest;
@@ -118,10 +116,10 @@ public class SutAnalyse extends RequestRunner
 			{
 				resAutoResult.setState(new HashSet<Link>());
 				resAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS)));
-				VeriFitAnalysisManager.updateAutomationResult(resAutoResult, serviceProviderId, resAutoResultId);
+				VeriFitAnalysisManager.updateAutomationResult(resAutoResult, resAutoResultId);
 				execAutoRequest.setState(new HashSet<Link>());
 				execAutoRequest.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS)));
-				VeriFitAnalysisManager.updateAutomationRequest(execAutoRequest, serviceProviderId, execAutoRequestId);
+				VeriFitAnalysisManager.updateAutomationRequest(execAutoRequest, execAutoRequestId);
 			}
 
 		    // prepare stdin & stdout contributions
@@ -194,7 +192,7 @@ public class SutAnalyse extends RequestRunner
 				modifFiles.add(currFile);
 			    Contribution newOrModifFile = new Contribution();
 	    		String fileId = currFile.getPath().replaceAll("/", "%2F"); // encode slashes in the file path
-			    newOrModifFile.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(serviceProviderId, fileId));
+			    newOrModifFile.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(fileId));
 			    newOrModifFile.setDescription("This file was modified or created during execution of this Automation Request. "
 			    		+ "To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property. "
 			    		+ "To modify the file send a regular OSLC update PUT request for a Contribution resource to the URI in fit:fileURI."); // TODO
@@ -229,7 +227,7 @@ public class SutAnalyse extends RequestRunner
 					zipFiles(modifFiles, pathToDir, pathToZip);
 
 					String fileId =  pathToZip.toString().replaceAll("/", "%2F"); // encode slashes in the file path
-					zipedContribs.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(serviceProviderId, fileId));
+					zipedContribs.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(fileId));
 					zipedContribs.setDescription("This is a ZIP of all other file contributions. "
 							+ "To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property."); // TODO
 					zipedContribs.setTitle(zipName);
@@ -252,10 +250,10 @@ public class SutAnalyse extends RequestRunner
 			resAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
 			resAutoResult.setVerdict(new HashSet<Link>());
 			resAutoResult.addVerdict(new Link(new URI(executionVerdict)));
-			VeriFitAnalysisManager.updateAutomationResult(resAutoResult, serviceProviderId, getResourceIdFromUri(resAutoResult.getAbout()));
+			VeriFitAnalysisManager.updateAutomationResult(resAutoResult, getResourceIdFromUri(resAutoResult.getAbout()));
 			execAutoRequest.setState(new HashSet<Link>());
 			execAutoRequest.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
-			VeriFitAnalysisManager.updateAutomationRequest(execAutoRequest, serviceProviderId, execAutoRequestId);
+			VeriFitAnalysisManager.updateAutomationRequest(execAutoRequest, execAutoRequestId);
 
 			// end the request execution (in case it is part of a request queue)
 			VeriFitAnalysisManager.finishedAutomationRequestExecution(execAutoRequest);

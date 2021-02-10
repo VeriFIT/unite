@@ -8,12 +8,12 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package verifit.analysis.outputParser;
+package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser;
 
 import java.util.List;
 import java.util.Map;
 
-import verifit.analysis.VeriFitAnalysisConstants;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisConstants;
 
 public class NoBinaryFileValuesParser extends BasicParser implements IParser {
 

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <!-- Start of user code header
     -->
-    <!-- TODO: Add additional header properties here to avoid them be overrriden upon future re-generation -->
+
     <!-- End of user code
     -->
     <groupId>cz.vutbr.fit.group.verifit.oslc.compilation</groupId>
@@ -23,14 +23,14 @@
         <swagger-ui.version>3.25.0</swagger-ui.version>
         <!-- Start of user code properties
         -->
-        <!-- TODO: Add additional properties here to avoid them be overrriden upon future re-generation -->
+
         <!-- End of user code
         -->
     </properties>
     <repositories>
         <!-- Start of user code repositories
         -->
-        <!-- TODO: Add additional repositories here to avoid them be overrriden upon future re-generation -->
+
         <!-- End of user code
         -->
         <repository>
@@ -58,12 +58,20 @@
         <!-- Specific dependencies -->
         <!-- Start of user code dependencies
         -->
-        <!-- TODO: Add additional dependencies here to avoid them be overrriden upon future re-generation -->
+        
         <dependency>
             <groupId>org.eclipse.lyo</groupId>
             <artifactId>oslc-domains</artifactId>
             <version>${version.lyo}</version>
         </dependency>
+        
+		<!-- GIT dependencies https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
+		<dependency>
+		    <groupId>org.eclipse.jgit</groupId>
+		    <artifactId>org.eclipse.jgit</artifactId>
+		    <version>4.8.0.201706111038-r</version>
+		</dependency>
+		
         <!-- End of user code
         -->
         <!-- General dependencies -->
@@ -127,6 +135,7 @@
     </dependencies>
     <!-- Start of user code post_dependencies
     -->
+    
     <!-- End of user code
     -->
     <build>
@@ -134,7 +143,69 @@
         <plugins>
             <!-- Start of user code plugins
             -->
-            <!-- TODO: Add additional plugins here to avoid them be overrriden upon future re-generation -->
+            
+			<!-- load & set properties -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<id>load</id>
+						<phase>initialize</phase>
+						<goals>
+						<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+						<files>
+							<file>${project.basedir}/VeriFitCompilation.properties</file>
+						</files>
+						</configuration>
+					</execution>
+					<execution>
+						<id>set</id>
+						<goals>
+							<goal>set-system-properties</goal>
+						</goals>
+						<configuration>
+							<properties>
+								<property>
+									<name>jetty.port</name>
+									<value>${adapter_port}</value>
+								</property>
+								<!-- add this for HTTPS
+								<property>
+									<name>https.port</name>
+									<value>${adapter_port}</value>
+								</property>
+								-->
+							</properties>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<!-- .war creation -->
+			<!-- TODO needed?
+      		<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-war-plugin</artifactId>
+			    <configuration>
+			        <webResources>
+			            <resource>
+			                <filtering>true</filtering>
+			                <directory>src/main/webapp</directory>
+			                <includes>
+			                    <include>**/web.xml</include>
+			                </includes>
+			            </resource>
+			        </webResources>
+			        <warSourceDirectory>src/main/webapp</warSourceDirectory>
+			        <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+			    </configuration>
+			</plugin>
+			-->
+			
             <!-- End of user code
             -->
             <plugin>
@@ -147,14 +218,10 @@
                     </webAppConfig>
                     <reload>automatic</reload>
                     <scanIntervalSeconds>5</scanIntervalSeconds>
-                    <systemProperties>
-                        <systemProperty>
-                            <name>jetty.port</name>
-                            <value>8081</value>
-                        </systemProperty>
-                    </systemProperties>
-                    <stopKey />
-                    <stopPort />
+					<jettyXml>
+				      ${project.basedir}/src/main/webapp/jetty-config/jetty.xml,${project.basedir}/src/main/webapp/jetty-config/jetty-http.xml
+				      <!-- add this for HTTPS ,${project.basedir}/src/main/webapp/jetty-config/jetty-ssl.xml,${project.basedir}/src/main/webapp/jetty-config/jetty-https.xml-->
+				    </jettyXml>
                 </configuration>
             </plugin>
             <!-- Swagger-ui -->

@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package verifit.compilation.automationPlans.sutFetcher;
+package cz.vutbr.fit.group.verifit.oslc.compilation.automationPlans.sutFetcher;
 
 import java.io.IOException;
 import java.net.URI;
@@ -18,7 +18,7 @@ import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 
-import verifit.compilation.VeriFitCompilationManager;
+import cz.vutbr.fit.group.verifit.oslc.compilation.VeriFitCompilationManager;
 
 public class SutFetchUrl implements SutFetcher {
 

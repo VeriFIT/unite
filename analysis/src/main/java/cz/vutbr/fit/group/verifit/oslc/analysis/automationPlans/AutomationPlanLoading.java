@@ -8,14 +8,13 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package verifit.analysis.automationPlans;
+package cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans;
 
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
-import org.eclipse.lyo.oslc4j.provider.jena.LyoJenaModelException;
 import org.eclipse.lyo.store.StoreAccessException;
-import verifit.analysis.VeriFitAnalysisManager;
-import verifit.analysis.VeriFitAnalysisProperties;
-import verifit.analysis.exceptions.OslcResourceException;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisProperties;
+import cz.vutbr.fit.group.verifit.oslc.analysis.exceptions.OslcResourceException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,9 +24,9 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Properties;
 
-import static verifit.analysis.automationPlans.AutomationPlanDefinition.getDummyAutomationPlanConf;
-import static verifit.analysis.automationPlans.AutomationPlanDefinition.getDummyAutomationPlanDefinition;
-import static verifit.analysis.utils.parseResourcesFromXmlFile;
+import static cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanDefinition.getDummyAutomationPlanConf;
+import static cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanDefinition.getDummyAutomationPlanDefinition;
+import static cz.vutbr.fit.group.verifit.oslc.analysis.utils.parseResourcesFromXmlFile;
 
 public class AutomationPlanLoading {
 
@@ -75,7 +74,7 @@ public class AutomationPlanLoading {
                     System.out.println("WARNING: Loading AutomationPlan: Failed to open definition .rdf file ("
                             + autoPlanDef.getName() + "): " + e.getMessage());
                     continue;
-                } catch (LyoJenaModelException | org.apache.jena.riot.RiotException e) {
+                } catch (Exception e) {
                     System.out.println("WARNING: Loading AutomationPlan: Failed to parse definition .rdf file: ("
                             + autoPlanDef.getName() + "): " + e.getMessage());
                     continue;

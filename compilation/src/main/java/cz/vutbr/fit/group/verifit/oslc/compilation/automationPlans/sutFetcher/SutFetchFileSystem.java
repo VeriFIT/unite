@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package verifit.compilation.automationPlans.sutFetcher;
+package cz.vutbr.fit.group.verifit.oslc.compilation.automationPlans.sutFetcher;
 
 import java.io.File;
 import java.io.IOException;

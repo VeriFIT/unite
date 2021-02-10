@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package verifit.compilation.automationPlans;
+package cz.vutbr.fit.group.verifit.oslc.compilation.automationPlans;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,8 +18,8 @@ import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.eclipse.lyo.store.StoreAccessException;
 
-import verifit.compilation.VeriFitCompilationConstants;
-import verifit.compilation.VeriFitCompilationManager;
+import cz.vutbr.fit.group.verifit.oslc.compilation.VeriFitCompilationConstants;
+import cz.vutbr.fit.group.verifit.oslc.compilation.VeriFitCompilationManager;
 
 /**
  * This class defines AutomationPlans predefined for the adapter.
@@ -43,7 +43,7 @@ public class AutomationPlanDefinition {
 	 */
 	public static boolean checkPredefinedAutomationPlans()
 	{
-    	if (VeriFitCompilationManager.getAutomationPlan(null, VeriFitCompilationConstants.AUTOMATION_PROVIDER_ID, "0") == null)
+    	if (VeriFitCompilationManager.getAutomationPlan(null, "0") == null)
     		return false;
     	else
     		return true;

@@ -63,6 +63,7 @@ import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
+import cz.vutbr.fit.group.verifit.oslc.domain.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsVocabularyConstants;
 import org.eclipse.lyo.oslc.domains.RdfVocabularyConstants;
 import org.eclipse.lyo.oslc.domains.Person;
@@ -105,6 +106,9 @@ public class Contribution
     // Start of user code attributeAnnotation:modified
     // End of user code
     private Date modified;
+    // Start of user code attributeAnnotation:fileURI
+    // End of user code
+    private URI fileURI;
     
     // Start of user code classAttributes
     // End of user code
@@ -296,6 +300,19 @@ public class Contribution
         return modified;
     }
     
+    // Start of user code getterAnnotation:fileURI
+    // End of user code
+    @OslcName("fileURI")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "fileURI")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcReadOnly(false)
+    public URI getFileURI()
+    {
+        // Start of user code getterInit:fileURI
+        // End of user code
+        return fileURI;
+    }
+    
     
     // Start of user code setterAnnotation:title
     // End of user code
@@ -402,6 +419,18 @@ public class Contribution
         this.modified = modified;
     
         // Start of user code setterFinalize:modified
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:fileURI
+    // End of user code
+    public void setFileURI(final URI fileURI )
+    {
+        // Start of user code setterInit:fileURI
+        // End of user code
+        this.fileURI = fileURI;
+    
+        // Start of user code setterFinalize:fileURI
         // End of user code
     }
     

@@ -113,15 +113,15 @@
     <resourceProperties id="_pnZqc5UdEeq-KoPaR9_Cfg" name="modifiedBy" description="The URI of a resource describing the entity that most recently modified the subject resource. The link target is usually a foaf:Person or foaf:Agent, but could be any type. This is modeled after dcterms:creator, but Dublin Core currently has no equivalent property." valueType="Resource"/>
     <resourceProperties id="_poPX8pUdEeq-KoPaR9_Cfg" name="describes" description="This shape describes resources that are of any of these types. Formally, a shape S applies to a resource R if there is a triple R rdf:type T and there is a triple S oslc:describes T. " occurs="zeroOrMany" valueType="URI"/>
     <resourceProperties id="_poSbQJUdEeq-KoPaR9_Cfg" name="property" description="The properties that are allowed or required by this shape. " occurs="zeroOrMany" valueType="LocalResource" range="_poP_AZUdEeq-KoPaR9_Cfg"/>
-    <resourceProperties id="_poP_ApUdEeq-KoPaR9_Cfg" name="allowedValue" description="value allowed for a property" occurs="oneOrMany" valueType="Resource"/>
+    <resourceProperties id="_poP_ApUdEeq-KoPaR9_Cfg" name="allowedValue" description="value allowed for a property" occurs="oneOrMany" valueType="String"/>
     <resourceProperties id="_poSbQZUdEeq-KoPaR9_Cfg" name="allowedValues" description="Resource with allowed values for the property being defined. " valueType="Resource"/>
-    <resourceProperties id="_poP_A5UdEeq-KoPaR9_Cfg" name="defaultValue" description="A default value for property, inlined into property definition. " occurs="zeroOrOne" valueType="Resource"/>
+    <resourceProperties id="_poP_A5UdEeq-KoPaR9_Cfg" name="defaultValue" description="A default value for property, inlined into property definition. " occurs="zeroOrOne" valueType="String"/>
     <resourceProperties id="_poP_BJUdEeq-KoPaR9_Cfg" name="hidden" description="A hint that indicates that property MAY be hidden when presented in a user interface " occurs="zeroOrOne"/>
     <resourceProperties id="_poP_BZUdEeq-KoPaR9_Cfg" name="isMemberProperty" description="If set to true, this indicates that the property is a membership property, as described in the Query Syntax Specification: Member List Patterns. This is useful when the resource whose shape is being defined is viewed as a container of other resources. For example, look at the last example in Appendix B's RDF/XML Representation Examples: Specifying the shape of a query result, where blog:comment is defined as a membership property and comment that matches the query is returned as value of that property." occurs="zeroOrOne"/>
     <resourceProperties id="_poQmEJUdEeq-KoPaR9_Cfg" name="name" description="Name of property being defined, i.e. second part of property's Prefixed Name" valueType="String"/>
     <resourceProperties id="_poQmEZUdEeq-KoPaR9_Cfg" name="maxSize" description="For String properties only, specifies maximum characters allowed. If not set, then there is no maximum or maximum is specified elsewhere." occurs="zeroOrOne" valueType="Integer"/>
     <resourceProperties id="_poQmEpUdEeq-KoPaR9_Cfg" name="occurs" description="MUST be either http://open-services.net/ns/core#Exactly-one (property is required), http://open-services.net/ns/core#Zero-or-one (property is optional), http://open-services.net/ns/core#zeroOrMany (property is optional), or http://open-services.net/ns/core#One-or-many (property is required)" valueType="Resource"/>
-    <resourceProperties id="_poQmE5UdEeq-KoPaR9_Cfg" name="propertyDefinition" description="URI of the property whose usage is being described." valueType="Resource"/>
+    <resourceProperties id="_poQmE5UdEeq-KoPaR9_Cfg" name="propertyDefinition" description="URI of the property whose usage is being described." occurs="zeroOrOne" valueType="Resource"/>
     <resourceProperties id="_poQmFJUdEeq-KoPaR9_Cfg" name="range" description="For properties with a resource value-type, Providers MAY also specify the range of possible resource types allowed, each specified by URI. The default range is http://open-services.net/ns/core#Any." occurs="zeroOrMany" valueType="Resource"/>
     <resourceProperties id="_poQmFZUdEeq-KoPaR9_Cfg" name="readOnly" description="true if the property is read-only. If omitted, or set to false, then the property is writable. Providers SHOULD declare a property read-only when changes to the value of that property will not be accepted after the resource has been created, e.g. on PUT/PATCH requests. Consumers should note that the converse does not apply: Providers MAY reject a change to the value of a writable property." occurs="zeroOrOne"/>
     <resourceProperties id="_poRNIJUdEeq-KoPaR9_Cfg" name="representation" description="Should be http://open-services.net/ns/core#Reference, http://open-services.net/ns/core#Inline or http://open-services.net/ns/core#Either" occurs="zeroOrOne" valueType="Resource"/>
@@ -382,7 +382,7 @@
   <domainSpecifications name="Automation" namespaceURI="http://open-services.net/ns/auto#" namespacePrefix="//@domainPrefixes[name='oslc_auto']">
     <resources id="_pn-SMJUdEeq-KoPaR9_Cfg" name="AutomationPlan" resourceProperties="_pna4kZUdEeq-KoPaR9_Cfg _pnXOMZUdEeq-KoPaR9_Cfg _pna4kJUdEeq-KoPaR9_Cfg _pnXOMpUdEeq-KoPaR9_Cfg _pnX1QJUdEeq-KoPaR9_Cfg _pnYcUJUdEeq-KoPaR9_Cfg _pnaRgpUdEeq-KoPaR9_Cfg _pnYcUZUdEeq-KoPaR9_Cfg _pnZDYJUdEeq-KoPaR9_Cfg _pnZqcpUdEeq-KoPaR9_Cfg _pnZqdJUdEeq-KoPaR9_Cfg _pn_gUJUdEeq-KoPaR9_Cfg _pn_gUZUdEeq-KoPaR9_Cfg _poAHYJUdEeq-KoPaR9_Cfg"/>
     <resources id="_poAHYZUdEeq-KoPaR9_Cfg" name="AutomationRequest" resourceProperties="_pna4kZUdEeq-KoPaR9_Cfg _pnXOMZUdEeq-KoPaR9_Cfg _pna4kJUdEeq-KoPaR9_Cfg _pnXOMpUdEeq-KoPaR9_Cfg _pnX1QJUdEeq-KoPaR9_Cfg _pnYcUJUdEeq-KoPaR9_Cfg _pnaRgpUdEeq-KoPaR9_Cfg _pnZDYJUdEeq-KoPaR9_Cfg _pnZqcpUdEeq-KoPaR9_Cfg _pnZqdJUdEeq-KoPaR9_Cfg _poBVgJUdEeq-KoPaR9_Cfg _poBVgZUdEeq-KoPaR9_Cfg _poEY0JUdEeq-KoPaR9_Cfg _poEY0ZUdEeq-KoPaR9_Cfg _vgN0sGpEEeuDWZwlSoXo7A"/>
-    <resources id="_poB8kJUdEeq-KoPaR9_Cfg" name="ParameterInstance" resourceProperties="_poB8kZUdEeq-KoPaR9_Cfg _poB8kpUdEeq-KoPaR9_Cfg _pnXOMpUdEeq-KoPaR9_Cfg _pnaRgpUdEeq-KoPaR9_Cfg _pnZqcpUdEeq-KoPaR9_Cfg _pnZqdJUdEeq-KoPaR9_Cfg"/>
+    <resources id="_poB8kJUdEeq-KoPaR9_Cfg" name="ParameterInstance" resourceProperties="_poB8kpUdEeq-KoPaR9_Cfg _pnXOMpUdEeq-KoPaR9_Cfg _pnaRgpUdEeq-KoPaR9_Cfg _pnZqcpUdEeq-KoPaR9_Cfg _pnZqdJUdEeq-KoPaR9_Cfg _poQmEJUdEeq-KoPaR9_Cfg"/>
     <resources id="_poCjoJUdEeq-KoPaR9_Cfg" name="AutomationResult">
       <resourceProperties href="#_pna4kZUdEeq-KoPaR9_Cfg"/>
       <resourceProperties href="#_pnXOMZUdEeq-KoPaR9_Cfg"/>
@@ -405,7 +405,6 @@
       <resourceProperties href="../model/toolchain.xml#_tffywmpHEeuDWZwlSoXo7A"/>
     </resources>
     <resources id="_vgObwGpEEeuDWZwlSoXo7A" name="ParameterDefinition">
-      <resourceProperties href="#_TYYx4GpFEeuDWZwlSoXo7A"/>
       <resourceProperties href="#_pnXOMpUdEeq-KoPaR9_Cfg"/>
       <resourceProperties href="#_pnZDYJUdEeq-KoPaR9_Cfg"/>
       <resourceProperties href="#_poP_ApUdEeq-KoPaR9_Cfg"/>
@@ -413,7 +412,6 @@
       <resourceProperties href="#_poSbQZUdEeq-KoPaR9_Cfg"/>
       <resourceProperties href="#_poP_BJUdEeq-KoPaR9_Cfg"/>
       <resourceProperties href="#_poP_BZUdEeq-KoPaR9_Cfg"/>
-      <resourceProperties href="#_poB8kZUdEeq-KoPaR9_Cfg"/>
       <resourceProperties href="#_poQmEJUdEeq-KoPaR9_Cfg"/>
       <resourceProperties href="#_poQmEZUdEeq-KoPaR9_Cfg"/>
       <resourceProperties href="#_poQmEpUdEeq-KoPaR9_Cfg"/>
@@ -423,8 +421,19 @@
       <resourceProperties href="#_poRNIZUdEeq-KoPaR9_Cfg"/>
       <resourceProperties href="#_poTpYJUdEeq-KoPaR9_Cfg"/>
       <resourceProperties href="../model/toolchain.xml#_tffyw2pHEeuDWZwlSoXo7A"/>
+      <resourceProperties href="#_poQmE5UdEeq-KoPaR9_Cfg"/>
     </resources>
-    <resources id="_mBlsMGpGEeuDWZwlSoXo7A" name="Contribution" resourceProperties="_pnZDYJUdEeq-KoPaR9_Cfg _pnXOMpUdEeq-KoPaR9_Cfg _pnaRgpUdEeq-KoPaR9_Cfg _poB8kpUdEeq-KoPaR9_Cfg _pnXOMZUdEeq-KoPaR9_Cfg _poRNIZUdEeq-KoPaR9_Cfg _pna4kJUdEeq-KoPaR9_Cfg _pnYcUJUdEeq-KoPaR9_Cfg"/>
+    <resources id="_mBlsMGpGEeuDWZwlSoXo7A" name="Contribution">
+      <resourceProperties href="#_pnZDYJUdEeq-KoPaR9_Cfg"/>
+      <resourceProperties href="#_pnXOMpUdEeq-KoPaR9_Cfg"/>
+      <resourceProperties href="#_pnaRgpUdEeq-KoPaR9_Cfg"/>
+      <resourceProperties href="#_poB8kpUdEeq-KoPaR9_Cfg"/>
+      <resourceProperties href="#_pnXOMZUdEeq-KoPaR9_Cfg"/>
+      <resourceProperties href="#_poRNIZUdEeq-KoPaR9_Cfg"/>
+      <resourceProperties href="#_pna4kJUdEeq-KoPaR9_Cfg"/>
+      <resourceProperties href="#_pnYcUJUdEeq-KoPaR9_Cfg"/>
+      <resourceProperties href="../model/toolchain.xml#_tffyxGpHEeuDWZwlSoXo7A"/>
+    </resources>
     <resourceProperties id="_pn_gUJUdEeq-KoPaR9_Cfg" name="parameterDefinition" description="The definition of a parameter for this Automation Plan. parameterDefinitions are either a local (inline) or referenced resource and use the attributes (the range) of the  oslc:Property resource with one exception. When used in the context of an oslc_auto:parameterDefinition, the cardinality of oslc:propertyDefinition becomes zero-or-one instead of exactly-one. Automation consumers creating Automation Requests MUST use the oslc:occurs attribute of the parameterDefinition, if present, to determine if a given parameter is required when creating the Automation Request. If the oslc:occurs attribute indicates the parameter is required (exactly-one or one-or-more), the service provider must guarantee the named parameter will be present in the Automation Result either as an oslc_auto:inputParmeter when unmodified during execution, or as an oslc_auto:outputParameter when modified during execution." occurs="zeroOrMany" valueType="LocalResource" range="_vgObwGpEEeuDWZwlSoXo7A" representation="either"/>
     <resourceProperties id="_pn_gUZUdEeq-KoPaR9_Cfg" name="usesExecutionEnvironment" description="A resource representing the environment(s) which this Automation Plan can be executed in. The execution environment resource could represent a grouping of environmental details such as operating system, database, browser, compiler, etc. See also the execution environments section." occurs="zeroOrMany" valueType="Resource" representation="reference"/>
     <resourceProperties id="_poAHYJUdEeq-KoPaR9_Cfg" name="futureAction" description="A resource representing actions that will become available on Automation Results that result from execution of this Plan. The resource is likely to be of type oslc:Action, but it can be of any type. Automation defines oslc_auto:TeardownAction as one kind of future action." occurs="zeroOrMany" valueType="Resource" representation="reference"/>
@@ -438,7 +447,6 @@
     <resourceProperties id="_poEY05UdEeq-KoPaR9_Cfg" name="producedByAutomationRequest" description="Automation Request which produced the Automation Result. It is likely that the target resource will be an oslc_auto:AutomationRequest but that is not necessarily the case." occurs="zeroOrOne" valueType="Resource" range="_poAHYZUdEeq-KoPaR9_Cfg" representation="reference"/>
     <resourceProperties id="_poE_4JUdEeq-KoPaR9_Cfg" name="reportsOnAutomationPlan" description="Automation Plan which the Automation Result reports on. It is likely that the target resource will be an oslc_auto:AutomationPlan but that is not necessarily the case." valueType="Resource" range="_pn-SMJUdEeq-KoPaR9_Cfg" representation="reference"/>
     <resourceProperties id="_vgN0sGpEEeuDWZwlSoXo7A" name="producedAutomationResult" occurs="zeroOrOne" valueType="Resource" range="_poCjoJUdEeq-KoPaR9_Cfg" representation="either"/>
-    <resourceProperties id="_TYYx4GpFEeuDWZwlSoXo7A" name="propertyDefinition" description="URI of the property whose usage is being described." occurs="zeroOrOne" valueType="Resource"/>
     <configuration xsi:type="oslc4j_ai:MavenSpecificationConfiguration">
       <generalConfiguration filesBasePath="." javaBasePackageName="org.eclipse.lyo.oslc.domains.auto"/>
       <projectConfiguration xsi:type="oslc4j_ai:MavenProjectConfiguration" doNotGenerateProjectConfigurationFiles="true" lyoVersion="4.0.0" groupId="org.eclipse.lyo.oslc.domains.auto" artifactId="Automation" version="0.0.1-SNAPSHOT"/>

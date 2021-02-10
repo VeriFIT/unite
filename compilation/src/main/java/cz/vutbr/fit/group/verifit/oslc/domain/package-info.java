@@ -46,9 +46,9 @@
     @OslcNamespaceDefinition(prefix = FoafDomainConstants.FOAF_NAMSPACE_PREFIX, namespaceURI = FoafDomainConstants.FOAF_NAMSPACE),
     @OslcNamespaceDefinition(prefix = OslcDomainConstants.OSLC_NAMSPACE_PREFIX, namespaceURI = OslcDomainConstants.OSLC_NAMSPACE),
     @OslcNamespaceDefinition(prefix = RdfDomainConstants.RDF_NAMSPACE_PREFIX, namespaceURI = RdfDomainConstants.RDF_NAMSPACE),
-    @OslcNamespaceDefinition(prefix = FitDomainConstants.VERIFIT_NAMSPACE_PREFIX, namespaceURI = FitDomainConstants.VERIFIT_NAMSPACE)
+    @OslcNamespaceDefinition(prefix = FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE_PREFIX, namespaceURI = FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE)
 })
-package verifit.compilation.resources;
+package cz.vutbr.fit.group.verifit.oslc.domain;
 
 import org.eclipse.lyo.oslc4j.core.annotation.OslcNamespaceDefinition;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcSchema;
@@ -59,5 +59,5 @@ import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
-import verifit.compilation.resources.FitDomainConstants;
+import cz.vutbr.fit.group.verifit.oslc.domain.FitDomainConstants;
 

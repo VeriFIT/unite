@@ -236,6 +236,21 @@
             
             </dd>
           </dl>
+          <dl class="row">
+            <% method = Contribution.class.getMethod("getFileURI"); %>
+            <dt  class="col-sm-2 text-right"><a href="<%=method.getAnnotation(OslcPropertyDefinition.class).value() %>"><%=method.getAnnotation(OslcName.class).value()%></a></dt>
+            <dd class="col-sm-9">
+            <%
+            if (aContribution.getFileURI() == null) {
+                out.write("<em>null</em>");
+            }
+            else {
+                out.write(aContribution.getFileURI().toString());
+            }
+            %>
+            
+            </dd>
+          </dl>
         </div>
         <%
         Map<QName, Object> extendedProperties = aContribution.getExtendedProperties();

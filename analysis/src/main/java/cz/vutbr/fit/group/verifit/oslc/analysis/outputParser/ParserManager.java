@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package verifit.analysis.outputParser;
+package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,7 +22,7 @@ import java.util.Set;
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 
-import verifit.analysis.VeriFitAnalysisManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
 
 public final class ParserManager {
     

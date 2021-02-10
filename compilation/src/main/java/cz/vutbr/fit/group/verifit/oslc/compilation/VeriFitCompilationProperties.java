@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package verifit.compilation;
+package cz.vutbr.fit.group.verifit.oslc.compilation;
 
 // Start of user code imports
 import java.util.Set;

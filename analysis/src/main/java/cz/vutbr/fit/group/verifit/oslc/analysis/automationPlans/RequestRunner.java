@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package verifit.analysis.automationPlans;
+package cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,15 +47,15 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 
-import verifit.analysis.VeriFitAnalysisConstants;
-import verifit.analysis.VeriFitAnalysisManager;
-import verifit.analysis.VeriFitAnalysisResourcesFactory;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisConstants;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisResourcesFactory;
 
 /**
  * A thread designed to execute an AutomationRequest.

@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package verifit.compilation.persistance;
+package cz.vutbr.fit.group.verifit.oslc.compilation.persistance;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -26,7 +26,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.jena.atlas.web.HttpException;
 import org.apache.jena.rdf.model.Model;
@@ -43,8 +42,8 @@ import org.eclipse.lyo.store.Store;
 import org.eclipse.lyo.store.StoreAccessException;
 import org.eclipse.lyo.store.StoreFactory;
 
-import verifit.compilation.VeriFitCompilationProperties;
-import verifit.compilation.resources.SUT;
+import cz.vutbr.fit.group.verifit.oslc.compilation.VeriFitCompilationProperties;
+import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
 
 /**

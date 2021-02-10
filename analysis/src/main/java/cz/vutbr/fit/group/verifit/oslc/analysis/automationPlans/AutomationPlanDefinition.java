@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package verifit.analysis.automationPlans;
+package cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,10 +18,10 @@ import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.eclipse.lyo.store.StoreAccessException;
 
-import verifit.analysis.VeriFitAnalysisConstants;
-import verifit.analysis.VeriFitAnalysisManager;
-import verifit.analysis.VeriFitAnalysisProperties;
-import verifit.analysis.exceptions.OslcResourceException;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisConstants;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisProperties;
+import cz.vutbr.fit.group.verifit.oslc.analysis.exceptions.OslcResourceException;
 
 /**
  * This class defines AutomationPlans predefined for the adapter.

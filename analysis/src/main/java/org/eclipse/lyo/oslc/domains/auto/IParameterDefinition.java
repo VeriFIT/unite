@@ -55,11 +55,9 @@ import org.eclipse.lyo.oslc4j.core.model.ValueType;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
-import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import cz.vutbr.fit.group.verifit.oslc.domain.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsVocabularyConstants;
-import org.eclipse.lyo.oslc.domains.FoafVocabularyConstants;
 
 // Start of user code imports
 // End of user code
@@ -139,20 +137,12 @@ public interface IParameterDefinition
     public Boolean isIsMemberProperty();
 
     @OslcName("name")
-    @OslcPropertyDefinition(FoafVocabularyConstants.FOAF_NAMSPACE + "name")
-    @OslcDescription("The full name of a person expressed as simple text string.")
-    @OslcOccurs(Occurs.ExactlyOne)
-    @OslcValueType(ValueType.String)
-    @OslcReadOnly(false)
-    public String getFoafName();
-
-    @OslcName("name")
     @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "name")
     @OslcDescription("Name of property being defined, i.e. second part of property's Prefixed Name")
     @OslcOccurs(Occurs.ExactlyOne)
     @OslcValueType(ValueType.String)
     @OslcReadOnly(false)
-    public String getOslcName();
+    public String getName();
 
     @OslcName("maxSize")
     @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "maxSize")
@@ -226,8 +216,7 @@ public interface IParameterDefinition
     public void setAllowedValues(final Link allowedValues );
     public void setHidden(final Boolean hidden );
     public void setIsMemberProperty(final Boolean isMemberProperty );
-    public void setFoafName(final String name );
-    public void setOslcName(final String name );
+    public void setName(final String name );
     public void setMaxSize(final Integer maxSize );
     public void setOccurs(final Link occurs );
     public void setRange(final Set<Link> range );

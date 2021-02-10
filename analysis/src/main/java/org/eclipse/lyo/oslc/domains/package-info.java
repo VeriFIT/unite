@@ -35,7 +35,7 @@
     @OslcNamespaceDefinition(prefix = RdfDomainConstants.RDF_NAMSPACE_PREFIX, namespaceURI = RdfDomainConstants.RDF_NAMSPACE),
     @OslcNamespaceDefinition(prefix = FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE_PREFIX, namespaceURI = FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE)
 })
-package org.eclipse.lyo.oslc.domains.auto;
+package org.eclipse.lyo.oslc.domains;
 
 import org.eclipse.lyo.oslc4j.core.annotation.OslcNamespaceDefinition;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcSchema;

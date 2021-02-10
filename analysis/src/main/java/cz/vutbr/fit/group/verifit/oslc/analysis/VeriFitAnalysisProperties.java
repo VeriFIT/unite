@@ -8,12 +8,12 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package verifit.analysis;
+package cz.vutbr.fit.group.verifit.oslc.analysis;
 
 // Start of user code imports
 import java.util.Set;
 
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

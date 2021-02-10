@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package verifit.analysis.automationPlans;
+package cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -57,6 +57,7 @@ import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
+import cz.vutbr.fit.group.verifit.oslc.domain.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsVocabularyConstants;
 import org.eclipse.lyo.oslc.domains.RdfVocabularyConstants;
 import org.eclipse.lyo.oslc.domains.IPerson;
@@ -137,6 +138,12 @@ public interface IContribution
     @OslcReadOnly(false)
     public Date getModified();
 
+    @OslcName("fileURI")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "fileURI")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcReadOnly(false)
+    public URI getFileURI();
+
 
     public void setTitle(final String title );
     public void setDescription(final String description );
@@ -146,5 +153,6 @@ public interface IContribution
     public void setValueType(final Set<Link> valueType );
     public void setCreator(final Set<Link> creator );
     public void setModified(final Date modified );
+    public void setFileURI(final URI fileURI );
 }
 

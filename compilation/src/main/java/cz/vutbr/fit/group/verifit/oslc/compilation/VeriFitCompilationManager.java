@@ -26,6 +26,7 @@ import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 import cz.vutbr.fit.group.verifit.oslc.compilation.servlet.ServiceProviderCatalogSingleton;
 import cz.vutbr.fit.group.verifit.oslc.compilation.ServiceProviderInfo;
+
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
@@ -51,6 +52,30 @@ import javax.ws.rs.core.Response.Status;
 
 
 // Start of user code imports
+import cz.vutbr.fit.group.verifit.oslc.compilation.persistance.Persistence;
+import cz.vutbr.fit.group.verifit.oslc.compilation.automationPlans.AutomationPlanDefinition;
+import cz.vutbr.fit.group.verifit.oslc.compilation.automationPlans.SutDeployAutoPlanExecution;
+import cz.vutbr.fit.group.verifit.oslc.compilation.exceptions.OslcResourceException;
+
+import org.eclipse.lyo.store.StoreAccessException;
+import org.eclipse.lyo.oslc4j.core.model.Link;
+import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.commons.io.FileUtils;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.NoSuchElementException;
+import java.util.Map;
 // End of user code
 
 // Start of user code pre_class_code
@@ -63,17 +88,497 @@ public class VeriFitCompilationManager {
     private static StorePool storePool;
     
     // Start of user code class_attributes
+	static Persistence store;
+	
+	static ResourceIdGen AutoPlanIdGen;
+	static ResourceIdGen AutoRequestIdGen;
+	
     // End of user code
     
     
     // Start of user code class_methods
+
+	/**
+	 * Creates the tmp directory for saving programs to analyze
+	 */
+	private static void createTmpDir()
+	{
+		File programDir = new File("tmp/");
+	    if (!programDir.exists())
+	    {
+	    	programDir.mkdirs();
+	    }
+	}
+	
+	/**
+	 * Deletes the tmp directory to cleanup
+	 * @throws IOException
+	 */
+	private static void deleteTmpDir() throws IOException
+	{
+		File programDir = new File("tmp");
+		FileDeleteStrategy.FORCE.delete(programDir);
+	}
+	
+	/**
+	 * Used to generate IDs for new resources in a synchronized way (datarace free)
+	 * @author od42
+	 */
+	private static class ResourceIdGen {
+	    int idCounter; 
+	    
+	    public ResourceIdGen ()
+	    {
+	    	idCounter = 0;
+	    };
+	    
+	    public ResourceIdGen (int start)
+	    {
+	    	idCounter = start;
+	    }
+	    
+	    /**
+	     * Get a new ID. This increments the internal ID counter. Synchronized.
+	     * @return New ID
+	     */
+	    public synchronized String getId() {
+	    	idCounter++;
+	        return Integer.toString(idCounter - 1);
+	    }
+	}
+	
+	/**
+	 * Get the ID of an OSLC resource from its URI (About(), or Link)
+	 * @param	uri	OSLC resource uri (eg. from a Link)
+	 * @return 		ID of the OSLC resource
+	 */
+	public static String getResourceIdFromUri(URI uri)
+	{
+		String uriPath = uri.getPath();
+		return uriPath.substring(uriPath.lastIndexOf('/') + 1);
+	}
+	
+	
+	/**
+	 * Creates an AutomationPlan resource with the specified properties, and stores in the Adapter's catalog.
+	 * @param aResource			The new resource will copy properties from the specified aResource.
+	 * @return					The newly created resource. Or null if one of the required properties was missing.
+	 * @throws StoreAccessException 
+	 */
+    public static AutomationPlan createAutomationPlan(final AutomationPlan aResource) throws StoreAccessException
+    {    	
+    	AutomationPlan newResource = null;
+    	
+    	// check that required properties are specified in the input parameter
+    	if (aResource == null || aResource.getTitle() == null || aResource.getTitle().isEmpty())
+    	{
+    		return null;
+    	}
+        
+		try {
+			String newID = AutoPlanIdGen.getId();
+			newResource = aResource;
+			newResource.setAbout(VeriFitCompilationResourcesFactory.constructURIForAutomationPlan(newID));
+			
+			// resources set by the service provider
+			newResource.setIdentifier(newID);
+			Date timestamp = new Date();
+			newResource.setCreated(timestamp);
+			newResource.setModified(timestamp);
+			//newResource.setInstanceShape(new URI(VeriFitCompilationProperties.PATH_RESOURCE_SHAPES + "automationPlan"));
+			//newResource.addServiceProvider(new URI(VeriFitCompilationProperties.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
+			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationPlan"));
+			
+			// persist in the triplestore
+			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
+
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+			
+		} catch (StoreAccessException e) {
+			throw new StoreAccessException("AutomationPlan creation failed: " + e.getMessage());
+		}
+		
+		return newResource;
+    }
+    
+
+    /**
+     * Updates an AutomationRequest in the Adapter's catalog. The old resource is replaced with the new one.
+     * @param changedResource		This resource will be used as replacement for the old resource.
+     * @param serviceProviderId		ID of the service provider for the updated resource.
+     * @param automationRequestId	ID of the AutomationRequest to update
+     * @return						The updated resource.
+     */
+    public static AutomationRequest updateAutomationRequest(AutomationRequest changedResource, final String serviceProviderId, final String automationRequestId)
+    {
+    	AutomationRequest updatedResource = null;
+
+    	changedResource.setModified(new Date());
+  
+    	try {
+    		
+			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), changedResource);
+			
+		} catch (StoreAccessException e) {
+			System.out.println("WARNING: AutomationRequest update failed: " + e.getMessage());
+			
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+		}
+    	updatedResource = changedResource;
+    	
+        return updatedResource;
+    }
+
+    /**
+     * Updates an AutomationResult in the Adapter's catalog. The old resource is replaced with the new one.
+     * @param changedResource		This resource will be used as replacement for the old resource.
+     * @param serviceProviderId		ID of the service provider for the updated resource.
+     * @param automationResultId	ID of the AutomationResult to update
+     * @return						The updated resource.
+     */
+    public static AutomationResult updateAutomationResult(AutomationResult changedResource, final String serviceProviderId, final String automationResultId)
+    {
+    	AutomationResult updatedResource = null;
+
+    	changedResource.setModified(new Date());
+  
+    	try {
+    		
+			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), changedResource);
+			
+		} catch (StoreAccessException e) {
+			System.out.println("WARNING: AutomationResult update failed: " + e.getMessage());
+			
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+		}
+    	updatedResource = changedResource;
+    	
+        return updatedResource;
+    }
+    
+    /**
+     * Creates an AutomationResult resource with the specified properties, and stores in the Adapter's catalog.
+     * @param aResource			The new resource will copy properties from the specified aResource.
+     * @param newID				ID to assign to the new Result (meant to be the same as the Request ID)
+     * @return					The newly created resource. Or null if one of the required properties was missing.
+     */
+    public static AutomationResult createAutomationResult(final AutomationResult aResource, final String newID)
+    {
+    	AutomationResult newResource = null;
+    	
+    	// check that required properties are specified in the input parameter
+    	if (aResource == null || aResource.getTitle() == null || aResource.getTitle().isEmpty() ||
+    		aResource.getState() == null || aResource.getState().isEmpty() ||
+    		aResource.getVerdict() == null || aResource.getVerdict().isEmpty() ||
+    		aResource.getReportsOnAutomationPlan().getValue() == null)
+    	{
+    		return null;
+    	}
+        
+		try {
+			newResource = aResource;
+			aResource.setAbout(VeriFitCompilationResourcesFactory.constructURIForAutomationResult(newID));
+			
+			// resources set by the service provider
+			newResource.setIdentifier(newID);
+			Date timestamp = new Date();
+			newResource.setCreated(timestamp);
+			newResource.setModified(timestamp);
+			//newResource.setInstanceShape(new URI(VeriFitCompilationProperties.PATH_RESOURCE_SHAPES + "automationResult"));
+			//newResource.addServiceProvider(new URI(VeriFitCompilationProperties.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
+			newResource.setDesiredState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));
+			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationResult"));
+		
+			// persist in the triplestore
+			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
+			
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+			
+		} catch (StoreAccessException e) {
+			System.out.println("WARNING: AutomationResult creation failed: " + e.getMessage());
+		}
+		
+		return newResource;
+    }
+    
+    /**
+	 * Creates a Contribution resource with the specified properties.
+	 * @param aResource			The new resource will copy properties from the specified aResource.
+	 * @param serviceProviderId	ID of the service provider for the new resource.
+	 * @param newID				ID for the new resource
+	 * @return					The newly created resource. Or null if one of the required properties was missing.
+	 */
+    public static Contribution createContribution(final Contribution aResource, final String serviceProviderId)
+    {
+    	Contribution newResource = null;
+
+    	// check that required properties are specified in the input parameter
+    	if (aResource == null)
+    	{
+    		return null;
+    	}
+    	
+		newResource = aResource;
+		newResource.setCreated(new Date());
+		// TODO set about / id
+
+		return newResource;
+    }
+    
+
+	/**
+	 * Check that the AutomationRequest contains the necessary input parameters based on its AutoPlan, fill the AutomationResult with output parameters (default values),
+	 * and return a simplified map of parameters (TODO refactor the map)
+	 * @param execAutoRequest			The AutomationRequest to execute. Needs to have a valid executesAutomationPlan property.
+	 * @param newAutoResult				The AutomationResult created by the AutoRequest.
+	 * @throws OslcResourceException 	When the executed AutomationRequest properties are invalid or missing
+	 * @return	A map of input parameters [ name, value ]
+	 */
+	private static Map<String, String> processAutoReqInputParams(AutomationRequest execAutoRequest, AutomationResult newAutoResult) throws OslcResourceException
+	{
+		// get the executed AutomationPlan resource			
+		String execAutoPlanId = getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue());
+		AutomationPlan execAutoPlan = getAutomationPlan(null, execAutoPlanId);
+		if (execAutoPlan == null)
+			throw new OslcResourceException("AutomationPlan not found (id: " + execAutoPlanId + ")");
+
+		/// check the input parameters and create a map of "name" -> ("value", position)
+		Map<String, String> inputParamsMap = new HashMap<String, String>();
+		
+		// loop through autoPlan defined parameters to match them with the input params
+		for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
+		{		
+			// find the corresponding autoRequest input parameter
+			boolean matched = false;
+			for (ParameterInstance submittedParam : execAutoRequest.getInputParameter())
+			{				
+				if (definedParam.getName().equals(submittedParam.getName()))
+				{
+					
+					// check if the value is allowed
+					Boolean validValue = true;
+					if (definedParam.getAllowedValue().size() > 0)
+					{
+						validValue = false;
+						for (String allowedValue : definedParam.getAllowedValue())
+						{
+							if (allowedValue.equals(submittedParam.getValue()))
+							{
+								validValue = true;
+								break;
+							}
+						}
+					}
+					if (!validValue)
+					{
+						throw new OslcResourceException("value '" + submittedParam.getValue() + "' not allowed for the '" + definedParam.getName() + "' parameter");
+					}
+					
+					inputParamsMap.put(definedParam.getName(), submittedParam.getValue());
+					matched = true;
+				}
+			}
+			// try to use the default value if no matching input param found
+			if (!matched && definedParam.getDefaultValue() != null)
+			{
+				inputParamsMap.put(definedParam.getName(), definedParam.getDefaultValue());
+				matched = true;
+
+				// add the default value as an output parameter to the Automation Result
+				ParameterInstance outputParameter = null;
+				try { outputParameter = new ParameterInstance(); } catch (URISyntaxException e) { /* should never be thrown --> just to make the compiler happy */}
+				outputParameter.setName(definedParam.getName());
+				outputParameter.setValue(definedParam.getDefaultValue());
+				newAutoResult.addOutputParameter(outputParameter);
+			}
+			
+			// check parameter occurrences
+			Boolean paramMissing = false;
+			switch (definedParam.getOccurs().getValue().toString())
+			{
+			case VeriFitCompilationConstants.OSLC_OCCURS_ONE:
+				// TODO check for more then one when there should be exactly one
+			case VeriFitCompilationConstants.OSLC_OCCURS_ONEorMany:
+				if (!matched)
+					paramMissing = true;
+				break;
+				
+			case VeriFitCompilationConstants.OSLC_OCCURS_ZEROorONE:
+				// TODO check for more then one when there should be max one
+				break;
+
+			case VeriFitCompilationConstants.OSLC_OCCURS_ZEROorMany:
+				break;
+			}
+			
+			if (paramMissing == true)
+				throw new OslcResourceException("'" + definedParam.getName() + "' input parameter missing");
+		}
+		
+		// check that there were no unknown input parameters
+		for (ParameterInstance submittedParam : execAutoRequest.getInputParameter())
+		{				
+			boolean matched = false;
+			for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
+			{
+				if (definedParam.getName().equals(submittedParam.getName()))
+					matched = true;
+			}
+			
+			if (!matched)
+				throw new OslcResourceException("'" + submittedParam.getName() + "' input parameter not recognized");
+		}
+		
+		return inputParamsMap;
+	}    
+	
+	
+    /**
+	 * Creates an SUT resource with the specified properties, and stores in the Adapter's catalog.
+     * @param aResource			The new resource will copy properties from the specified aResource.
+     * @param serviceProviderId	ID of the service provider for the new resource.
+     * @param newID				ID to assign to the new SUT (meant to be the same as the Request ID)
+     * @return					The newly created resource. Or null if one of the required properties was missing.
+     */
+    public static SUT createSUT(final SUT aResource, final String serviceProviderId, final String newID) 
+    {    	
+    	SUT newResource = null;
+    	
+    	// check that required properties are specified in the input parameter
+    	if (aResource == null || aResource.getTitle() == null || aResource.getTitle().isEmpty()) // TODO
+    	{
+    		return null;
+    	}
+        
+		try {
+			newResource = aResource;
+			newResource.setAbout(VeriFitCompilationResourcesFactory.constructURIForSUT(newID));
+			
+			// resources set by the service provider
+			Date timestamp = new Date();
+			newResource.setCreated(timestamp);
+			newResource.setModified(timestamp);
+			newResource.setIdentifier(newID);
+			//TODO
+			
+			// persist in the triplestore
+			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
+
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+			
+		} catch (StoreAccessException e) {
+			System.out.println("WARNING: SUT creation failed: " + e.getMessage());
+		}
+		
+		return newResource;
+    }
+    
+    
+    /**
+	 * Check that the AutomationRequest exactly one "source.*" input parameter.
+	 * @param autoRequest			Automation Request with parameters to check
+	 * @throws OslcResourceException 	When the executed AutomationRequest "source.*" input params are invalid or missing
+	 */
+    public static void checkSutDeploySourceInputs (AutomationRequest autoRequest) throws OslcResourceException
+    {
+		// count the "source.*" input params
+		int count = 0;
+    	for (ParameterInstance submittedParam : autoRequest.getInputParameter())
+		{				
+			if (submittedParam.getName().startsWith("source"))
+			{
+				count++;
+			}
+		}
+    	
+    	if (count == 1)
+    		return;	// all fine
+    	else if (count == 0)
+    		throw new OslcResourceException("Source parameter missing. Expected exactly one.");
+    	else // (count > 1)
+    		throw new OslcResourceException("Too many source parameters. Expected exactly one.");
+    }
     // End of user code
 
     public static void contextInitializeServletListener(final ServletContextEvent servletContextEvent)
     {
         
         // Start of user code contextInitializeServletListener
-        // TODO Implement code to establish connection to data backbone etc ...
+
+    	// load configuration
+    	try {
+    		VeriFitCompilationProperties.loadProperties();
+    	} catch (IOException e) {
+			System.out.println("ERROR: Adapter configuration: Failed to load Java properties: " + e.getMessage());
+			System.exit(1);
+		}    	 
+    	
+    	// create the tmp directory
+    	if (VeriFitCompilationProperties.PERSIST_SUT_DIRS == false) // make sure it was deleted if not persistent
+    	{
+    		try {
+				deleteTmpDir();
+			} catch (IOException e) {
+				// ignore
+			}
+    	}
+    	createTmpDir();
+
+    	// connect to the triplestore
+    	String sSparqlQueryEndpoint = VeriFitCompilationProperties.SPARQL_SERVER_QUERY_ENDPOINT;
+    	String sSparqlUpdateEndpoint = VeriFitCompilationProperties.SPARQL_SERVER_UPDATE_ENDPOINT; 
+		try {
+			store = new Persistence(sSparqlQueryEndpoint, sSparqlUpdateEndpoint);
+		} catch (IOException e) {
+			System.out.println("ERROR: Adapter configuration: " + e.getMessage());
+			System.exit(1);
+		}
+
+    	// create predefined AutomationPlans
+		try {
+			AutoPlanIdGen = new ResourceIdGen();
+			if (!AutomationPlanDefinition.checkPredefinedAutomationPlans())
+			{
+				AutomationPlanDefinition.createPredefinedAutomationPlans();
+			}
+		} catch (StoreAccessException e) {
+			System.out.println("ERROR: Adapter initialization: Predefined AutomationPlan creation: " + e.getMessage());
+			System.exit(1);
+		}
+		
+		// check what the last AutomationRequest ID is
+    	// requests have a numerical ID
+    	int initReqId = 0;
+    	try {
+			List<AutomationRequest> listAutoRequests =  store.getResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), AutomationRequest.class);
+			for (AutomationRequest autoReq : listAutoRequests)
+			{
+				int reqId = Integer.parseInt(getResourceIdFromUri(autoReq.getAbout()));
+				if ( reqId >= initReqId)
+				{
+					initReqId = reqId + 1;
+				}
+			}		
+		} catch (StoreAccessException e) { 
+			System.out.println("ERROR: Adapter initialization: Failed to get latest AutomationRequest ID: " + e.getMessage());
+			System.exit(1);
+			
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+		}		
+		AutoRequestIdGen = new ResourceIdGen(initReqId);
+		
         // End of user code
         // Start of user code StoreInitialise
         // End of user code
@@ -110,7 +615,15 @@ public class VeriFitCompilationManager {
     {
         
         // Start of user code contextDestroyed
-        // TODO Implement code to shutdown connections to data backbone etc...
+    	
+    	// delete the TMP directory, if persistency is not enabled
+    	if (VeriFitCompilationProperties.PERSIST_SUT_DIRS == false)
+    	{	try {
+				deleteTmpDir();
+			} catch (IOException e) {
+				System.out.println("WARNING: Adapter context destroy: Failed to delete the TMP folder: " + e.getMessage());
+			}
+    	}
         // End of user code
     }
 
@@ -119,7 +632,14 @@ public class VeriFitCompilationManager {
         ServiceProviderInfo[] serviceProviderInfos = {};
         
         // Start of user code "ServiceProviderInfo[] getServiceProviderInfos(...)"
-        // TODO Implement code to return the set of ServiceProviders
+
+        ServiceProviderInfo r1 = new ServiceProviderInfo();
+        r1.name = "VeriFit Compilation Provider";
+        r1.serviceProviderId = VeriFitCompilationConstants.AUTOMATION_PROVIDER_ID;
+
+        serviceProviderInfos = new ServiceProviderInfo[1];
+        serviceProviderInfos[0] = r1;
+
         // End of user code
         return serviceProviderInfos;
     }
@@ -330,8 +850,88 @@ public class VeriFitCompilationManager {
         
         
         // Start of user code createAutomationRequest
-        // TODO Implement code to create a resource
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+
+        /*
+         * Check that the predefined AutomationPlans exist
+         * If not then the triplestore is not running or is broken 
+         */
+        if (!AutomationPlanDefinition.checkPredefinedAutomationPlans())
+		{
+        	//throw new OslcResourceException("Failed to get AutomationPlans. Is the triplestore still online?"
+        	//		+ " If yes, then it may be corrupted. Try restarting the Adapter.");
+			throw new  WebApplicationException("Failed to get AutomationPlans. Is the triplestore still online?"
+					+ " If yes, then it may be corrupted. Try restarting the Adapter.", 400); // TODO
+		}
+ 
+		try {
+			// error response on empty creation POST
+	        if (aResource == null)
+				throw new OslcResourceException("empty creation POST");
+	        
+	        // check for missing required properties
+			if (aResource.getExecutesAutomationPlan().getValue() == null)
+				throw new OslcResourceException("executesAutomationPlan property missing");
+			if (aResource.getTitle() == null || aResource.getTitle().isEmpty())
+				throw new OslcResourceException("title property missing");
+	        
+			// copy the properties specified in the POST request
+			String newID = AutoRequestIdGen.getId();
+			newResource = aResource;
+			newResource.setAbout(VeriFitCompilationResourcesFactory.constructURIForAutomationRequest(newID));
+			
+			// resources set by the service provider
+			newResource.setIdentifier(newID);
+			Date timestamp = new Date();
+			newResource.setCreated(timestamp);
+			newResource.setModified(timestamp);
+			//newResource.setInstanceShape(new URI(AnacondaAdapterConstants.PATH_RESOURCE_SHAPES + "automationRequest"));
+			//newResource.addServiceProvider(new URI(AnacondaAdapterConstants.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
+			newResource.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_NEW)));
+			newResource.setDesiredState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));
+			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationRequest"));
+
+			// create an AutomationResult for this AutoRequest; output parameters will be set by processAutoReqInputParams()
+			AutomationResult propAutoResult = new AutomationResult();
+			propAutoResult.setTitle("Result - " + newResource.getTitle());
+			propAutoResult.setReportsOnAutomationPlan(newResource.getExecutesAutomationPlan());
+			propAutoResult.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(newID));
+			propAutoResult.setInputParameter(newResource.getInputParameter());
+			propAutoResult.setContributor(newResource.getContributor());
+			propAutoResult.setCreator(newResource.getCreator());
+			propAutoResult.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_NEW)));
+			propAutoResult.addVerdict(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_VERDICT_UNAVAILABLE)));
+			
+			// get the executed autoPlan, check input parameters, add output parameters to the AutoResult, and make an input map for the runner
+			Map<String, String> inputParamsMap = processAutoReqInputParams(newResource, propAutoResult);
+			
+			// check that the request contains exactly one "source.*" parameter (can not be checked automatically based on the AutoPlan
+			// throws an exception if the Inputs are not OK
+			checkSutDeploySourceInputs(newResource);
+			
+			// persist the AutomationResult and set the setProducedAutomationResult() link for the AutoRequest
+		    AutomationResult newAutoResult = VeriFitCompilationManager.createAutomationResult(propAutoResult, newID);
+			newResource.setProducedAutomationResult(new Link(newAutoResult.getAbout())); // TODO
+			
+			// persist in the triplestore
+			store.updateResources(new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES), newResource);
+			
+			// create a new thread to execute the automation request // TODO
+			new SutDeployAutoPlanExecution(newResource, newAutoResult, inputParamsMap);	
+
+		} catch (OslcResourceException e) {
+			//throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
+			throw new  WebApplicationException("AutomationRequest NOT created - " + e.getMessage(), 400); // TODO
+			
+		} catch (URISyntaxException e) {
+			// TODO should never be thrown (URI syntax)
+			e.printStackTrace();
+			
+		} catch (Exception e) {
+			System.out.println("WARNING: AutomationResquest creation failed: " + e.getMessage());
+			//throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
+			throw new  WebApplicationException("AutomationRequest NOT created - " + e.getMessage(), 400); // TODO
+		}
+		
         // End of user code
         return newResource;
     }
@@ -342,8 +942,7 @@ public class VeriFitCompilationManager {
         
         
         // Start of user code createAutomationRequestFromDialog
-        // TODO Implement code to create a resource
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+		newResource = createAutomationRequest(httpServletRequest,aResource);
         // End of user code
         return newResource;
     }
@@ -498,8 +1097,10 @@ public class VeriFitCompilationManager {
     {
         String eTag = null;
         // Start of user code getETagFromAutomationPlan
-        // TODO Implement code to return an ETag for a particular resource
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        
+        if (aResource != null && aResource.getModified() != null)
+        	eTag = Long.toString(aResource.getModified().getTime());
+        
         // End of user code
         return eTag;
     }
@@ -507,8 +1108,10 @@ public class VeriFitCompilationManager {
     {
         String eTag = null;
         // Start of user code getETagFromAutomationRequest
-        // TODO Implement code to return an ETag for a particular resource
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        
+        if (aResource != null && aResource.getModified() != null)
+        	eTag = Long.toString(aResource.getModified().getTime());
+        
         // End of user code
         return eTag;
     }
@@ -516,8 +1119,10 @@ public class VeriFitCompilationManager {
     {
         String eTag = null;
         // Start of user code getETagFromAutomationResult
-        // TODO Implement code to return an ETag for a particular resource
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        
+        if (aResource != null && aResource.getModified() != null)
+        	eTag = Long.toString(aResource.getModified().getTime());
+        
         // End of user code
         return eTag;
     }
@@ -525,8 +1130,10 @@ public class VeriFitCompilationManager {
     {
         String eTag = null;
         // Start of user code getETagFromSUT
-        // TODO Implement code to return an ETag for a particular resource
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        
+        if (aResource != null && aResource.getCreated() != null)
+        	eTag = Long.toString(aResource.getCreated().getTime());
+        
         // End of user code
         return eTag;
     }

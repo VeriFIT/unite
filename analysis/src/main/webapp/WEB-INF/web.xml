@@ -7,7 +7,7 @@
     <context-param>
         <description>Base URI for the adaptor.</description>
         <param-name>cz.vutbr.fit.group.verifit.oslc.analysis.servlet.baseurl</param-name>
-        <param-value>http://localhost:8080/</param-value>
+        <param-value>${adapter_host}:${adapter_port}</param-value>
     </context-param>
     <!-- Start of user code webxml1
     -->
@@ -50,7 +50,7 @@
         </init-param>
         <init-param>
             <param-name>swagger.api.basepath</param-name>
-            <param-value>http://localhost:8080/analysis/services/</param-value>
+            <param-value>${adapter_host}:${adapter_port}/analysis/services/</param-value>
         </init-param>
         <load-on-startup>2</load-on-startup>
     </servlet>

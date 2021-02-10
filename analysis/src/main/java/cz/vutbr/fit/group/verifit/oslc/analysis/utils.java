@@ -8,12 +8,11 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package verifit.analysis;
+package cz.vutbr.fit.group.verifit.oslc.analysis;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.eclipse.lyo.oslc4j.provider.jena.JenaModelHelper;
-import org.eclipse.lyo.oslc4j.provider.jena.LyoJenaModelException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +45,7 @@ public class utils {
 	 * @throws FileNotFoundException Error accessing the XML file
 	 * @throws LyoJenaModelException Error parsing the XML file
 	 */
-	public static <T> T[] parseResourcesFromXmlFile(File pathToFile, Class<T> clazz) throws FileNotFoundException, LyoJenaModelException, org.apache.jena.riot.RiotException
+	public static <T> T[] parseResourcesFromXmlFile(File pathToFile, Class<T> clazz) throws FileNotFoundException, org.apache.jena.riot.RiotException
 	{
 		InputStream inStream = new FileInputStream(pathToFile);
 		Model model = ModelFactory.createDefaultModel();

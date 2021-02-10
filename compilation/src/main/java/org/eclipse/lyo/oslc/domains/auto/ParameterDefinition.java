@@ -61,11 +61,9 @@ import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
-import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import cz.vutbr.fit.group.verifit.oslc.domain.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsVocabularyConstants;
-import org.eclipse.lyo.oslc.domains.FoafVocabularyConstants;
 
 // Start of user code imports
 // End of user code
@@ -106,12 +104,9 @@ public class ParameterDefinition
     // Start of user code attributeAnnotation:isMemberProperty
     // End of user code
     private Boolean isMemberProperty;
-    // Start of user code attributeAnnotation:foafName
+    // Start of user code attributeAnnotation:name
     // End of user code
-    private String foafName;
-    // Start of user code attributeAnnotation:oslcName
-    // End of user code
-    private String oslcName;
+    private String name;
     // Start of user code attributeAnnotation:maxSize
     // End of user code
     private Integer maxSize;
@@ -327,22 +322,7 @@ public class ParameterDefinition
         return isMemberProperty;
     }
     
-    // Start of user code getterAnnotation:foafName
-    // End of user code
-    @OslcName("name")
-    @OslcPropertyDefinition(FoafVocabularyConstants.FOAF_NAMSPACE + "name")
-    @OslcDescription("The full name of a person expressed as simple text string.")
-    @OslcOccurs(Occurs.ExactlyOne)
-    @OslcValueType(ValueType.String)
-    @OslcReadOnly(false)
-    public String getFoafName()
-    {
-        // Start of user code getterInit:foafName
-        // End of user code
-        return foafName;
-    }
-    
-    // Start of user code getterAnnotation:oslcName
+    // Start of user code getterAnnotation:name
     // End of user code
     @OslcName("name")
     @OslcPropertyDefinition(OslcDomainConstants.OSLC_NAMSPACE + "name")
@@ -350,11 +330,11 @@ public class ParameterDefinition
     @OslcOccurs(Occurs.ExactlyOne)
     @OslcValueType(ValueType.String)
     @OslcReadOnly(false)
-    public String getOslcName()
+    public String getName()
     {
-        // Start of user code getterInit:oslcName
+        // Start of user code getterInit:name
         // End of user code
-        return oslcName;
+        return name;
     }
     
     // Start of user code getterAnnotation:maxSize
@@ -577,27 +557,15 @@ public class ParameterDefinition
         // End of user code
     }
     
-    // Start of user code setterAnnotation:foafName
+    // Start of user code setterAnnotation:name
     // End of user code
-    public void setFoafName(final String name )
+    public void setName(final String name )
     {
-        // Start of user code setterInit:foafName
+        // Start of user code setterInit:name
         // End of user code
-        this.foafName = name;
+        this.name = name;
     
-        // Start of user code setterFinalize:foafName
-        // End of user code
-    }
-    
-    // Start of user code setterAnnotation:oslcName
-    // End of user code
-    public void setOslcName(final String name )
-    {
-        // Start of user code setterInit:oslcName
-        // End of user code
-        this.oslcName = name;
-    
-        // Start of user code setterFinalize:oslcName
+        // Start of user code setterFinalize:name
         // End of user code
     }
     

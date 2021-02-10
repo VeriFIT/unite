@@ -203,6 +203,21 @@
         
         </dd>
     </dl>
+    <dl class="dl-horizontal">
+        <% method = Contribution.class.getMethod("getFileURI"); %>
+        <dt><a href="<%=method.getAnnotation(OslcPropertyDefinition.class).value() %>"><%=method.getAnnotation(OslcName.class).value()%></a></dt>
+        <dd>
+        <%
+        if (aContribution.getFileURI() == null) {
+            out.write("<em>null</em>");
+        }
+        else {
+            out.write(aContribution.getFileURI().toString());
+        }
+        %>
+        
+        </dd>
+    </dl>
 </div>
 <%
 Map<QName, Object> extendedProperties = aContribution.getExtendedProperties();

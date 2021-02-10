@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package verifit.analysis.outputParser;
+package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser;
 
 import java.util.List;
 import java.util.Map;

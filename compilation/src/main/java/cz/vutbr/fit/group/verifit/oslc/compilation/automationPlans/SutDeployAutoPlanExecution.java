@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package verifit.compilation.automationPlans;
+package cz.vutbr.fit.group.verifit.oslc.compilation.automationPlans;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,21 +37,21 @@ import java.util.Base64.Decoder;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 
-import verifit.compilation.VeriFitCompilationConstants;
-import verifit.compilation.VeriFitCompilationManager;
-import verifit.compilation.VeriFitCompilationResourcesFactory;
-import verifit.compilation.automationPlans.sutFetcher.SutFetchBase64;
-import verifit.compilation.automationPlans.sutFetcher.SutFetchFileSystem;
-import verifit.compilation.automationPlans.sutFetcher.SutFetchGit;
-import verifit.compilation.automationPlans.sutFetcher.SutFetchUrl;
-import verifit.compilation.automationPlans.sutFetcher.SutFetcher;
-import verifit.compilation.resources.SUT;
+import cz.vutbr.fit.group.verifit.oslc.compilation.VeriFitCompilationConstants;
+import cz.vutbr.fit.group.verifit.oslc.compilation.VeriFitCompilationManager;
+import cz.vutbr.fit.group.verifit.oslc.compilation.VeriFitCompilationResourcesFactory;
+import cz.vutbr.fit.group.verifit.oslc.compilation.automationPlans.sutFetcher.SutFetchBase64;
+import cz.vutbr.fit.group.verifit.oslc.compilation.automationPlans.sutFetcher.SutFetchFileSystem;
+import cz.vutbr.fit.group.verifit.oslc.compilation.automationPlans.sutFetcher.SutFetchGit;
+import cz.vutbr.fit.group.verifit.oslc.compilation.automationPlans.sutFetcher.SutFetchUrl;
+import cz.vutbr.fit.group.verifit.oslc.compilation.automationPlans.sutFetcher.SutFetcher;
+import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
 /**
  * A thread for executing the Deploy SUT Automation Plan.
@@ -60,7 +60,6 @@ import org.eclipse.lyo.oslc.domains.auto.Contribution;
  */
 public class SutDeployAutoPlanExecution extends RequestRunner
 {
-	final private String serviceProviderId;
 	final private String execAutoRequestId;
 	private AutomationRequest execAutoRequest;
 	final private String resAutoResultId;
@@ -69,16 +68,14 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 	
 	/**
 	 * Creating the thread automatically starts the execution
-	 * @param serviceProviderId	ID of the service provider
 	 * @param execAutoRequest	Executed AutomationRequest resource object
 	 * @param execAutoResult	Result AutomationResult resource object
 	 * @param inputParamsMap	Input parameters as a "name" => "value" map
 	 */
-	public SutDeployAutoPlanExecution(String serviceProviderId, AutomationRequest execAutoRequest, AutomationResult resAutoResult, Map<String, String> inputParamsMap) 
+	public SutDeployAutoPlanExecution(AutomationRequest execAutoRequest, AutomationResult resAutoResult, Map<String, String> inputParamsMap) 
 	{
 		super();
 		
-		this.serviceProviderId = serviceProviderId;
 		this.inputParamsMap = inputParamsMap;
 		this.execAutoRequestId = VeriFitCompilationManager.getResourceIdFromUri(execAutoRequest.getAbout());
 		this.execAutoRequest = execAutoRequest;
@@ -137,10 +134,10 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			// set the states of the Automation Result and Request to "inProgress"
 			resAutoResult.setState(new HashSet<Link>());
 			resAutoResult.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_INPROGRESS)));
-			VeriFitCompilationManager.updateAutomationResult(resAutoResult, serviceProviderId, resAutoResultId);
+			VeriFitCompilationManager.updateAutomationResult(resAutoResult, resAutoResultId);
 			execAutoRequest.setState(new HashSet<Link>());
 			execAutoRequest.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_INPROGRESS)));
-			VeriFitCompilationManager.updateAutomationRequest(execAutoRequest, serviceProviderId, execAutoRequestId);
+			VeriFitCompilationManager.updateAutomationRequest(execAutoRequest, execAutoRequestId);
 			
 			
 		    // prepare result contributions - program fetching, compilation
@@ -188,7 +185,7 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 
 			} finally {
 				// create the fetching log Contribution and add it to the AutomationResult
-				fetchLog = VeriFitCompilationManager.createContribution(fetchLog, serviceProviderId);
+				fetchLog = VeriFitCompilationManager.createContribution(fetchLog);
 		    	resAutoResult.addContribution(fetchLog);
 			}
 			
@@ -223,8 +220,8 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 		    		
 				} finally {
 					// create the compilation Contributions and add them to the Automation Result
-					compStdoutLog = VeriFitCompilationManager.createContribution(compStdoutLog, serviceProviderId);
-					compStderrLog = VeriFitCompilationManager.createContribution(compStderrLog, serviceProviderId);
+					compStdoutLog = VeriFitCompilationManager.createContribution(compStdoutLog);
+					compStderrLog = VeriFitCompilationManager.createContribution(compStderrLog);
 			    	resAutoResult.addContribution(compStdoutLog);
 			    	resAutoResult.addContribution(compStderrLog);
 				}
@@ -240,9 +237,9 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 					newSut.setBuildCommand(paramBuildCommand);
 				newSut.setSUTdirectoryPath(folderPath.toAbsolutePath().toString());
 				newSut.setCreator(execAutoRequest.getCreator());
-				newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(serviceProviderId, execAutoRequestId));
-				VeriFitCompilationManager.createSUT(newSut, serviceProviderId, execAutoRequestId); // TODO
-				resAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(serviceProviderId, VeriFitCompilationManager.getResourceIdFromUri(newSut.getAbout()))); // TODO
+				newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(execAutoRequestId));
+				VeriFitCompilationManager.createSUT(newSut, execAutoRequestId); // TODO
+				resAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(VeriFitCompilationManager.getResourceIdFromUri(newSut.getAbout()))); // TODO
 			}
 			
 			// update the AutoResult state and verdict, and AutoRequest state
@@ -250,10 +247,10 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			resAutoResult.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));
 			resAutoResult.setVerdict(new HashSet<Link>());
 			resAutoResult.addVerdict(new Link(new URI(executionVerdict)));
-			VeriFitCompilationManager.updateAutomationResult(resAutoResult, serviceProviderId, VeriFitCompilationManager.getResourceIdFromUri(resAutoResult.getAbout()));
+			VeriFitCompilationManager.updateAutomationResult(resAutoResult, VeriFitCompilationManager.getResourceIdFromUri(resAutoResult.getAbout()));
 			execAutoRequest.setState(new HashSet<Link>());
 			execAutoRequest.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));
-			VeriFitCompilationManager.updateAutomationRequest(execAutoRequest, serviceProviderId, execAutoRequestId);
+			VeriFitCompilationManager.updateAutomationRequest(execAutoRequest, execAutoRequestId);
 				
 		} catch (URISyntaxException e) {
 			// TODO should never be thrown (URI syntax)
