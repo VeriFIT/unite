@@ -798,7 +798,7 @@ public class VeriFitAnalysisManager {
         // End of user code
         return resources;
     }
-    public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource)
+    public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource) throws OslcResourceException
     {
         AutomationRequest newResource = null;
         
@@ -933,8 +933,7 @@ public class VeriFitAnalysisManager {
 			
 			
 		} catch (OslcResourceException | RuntimeException | IOException e) {
-			//throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
-			throw new  WebApplicationException("AutomationRequest NOT created - " + e.getMessage(), 400); // TODO
+			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
 			
 		} catch (URISyntaxException e) {
 			// TODO should never be thrown (URI syntax)
@@ -942,8 +941,7 @@ public class VeriFitAnalysisManager {
 			
 		} catch (Exception e) {
 			System.out.println("WARNING: AutomationResquest creation failed: " + e.getMessage());
-			//throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
-			throw new  WebApplicationException("AutomationRequest NOT created - " + e.getMessage(), 400); // TODO
+			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
 		}
 		
         
@@ -986,7 +984,12 @@ public class VeriFitAnalysisManager {
         
         
         // Start of user code createAutomationRequestFromDialog
-		newResource = createAutomationRequest(httpServletRequest,aResource);
+		try {
+			newResource = createAutomationRequest(httpServletRequest,aResource);
+		} catch (OslcResourceException e) {	// TODO
+            log.error("Failed to create resource: '" + aResource.getAbout() + "'", e); 
+			throw new WebApplicationException("Failed to create resource: '" + aResource.getAbout() + "'", e, Status.BAD_REQUEST);
+		}
         // End of user code
         return newResource;
     }

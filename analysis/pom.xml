@@ -60,12 +60,6 @@
         <!-- Start of user code dependencies
         -->
         
-        <dependency>
-            <groupId>org.eclipse.lyo</groupId>
-            <artifactId>oslc-domains</artifactId>
-            <version>${version.lyo}</version>
-        </dependency>
-        
         <!-- End of user code
         -->
         <!-- General dependencies -->
@@ -186,7 +180,6 @@
 			
 			
 			<!-- .war creation -->
-			<!-- TODO needed?
       		<plugin>
 			    <groupId>org.apache.maven.plugins</groupId>
 			    <artifactId>maven-war-plugin</artifactId>
@@ -204,7 +197,7 @@
 			        <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
 			    </configuration>
 			</plugin>
-			-->
+			
             <!-- End of user code
             -->
             <plugin>
@@ -215,7 +208,7 @@
                     <webAppConfig>
                         <contextPath>/analysis</contextPath>
                     </webAppConfig>
-                    <reload>automatic</reload>
+                    <reload>manual</reload>
                     <scanIntervalSeconds>5</scanIntervalSeconds>
 					<jettyXml>
 				      ${project.basedir}/src/main/webapp/jetty-config/jetty.xml,${project.basedir}/src/main/webapp/jetty-config/jetty-http.xml

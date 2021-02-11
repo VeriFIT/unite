@@ -14,5 +14,4 @@
 cd "${BASH_SOURCE%/*}"
 
 ./fix_move_domains.sh
-./fix_getters.sh
 ./fix_redo_modifs.sh

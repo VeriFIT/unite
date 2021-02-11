@@ -103,18 +103,18 @@ public abstract class RequestRunner extends Thread
 	}
 	
 	/**
-	 * Creates a folder in the "tmp/" adapter folder
+	 * Creates a folder in the "SUT" adapter folder
 	 * @param subfolder How to name the subfolder
 	 * @return	Path to the new folder
 	 * @throws IOException 
 	 */
-	protected Path createTmpDir(String subfolder) throws IOException
+	protected Path createSutDir(String subfolder) throws IOException
 	{
-		Path subfolderPath = FileSystems.getDefault().getPath("tmp").resolve(subfolder);
+		Path subfolderPath = FileSystems.getDefault().getPath("SUT").resolve(subfolder);
 	    
 	    if (!Files.exists(subfolderPath))
 	    {   
-            Files.createDirectory(subfolderPath); sdfgsdfgsdf
+            Files.createDirectory(subfolderPath);
 	    }
 	    return subfolderPath;
 	}

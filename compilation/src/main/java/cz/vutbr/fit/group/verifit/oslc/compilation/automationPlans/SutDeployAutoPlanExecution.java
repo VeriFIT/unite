@@ -164,7 +164,7 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 			Path folderPath = null;
 			try {
 				// create the program path and name
-				folderPath = createTmpDir(execAutoRequestId);
+				folderPath = createSutDir(execAutoRequestId);
 				String filenameSUT = "";	// used for optional unpacking later
 				
 			    // get the source file

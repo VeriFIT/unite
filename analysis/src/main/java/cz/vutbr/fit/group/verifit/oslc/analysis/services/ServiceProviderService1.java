@@ -93,6 +93,7 @@ import io.swagger.annotations.ApiOperation;
 
 // Start of user code imports
 import cz.vutbr.fit.group.verifit.oslc.analysis.exceptions.OslcResourceException;
+import org.eclipse.lyo.oslc4j.core.model.Error;
 // End of user code
 
 // Start of user code pre_class_code
@@ -583,9 +584,19 @@ public class ServiceProviderService1
             final AutomationRequest aResource
         ) throws IOException, ServletException
     {
-        AutomationRequest newResource = VeriFitAnalysisManager.createAutomationRequest(httpServletRequest, aResource);
-        httpServletResponse.setHeader("ETag", VeriFitAnalysisManager.getETagFromAutomationRequest(newResource));
-        return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();
+    	try {
+	        AutomationRequest newResource = VeriFitAnalysisManager.createAutomationRequest(httpServletRequest, aResource);
+	        httpServletResponse.setHeader("ETag", VeriFitAnalysisManager.getETagFromAutomationRequest(newResource));
+	        return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();
+	    } catch (OslcResourceException e) {
+			Error errorResource = new Error();
+			errorResource.setStatusCode("400");
+			errorResource.setMessage(e.getMessage());
+			return Response.status(400).entity(errorResource).build();
+		 } catch (Exception e) {
+			e.printStackTrace();
+			throw new WebApplicationException(e);
+		 }
     }
 
     /**

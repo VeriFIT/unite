@@ -59,12 +59,6 @@
         <!-- Start of user code dependencies
         -->
         
-        <dependency>
-            <groupId>org.eclipse.lyo</groupId>
-            <artifactId>oslc-domains</artifactId>
-            <version>${version.lyo}</version>
-        </dependency>
-        
 		<!-- GIT dependencies https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
 		<dependency>
 		    <groupId>org.eclipse.jgit</groupId>
@@ -214,7 +208,7 @@
                     <webAppConfig>
                         <contextPath>/compilation</contextPath>
                     </webAppConfig>
-                    <reload>automatic</reload>
+                    <reload>manual</reload>
                     <scanIntervalSeconds>5</scanIntervalSeconds>
 					<jettyXml>
 				      ${project.basedir}/src/main/webapp/jetty-config/jetty.xml,${project.basedir}/src/main/webapp/jetty-config/jetty-http.xml

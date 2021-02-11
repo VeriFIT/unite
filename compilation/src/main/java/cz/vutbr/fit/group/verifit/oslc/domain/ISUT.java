@@ -142,7 +142,7 @@ public interface ISUT
     public Set<Link> getCreator();
 
     @OslcName("producedByAutomationRequest")
-    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "producedByAutomationRequest")
+    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "producedByAutomationRequest")
     @OslcOccurs(Occurs.ZeroOrOne)
     @OslcValueType(ValueType.Resource)
     @OslcRange({Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE})

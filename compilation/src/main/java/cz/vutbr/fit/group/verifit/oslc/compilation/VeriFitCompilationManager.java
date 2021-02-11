@@ -95,11 +95,11 @@ public class VeriFitCompilationManager {
     // Start of user code class_methods
 
 	/**
-	 * Creates the tmp directory for saving programs to analyze
+	 * Creates the SUT directory for saving programs to analyze
 	 */
 	private static void createTmpDir()
 	{
-		File programDir = new File("tmp/");
+		File programDir = new File("SUT/");
 	    if (!programDir.exists())
 	    {
 	    	programDir.mkdirs();
@@ -107,12 +107,12 @@ public class VeriFitCompilationManager {
 	}
 	
 	/**
-	 * Deletes the tmp directory to cleanup
+	 * Deletes the SUT directory to cleanup
 	 * @throws IOException
 	 */
 	private static void deleteTmpDir() throws IOException
 	{
-		File programDir = new File("tmp");
+		File programDir = new File("SUT");
 		FileDeleteStrategy.FORCE.delete(programDir);
 	}
 	
@@ -310,9 +310,12 @@ public class VeriFitCompilationManager {
 	{
 		// get the executed AutomationPlan resource			
 		String execAutoPlanId = getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue());
-		AutomationPlan execAutoPlan = getAutomationPlan(null, execAutoPlanId);
-		if (execAutoPlan == null)
-			throw new OslcResourceException("AutomationPlan not found (id: " + execAutoPlanId + ")");
+		AutomationPlan execAutoPlan = null;
+		try {
+			execAutoPlan = getAutomationPlan(null, execAutoPlanId);
+		} catch (Exception e) {
+			throw new OslcResourceException("AutomationPlan not found (id: " + execAutoPlanId + ")");			
+		}
 
 		/// check the input parameters and create a map of "name" -> ("value", position)
 		Map<String, String> inputParamsMap = new HashMap<String, String>();
@@ -500,7 +503,7 @@ public class VeriFitCompilationManager {
 			System.exit(1);
 		}    	 
     	
-    	// create the tmp directory
+    	// create the SUT directory
     	if (VeriFitCompilationProperties.PERSIST_SUT_DIRS == false) // make sure it was deleted if not persistent
     	{
     		try {
@@ -833,7 +836,7 @@ public class VeriFitCompilationManager {
         // End of user code
         return resources;
     }
-    public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource)
+    public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource) throws OslcResourceException
     {
         AutomationRequest newResource = null;
         
@@ -845,10 +848,8 @@ public class VeriFitCompilationManager {
          */
         if (!AutomationPlanDefinition.checkPredefinedAutomationPlans())
 		{
-        	//throw new OslcResourceException("Failed to get AutomationPlans. Is the triplestore still online?"
-        	//		+ " If yes, then it may be corrupted. Try restarting the Adapter.");
-			throw new  WebApplicationException("Failed to get AutomationPlans. Is the triplestore still online?"
-					+ " If yes, then it may be corrupted. Try restarting the Adapter.", 400); // TODO
+        	throw new OslcResourceException("Failed to get AutomationPlans. Is the triplestore still online?"
+        			+ " If yes, then it may be corrupted. Try restarting the Adapter.");
 		}
         
         Map<String, String> inputParamsMap = null;
@@ -859,7 +860,7 @@ public class VeriFitCompilationManager {
 				throw new OslcResourceException("empty creation POST");
 	        
 	        // check for missing required properties
-			if (aResource.getExecutesAutomationPlan().getValue() == null)
+			if (aResource.getExecutesAutomationPlan() == null || aResource.getExecutesAutomationPlan().getValue() == null)
 				throw new OslcResourceException("executesAutomationPlan property missing");
 			if (aResource.getTitle() == null || aResource.getTitle().isEmpty())
 				throw new OslcResourceException("title property missing");
@@ -904,8 +905,7 @@ public class VeriFitCompilationManager {
 			
 
 		} catch (OslcResourceException e) {
-			//throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
-			throw new  WebApplicationException("AutomationRequest NOT created - " + e.getMessage(), 400); // TODO
+			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
 			
 		} catch (URISyntaxException e) {
 			// TODO should never be thrown (URI syntax)
@@ -913,8 +913,7 @@ public class VeriFitCompilationManager {
 			
 		} catch (Exception e) {
 			System.out.println("WARNING: AutomationResquest creation failed: " + e.getMessage());
-			//throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
-			throw new  WebApplicationException("AutomationRequest NOT created - " + e.getMessage(), 400); // TODO
+			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
 		}
 		
         // End of user code
@@ -960,7 +959,12 @@ public class VeriFitCompilationManager {
         
         
         // Start of user code createAutomationRequestFromDialog
-		newResource = createAutomationRequest(httpServletRequest,aResource);
+		try {
+			newResource = createAutomationRequest(httpServletRequest,aResource);
+		} catch (OslcResourceException e) {	// TODO
+            log.error("Failed to create resource: '" + aResource.getAbout() + "'", e); 
+			throw new WebApplicationException("Failed to create resource: '" + aResource.getAbout() + "'", e, Status.BAD_REQUEST);
+		}
         // End of user code
         return newResource;
     }

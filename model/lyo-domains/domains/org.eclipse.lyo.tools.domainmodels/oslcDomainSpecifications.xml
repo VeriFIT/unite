@@ -447,6 +447,7 @@
     <resourceProperties id="_poEY05UdEeq-KoPaR9_Cfg" name="producedByAutomationRequest" description="Automation Request which produced the Automation Result. It is likely that the target resource will be an oslc_auto:AutomationRequest but that is not necessarily the case." occurs="zeroOrOne" valueType="Resource" range="_poAHYZUdEeq-KoPaR9_Cfg" representation="reference"/>
     <resourceProperties id="_poE_4JUdEeq-KoPaR9_Cfg" name="reportsOnAutomationPlan" description="Automation Plan which the Automation Result reports on. It is likely that the target resource will be an oslc_auto:AutomationPlan but that is not necessarily the case." valueType="Resource" range="_pn-SMJUdEeq-KoPaR9_Cfg" representation="reference"/>
     <resourceProperties id="_vgN0sGpEEeuDWZwlSoXo7A" name="producedAutomationResult" occurs="zeroOrOne" valueType="Resource" range="_poCjoJUdEeq-KoPaR9_Cfg" representation="either"/>
+    <resourceProperties id="_EXLfYGusEeuUjZLNvT5EgA" name="producedByAutomationRequest" occurs="zeroOrOne" valueType="Resource" range="_poAHYZUdEeq-KoPaR9_Cfg"/>
     <configuration xsi:type="oslc4j_ai:MavenSpecificationConfiguration">
       <generalConfiguration filesBasePath="." javaBasePackageName="org.eclipse.lyo.oslc.domains.auto"/>
       <projectConfiguration xsi:type="oslc4j_ai:MavenProjectConfiguration" doNotGenerateProjectConfigurationFiles="true" lyoVersion="4.0.0" groupId="org.eclipse.lyo.oslc.domains.auto" artifactId="Automation" version="0.0.1-SNAPSHOT"/>
