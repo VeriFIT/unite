@@ -35,7 +35,6 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "47f638d5-fb68-4f9f-b1dc-e50d627524fd",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -45,15 +44,13 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "f44ae60f-ecdb-41ac-a838-24eb15c1670d",
 						"type": "text/javascript",
 						"exec": [
 							""
 						]
 					}
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "1) look at resource shapes",
@@ -67,7 +64,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "73903c9c-a644-437d-8ee6-f0ae58002b4a",
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -108,7 +104,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "d8bcf661-6b3a-4c1e-bdce-698d133d02be",
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -149,7 +144,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "5eff6b85-9d30-4f71-8f4e-58515c452cc5",
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -184,9 +178,7 @@
 							},
 							"response": []
 						}
-					],
-					"protocolProfileBehavior": {},
-					"_postman_isSubFolder": true
+					]
 				},
 				{
 					"name": "compilation",
@@ -197,7 +189,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "1fe65082-394a-4eb9-8a77-ae799b5cfc37",
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -238,7 +229,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "db18adc3-6a6d-4381-a76b-21977e27fbce",
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -279,7 +269,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "892b01f4-5775-41d3-af84-14b210ae07b5",
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -314,12 +303,9 @@
 							},
 							"response": []
 						}
-					],
-					"protocolProfileBehavior": {},
-					"_postman_isSubFolder": true
+					]
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "2) choose an Automation Plan (ie. a tool)",
@@ -330,7 +316,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "89310430-a76c-46c4-8a3b-3066fe6de969",
 								"exec": [
 									"pm.test(\"Response code should be 200 (OK)\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -350,7 +335,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{server_address}}:{{analysis_port}}/analysis/services/serviceProviders/A0/resources/queryAutoPlan",
+							"raw": "{{server_address}}:{{analysis_port}}/analysis/services/resources/queryAutomationPlan",
 							"host": [
 								"{{server_address}}"
 							],
@@ -358,18 +343,10 @@
 							"path": [
 								"analysis",
 								"services",
-								"serviceProviders",
-								"A0",
 								"resources",
-								"queryAutoPlan"
+								"queryAutomationPlan"
 							],
 							"query": [
-								{
-									"key": "oslc.searchTerms",
-									"value": "TextToFind",
-									"description": "Full text search in all properties",
-									"disabled": true
-								},
 								{
 									"key": "oslc.where",
 									"value": "dcterms:identifier=\"0\"",
@@ -399,8 +376,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "3) basic usacase (compile - analyse - get result)",
@@ -414,7 +390,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "69cd0a20-02d0-4f12-b478-4d4766367c77",
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -426,7 +401,6 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "d6833a02-69eb-4b0f-9bd2-ee3e94a4a48e",
 										"exec": [
 											""
 										],
@@ -444,7 +418,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{server_address}}:{{compilation_port}}/compilation/services/serviceProviders/A0/resources/automationPlans/0",
+									"raw": "{{server_address}}:{{compilation_port}}/compilation/services/resources/automationPlans/0",
 									"host": [
 										"{{server_address}}"
 									],
@@ -452,8 +426,6 @@
 									"path": [
 										"compilation",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
 										"automationPlans",
 										"0"
@@ -468,7 +440,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "32a7a03c-3a11-4c8d-9ad7-9c24dd2fcb7c",
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -480,7 +451,6 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "a5d7d292-9cbb-4825-8717-1bde898a199b",
 										"exec": [
 											""
 										],
@@ -498,7 +468,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{server_address}}:{{analysis_port}}/analysis/services/serviceProviders/A0/resources/automationPlans/3",
+									"raw": "{{server_address}}:{{analysis_port}}/analysis/services/resources/automationPlans/dummy",
 									"host": [
 										"{{server_address}}"
 									],
@@ -506,19 +476,15 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
 										"automationPlans",
-										"3"
+										"dummy"
 									]
 								}
 							},
 							"response": []
 						}
-					],
-					"protocolProfileBehavior": {},
-					"_postman_isSubFolder": true
+					]
 				},
 				{
 					"name": "1) compile the SUT",
@@ -529,7 +495,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "e67ba477-b2c3-4353-88a4-ab6bc4c660f0",
 										"exec": [
 											"// save the request ID as a global variable for later tests to use",
 											"const response = xml2Json(pm.response.text());",
@@ -549,7 +514,6 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "b463b424-cdcb-465a-8ffb-6d5998777946",
 										"exec": [
 											""
 										],
@@ -574,13 +538,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}:{{compilation_port}}/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>",
-									"options": {
-										"raw": {}
-									}
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}:{{compilation_port}}/compilation/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
-									"raw": "{{server_address}}:{{compilation_port}}/compilation/services/serviceProviders/A0/resources/createAutoRequest",
+									"raw": "{{server_address}}:{{compilation_port}}/compilation/services/resources/createAutomationRequest",
 									"host": [
 										"{{server_address}}"
 									],
@@ -588,10 +549,8 @@
 									"path": [
 										"compilation",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"createAutoRequest"
+										"createAutomationRequest"
 									]
 								}
 							},
@@ -603,7 +562,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "69083adc-3b68-4be8-bbf7-65dd413df93a",
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {",
 											"    pm.response.to.have.status(200);",
@@ -615,7 +573,6 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "1c4b56eb-d58f-4e86-a39a-e5bb23a40753",
 										"exec": [
 											""
 										],
@@ -633,7 +590,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{server_address}}:{{compilation_port}}/compilation/services/serviceProviders/A0/resources/automationResults/{{compilation_reqId}}",
+									"raw": "{{server_address}}:{{compilation_port}}/compilation/services/resources/automationResults/{{compilation_reqId}}",
 									"host": [
 										"{{server_address}}"
 									],
@@ -641,8 +598,6 @@
 									"path": [
 										"compilation",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
 										"automationResults",
 										"{{compilation_reqId}}"
@@ -657,7 +612,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "cd108a70-0533-432e-96b0-73a810dcc974",
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {",
 											"    pm.response.to.have.status(200);",
@@ -669,7 +623,6 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "3b20ba06-3d09-419e-8def-a8df2677b26d",
 										"exec": [
 											""
 										],
@@ -687,7 +640,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{server_address}}:{{compilation_port}}/compilation/services/serviceProviders/A0/resources/sUTs/{{compilation_reqId}}",
+									"raw": "{{server_address}}:{{compilation_port}}/compilation/services/resources/sUTs/{{compilation_reqId}}",
 									"host": [
 										"{{server_address}}"
 									],
@@ -695,8 +648,6 @@
 									"path": [
 										"compilation",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
 										"sUTs",
 										"{{compilation_reqId}}"
@@ -705,9 +656,7 @@
 							},
 							"response": []
 						}
-					],
-					"protocolProfileBehavior": {},
-					"_postman_isSubFolder": true
+					]
 				},
 				{
 					"name": "2) analyse",
@@ -718,7 +667,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "88c7fce0-cf41-4eca-85b9-9546d07e4b03",
 										"exec": [
 											"// save the request ID as a global variable for later tests to use",
 											"const response = xml2Json(pm.response.text());",
@@ -737,7 +685,6 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "629cff14-15b9-4d5f-8b0e-3c0976bab640",
 										"exec": [
 											""
 										],
@@ -762,13 +709,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>Tutorial title</dcterms:title>\n\t<dcterms:description>Tutorial description</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{analysis_port}}/analysis/services/serviceProviders/A0/resources/automationPlans/dummy\" />\n\t<dcterms:creator rdf:resource=\"Title-creator\"/>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value>HelloWorld</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{server_address}}:{{compilation_port}}/compilation/services/serviceProviders/A0/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>",
-									"options": {
-										"raw": {}
-									}
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>Tutorial title</dcterms:title>\n\t<dcterms:description>Tutorial description</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{analysis_port}}/analysis/services/resources/automationPlans/dummy\" />\n\t<dcterms:creator rdf:resource=\"Title-creator\"/>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value>HelloWorld</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{server_address}}:{{compilation_port}}/compilation/services/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
-									"raw": "{{server_address}}:{{analysis_port}}/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+									"raw": "{{server_address}}:{{analysis_port}}/analysis/services/resources/createAutomationRequest",
 									"host": [
 										"{{server_address}}"
 									],
@@ -776,10 +720,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"createAutoRequest"
+										"createAutomationRequest"
 									]
 								}
 							},
@@ -791,7 +733,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4e15a53e-01af-4bc3-a6f6-3c3e3ab78860",
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {",
 											"    pm.response.to.have.status(200);",
@@ -803,7 +744,6 @@
 								{
 									"listen": "prerequest",
 									"script": {
-										"id": "045231fe-7114-49c8-8f5d-8045d17e1280",
 										"exec": [
 											""
 										],
@@ -821,7 +761,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{server_address}}:{{analysis_port}}/analysis/services/serviceProviders/A0/resources/automationResults/{{analysis_reqId}}",
+									"raw": "{{server_address}}:{{analysis_port}}/analysis/services/resources/automationResults/{{analysis_reqId}}",
 									"host": [
 										"{{server_address}}"
 									],
@@ -829,8 +769,6 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
 										"automationResults",
 										"{{analysis_reqId}}"
@@ -845,7 +783,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "a1a7b2af-0a75-42c8-8a88-bd3cbf1c972a",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -855,23 +792,19 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9a7774be-dbf6-445c-a0a4-44a8b2fed5c5",
 								"type": "text/javascript",
 								"exec": [
 									""
 								]
 							}
 						}
-					],
-					"protocolProfileBehavior": {},
-					"_postman_isSubFolder": true
+					]
 				}
 			],
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "e7e23517-2beb-4f5b-b142-ca1089b2f3b0",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -881,15 +814,13 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "0e3dc36b-ec03-43f6-aba7-6a30409a0f93",
 						"type": "text/javascript",
 						"exec": [
 							""
 						]
 					}
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "explore the adapter through OSLC",
@@ -903,7 +834,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "26b7070d-f57f-4251-b762-8067d2fc6c54",
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -944,7 +874,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "9b94b32c-7d20-46ff-b36b-ccba665e3363",
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -979,9 +908,7 @@
 							},
 							"response": []
 						}
-					],
-					"protocolProfileBehavior": {},
-					"_postman_isSubFolder": true
+					]
 				},
 				{
 					"name": "compilation",
@@ -992,7 +919,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "d08c21b5-25a7-4949-804f-e450d0314d0f",
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -1033,7 +959,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "9a45177d-81b1-47a0-bc81-82a5d4466fba",
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
@@ -1068,16 +993,13 @@
 							},
 							"response": []
 						}
-					],
-					"protocolProfileBehavior": {},
-					"_postman_isSubFolder": true
+					]
 				}
 			],
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "b9c51e58-5656-4382-b48b-5e3fd0cab4a8",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -1087,15 +1009,13 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "1650bef0-bd86-4512-bb63-9abcff0e4868",
 						"type": "text/javascript",
 						"exec": [
 							""
 						]
 					}
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "resource query parameters",
@@ -1112,7 +1032,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{server_address}}:{{analysis_port}}/analysis/services/serviceProviders/A0/resources/queryAutoResult",
+							"raw": "{{server_address}}:{{analysis_port}}/analysis/services/resources/queryAutomationResult",
 							"host": [
 								"{{server_address}}"
 							],
@@ -1120,10 +1040,8 @@
 							"path": [
 								"analysis",
 								"services",
-								"serviceProviders",
-								"A0",
 								"resources",
-								"queryAutoResult"
+								"queryAutomationResult"
 							],
 							"query": [
 								{
@@ -1161,15 +1079,13 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		}
 	],
 	"event": [
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "c89d477d-51f8-4842-9621-7a563255c632",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -1179,7 +1095,6 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "6619f713-9637-446e-b743-a45f48f1b73e",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -1189,20 +1104,16 @@
 	],
 	"variable": [
 		{
-			"id": "d38e4011-42aa-4232-bacc-54f4983589ae",
 			"key": "server_address",
 			"value": "http://localhost"
 		},
 		{
-			"id": "6f58b933-3b3c-4e3a-b31a-21cda644cdcd",
 			"key": "analysis_port",
 			"value": "8080"
 		},
 		{
-			"id": "39d6b164-4f81-45b7-9ad6-684622c557e7",
 			"key": "compilation_port",
 			"value": "8081"
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }

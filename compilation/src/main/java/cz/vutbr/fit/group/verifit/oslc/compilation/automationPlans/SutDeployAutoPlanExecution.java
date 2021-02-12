@@ -67,7 +67,6 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 	final private Map<String, String> inputParamsMap;
 	
 	/**
-	 * Creating the thread automatically starts the execution
 	 * @param execAutoRequest	Executed AutomationRequest resource object
 	 * @param execAutoResult	Result AutomationResult resource object
 	 * @param inputParamsMap	Input parameters as a "name" => "value" map
@@ -81,8 +80,6 @@ public class SutDeployAutoPlanExecution extends RequestRunner
 		this.execAutoRequest = execAutoRequest;
 		this.resAutoResultId = VeriFitCompilationManager.getResourceIdFromUri(resAutoResult.getAbout());
 		this.resAutoResult = resAutoResult;
-		
-		this.start();
 	}
 
 	/**

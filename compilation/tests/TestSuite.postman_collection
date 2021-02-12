@@ -7213,60 +7213,6 @@
 							]
 						},
 						{
-							"name": "searchTerms",
-							"item": [
-								{
-									"name": "query with searchTerms",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.test(\"Response code should be 200 (OK)\", function () {",
-													"    pm.response.to.have.status(200);",
-													"});",
-													"",
-													"pm.test(\"Check the query result\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"special title for search term query\");",
-													"});"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "GET",
-										"header": [
-											{
-												"key": "Accept",
-												"value": "application/rdf+xml",
-												"type": "text"
-											}
-										],
-										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/queryAutomationResult?oslc.searchTerms=special title for search term query",
-											"host": [
-												"{{server_address}}"
-											],
-											"path": [
-												"{{server_context}}",
-												"services",
-												"resources",
-												"queryAutomationResult"
-											],
-											"query": [
-												{
-													"key": "oslc.searchTerms",
-													"value": "special title for search term query"
-												}
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
 							"name": "where",
 							"item": [
 								{

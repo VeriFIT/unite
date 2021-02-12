@@ -514,12 +514,9 @@ public class VeriFitCompilationManager {
     	}
     	createTmpDir();
 
-    	// connect to the triplestore
-    	String sSparqlQueryEndpoint = VeriFitCompilationProperties.SPARQL_SERVER_QUERY_ENDPOINT;
-    	String sSparqlUpdateEndpoint = VeriFitCompilationProperties.SPARQL_SERVER_UPDATE_ENDPOINT; 
-    	
         // End of user code
         // Start of user code StoreInitialise
+    	// connect to the triplestore
         // End of user code
         Properties lyoStoreProperties = new Properties();
         String lyoStorePropertiesFile = StorePool.class.getResource("/store.properties").getFile();
@@ -583,20 +580,33 @@ public class VeriFitCompilationManager {
 		// check what the last AutomationRequest ID is
     	// requests have a numerical ID
     	int initReqId = 0;
+    	int currMaxReqId = 0;
     	try {
-			List<AutomationRequest> listAutoRequests = VeriFitCompilationManager.queryAutomationRequests(null, "", "", 0, 100); // TODO check that it works -- should get max ID
-			for (AutomationRequest autoReq : listAutoRequests)
-			{
-				int reqId = Integer.parseInt(getResourceIdFromUri(autoReq.getAbout()));
-				if ( reqId >= initReqId)
+    		// loop over all the Automation Requests in the triplestore (TODO potential performance issue for initialization with a large persistent database)
+    		for (int page = 0;; page++)
+    		{
+				List<AutomationRequest> listAutoRequests = VeriFitCompilationManager.queryAutomationRequests(null, "", "", page, 100);
+				if (listAutoRequests.size() == 0)
 				{
-					initReqId = reqId + 1;
+					break;	
 				}
-			}		
+				else
+				{	
+					for (AutomationRequest autoReq : listAutoRequests)
+					{
+						int reqId = Integer.parseInt(getResourceIdFromUri(autoReq.getAbout()));
+						if (reqId > currMaxReqId)
+						{
+							currMaxReqId = reqId;
+						}
+					}
+				}
+    		}
 		} catch (WebApplicationException e) { 
 			System.out.println("ERROR: Adapter initialization: Failed to get latest AutomationRequest ID: " + e.getMessage());
 			System.exit(1);
 		}		
+    	initReqId = currMaxReqId + 1;
 		AutoRequestIdGen = new ResourceIdGen(initReqId);
         
         // End of user code
@@ -641,6 +651,12 @@ public class VeriFitCompilationManager {
         List<SUT> resources = null;
         
         // Start of user code querySUTs_storeInit
+        if (httpServletRequest != null)
+        {
+		    String strLimit = httpServletRequest.getParameter("limit");
+		    if (strLimit != null)
+		    	limit = Integer.parseInt(strLimit) - 1; // TODO -1 to counteract the +1 generated in the store.getResources(...) below
+        }
         // End of user code
         Store store = storePool.getStore();
         try {
@@ -666,6 +682,12 @@ public class VeriFitCompilationManager {
         List<AutomationResult> resources = null;
         
         // Start of user code queryAutomationResults_storeInit
+        if (httpServletRequest != null)
+        {
+		    String strLimit = httpServletRequest.getParameter("limit");
+		    if (strLimit != null)
+		    	limit = Integer.parseInt(strLimit) - 1; // TODO -1 to counteract the +1 generated in the store.getResources(...) below
+        }
         // End of user code
         Store store = storePool.getStore();
         try {
@@ -691,6 +713,12 @@ public class VeriFitCompilationManager {
         List<AutomationPlan> resources = null;
         
         // Start of user code queryAutomationPlans_storeInit
+        if (httpServletRequest != null)
+        {
+		    String strLimit = httpServletRequest.getParameter("limit");
+		    if (strLimit != null)
+		    	limit = Integer.parseInt(strLimit) - 1; // TODO -1 to counteract the +1 generated in the store.getResources(...) below
+        }
         // End of user code
         Store store = storePool.getStore();
         try {
@@ -716,6 +744,12 @@ public class VeriFitCompilationManager {
         List<AutomationRequest> resources = null;
         
         // Start of user code queryAutomationRequests_storeInit
+        if (httpServletRequest != null)
+        {
+		    String strLimit = httpServletRequest.getParameter("limit");
+		    if (strLimit != null)
+		    	limit = Integer.parseInt(strLimit) - 1; // TODO -1 to counteract the +1 generated in the store.getResources(...) below
+        }
         // End of user code
         Store store = storePool.getStore();
         try {
@@ -852,8 +886,7 @@ public class VeriFitCompilationManager {
         			+ " If yes, then it may be corrupted. Try restarting the Adapter.");
 		}
         
-        Map<String, String> inputParamsMap = null;
-        AutomationResult newAutoResult = null;
+        SutDeployAutoPlanExecution runner = null;
 		try {
 			// error response on empty creation POST
 	        if (aResource == null)
@@ -893,15 +926,18 @@ public class VeriFitCompilationManager {
 			propAutoResult.addVerdict(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_VERDICT_UNAVAILABLE)));
 			
 			// get the executed autoPlan, check input parameters, add output parameters to the AutoResult, and make an input map for the runner
-			inputParamsMap = processAutoReqInputParams(newResource, propAutoResult);
+			Map<String, String> inputParamsMap = processAutoReqInputParams(newResource, propAutoResult);
 			
 			// check that the request contains exactly one "source.*" parameter (can not be checked automatically based on the AutoPlan
 			// throws an exception if the Inputs are not OK
 			checkSutDeploySourceInputs(newResource);
 			
 			// persist the AutomationResult and set the setProducedAutomationResult() link for the AutoRequest
-		    newAutoResult = VeriFitCompilationManager.createAutomationResult(propAutoResult, newID);
+		    AutomationResult newAutoResult = VeriFitCompilationManager.createAutomationResult(propAutoResult, newID);
 			newResource.setProducedAutomationResult(new Link(newAutoResult.getAbout())); // TODO
+			
+			// create a new thread to execute the automation request
+			runner = new SutDeployAutoPlanExecution(newResource, newAutoResult, inputParamsMap);
 			
 
 		} catch (OslcResourceException e) {
@@ -941,10 +977,9 @@ public class VeriFitCompilationManager {
         }
         newResource = aResource;
         // Start of user code createAutomationRequest_storeFinalize
-
-		// create a new thread to execute the automation request
-		new SutDeployAutoPlanExecution(newResource, newAutoResult, inputParamsMap);
 		
+        runner.start();
+        
         // End of user code
         
         // Start of user code createAutomationRequest
