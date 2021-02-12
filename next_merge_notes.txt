@@ -1,0 +1,14 @@
+migrated to lyo 4.0
+
+new features
+	swagger
+	generating OSLC4J projects
+	modeling persistency
+	maybe easier oauth
+	had to migrate for future features
+
+api changes
+	all endpoints renamed from AutoXXX to AutomationXXX (e.g. createAutoRequest -> createAutomationRequest)
+		>> find and replace for AutoRequest, AutoResult, AutoPlan -> AutomationXXX
+	service is now independent of the service provider (default setting in lyo so lets go with it)	
+		>> find and replace /serviceProviders/A0/ -> /
