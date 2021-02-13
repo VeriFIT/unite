@@ -28,8 +28,8 @@ public interface FitDomainConstants
     // Start of user code user constants
     // End of user code
 
-    public static String VERIFIT_UNIVERSAL_ANALYSIS_DOMAIN = "http://your.organisation.domain/nsp1#";
-    public static String VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE = "http://your.organisation.domain/nsp1#";
+    public static String VERIFIT_UNIVERSAL_ANALYSIS_DOMAIN = "http://fit.vutbr.cz/group/verifit/oslc/ns/universal-analysis#";
+    public static String VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE = "http://fit.vutbr.cz/group/verifit/oslc/ns/universal-analysis#";
     public static String VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE_PREFIX = "fit";
 
     public static String SUT_PATH = "sUT";

@@ -12,3 +12,5 @@ api changes
 		>> find and replace for AutoRequest, AutoResult, AutoPlan -> AutomationXXX
 	service is now independent of the service provider (default setting in lyo so lets go with it)	
 		>> find and replace /serviceProviders/A0/ -> /
+	namespace URI changed from xmlns:fit="http://verifit/fit#" to xmlns:fit="http://fit.vutbr.cz/group/verifit/oslc/ns/universal-analysis#"
+

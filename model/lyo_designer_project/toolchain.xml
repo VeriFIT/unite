@@ -115,7 +115,7 @@
     <stores defaultNamedGraph="verifit_compilation" sparqlQueryEndpoint="http://localhost:8082/fuseki/verifit_compilation/query" sparqlUpdateEndpoint="http://localhost:8082/fuseki/verifit_compilation/update" initialPoolSize="500"/>
   </adaptorInterfaces>
   <specification>
-    <domainSpecifications name="VeriFit Universal Analysis" namespaceURI="http://your.organisation.domain/nsp1#" namespacePrefix="//@specification/@domainPrefixes[name='fit']">
+    <domainSpecifications name="VeriFit Universal Analysis" namespaceURI="http://fit.vutbr.cz/group/verifit/oslc/ns/universal-analysis#" namespacePrefix="//@specification/@domainPrefixes[name='fit']">
       <resources id="_mBmTQGpGEeuDWZwlSoXo7A" name="SUT">
         <resourceProperties href="#_tffywGpHEeuDWZwlSoXo7A"/>
         <resourceProperties href="#_6VLhMGpGEeuDWZwlSoXo7A"/>

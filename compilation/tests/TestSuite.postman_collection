@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "ef53251f-e188-4670-9c5c-df836bb693d7",
+		"_postman_id": "a6f89ca9-4755-4a52-a21e-babf25a0a181",
 		"name": "Compilation Tests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -7306,7 +7306,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{server_address}}/{{server_context}}/services/resources/queryAutomationPlan?",
+							"raw": "{{server_address}}/{{server_context}}/services/resources/queryAutomationPlan",
 							"host": [
 								"{{server_address}}"
 							],
