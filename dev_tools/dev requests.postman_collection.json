@@ -23,7 +23,7 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/queryAutoPlan",
+									"raw": "http://localhost:8081/compilation/services/resources/queryAutomationPlan",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -32,10 +32,8 @@
 									"path": [
 										"compilation",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"queryAutoPlan"
+										"queryAutomationPlan"
 									],
 									"query": [
 										{
@@ -85,7 +83,7 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/queryAutoRequest",
+									"raw": "http://localhost:8081/compilation/services/resources/queryAutomationRequest",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -94,10 +92,8 @@
 									"path": [
 										"compilation",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"queryAutoRequest"
+										"queryAutomationRequest"
 									],
 									"query": [
 										{
@@ -147,7 +143,7 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/queryAutoResult",
+									"raw": "http://localhost:8081/compilation/services/resources/queryAutomationResult",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -156,10 +152,8 @@
 									"path": [
 										"compilation",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"queryAutoResult"
+										"queryAutomationResult"
 									],
 									"query": [
 										{
@@ -209,7 +203,7 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/querySUT",
+									"raw": "http://localhost:8081/compilation/services/resources/querySUT",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -218,8 +212,6 @@
 									"path": [
 										"compilation",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
 										"querySUT"
 									],
@@ -259,9 +251,7 @@
 							},
 							"response": []
 						}
-					],
-					"protocolProfileBehavior": {},
-					"_postman_isSubFolder": true
+					]
 				},
 				{
 					"name": "compile File URL",
@@ -277,10 +267,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
-							"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/createAutoRequest",
+							"raw": "http://localhost:8081/compilation/services/resources/createAutomationRequest",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -289,10 +279,8 @@
 							"path": [
 								"compilation",
 								"services",
-								"serviceProviders",
-								"A0",
 								"resources",
-								"createAutoRequest"
+								"createAutomationRequest"
 							]
 						}
 					},
@@ -312,10 +300,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:creator rdf:resource=\"https://pajda.fit.vutbr.cz/xvasic\"/>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceGit</oslc:name>\n\t\t\t<rdf:value>https://github.com/od42/test.git</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>make</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./testEcho</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:creator rdf:resource=\"https://pajda.fit.vutbr.cz/xvasic\"/>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceGit</oslc:name>\n\t\t\t<rdf:value>https://github.com/od42/test.git</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>make</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./testEcho</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
-							"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/createAutoRequest",
+							"raw": "http://localhost:8081/compilation/services/resources/createAutomationRequest",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -324,10 +312,8 @@
 							"path": [
 								"compilation",
 								"services",
-								"serviceProviders",
-								"A0",
 								"resources",
-								"createAutoRequest"
+								"createAutomationRequest"
 							]
 						}
 					},
@@ -347,10 +333,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.zip</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>unpackZip</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.zip</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>unpackZip</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
-							"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/createAutoRequest",
+							"raw": "http://localhost:8081/compilation/services/resources/createAutomationRequest",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -359,10 +345,8 @@
 							"path": [
 								"compilation",
 								"services",
-								"serviceProviders",
-								"A0",
 								"resources",
-								"createAutoRequest"
+								"createAutomationRequest"
 							]
 						}
 					},
@@ -382,10 +366,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
-							"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/createAutoRequest",
+							"raw": "http://localhost:8081/compilation/services/resources/createAutomationRequest",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -394,10 +378,8 @@
 							"path": [
 								"compilation",
 								"services",
-								"serviceProviders",
-								"A0",
 								"resources",
-								"createAutoRequest"
+								"createAutomationRequest"
 							]
 						}
 					},
@@ -459,8 +441,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "analysis provider",
@@ -480,7 +461,7 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/queryAutoPlan",
+									"raw": "http://localhost:8080/analysis/services/resources/queryAutomationPlan",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -489,10 +470,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"queryAutoPlan"
+										"queryAutomationPlan"
 									],
 									"query": [
 										{
@@ -542,7 +521,7 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/queryAutoRequest",
+									"raw": "http://localhost:8080/analysis/services/resources/queryAutomationRequest",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -551,10 +530,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"queryAutoRequest"
+										"queryAutomationRequest"
 									],
 									"query": [
 										{
@@ -604,7 +581,7 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/queryAutoResult",
+									"raw": "http://localhost:8080/analysis/services/resources/queryAutomationResult",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -613,10 +590,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"queryAutoResult"
+										"queryAutomationResult"
 									],
 									"query": [
 										{
@@ -654,9 +629,7 @@
 							},
 							"response": []
 						}
-					],
-					"protocolProfileBehavior": {},
-					"_postman_isSubFolder": true
+					]
 				},
 				{
 					"name": "perun",
@@ -670,7 +643,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "bbcb3231-96df-4283-a2be-ced524431a66",
 												"exec": [
 													"// save the request ID as a global variable for later tests to use -- used as SUT ID",
 													"const response = xml2Json(pm.response.text());",
@@ -685,7 +657,6 @@
 										{
 											"listen": "prerequest",
 											"script": {
-												"id": "1ae19470-90c1-4054-b9e3-8da3fa8cb1de",
 												"exec": [
 													""
 												],
@@ -710,10 +681,10 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>analysis test</dcterms:title>\n\t<dcterms:description>analysis test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceGit</oslc:name>\n\t\t\t<rdf:value>https://github.com/od42/test.git</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>analysis test</dcterms:title>\n\t<dcterms:description>analysis test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceGit</oslc:name>\n\t\t\t<rdf:value>https://github.com/od42/test.git</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
-											"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/createAutoRequest",
+											"raw": "http://localhost:8081/compilation/services/resources/createAutomationRequest",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -722,10 +693,8 @@
 											"path": [
 												"compilation",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
-												"createAutoRequest"
+												"createAutomationRequest"
 											],
 											"query": [
 												{
@@ -744,7 +713,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "34ba5e63-62aa-4317-88fa-b52d363bd52d",
 												"exec": [
 													"// save the request ID as a global variable for later tests to use",
 													"const response = xml2Json(pm.response.text());",
@@ -769,10 +737,10 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>init</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>outputFileRegex</oslc:name>\n\t\t\t<rdf:value>.*\\.yml</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>init</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>outputFileRegex</oslc:name>\n\t\t\t<rdf:value>.*\\.yml</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
-											"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+											"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -781,10 +749,8 @@
 											"path": [
 												"analysis",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
-												"createAutoRequest"
+												"createAutomationRequest"
 											]
 										}
 									},
@@ -796,7 +762,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "f4519f03-161f-46ed-9a30-32a34367d96d",
 												"exec": [
 													"// save the request ID as a global variable for later tests to use",
 													"const response = xml2Json(pm.response.text());",
@@ -821,10 +786,10 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>collect -c ./my_echo -w \"text\" time -w 0 -r 1</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>collect -c ./my_echo -w \"text\" time -w 0 -r 1</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
-											"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+											"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -833,10 +798,8 @@
 											"path": [
 												"analysis",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
-												"createAutoRequest"
+												"createAutomationRequest"
 											]
 										}
 									},
@@ -848,7 +811,7 @@
 										"method": "GET",
 										"header": [],
 										"url": {
-											"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationResults/{{requestId}}?Accept=application/rdf+xml",
+											"raw": "http://localhost:8080/analysis/services/resources/automationResults/{{requestId}}?Accept=application/rdf+xml",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -857,8 +820,6 @@
 											"path": [
 												"analysis",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
 												"automationResults",
 												"{{requestId}}"
@@ -873,9 +834,7 @@
 									},
 									"response": []
 								}
-							],
-							"protocolProfileBehavior": {},
-							"_postman_isSubFolder": true
+							]
 						},
 						{
 							"name": "perun showcase adt",
@@ -886,7 +845,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "119c7f92-898f-4840-94a4-2bbec1bc90eb",
 												"exec": [
 													"// save the request ID as a global variable for later tests to use",
 													"const response = xml2Json(pm.response.text());",
@@ -912,10 +870,10 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:creator rdf:resource=\"https://pajda.fit.vutbr.cz/xvasic\"/>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceGit</oslc:name>\n\t\t\t<rdf:value>https://github.com/tfiedor/perun-showcase-adt.git</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>make</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>build/list_search</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:creator rdf:resource=\"https://pajda.fit.vutbr.cz/xvasic\"/>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceGit</oslc:name>\n\t\t\t<rdf:value>https://github.com/tfiedor/perun-showcase-adt.git</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>make</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>build/list_search</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
-											"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/createAutoRequest",
+											"raw": "http://localhost:8081/compilation/services/resources/createAutomationRequest",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -924,10 +882,8 @@
 											"path": [
 												"compilation",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
-												"createAutoRequest"
+												"createAutomationRequest"
 											]
 										}
 									},
@@ -939,7 +895,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "34ba5e63-62aa-4317-88fa-b52d363bd52d",
 												"exec": [
 													"// save the request ID as a global variable for later tests to use",
 													"const response = xml2Json(pm.response.text());",
@@ -954,7 +909,6 @@
 										{
 											"listen": "prerequest",
 											"script": {
-												"id": "5d2ec047-5a0e-403e-8237-77788fcc8a41",
 												"exec": [
 													""
 												],
@@ -974,10 +928,10 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>init -t user</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>outputFileRegex</oslc:name>\n\t\t\t<rdf:value>.*\\.yml</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>init -t user</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>outputFileRegex</oslc:name>\n\t\t\t<rdf:value>.*\\.yml</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
-											"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+											"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -986,10 +940,8 @@
 											"path": [
 												"analysis",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
-												"createAutoRequest"
+												"createAutomationRequest"
 											]
 										}
 									},
@@ -1001,7 +953,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "2495e754-12ff-4683-8222-6cd5c4bb0ea9",
 												"exec": [
 													""
 												],
@@ -1021,7 +972,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rdf:RDF\n    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n    xmlns:dcterms=\"http://purl.org/dc/terms/\"\n    xmlns:fit=\"http://verifit/fit#\"\n    xmlns:oslc_data=\"http://open-services.net/ns/servicemanagement/1.0/\"\n    xmlns:oslc=\"http://open-services.net/ns/core#\"\n    xmlns:foaf=\"http://xmlns.com/foaf/0.1/#\"\n    xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n    xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\t\n            <oslc_auto:Contribution>\n                <dcterms:created rdf:datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\"\n        >2020-05-03T18:08:21.441Z</dcterms:created>\n                <dcterms:title rdf:parseType=\"Literal\">local.yml</dcterms:title>\n                <dcterms:description rdf:parseType=\"Literal\">This file was modified or created during execution of this Automation Request. If you want to modify the file (eg. its a configuration file), then post this oslc_auto:Contribution resource to the Contribution creation factory.</dcterms:description>\n                <rdf:value rdf:parseType=\"Literal\">vcs:\n  type: git\n  url: /home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/tmp/{{sutId}}\n\n## The following sets the executables (binaries / scripts).\n## These will be profiled by selected collectors.\n## Extend the following region with more executables to be profiled:\ncmds:\n- build/list_search\n\n## The following sets argument configurations for the profiled executables\n## Uncomment and edit the following region:\n# args:\n#   - -e\n\n## The following sets the profiling workload for given commands\n## Uncomment and edit the following region:\nworkloads:\n   - 10000\n\n## The following contains the set of collectors (profilers) that will collect performance data.\n## Extend the following region to use more profilers:\ncollectors:\n- name: time\n  params:\n    warmup: 3\n    repeat: 10\n## Try '$ perun collect --help' to obtain list of supported collectors!\n\n## The following contains the ordered list of postprocess phases that are executed after collection.\n## Uncomment and edit the following region (!order matters!):\n# postprocessors:\n#   - name: regression_analysis\n#     params:\n#       method: full\n#   - name: filter\n## Try '$ perun postprocessby --help' to obtain list of supported collectors!\n\n## The following option automatically registers newly collected profiles for current minor version\nprofiles:\n  register_after_run: true\n\n## The following changes the automatically generated name of the profiles\nformat:\n  output_profile_template: '%collector%-of-%cmd%-%workload%-%date%'\n\n## The following options control the degradation checks in repository\ndegradation:\n## Setting the following combination of option to true will make Perun collect new profiles,\n## before checking for degradations and store them in logs at directory .perun/logs/\n  collect_before_check: true\n  log_collect: true\n## Setting this to first (resp. all) will apply the first (resp. all) found check methods\n## for corresponding configurations\n#   apply: first\n## Specification of list of rules for applying degradation checks\n  strategy:\n  - method: average_amount_threshold\n\n## To run your custom steps before any collection (un)comment the following region:\nexecute:\n  pre_run:\n  - make\n  \n  </rdf:value>\n                <fit:absolutePath rdf:parseType=\"Literal\">/home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/tmp/{{sutId}}/.perun/local.yml</fit:absolutePath>\n            </oslc_auto:Contribution>\n            \n</rdf:RDF>",
+											"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rdf:RDF\n    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n    xmlns:dcterms=\"http://purl.org/dc/terms/\"\n    xmlns:fit=\"http://fit.vutbr.cz/group/verifit/oslc/ns/universal-analysis#\"\n    xmlns:oslc_data=\"http://open-services.net/ns/servicemanagement/1.0/\"\n    xmlns:oslc=\"http://open-services.net/ns/core#\"\n    xmlns:foaf=\"http://xmlns.com/foaf/0.1/#\"\n    xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n    xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\t\n            <oslc_auto:Contribution>\n                <dcterms:created rdf:datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\"\n        >2020-05-03T18:08:21.441Z</dcterms:created>\n                <dcterms:title rdf:parseType=\"Literal\">local.yml</dcterms:title>\n                <dcterms:description rdf:parseType=\"Literal\">This file was modified or created during execution of this Automation Request. If you want to modify the file (eg. its a configuration file), then post this oslc_auto:Contribution resource to the Contribution creation factory.</dcterms:description>\n                <rdf:value rdf:parseType=\"Literal\">vcs:\n  type: git\n  url: /home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/tmp/{{sutId}}\n\n## The following sets the executables (binaries / scripts).\n## These will be profiled by selected collectors.\n## Extend the following region with more executables to be profiled:\ncmds:\n- build/list_search\n\n## The following sets argument configurations for the profiled executables\n## Uncomment and edit the following region:\n# args:\n#   - -e\n\n## The following sets the profiling workload for given commands\n## Uncomment and edit the following region:\nworkloads:\n   - 10000\n\n## The following contains the set of collectors (profilers) that will collect performance data.\n## Extend the following region to use more profilers:\ncollectors:\n- name: time\n  params:\n    warmup: 3\n    repeat: 10\n## Try '$ perun collect --help' to obtain list of supported collectors!\n\n## The following contains the ordered list of postprocess phases that are executed after collection.\n## Uncomment and edit the following region (!order matters!):\n# postprocessors:\n#   - name: regression_analysis\n#     params:\n#       method: full\n#   - name: filter\n## Try '$ perun postprocessby --help' to obtain list of supported collectors!\n\n## The following option automatically registers newly collected profiles for current minor version\nprofiles:\n  register_after_run: true\n\n## The following changes the automatically generated name of the profiles\nformat:\n  output_profile_template: '%collector%-of-%cmd%-%workload%-%date%'\n\n## The following options control the degradation checks in repository\ndegradation:\n## Setting the following combination of option to true will make Perun collect new profiles,\n## before checking for degradations and store them in logs at directory .perun/logs/\n  collect_before_check: true\n  log_collect: true\n## Setting this to first (resp. all) will apply the first (resp. all) found check methods\n## for corresponding configurations\n#   apply: first\n## Specification of list of rules for applying degradation checks\n  strategy:\n  - method: average_amount_threshold\n\n## To run your custom steps before any collection (un)comment the following region:\nexecute:\n  pre_run:\n  - make\n  \n  </rdf:value>\n                <fit:absolutePath rdf:parseType=\"Literal\">/home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/tmp/{{sutId}}/.perun/local.yml</fit:absolutePath>\n            </oslc_auto:Contribution>\n            \n</rdf:RDF>",
 											"options": {
 												"raw": {
 													"language": "xml"
@@ -1029,7 +980,7 @@
 											}
 										},
 										"url": {
-											"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/contributions/%252Fhome%252Fod42%252Fmatrix%252Fproj_praxe%252Fgeneric-analysis-adapter%252Fcompilation%252Ftmp%252F{{sutId}}%252F.perun%252Flocal.yml",
+											"raw": "http://localhost:8080/analysis/services/resources/contributions/%252Fhome%252Fod42%252Fmatrix%252Fproj_praxe%252Fgeneric-analysis-adapter%252Fcompilation%252Ftmp%252F{{sutId}}%252F.perun%252Flocal.yml",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -1038,8 +989,6 @@
 											"path": [
 												"analysis",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
 												"contributions",
 												"%252Fhome%252Fod42%252Fmatrix%252Fproj_praxe%252Fgeneric-analysis-adapter%252Fcompilation%252Ftmp%252F{{sutId}}%252F.perun%252Flocal.yml"
@@ -1054,7 +1003,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "98a47760-78f9-4c27-b9ac-950555948ccf",
 												"exec": [
 													"// save the request ID as a global variable for later tests to use",
 													"const response = xml2Json(pm.response.text());",
@@ -1079,10 +1027,10 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>run matrix</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>outputFileRegex</oslc:name>\n\t\t\t<rdf:value>.*\\.perf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>run matrix</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>outputFileRegex</oslc:name>\n\t\t\t<rdf:value>.*\\.perf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
-											"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+											"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -1091,10 +1039,8 @@
 											"path": [
 												"analysis",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
-												"createAutoRequest"
+												"createAutomationRequest"
 											]
 										}
 									},
@@ -1106,7 +1052,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "98a47760-78f9-4c27-b9ac-950555948ccf",
 												"exec": [
 													"// save the request ID as a global variable for later tests to use",
 													"const response = xml2Json(pm.response.text());",
@@ -1131,10 +1076,10 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>check all</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>check all</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
-											"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+											"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -1143,10 +1088,8 @@
 											"path": [
 												"analysis",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
-												"createAutoRequest"
+												"createAutomationRequest"
 											]
 										}
 									},
@@ -1158,7 +1101,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "98a47760-78f9-4c27-b9ac-950555948ccf",
 												"exec": [
 													"// save the request ID as a global variable for later tests to use",
 													"const response = xml2Json(pm.response.text());",
@@ -1183,10 +1125,10 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>check head</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>check head</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
-											"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+											"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -1195,10 +1137,8 @@
 											"path": [
 												"analysis",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
-												"createAutoRequest"
+												"createAutomationRequest"
 											]
 										}
 									},
@@ -1216,7 +1156,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationResults/{{requestId}}?Accept=application/rdf+xml",
+											"raw": "http://localhost:8080/analysis/services/resources/automationResults/{{requestId}}?Accept=application/rdf+xml",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -1225,8 +1165,6 @@
 											"path": [
 												"analysis",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
 												"automationResults",
 												"{{requestId}}"
@@ -1241,9 +1179,7 @@
 									},
 									"response": []
 								}
-							],
-							"protocolProfileBehavior": {},
-							"_postman_isSubFolder": true
+							]
 						},
 						{
 							"name": "perun showcase sorts",
@@ -1254,7 +1190,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "535bdb69-0f1b-4cee-89d3-868cafe4b7a2",
 												"exec": [
 													"// save the request ID as a global variable for later tests to use",
 													"const response = xml2Json(pm.response.text());",
@@ -1280,10 +1215,10 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:creator rdf:resource=\"https://pajda.fit.vutbr.cz/xvasic\"/>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceGit</oslc:name>\n\t\t\t<rdf:value>https://github.com/tfiedor/perun-showcase-sorts</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>make</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>build/run_sorts</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:creator rdf:resource=\"https://pajda.fit.vutbr.cz/xvasic\"/>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceGit</oslc:name>\n\t\t\t<rdf:value>https://github.com/tfiedor/perun-showcase-sorts</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>make</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>build/run_sorts</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
-											"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/createAutoRequest",
+											"raw": "http://localhost:8081/compilation/services/resources/createAutomationRequest",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -1292,10 +1227,8 @@
 											"path": [
 												"compilation",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
-												"createAutoRequest"
+												"createAutomationRequest"
 											]
 										}
 									},
@@ -1307,7 +1240,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "01268ad7-7f03-4d0c-aec8-f6524982792d",
 												"exec": [
 													"// save the request ID as a global variable for later tests to use",
 													"const response = xml2Json(pm.response.text());",
@@ -1322,7 +1254,6 @@
 										{
 											"listen": "prerequest",
 											"script": {
-												"id": "88e7b99c-a29c-41b9-8e21-107a7e1f6c20",
 												"exec": [
 													""
 												],
@@ -1342,10 +1273,10 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>init -t user</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>outputFileRegex</oslc:name>\n\t\t\t<rdf:value>.*\\.yml</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>init -t user</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>outputFileRegex</oslc:name>\n\t\t\t<rdf:value>.*\\.yml</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
-											"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+											"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -1354,10 +1285,8 @@
 											"path": [
 												"analysis",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
-												"createAutoRequest"
+												"createAutomationRequest"
 											]
 										}
 									},
@@ -1369,7 +1298,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "fa5df3f0-38e1-44f1-99eb-7d6d3bdaf8be",
 												"exec": [
 													""
 												],
@@ -1389,7 +1317,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rdf:RDF\n    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n    xmlns:dcterms=\"http://purl.org/dc/terms/\"\n    xmlns:fit=\"http://verifit/fit#\"\n    xmlns:oslc_data=\"http://open-services.net/ns/servicemanagement/1.0/\"\n    xmlns:oslc=\"http://open-services.net/ns/core#\"\n    xmlns:foaf=\"http://xmlns.com/foaf/0.1/#\"\n    xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n    xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\t\n            <oslc_auto:Contribution>\n                <dcterms:created rdf:datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\"\n        >2020-05-03T18:08:21.441Z</dcterms:created>\n                <dcterms:title rdf:parseType=\"Literal\">local.yml</dcterms:title>\n                <dcterms:description rdf:parseType=\"Literal\">This file was modified or created during execution of this Automation Request. If you want to modify the file (eg. its a configuration file), then post this oslc_auto:Contribution resource to the Contribution creation factory.</dcterms:description>\n                <rdf:value rdf:parseType=\"Literal\">vcs:\n  type: git\n  url: /home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/tmp/{{sutId}}\n\n## The following sets the executables (binaries / scripts).\n## These will be profiled by selected collectors.\n## Extend the following region with more executables to be profiled:\ncmds:\n- build/run_sorts\n\n## The following sets argument configurations for the profiled executables\n## Uncomment and edit the following region:\n# args:\n#   - -e\n\n## The following sets the profiling workload for given commands\n## Uncomment and edit the following region:\nworkloads:\n- 100 \n#   - world\n\n## The following contains the set of collectors (profilers) that will collect performance data.\n## Extend the following region to use more profilers:\ncollectors:\n- name: time\n  params:\n    warmup: 3\n    repeat: 10\n## Try '$ perun collect --help' to obtain list of supported collectors!\n\n## The following contains the ordered list of postprocess phases that are executed after collection.\n## Uncomment and edit the following region (!order matters!):\n# postprocessors:\n#   - name: regression_analysis\n#     params:\n#       method: full\n#   - name: filter\n## Try '$ perun postprocessby --help' to obtain list of supported collectors!\n\n## The following option automatically registers newly collected profiles for current minor version\nprofiles:\n  register_after_run: true\n\n## The following changes the automatically generated name of the profiles\nformat:\n  output_profile_template: '%collector%-of-%cmd%-%workload%-%date%'\n\n## The following options control the degradation checks in repository\ndegradation:\n## Setting the following combination of option to true will make Perun collect new profiles,\n## before checking for degradations and store them in logs at directory .perun/logs/\n  collect_before_check: true\n  log_collect: true\n## Setting this to first (resp. all) will apply the first (resp. all) found check methods\n## for corresponding configurations\n#   apply: first\n## Specification of list of rules for applying degradation checks\n  strategy:\n  - method: average_amount_threshold\n\n## To run your custom steps before any collection (un)comment the following region:\nexecute:\n  pre_run:\n  - make\n  \n  </rdf:value>\n                <fit:absolutePath rdf:parseType=\"Literal\">/home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/tmp/{{sutId}}/.perun/local.yml</fit:absolutePath>\n            </oslc_auto:Contribution>\n            \n</rdf:RDF>",
+											"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rdf:RDF\n    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n    xmlns:dcterms=\"http://purl.org/dc/terms/\"\n    xmlns:fit=\"http://fit.vutbr.cz/group/verifit/oslc/ns/universal-analysis#\"\n    xmlns:oslc_data=\"http://open-services.net/ns/servicemanagement/1.0/\"\n    xmlns:oslc=\"http://open-services.net/ns/core#\"\n    xmlns:foaf=\"http://xmlns.com/foaf/0.1/#\"\n    xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n    xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\t\n            <oslc_auto:Contribution>\n                <dcterms:created rdf:datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\"\n        >2020-05-03T18:08:21.441Z</dcterms:created>\n                <dcterms:title rdf:parseType=\"Literal\">local.yml</dcterms:title>\n                <dcterms:description rdf:parseType=\"Literal\">This file was modified or created during execution of this Automation Request. If you want to modify the file (eg. its a configuration file), then post this oslc_auto:Contribution resource to the Contribution creation factory.</dcterms:description>\n                <rdf:value rdf:parseType=\"Literal\">vcs:\n  type: git\n  url: /home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/tmp/{{sutId}}\n\n## The following sets the executables (binaries / scripts).\n## These will be profiled by selected collectors.\n## Extend the following region with more executables to be profiled:\ncmds:\n- build/run_sorts\n\n## The following sets argument configurations for the profiled executables\n## Uncomment and edit the following region:\n# args:\n#   - -e\n\n## The following sets the profiling workload for given commands\n## Uncomment and edit the following region:\nworkloads:\n- 100 \n#   - world\n\n## The following contains the set of collectors (profilers) that will collect performance data.\n## Extend the following region to use more profilers:\ncollectors:\n- name: time\n  params:\n    warmup: 3\n    repeat: 10\n## Try '$ perun collect --help' to obtain list of supported collectors!\n\n## The following contains the ordered list of postprocess phases that are executed after collection.\n## Uncomment and edit the following region (!order matters!):\n# postprocessors:\n#   - name: regression_analysis\n#     params:\n#       method: full\n#   - name: filter\n## Try '$ perun postprocessby --help' to obtain list of supported collectors!\n\n## The following option automatically registers newly collected profiles for current minor version\nprofiles:\n  register_after_run: true\n\n## The following changes the automatically generated name of the profiles\nformat:\n  output_profile_template: '%collector%-of-%cmd%-%workload%-%date%'\n\n## The following options control the degradation checks in repository\ndegradation:\n## Setting the following combination of option to true will make Perun collect new profiles,\n## before checking for degradations and store them in logs at directory .perun/logs/\n  collect_before_check: true\n  log_collect: true\n## Setting this to first (resp. all) will apply the first (resp. all) found check methods\n## for corresponding configurations\n#   apply: first\n## Specification of list of rules for applying degradation checks\n  strategy:\n  - method: average_amount_threshold\n\n## To run your custom steps before any collection (un)comment the following region:\nexecute:\n  pre_run:\n  - make\n  \n  </rdf:value>\n                <fit:absolutePath rdf:parseType=\"Literal\">/home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/tmp/{{sutId}}/.perun/local.yml</fit:absolutePath>\n            </oslc_auto:Contribution>\n            \n</rdf:RDF>",
 											"options": {
 												"raw": {
 													"language": "xml"
@@ -1397,7 +1325,7 @@
 											}
 										},
 										"url": {
-											"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/writeContribution",
+											"raw": "http://localhost:8080/analysis/services/resources/writeContribution",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -1406,8 +1334,6 @@
 											"path": [
 												"analysis",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
 												"writeContribution"
 											]
@@ -1421,7 +1347,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "17c81316-de2a-4c75-9460-0804840366ae",
 												"exec": [
 													"// save the request ID as a global variable for later tests to use",
 													"const response = xml2Json(pm.response.text());",
@@ -1446,10 +1371,10 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>run matrix</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>outputFileRegex</oslc:name>\n\t\t\t<rdf:value>.*\\.perf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>run matrix</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>outputFileRegex</oslc:name>\n\t\t\t<rdf:value>.*\\.perf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
-											"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+											"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -1458,10 +1383,8 @@
 											"path": [
 												"analysis",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
-												"createAutoRequest"
+												"createAutomationRequest"
 											]
 										}
 									},
@@ -1473,7 +1396,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "1620e259-ffb0-4317-9189-9a71199332ef",
 												"exec": [
 													"// save the request ID as a global variable for later tests to use",
 													"const response = xml2Json(pm.response.text());",
@@ -1498,10 +1420,10 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>check all</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>check all</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
-											"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+											"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -1510,10 +1432,8 @@
 											"path": [
 												"analysis",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
-												"createAutoRequest"
+												"createAutomationRequest"
 											]
 										}
 									},
@@ -1525,7 +1445,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "df7ba0d3-631c-44e0-87eb-e49c569554e3",
 												"exec": [
 													"// save the request ID as a global variable for later tests to use",
 													"const response = xml2Json(pm.response.text());",
@@ -1550,10 +1469,10 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>check head</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>check head</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
-											"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+											"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -1562,10 +1481,8 @@
 											"path": [
 												"analysis",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
-												"createAutoRequest"
+												"createAutomationRequest"
 											]
 										}
 									},
@@ -1583,7 +1500,7 @@
 											}
 										],
 										"url": {
-											"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationResults/{{requestId}}?Accept=application/rdf+xml",
+											"raw": "http://localhost:8080/analysis/services/resources/automationResults/{{requestId}}?Accept=application/rdf+xml",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -1592,8 +1509,6 @@
 											"path": [
 												"analysis",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
 												"automationResults",
 												"{{requestId}}"
@@ -1608,9 +1523,7 @@
 									},
 									"response": []
 								}
-							],
-							"protocolProfileBehavior": {},
-							"_postman_isSubFolder": true
+							]
 						},
 						{
 							"name": "not working",
@@ -1621,7 +1534,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "7d956b7a-5eaa-452b-a87e-7954a7a7f360",
 												"exec": [
 													"// save the request ID as a global variable for later tests to use",
 													"const response = xml2Json(pm.response.text());",
@@ -1646,10 +1558,10 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>init --configure</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>init --configure</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
-											"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+											"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 											"protocol": "http",
 											"host": [
 												"localhost"
@@ -1658,18 +1570,14 @@
 											"path": [
 												"analysis",
 												"services",
-												"serviceProviders",
-												"A0",
 												"resources",
-												"createAutoRequest"
+												"createAutomationRequest"
 											]
 										}
 									},
 									"response": []
 								}
-							],
-							"protocolProfileBehavior": {},
-							"_postman_isSubFolder": true
+							]
 						},
 						{
 							"name": "perun init",
@@ -1677,7 +1585,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "c27e658b-1c03-4189-89e0-5b36908f6614",
 										"exec": [
 											"// save the request ID as a global variable for later tests to use",
 											"const response = xml2Json(pm.response.text());",
@@ -1702,10 +1609,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>init</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>init</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+									"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -1714,10 +1621,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"createAutoRequest"
+										"createAutomationRequest"
 									]
 								}
 							},
@@ -1729,7 +1634,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "85a23e83-bc9e-4585-a4b6-a017dabaa77d",
 										"exec": [
 											"// save the request ID as a global variable for later tests to use",
 											"const response = xml2Json(pm.response.text());",
@@ -1754,10 +1658,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>check head</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>check head</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+									"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -1766,10 +1670,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"createAutoRequest"
+										"createAutomationRequest"
 									]
 								}
 							},
@@ -1781,7 +1683,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "f0a3d2ff-6068-4a32-b17a-18e773b86d39",
 										"exec": [
 											"// save the request ID as a global variable for later tests to use",
 											"const response = xml2Json(pm.response.text());",
@@ -1806,10 +1707,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>check all</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>check all</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+									"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -1818,10 +1719,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"createAutoRequest"
+										"createAutomationRequest"
 									]
 								}
 							},
@@ -1833,7 +1732,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "5c558644-b54c-4c80-ab11-b1363f91569a",
 										"exec": [
 											"// save the request ID as a global variable for later tests to use",
 											"const response = xml2Json(pm.response.text());",
@@ -1858,10 +1756,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>status</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>status</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+									"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -1870,10 +1768,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"createAutoRequest"
+										"createAutomationRequest"
 									]
 								}
 							},
@@ -1893,7 +1789,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rdf:RDF\n    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n    xmlns:dcterms=\"http://purl.org/dc/terms/\"\n    xmlns:fit=\"http://verifit/fit#\"\n    xmlns:oslc_data=\"http://open-services.net/ns/servicemanagement/1.0/\"\n    xmlns:oslc=\"http://open-services.net/ns/core#\"\n    xmlns:foaf=\"http://xmlns.com/foaf/0.1/#\"\n    xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n    xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\t\n            <oslc_auto:Contribution>\n                <rdf:value rdf:parseType=\"Literal\"> vcs:\n  type: git\n  url: /home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/tmp/0\n\n## The following sets the executables (binaries / scripts).\n## These will be profiled by selected collectors.\n## Uncomment and edit the following region:\n cmds:\n   - echo\n\n## The following sets argument configurations for the profiled executables\n## Uncomment and edit the following region:\n args:\n   - -e\n\n## The following sets the profiling workload for given commands\n## Uncomment and edit the following region:\n workloads:\n   - hello\n   - world\n\n## The following contains the set of collectors (profilers) that will collect performance data.\n## Uncomment and edit the following region:\n collectors:\n   - name: time\n## Try '$ perun collect --help' to obtain list of supported collectors!\n\n## The following contains the ordered list of postprocess phases that are executed after collection.\n## Uncomment and edit the following region (!order matters!):\n# postprocessors:\n#   - name: regression_analysis\n#     params:\n#       method: full\n#   - name: filter\n## Try '$ perun postprocessby --help' to obtain list of supported collectors!\n\n## The following option automatically registers newly collected profiles for current minor version\n## Uncomment the following to enable this behaviour:\n# profiles:\n#   register_after_run: true\n\n\n## The following options control the degradation checks in repository\n# degradation:\n## Setting the following combination of option to true will make Perun collect new profiles,\n## before checking for degradations and store them in logs at directory .perun/logs/\n#   collect_before_check: true\n#   log_collect: true\n## Setting this to first (resp. all) will apply the first (resp. all) found check methods\n## for corresponding configurations\n#   apply: first\n## Specification of list of rules for applying degradation checks\n#   strategy:\n#     - method: average_amount_threshold\n\n## To run your custom steps before any collection (un)comment the following region:\n# execute:\n#   pre_run:\n#     - make\n</rdf:value>\n            </oslc_auto:Contribution>\n            \n</rdf:RDF>",
+									"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rdf:RDF\n    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n    xmlns:dcterms=\"http://purl.org/dc/terms/\"\n    xmlns:fit=\"http://fit.vutbr.cz/group/verifit/oslc/ns/universal-analysis#\"\n    xmlns:oslc_data=\"http://open-services.net/ns/servicemanagement/1.0/\"\n    xmlns:oslc=\"http://open-services.net/ns/core#\"\n    xmlns:foaf=\"http://xmlns.com/foaf/0.1/#\"\n    xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n    xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\t\n            <oslc_auto:Contribution>\n                <rdf:value rdf:parseType=\"Literal\"> vcs:\n  type: git\n  url: /home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/tmp/0\n\n## The following sets the executables (binaries / scripts).\n## These will be profiled by selected collectors.\n## Uncomment and edit the following region:\n cmds:\n   - echo\n\n## The following sets argument configurations for the profiled executables\n## Uncomment and edit the following region:\n args:\n   - -e\n\n## The following sets the profiling workload for given commands\n## Uncomment and edit the following region:\n workloads:\n   - hello\n   - world\n\n## The following contains the set of collectors (profilers) that will collect performance data.\n## Uncomment and edit the following region:\n collectors:\n   - name: time\n## Try '$ perun collect --help' to obtain list of supported collectors!\n\n## The following contains the ordered list of postprocess phases that are executed after collection.\n## Uncomment and edit the following region (!order matters!):\n# postprocessors:\n#   - name: regression_analysis\n#     params:\n#       method: full\n#   - name: filter\n## Try '$ perun postprocessby --help' to obtain list of supported collectors!\n\n## The following option automatically registers newly collected profiles for current minor version\n## Uncomment the following to enable this behaviour:\n# profiles:\n#   register_after_run: true\n\n\n## The following options control the degradation checks in repository\n# degradation:\n## Setting the following combination of option to true will make Perun collect new profiles,\n## before checking for degradations and store them in logs at directory .perun/logs/\n#   collect_before_check: true\n#   log_collect: true\n## Setting this to first (resp. all) will apply the first (resp. all) found check methods\n## for corresponding configurations\n#   apply: first\n## Specification of list of rules for applying degradation checks\n#   strategy:\n#     - method: average_amount_threshold\n\n## To run your custom steps before any collection (un)comment the following region:\n# execute:\n#   pre_run:\n#     - make\n</rdf:value>\n            </oslc_auto:Contribution>\n            \n</rdf:RDF>",
 									"options": {
 										"raw": {
 											"language": "xml"
@@ -1901,7 +1797,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/contributions/%252Fhome%252Fod42%252Fmatrix%252Fproj_praxe%252Fgeneric-analysis-adapter%252Fcompilation%252Ftmp%252F11%252F.perun%252Flocal.yml",
+									"raw": "http://localhost:8080/analysis/services/resources/contributions/%252Fhome%252Fod42%252Fmatrix%252Fproj_praxe%252Fgeneric-analysis-adapter%252Fcompilation%252Ftmp%252F11%252F.perun%252Flocal.yml",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -1910,8 +1806,6 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
 										"contributions",
 										"%252Fhome%252Fod42%252Fmatrix%252Fproj_praxe%252Fgeneric-analysis-adapter%252Fcompilation%252Ftmp%252F11%252F.perun%252Flocal.yml"
@@ -1926,7 +1820,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "f46db683-fbe2-45f4-81f6-8a481ff78835",
 										"exec": [
 											"// save the request ID as a global variable for later tests to use",
 											"const response = xml2Json(pm.response.text());",
@@ -1951,10 +1844,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>run matrix</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>run matrix</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+									"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -1963,10 +1856,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"createAutoRequest"
+										"createAutomationRequest"
 									]
 								}
 							},
@@ -1978,7 +1869,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "06c7c64f-31a4-4e0a-b175-6e451d77f58e",
 										"exec": [
 											"// save the request ID as a global variable for later tests to use",
 											"const response = xml2Json(pm.response.text());",
@@ -2003,10 +1893,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>show time-echo-[hello]-[hello]-2020-05-07-10-18-50.perf raw</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>show time-echo-[hello]-[hello]-2020-05-07-10-18-50.perf raw</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+									"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -2015,10 +1905,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"createAutoRequest"
+										"createAutomationRequest"
 									]
 								}
 							},
@@ -2030,7 +1918,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "f4519f03-161f-46ed-9a30-32a34367d96d",
 										"exec": [
 											"// save the request ID as a global variable for later tests to use",
 											"const response = xml2Json(pm.response.text());",
@@ -2055,10 +1942,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>collect -c perun -w \"--help\" time -w 0 -r 1</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>collect -c perun -w \"--help\" time -w 0 -r 1</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+									"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -2067,10 +1954,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"createAutoRequest"
+										"createAutomationRequest"
 									]
 								}
 							},
@@ -2082,7 +1967,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "b6fbba77-ea1a-4863-9d75-1c4077c62951",
 										"exec": [
 											"// save the request ID as a global variable for later tests to use",
 											"const response = xml2Json(pm.response.text());",
@@ -2107,10 +1991,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>run job --cmd perun -c time -w \"--help\"</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>run job --cmd perun -c time -w \"--help\"</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+									"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -2119,10 +2003,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"createAutoRequest"
+										"createAutomationRequest"
 									]
 								}
 							},
@@ -2134,7 +2016,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4de30b15-8038-495c-8ab0-db8797079b1f",
 										"exec": [
 											"// save the request ID as a global variable for later tests to use",
 											"const response = xml2Json(pm.response.text());",
@@ -2159,10 +2040,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>config --local get vcs.type</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>config --local get vcs.type</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+									"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -2171,10 +2052,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"createAutoRequest"
+										"createAutomationRequest"
 									]
 								}
 							},
@@ -2186,7 +2065,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "90c16991-4a9c-434f-a655-1cc83218d33e",
 										"exec": [
 											"// save the request ID as a global variable for later tests to use",
 											"const response = xml2Json(pm.response.text());",
@@ -2211,10 +2089,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>config --local set vcs.type git</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>config --local set vcs.type git</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+									"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -2223,10 +2101,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"createAutoRequest"
+										"createAutomationRequest"
 									]
 								}
 							},
@@ -2238,7 +2114,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "355cce18-5cf9-43e0-ac23-5a69d9dd946c",
 										"exec": [
 											"// save the request ID as a global variable for later tests to use",
 											"const response = xml2Json(pm.response.text());",
@@ -2263,10 +2138,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>add .perun/jobs/time-perun-\\[_\\]-\\[_--help_\\]-2020-05-09-16-15-42.perf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>add .perun/jobs/time-perun-\\[_\\]-\\[_--help_\\]-2020-05-09-16-15-42.perf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+									"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -2275,10 +2150,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"createAutoRequest"
+										"createAutomationRequest"
 									]
 								}
 							},
@@ -2290,7 +2163,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "578684ec-8307-4fb4-bb5f-bd484384db3d",
 										"exec": [
 											"// save the request ID as a global variable for later tests to use",
 											"const response = xml2Json(pm.response.text());",
@@ -2315,10 +2187,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>rm .perun/jobs/time-perun-\\[_\\]-\\[_--help_\\]-2020-05-09-16-15-42.perf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>rm .perun/jobs/time-perun-\\[_\\]-\\[_--help_\\]-2020-05-09-16-15-42.perf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+									"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -2327,10 +2199,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"createAutoRequest"
+										"createAutomationRequest"
 									]
 								}
 							},
@@ -2342,7 +2212,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "8ddbee5c-bbc1-47d3-91b8-fd1235d1b69a",
 										"exec": [
 											"// save the request ID as a global variable for later tests to use",
 											"const response = xml2Json(pm.response.text());",
@@ -2367,10 +2236,10 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>log --short</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/perun\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>log --short</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+									"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -2379,10 +2248,8 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
-										"createAutoRequest"
+										"createAutomationRequest"
 									]
 								}
 							},
@@ -2394,7 +2261,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationResults/{{requestId}}?Accept=application/rdf+xml",
+									"raw": "http://localhost:8080/analysis/services/resources/automationResults/{{requestId}}?Accept=application/rdf+xml",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -2403,8 +2270,6 @@
 									"path": [
 										"analysis",
 										"services",
-										"serviceProviders",
-										"A0",
 										"resources",
 										"automationResults",
 										"{{requestId}}"
@@ -2419,9 +2284,7 @@
 							},
 							"response": []
 						}
-					],
-					"protocolProfileBehavior": {},
-					"_postman_isSubFolder": true
+					]
 				},
 				{
 					"name": "anaconda analyse",
@@ -2437,10 +2300,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/anaconda\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>analyser</oslc:name>\n\t\t\t<rdf:value>atomrace</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>executionParameters</oslc:name>\n\t\t\t<rdf:value>\"Hello World!\"</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/anaconda\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>analyser</oslc:name>\n\t\t\t<rdf:value>atomrace</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>executionParameters</oslc:name>\n\t\t\t<rdf:value>\"Hello World!\"</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
-							"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+							"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2449,10 +2312,8 @@
 							"path": [
 								"analysis",
 								"services",
-								"serviceProviders",
-								"A0",
 								"resources",
-								"createAutoRequest"
+								"createAutomationRequest"
 							]
 						}
 					},
@@ -2472,10 +2333,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/valgrind\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value></rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/valgrind\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value></rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
-							"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+							"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2484,10 +2345,41 @@
 							"path": [
 								"analysis",
 								"services",
-								"serviceProviders",
-								"A0",
 								"resources",
-								"createAutoRequest"
+								"createAutomationRequest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "grep analyse",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/grep\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>pattern</oslc:name>\n\t\t\t<rdf:value>i</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>file</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+						},
+						"url": {
+							"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"analysis",
+								"services",
+								"resources",
+								"createAutomationRequest"
 							]
 						}
 					},
@@ -2527,7 +2419,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "061d61ed-5a4f-4d37-a861-10e856448e8b",
 								"exec": [
 									""
 								],
@@ -2537,7 +2428,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "36a188ea-5f2f-4520-9d4e-058368bf02f3",
 								"exec": [
 									""
 								],
@@ -2555,7 +2445,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/0",
+							"raw": "http://localhost:8080/analysis/services/resources/automationPlans/0",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2564,8 +2454,6 @@
 							"path": [
 								"analysis",
 								"services",
-								"serviceProviders",
-								"A0",
 								"resources",
 								"automationPlans",
 								"0"
@@ -2580,7 +2468,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "061d61ed-5a4f-4d37-a861-10e856448e8b",
 								"exec": [
 									""
 								],
@@ -2590,7 +2477,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "36a188ea-5f2f-4520-9d4e-058368bf02f3",
 								"exec": [
 									""
 								],
@@ -2608,7 +2494,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/1",
+							"raw": "http://localhost:8080/analysis/services/resources/automationPlans/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2617,8 +2503,6 @@
 							"path": [
 								"analysis",
 								"services",
-								"serviceProviders",
-								"A0",
 								"resources",
 								"automationPlans",
 								"1"
@@ -2655,8 +2539,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "hilite",
@@ -2675,13 +2558,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/serviceProviders/A0/resources/automationPlans/hilite\" />\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/serviceProviders/A0/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>zipOutputs</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>outputFileRegex</oslc:name>\n\t\t\t<rdf:value>.*</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>",
-							"options": {
-								"raw": {}
-							}
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/hilite\" />\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/0</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>zipOutputs</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>outputFileRegex</oslc:name>\n\t\t\t<rdf:value>.*</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
-							"raw": "http://localhost:8080/analysis/services/serviceProviders/A0/resources/createAutoRequest",
+							"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2690,10 +2570,8 @@
 							"path": [
 								"analysis",
 								"services",
-								"serviceProviders",
-								"A0",
 								"resources",
-								"createAutoRequest"
+								"createAutomationRequest"
 							]
 						}
 					},
@@ -2713,13 +2591,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:10081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.zip</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>unpackZip</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>config-file.hilite</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>",
-							"options": {
-								"raw": {}
-							}
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:10081/compilation/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.zip</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>unpackZip</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>config-file.hilite</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
-							"raw": "http://localhost:10081/compilation/services/serviceProviders/A0/resources/createAutoRequest",
+							"raw": "http://localhost:10081/compilation/services/resources/createAutomationRequest",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2728,10 +2603,8 @@
 							"path": [
 								"compilation",
 								"services",
-								"serviceProviders",
-								"A0",
 								"resources",
-								"createAutoRequest"
+								"createAutomationRequest"
 							]
 						}
 					},
@@ -2751,13 +2624,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/serviceProviders/A0/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.zip\nUEsDBBQACAAIABCDvFAAAAAAAAAAAF4AAAATACAAVGVzdEVjaG9Qcm9ncmFtLmNwcFVUDQAHocnPXqHJz16hyc9edXgLAAEE6AMAAAToAwAAU87MS84pTUlVsCkuScnM18uw4+LKzCtRyE3MzNMAMRKL0pN1FJIzEou0tECcMk2uai7OgiKgXJqGkmpxTJ6SDlg82jBW05qLsyi1pLQoT8HAmquWiwsAUEsHCC08KtBXAAAAXgAAAFBLAQIUAxQACAAIABCDvFAtPCrQVwAAAF4AAAATACAAAAAAAAAAAACkgQAAAABUZXN0RWNob1Byb2dyYW0uY3BwVVQNAAehyc9eocnPXqHJz151eAsAAQToAwAABOgDAABQSwUGAAAAAAEAAQBhAAAAuAAAAAAA</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>unpackZip</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>config-file.hilite</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>",
-							"options": {
-								"raw": {}
-							}
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.zip\nUEsDBBQACAAIABCDvFAAAAAAAAAAAF4AAAATACAAVGVzdEVjaG9Qcm9ncmFtLmNwcFVUDQAHocnPXqHJz16hyc9edXgLAAEE6AMAAAToAwAAU87MS84pTUlVsCkuScnM18uw4+LKzCtRyE3MzNMAMRKL0pN1FJIzEou0tECcMk2uai7OgiKgXJqGkmpxTJ6SDlg82jBW05qLsyi1pLQoT8HAmquWiwsAUEsHCC08KtBXAAAAXgAAAFBLAQIUAxQACAAIABCDvFAtPCrQVwAAAF4AAAATACAAAAAAAAAAAACkgQAAAABUZXN0RWNob1Byb2dyYW0uY3BwVVQNAAehyc9eocnPXqHJz151eAsAAQToAwAABOgDAABQSwUGAAAAAAEAAQBhAAAAuAAAAAAA</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>unpackZip</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>config-file.hilite</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
-							"raw": "http://localhost:8081/compilation/services/serviceProviders/A0/resources/createAutoRequest",
+							"raw": "http://localhost:8081/compilation/services/resources/createAutomationRequest",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2766,18 +2636,101 @@
 							"path": [
 								"compilation",
 								"services",
-								"serviceProviders",
-								"A0",
 								"resources",
-								"createAutoRequest"
+								"createAutomationRequest"
 							]
 						}
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
+		},
+		{
+			"name": "infer",
+			"item": [
+				{
+					"name": "analyze java_hello example",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8080/analysis/services/resources/automationPlans/infer\" />\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value>run --reactive -- make</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>outputFileRegex</oslc:name>\n\t\t\t<rdf:value>.*</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>zipOutputs</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+						},
+						"url": {
+							"raw": "http://localhost:8080/analysis/services/resources/createAutomationRequest",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"analysis",
+								"services",
+								"resources",
+								"createAutomationRequest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "fetch example",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// save the request ID as a global variable for later tests to use -- used as SUT ID",
+									"const response = xml2Json(pm.response.text());",
+									"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+									"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+									"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
+									"pm.globals.set('sutId', requestId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/xml"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"http://localhost:8081/compilation/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFilePath</oslc:name>\n\t\t\t<rdf:value>/home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/tests/resources/InferExample</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>make</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+						},
+						"url": {
+							"raw": "http://localhost:8081/compilation/services/resources/createAutomationRequest",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"compilation",
+								"services",
+								"resources",
+								"createAutomationRequest"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
