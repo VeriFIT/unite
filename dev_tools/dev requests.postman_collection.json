@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "9deeb2b1-f514-4bbb-a494-d47fc9ae6b9d",
+		"_postman_id": "cde78f36-e86f-4560-bd3c-c90fdfd03edd",
 		"name": "dev requests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -2731,6 +2731,51 @@
 					"response": []
 				}
 			]
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "{{password}}",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "{{username}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "username",
+			"value": "user"
+		},
+		{
+			"key": "password",
+			"value": "user"
 		}
 	]
 }

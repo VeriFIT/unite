@@ -23,6 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.eclipse.lyo.server.oauth.core.Application;
 import org.eclipse.lyo.server.oauth.core.token.LRUCache;
+
+import cz.vutbr.fit.group.verifit.oslc.compilation.VeriFitCompilationProperties;
+
 import org.eclipse.lyo.server.oauth.core.AuthenticationException;
 
 // Start of user code imports
@@ -33,6 +36,8 @@ import org.eclipse.lyo.server.oauth.core.AuthenticationException;
 
 public class AuthenticationApplication implements Application {
     // Start of user code class_attributes
+	static String USERNAME = VeriFitCompilationProperties.AUTHENTICATION_USERNAME;
+	static String PASSWORD = VeriFitCompilationProperties.AUTHENTICATION_PASSWORD;
     // End of user code
 
     // Start of user code class_methods
@@ -95,19 +100,20 @@ public class AuthenticationApplication implements Application {
     public void login(HttpServletRequest request, String username, String password) throws AuthenticationException {
         // Start of user code login
         //TODO: replace with code with real logic to login. You should also decide whether the login is admin or not.
-        System.out.println("Warning! You are using fake login checks, which ought to be changed!");
-        if ((username.equals("user") && password.equals("user")) || (username.equals("admin") && password.equals("admin"))) {
+        if ((username.equals(USERNAME) && password.equals(PASSWORD))) {
             bindApplicationConnectorToSession(request, username);
         }
         else {
             throw new AuthenticationException("Login failed!");
         }
+        /* TODO guide to add an admin in the future
         if (username.equals("admin") && password.equals("admin")) {
             request.getSession().setAttribute(APPLICATION_CONNECTOR_ADMIN_SESSION_ATTRIBUTE, true);
         }
         else {
             request.getSession().setAttribute(APPLICATION_CONNECTOR_ADMIN_SESSION_ATTRIBUTE, false);
         }
+        */
         // End of user code
         return;
     }

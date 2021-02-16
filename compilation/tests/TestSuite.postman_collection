@@ -7484,6 +7484,21 @@
 			]
 		}
 	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "{{password}}",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "{{username}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
@@ -7520,6 +7535,14 @@
 		{
 			"key": "sut_folder",
 			"value": "/home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/SUT"
+		},
+		{
+			"key": "username",
+			"value": "user"
+		},
+		{
+			"key": "password",
+			"value": "user"
 		}
 	]
 }
