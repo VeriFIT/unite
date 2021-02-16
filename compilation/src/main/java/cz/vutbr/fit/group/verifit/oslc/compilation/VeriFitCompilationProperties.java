@@ -58,6 +58,21 @@ public class VeriFitCompilationProperties
 		if (str_PERSIST_SUT_DIRS == null)
 			throw new IOException("persist_sut_dirs missing");
 		PERSIST_SUT_DIRS = Boolean.parseBoolean(str_PERSIST_SUT_DIRS);
+
+		String str_AUTHENTICAION_ENABLED;
+		str_AUTHENTICAION_ENABLED = VeriFitCompilationProperties.getProperty("enable_authentication");	
+		if (str_AUTHENTICAION_ENABLED == null)
+			throw new IOException("enable_authentication missing");
+		AUTHENTICATION_ENABLED = Boolean.parseBoolean(str_AUTHENTICAION_ENABLED);
+		
+		AUTHENTICATION_USERNAME = VeriFitCompilationProperties.getProperty("username");	
+		if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
+			throw new IOException("username missing");
+		
+		AUTHENTICATION_PASSWORD = VeriFitCompilationProperties.getProperty("password");	
+		if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
+			throw new IOException("password missing");
+		
 		
 		updateConstants();
 	}
@@ -85,6 +100,10 @@ public class VeriFitCompilationProperties
     public static String SPARQL_SERVER_UPDATE_ENDPOINT;
     
     public static Boolean PERSIST_SUT_DIRS;
+    public static Boolean AUTHENTICATION_ENABLED;
+    public static String AUTHENTICATION_USERNAME;
+    public static String AUTHENTICATION_PASSWORD;
+    
     
     
     /*

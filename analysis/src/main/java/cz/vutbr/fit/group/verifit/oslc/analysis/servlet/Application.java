@@ -45,6 +45,7 @@ import org.eclipse.lyo.oslc4j.core.model.ServiceProviderCatalog;
 import org.eclipse.lyo.oslc4j.provider.jena.JenaProvidersRegistry;
 import org.eclipse.lyo.oslc4j.provider.json4j.Json4JProvidersRegistry;
 
+import cz.vutbr.fit.group.verifit.oslc.analysis.services.RootServicesService;
 import cz.vutbr.fit.group.verifit.oslc.analysis.services.ServiceProviderCatalogService;
 import cz.vutbr.fit.group.verifit.oslc.analysis.services.ServiceProviderService;
 import cz.vutbr.fit.group.verifit.oslc.analysis.services.ResourceShapeService;
@@ -107,6 +108,15 @@ public class Application extends javax.ws.rs.core.Application {
         // Swagger resources
         RESOURCE_CLASSES.add(io.swagger.jaxrs.listing.ApiListingResource.class);
         RESOURCE_CLASSES.add(io.swagger.jaxrs.listing.SwaggerSerializers.class);
+        // OAuth resources
+        RESOURCE_CLASSES.add(RootServicesService.class);
+        try {
+            RESOURCE_CLASSES.add(Class.forName("org.eclipse.lyo.server.oauth.webapp.services.ConsumersService"));
+            RESOURCE_CLASSES.add(Class.forName("org.eclipse.lyo.server.oauth.webapp.services.OAuthService"));
+        } catch (ClassNotFoundException e) {
+            // Start of user code OAuthServiceClasses_notFound
+            // End of user code
+        }
 
         // Start of user code Custom Resource Classes
         // End of user code

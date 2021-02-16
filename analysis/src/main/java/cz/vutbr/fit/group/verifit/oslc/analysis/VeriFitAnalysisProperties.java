@@ -57,16 +57,20 @@ public class VeriFitAnalysisProperties
 		if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
 			throw new IOException("sparql_graph missing");
 		
-		// dummy
-		if (SystemUtils.IS_OS_LINUX)
-		{
-			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.sh").toFile().getAbsolutePath();
-			
-		}
-		else if (SystemUtils.IS_OS_WINDOWS)
-		{
-			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.bat").toFile().getAbsolutePath();
-		}	
+		String str_AUTHENTICAION_ENABLED;
+		str_AUTHENTICAION_ENABLED = VeriFitAnalysisProperties.getProperty("enable_authentication");	
+		if (str_AUTHENTICAION_ENABLED == null)
+			throw new IOException("enable_authentication missing");
+		AUTHENTICATION_ENABLED = Boolean.parseBoolean(str_AUTHENTICAION_ENABLED);
+		
+		AUTHENTICATION_USERNAME = VeriFitAnalysisProperties.getProperty("username");	
+		if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
+			throw new IOException("username missing");
+		
+		AUTHENTICATION_PASSWORD = VeriFitAnalysisProperties.getProperty("password");	
+		if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
+			throw new IOException("password missing");
+		
 		updateConstants();
 	}
 	
@@ -78,6 +82,18 @@ public class VeriFitAnalysisProperties
 		SERVER_URL = ADAPTER_HOST + ":" + ADAPTER_PORT + "/";
 	    PATH_AUTOMATION_SERVICE_PROVIDERS = SERVER_URL + ADAPTER_CONTEXT + "services/serviceProviders/";
 	    PATH_RESOURCE_SHAPES = SERVER_URL + ADAPTER_CONTEXT + "services/resourceShapes/";
+	    
+
+		// dummy
+		if (SystemUtils.IS_OS_LINUX)
+		{
+			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.sh").toFile().getAbsolutePath();
+			
+		}
+		else if (SystemUtils.IS_OS_WINDOWS)
+		{
+			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.bat").toFile().getAbsolutePath();
+		}	
 	}
 	
 	/*
@@ -94,6 +110,10 @@ public class VeriFitAnalysisProperties
     public static String SPARQL_SERVER_NAMED_GRAPH_RESOURCES;
     public static String SPARQL_SERVER_QUERY_ENDPOINT;
     public static String SPARQL_SERVER_UPDATE_ENDPOINT;
+    
+    public static Boolean AUTHENTICATION_ENABLED;
+    public static String AUTHENTICATION_USERNAME;
+    public static String AUTHENTICATION_PASSWORD;
     
     
     /*

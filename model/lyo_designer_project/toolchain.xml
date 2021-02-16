@@ -3,7 +3,7 @@
   <adaptorInterfaces name="VeriFit Analysis">
     <serviceProviderCatalog title="Service Provider Catalog" description="Service Provider Catalog">
       <serviceProviders title="Service Provider" description="Service Provider">
-        <services serviceNamespace="relativeToServiceProvider">
+        <services>
           <domainSpecification href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications[name='Automation']"/>
           <creationFactories title="CreateAutomationRequest" label="CreateAutomationRequest" creationURI="createAutomationRequest">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
@@ -54,13 +54,14 @@
     <configuration xsi:type="oslc4j_ai:MavenServerConfiguration" rootServerBaseUrl="http://localhost:8080/" applicationContextPath="/analysis" servletUrlPattern="/services/*" jettyPort="8080">
       <generalConfiguration filesBasePath="analysis" javaBasePackageName="cz.vutbr.fit.group.verifit.oslc.analysis"/>
       <projectConfiguration xsi:type="oslc4j_ai:MavenProjectConfiguration" lyoVersion="4.0.0" groupId="cz.vutbr.fit.group.verifit.oslc.analysis" artifactId="Analysis" version="0.0.1-SNAPSHOT"/>
+      <authenticationConfiguration applicationName="VeriFit Analysis" oauthRealm="VeriFit Analysis"/>
     </configuration>
     <stores defaultNamedGraph="verifit_analysis" sparqlQueryEndpoint="http://localhost:8082/fuseki/verifit_analysis/query" sparqlUpdateEndpoint="http://localhost:8082/fuseki/verifit_analysis/update" initialPoolSize="500"/>
   </adaptorInterfaces>
   <adaptorInterfaces name="VeriFit Compilation">
     <serviceProviderCatalog title="Service Provider Catalog" description="Service Provider Catalog">
       <serviceProviders title="Service Provider" description="Service Provider">
-        <services serviceNamespace="relativeToServiceProvider">
+        <services>
           <domainSpecification href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#//@domainSpecifications[name='Automation']"/>
           <creationFactories title="CreateAutomationRequest" label="CreateAutomationRequest" creationURI="createAutomationRequest">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
@@ -111,6 +112,7 @@
     <configuration xsi:type="oslc4j_ai:MavenServerConfiguration" rootServerBaseUrl="http://localhost:8081/" applicationContextPath="/compilation" servletUrlPattern="/services/*" jettyPort="8081">
       <generalConfiguration filesBasePath="compilation" javaBasePackageName="cz.vutbr.fit.group.verifit.oslc.compilation"/>
       <projectConfiguration xsi:type="oslc4j_ai:MavenProjectConfiguration" lyoVersion="4.0.0" groupId="cz.vutbr.fit.group.verifit.oslc.compilation" artifactId="compilation" version="0.0.1-SNAPSHOT"/>
+      <authenticationConfiguration applicationName="VeriFit Compilation" oauthRealm="VeriFit Compilation"/>
     </configuration>
     <stores defaultNamedGraph="verifit_compilation" sparqlQueryEndpoint="http://localhost:8082/fuseki/verifit_compilation/query" sparqlUpdateEndpoint="http://localhost:8082/fuseki/verifit_compilation/update" initialPoolSize="500"/>
   </adaptorInterfaces>

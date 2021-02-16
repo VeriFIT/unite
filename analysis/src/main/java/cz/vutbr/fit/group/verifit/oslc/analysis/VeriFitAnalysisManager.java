@@ -25,8 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 import cz.vutbr.fit.group.verifit.oslc.analysis.servlet.ServiceProviderCatalogSingleton;
-import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
-import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisProperties;
 import cz.vutbr.fit.group.verifit.oslc.analysis.ServiceProviderInfo;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
@@ -56,6 +54,8 @@ import javax.ws.rs.core.Response.Status;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.RequestRunner;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.SutAnalyse;
 import cz.vutbr.fit.group.verifit.oslc.analysis.exceptions.OslcResourceException;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisProperties;
 
 import org.eclipse.lyo.store.StoreAccessException;
 import org.eclipse.lyo.oslc4j.core.model.Link;
