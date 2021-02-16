@@ -18,7 +18,22 @@ IF not "%1" == "" (
 )
 
 set USRPATH=%CD%
-cd %~dp0
+set ROOTDIR=%~dp0
+cd %ROOTDIR%
+
+:: make sure configuration files exist
+if not exist ".\analysis\VeriFitAnalysis.properties" (
+    echo ERROR: Configuration file "%ROOTDIR%analysis\VeriFitAnalysis.properties" not found.
+    echo   The adapter needs to be configured to be able to run!
+    echo   See the "VeriFitAnalysisExample.properties" file for instructions and use it as a template.
+    exit 1
+)
+if not exist ".\compilation\VeriFitCompilation.properties" (
+    echo ERROR: Configuration file "%ROOTDIR%compilation\VeriFitCompilation.properties" not found.
+    echo   The adapter needs to be configured to be able to run!
+    echo   See the "VeriFitCompilationExample.properties" file for instructions and use it as a template.
+    exit 1
+)
 
 
 :: lookup triplestore config

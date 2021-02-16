@@ -854,7 +854,7 @@
 											"});",
 											"pm.test(\"SUT SUTdirectoryPath should have the expected value\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<fit:SUTdirectoryPath rdf:parseType=\\\"Literal\\\">\");",
-											"    pm.expect(pm.response.text()).to.include(\"compilation/SUT/\" + requestId + \"</fit:SUTdirectoryPath>\");",
+											"    pm.expect(pm.response.text()).to.include(requestId + \"</fit:SUTdirectoryPath>\");",
 											"});"
 										],
 										"type": "text/javascript"
