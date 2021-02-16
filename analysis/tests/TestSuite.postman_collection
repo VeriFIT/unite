@@ -4617,7 +4617,7 @@
 											"});",
 											"",
 											"pm.test(\"File should contain the expected text\", function () {",
-											"    pm.expect(pm.response.text()).to.equal(\"test file\\n\");",
+											"    pm.expect(pm.response.text()).to.contain(\"test file\");",
 											"});"
 										],
 										"type": "text/javascript"
@@ -4658,7 +4658,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "updated file contents\n",
+									"raw": "updated file contents",
 									"options": {
 										"raw": {
 											"language": "text"
@@ -4688,7 +4688,7 @@
 											"});",
 											"",
 											"pm.test(\"File should contain the expected text\", function () {",
-											"    pm.expect(pm.response.text()).to.equal(\"updated file contents\\n\");",
+											"    pm.expect(pm.response.text()).to.equal(\"updated file contents\");",
 											"});"
 										],
 										"type": "text/javascript"

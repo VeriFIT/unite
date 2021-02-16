@@ -23,13 +23,13 @@ cd %ROOTDIR%
 
 :: make sure configuration files exist
 if not exist ".\analysis\VeriFitAnalysis.properties" (
-    echo ERROR: Configuration file "%ROOTDIR%\analysis\VeriFitAnalysis.properties" not found.
+    echo ERROR: Configuration file "%ROOTDIR%analysis\VeriFitAnalysis.properties" not found.
     echo   The adapter needs to be configured to be able to run!
     echo   See the "VeriFitAnalysisExample.properties" file for instructions and use it as a template.
     exit 1
 )
-if not exist ".\analysis\VeriFitCompilation.properties" (
-    echo ERROR: Configuration file "%ROOTDIR%\compilation\VeriFitCompilation.properties" not found.
+if not exist ".\compilation\VeriFitCompilation.properties" (
+    echo ERROR: Configuration file "%ROOTDIR%compilation\VeriFitCompilation.properties" not found.
     echo   The adapter needs to be configured to be able to run!
     echo   See the "VeriFitCompilationExample.properties" file for instructions and use it as a template.
     exit 1
