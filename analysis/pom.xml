@@ -1,128 +1,158 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  
-	 <properties> 
-	  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	  <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-	  <maven.compiler.source>1.8</maven.compiler.source>
-	  <maven.compiler.target>1.8</maven.compiler.target>
-	  <version.lyo>2.4.0.M1</version.lyo>
-	 </properties>
-  
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>verifit</groupId>
-	<artifactId>analysis</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
-	<name>Verifit OSLC Analysis</name>
-	
-	 <repositories>
-	  <repository>
-	    <id>lyo-releases</id>
-	    <name>Eclipse Lyo Releases</name>
-	    <url>https://repo.eclipse.org/content/repositories/lyo-releases/</url>
-	    <snapshots>
-	      <enabled>false</enabled>
-	    </snapshots>
-	  </repository>
-	  
-	  <repository>
-	    <id>lyo-snapshots</id>
-	    <name>Eclipse Lyo Snapshots</name>
-	    <url>https://repo.eclipse.org/content/repositories/lyo-snapshots/</url>
-	    <releases>
-	      <enabled>false</enabled>
-	    </releases>
-	  </repository>
-	 </repositories>
-  
-	<dependencies>
-	
-		<!-- Adaptor-specific dependencies -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.21</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-		  <groupId>io.swagger</groupId>
-		  <artifactId>swagger-jaxrs</artifactId>
-		  <version>1.5.17</version>
-		</dependency>
-	
-		<!-- Lyo dependencies -->
-		<dependency>
-			<groupId>org.eclipse.lyo.oslc4j.core</groupId>
-			<artifactId>oslc4j-core</artifactId>
-			<version>${version.lyo}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.lyo.oslc4j.core</groupId>
-			<artifactId>oslc4j-jena-provider</artifactId>
-			<version>${version.lyo}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.lyo.oslc4j.core</groupId>
-			<artifactId>oslc4j-wink</artifactId>
-			<version>${version.lyo}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.lyo.oslc4j.core</groupId>
-			<artifactId>oslc4j-json4j-provider</artifactId>
-			<version>${version.lyo}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.lyo.server</groupId>
-			<artifactId>oauth-core</artifactId>
-			<version>${version.lyo}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.lyo.server</groupId>
-			<artifactId>oauth-consumer-store</artifactId>
-			<version>${version.lyo}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.lyo.server</groupId>
-			<artifactId>oauth-webapp</artifactId>
-			<version>${version.lyo}</version>
-			<type>war</type>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.lyo.clients</groupId>
-			<artifactId>oslc-java-client</artifactId>
-			<version>${version.lyo}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.lyo.store</groupId>
-			<artifactId>store-core</artifactId>
-			<version>4.0.0.M2</version>
-		</dependency>
-		
-		<!-- Servlet-related dependencies -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.2</version>
-		</dependency>
-	
-		<!-- Test dependencies -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <!-- Start of user code header
+    -->
 
-	<build>
-		<plugins>
+    <!-- End of user code
+    -->
+    <groupId>cz.vutbr.fit.group.verifit.oslc.analysis</groupId>
+    <artifactId>Analysis</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>war</packaging>
+    <name>VeriFit Analysis</name>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <version.lyo>4.0.0</version.lyo>
+        <swagger.version>1.5.22</swagger.version>
+        <swagger-ui.version>3.25.0</swagger-ui.version>
+        <!-- Start of user code properties
+        -->
+
+        <!-- End of user code
+        -->
+    </properties>
+    <repositories>
+        <!-- Start of user code repositories
+        -->
+
+        <!-- End of user code
+        -->
+        <repository>
+            <id>lyo-releases</id>
+            <name>Eclipse Lyo Releases</name>
+            <url>https://repo.eclipse.org/content/repositories/lyo-releases/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>lyo-snapshots</id>
+            <name>Eclipse Lyo Snapshots</name>
+            <url>https://repo.eclipse.org/content/repositories/lyo-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+    <!-- Start of user code pre_dependencies
+    -->
+    
+    <!-- End of user code
+    -->
+    <dependencies>
+        <!-- Specific dependencies -->
+        <!-- Start of user code dependencies
+        -->
+        
+        <!-- End of user code
+        -->
+        <!-- General dependencies -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.21</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- Servlet dependencies -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>2.25.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet</artifactId>
+            <version>2.25.1</version>
+        </dependency>
+        
+        <!-- Lyo dependencies -->
+        <dependency>
+            <groupId>org.eclipse.lyo.oslc4j.core</groupId>
+            <artifactId>oslc4j-core</artifactId>
+            <version>${version.lyo}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.lyo.oslc4j.core</groupId>
+            <artifactId>oslc4j-jena-provider</artifactId>
+            <version>${version.lyo}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.lyo.oslc4j.core</groupId>
+            <artifactId>oslc4j-json4j-provider</artifactId>
+            <version>${version.lyo}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.lyo.store</groupId>
+            <artifactId>store-core</artifactId>
+            <version>${version.lyo}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.lyo.clients</groupId>
+            <artifactId>oslc-client</artifactId>
+            <version>${version.lyo}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.lyo.server</groupId>
+            <artifactId>oauth-core</artifactId>
+            <version>${version.lyo}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.lyo.server</groupId>
+            <artifactId>oauth-consumer-store</artifactId>
+            <version>${version.lyo}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.lyo.server</groupId>
+            <artifactId>oauth-webapp</artifactId>
+            <version>${version.lyo}</version>
+            <type>war</type>
+        </dependency>
+        
+        <!-- Swagger dependencies -->
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-jersey2-jaxrs</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+    </dependencies>
+    <!-- Start of user code post_dependencies
+    -->
+    
+    <!-- End of user code
+    -->
+    <build>
+        <finalName>analysis</finalName>
+        <plugins>
+            <!-- Start of user code plugins
+            -->
+            
 			<!-- load & set properties -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -163,24 +193,8 @@
 					</execution>
 				</executions>
 			</plugin>
-
-			<!-- jetty server -->
-			<plugin>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>9.3.9.v20160517</version>
-				<configuration>
-					<webAppConfig>
-						<contextPath>/analysis</contextPath>
-					</webAppConfig>
-					<reload>automatic</reload>
-					<scanIntervalSeconds>5</scanIntervalSeconds>					
-					<jettyXml>
-				      ${project.basedir}/src/main/webapp/jetty-config/jetty.xml,${project.basedir}/src/main/webapp/jetty-config/jetty-http.xml
-				      <!-- add this for HTTPS ,${project.basedir}/src/main/webapp/jetty-config/jetty-ssl.xml,${project.basedir}/src/main/webapp/jetty-config/jetty-https.xml-->
-				    </jettyXml>
-				</configuration>
-      		</plugin>
+			
+			
 			<!-- .war creation -->
       		<plugin>
 			    <groupId>org.apache.maven.plugins</groupId>
@@ -199,7 +213,111 @@
 			        <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
 			    </configuration>
 			</plugin>
-		</plugins>
-	</build>
-
+			
+            <!-- End of user code
+            -->
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.4.18.v20190429</version>
+                <configuration>
+                    <webAppConfig>
+                        <contextPath>/analysis</contextPath>
+                    </webAppConfig>
+                    <reload>manual</reload>
+                    <scanIntervalSeconds>5</scanIntervalSeconds>
+					<jettyXml>
+				      ${project.basedir}/src/main/webapp/jetty-config/jetty.xml,${project.basedir}/src/main/webapp/jetty-config/jetty-http.xml
+				      <!-- add this for HTTPS ,${project.basedir}/src/main/webapp/jetty-config/jetty-ssl.xml,${project.basedir}/src/main/webapp/jetty-config/jetty-https.xml-->
+				    </jettyXml>
+                </configuration>
+            </plugin>
+            <!-- Swagger-ui -->
+            <plugin>
+                <!-- Download Swagger UI webjar. -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.webjars</groupId>
+                                    <artifactId>swagger-ui</artifactId>
+                                    <version>${swagger-ui.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/swagger-ui</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- Add Swagger UI resources to the war file. -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.2.3</version>
+                <configuration>
+                    <webResources combine.children="append">
+                        <resource>
+                            <directory>${project.build.directory}/swagger-ui/META-INF/resources/webjars/swagger-ui/${swagger-ui.version}</directory>
+                            <includes>
+                                <include>**/*.*</include>
+                            </includes>
+                            <targetPath>/swagger-ui/dist</targetPath>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+        </plugins>
+        
+    	<!--  Just to ignore error report for  maven properties plugin execution <id>set</id> -->
+        <pluginManagement>
+        	<plugins>
+        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        		<plugin>
+        			<groupId>org.eclipse.m2e</groupId>
+        			<artifactId>lifecycle-mapping</artifactId>
+        			<version>1.0.0</version>
+        			<configuration>
+        				<lifecycleMappingMetadata>
+        					<pluginExecutions>
+        						<pluginExecution>
+        							<pluginExecutionFilter>
+        								<groupId>
+        									org.codehaus.mojo
+        								</groupId>
+        								<artifactId>
+        									properties-maven-plugin
+        								</artifactId>
+        								<versionRange>
+        									[1.0.0,)
+        								</versionRange>
+        								<goals>
+        									<goal>
+        										set-system-properties
+        									</goal>
+        								</goals>
+        							</pluginExecutionFilter>
+        							<action>
+        								<ignore></ignore>
+        							</action>
+        						</pluginExecution>
+        					</pluginExecutions>
+        				</lifecycleMappingMetadata>
+        			</configuration>
+        		</plugin>
+        	</plugins>
+        </pluginManagement>
+    </build>
+    <!-- Start of user code post_build
+    -->
+    
+    <!-- End of user code
+    -->
 </project>

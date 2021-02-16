@@ -18,7 +18,22 @@ IF not "%1" == "" (
 )
 
 set USRPATH=%CD%
-cd %~dp0
+set ROOTDIR=%~dp0
+cd %ROOTDIR%
+
+:: make sure configuration files exist
+if not exist ".\analysis\VeriFitAnalysis.properties" (
+    echo ERROR: Configuration file "%ROOTDIR%analysis\VeriFitAnalysis.properties" not found.
+    echo   The adapter needs to be configured to be able to run!
+    echo   See the "VeriFitAnalysisExample.properties" file for instructions and use it as a template.
+    exit 1
+)
+if not exist ".\compilation\VeriFitCompilation.properties" (
+    echo ERROR: Configuration file "%ROOTDIR%compilation\VeriFitCompilation.properties" not found.
+    echo   The adapter needs to be configured to be able to run!
+    echo   See the "VeriFitCompilationExample.properties" file for instructions and use it as a template.
+    exit 1
+)
 
 
 :: lookup triplestore config
@@ -63,7 +78,7 @@ echo ####################################################!LF!## Run started at: 
 :: start the triplestore
 echo Starting the Triplestore
 cd sparql_triplestore\jetty-distribution
-START /MIN "Universal VeriFIT OSLC Adapter - Compilation" CMD /C "java -DFUSEKI_BASE=..\triplestore -jar start.jar >> %USRPATH%\logs\triplestore_%CURTIME%.txt 2>&1"
+START /MIN "Universal VeriFIT OSLC Adapter - Triplestore" CMD /C "java -DFUSEKI_BASE=..\triplestore -jar start.jar >> %USRPATH%\logs\triplestore_%CURTIME%.txt 2>&1"
 echo Waiting for the Triplestore to finish startup
 call :poll_url %TRIPESTORE_URL%
 echo Triplestore running
@@ -109,7 +124,7 @@ exit 0
 :loop
 timeout /t 3 /nobreak > NUL
 echo |set /p="."
-curl %~1 > nul 2>&1
+powershell curl -UseBasicParsing %~1 > nul 2>&1
 if not %errorlevel% == 0 goto :loop
 echo.
 exit /B 0
