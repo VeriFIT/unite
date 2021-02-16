@@ -104,6 +104,10 @@
 											"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
 											"pm.globals.set('requestId', requestId);",
 											"",
+											"// wait for the resource creation to finish",
+											" var result_wait_time = pm.variables.get('result_wait_time');",
+											" setTimeout(function(){}, [100]);",
+											"",
 											"// get global variable to use in this test",
 											"var serverAddr = pm.variables.get(\"server_address\");",
 											"var server_context = pm.variables.get(\"server_context\");",
@@ -849,7 +853,7 @@
 											"    pm.expect(pm.response.text()).to.include(\"<fit:SUTdirectoryPath\");",
 											"});",
 											"pm.test(\"SUT SUTdirectoryPath should have the expected value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<fit:SUTdirectoryPath rdf:parseType=\\\"Literal\\\">\" + sut_folder);",
+											"    pm.expect(pm.response.text()).to.include(\"<fit:SUTdirectoryPath rdf:parseType=\\\"Literal\\\">\");",
 											"    pm.expect(pm.response.text()).to.include(requestId + \"</fit:SUTdirectoryPath>\");",
 											"});"
 										],
@@ -6367,15 +6371,6 @@
 											"var requestId = pm.globals.get('requestId');",
 											"var serverAddr = pm.variables.get(\"server_address\");",
 											"var server_context = pm.variables.get(\"server_context\");",
-											"var AutomationPlanId = pm.variables.get(\"AutomationPlanId\");",
-											"var buildCommand = pm.variables.get(\"buildCommand\");",
-											"var launchCommand= pm.variables.get(\"launchCommand\");",
-											"var sourceType = pm.variables.get(\"sourceType\");",
-											"var sourceVal = pm.variables.get(\"sourceVal\");",
-											"var reqCreator = pm.variables.get(\"reqCreator\");",
-											"var reqTitle = pm.variables.get(\"reqTitle\");",
-											"var reqDescription = pm.variables.get(\"reqDescription\");",
-											"var sut_folder = pm.variables.get(\"sut_folder\");",
 											"",
 											"pm.test(\"Response code should be 200 (OK)\", function () {",
 											"    pm.response.to.have.status(200);",
@@ -7531,10 +7526,6 @@
 		{
 			"key": "server_context",
 			"value": "compilation"
-		},
-		{
-			"key": "sut_folder",
-			"value": "/home/od42/matrix/proj_praxe/generic-analysis-adapter/compilation/SUT"
 		},
 		{
 			"key": "username",
