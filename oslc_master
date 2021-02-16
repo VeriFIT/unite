@@ -142,6 +142,20 @@ start()
 {
     trap 'stop; exit 0' INT TERM HUP
 
+    # make sure configuration files exist
+    if [ ! -f "./analysis/VeriFitAnalysis.properties" ]; then
+        log -v "ERROR: Configuration file \"$ROOTDIR/analysis/VeriFitAnalysis.properties\" not found."
+        log -v "  The adapter needs to be configured to be able to run!"
+        log -v "  See the \"VeriFitAnalysisExample.properties\" file for instructions and use it as a template."
+        exit 1
+    fi
+    if [ ! -f "./compilation/VeriFitCompilation.properties" ]; then
+        log -v "ERROR: Configuration file \"$ROOTDIR/compilation/VeriFitCompilation.properties\" not found."
+        log -v "  The adapter needs to be configured to be able to run!"
+        log -v "  See the \"VeriFitCompilationExample.properties\" file for instructions and use it as a template."
+        exit 1
+    fi
+
     # lookup config
     t_host=$(get_inivalue $TRIPLESTORE_INI jetty.http.host | sed 's|/$||')
     t_port=$(get_inivalue $TRIPLESTORE_INI jetty.http.port)

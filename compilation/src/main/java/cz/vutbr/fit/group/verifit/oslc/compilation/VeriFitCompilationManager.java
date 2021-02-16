@@ -37,6 +37,7 @@ import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 import java.net.URI;
 import java.util.Properties;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.NoSuchElementException;
@@ -498,6 +499,12 @@ public class VeriFitCompilationManager {
     	// load configuration
     	try {
     		VeriFitCompilationProperties.loadProperties();
+    	} catch (FileNotFoundException e) {
+			System.out.println("ERROR: Adapter configuration: Failed to load Java properties: " + e.getMessage());
+			System.out.println("\t The adapter needs to be configured to be able to run!\n"
+					+ "\tSee the \"VeriFitCompilationExample.properties\" file for instructions and use it as a template.");
+			System.exit(1);
+  
     	} catch (IOException e) {
 			System.out.println("ERROR: Adapter configuration: Failed to load Java properties: " + e.getMessage());
 			System.exit(1);

@@ -25,19 +25,38 @@ if [ "$#" -ne 0 ]; then
 fi
 
 
-USRPATH=$PWD # get the call directory
-cd "${BASH_SOURCE%/*}" # move to the script directory
+USRPATH=$PWD                        # get the call directory
+ROOTDIR=$(dirname $(realpath $0))   # get the script directory
+cd $ROOTDIR                         # move to the script directory
+
+
+# make sure configuration files exist
+if [ ! -f "./analysis/VeriFitAnalysis.properties" ]; then
+    echo -e "ERROR: Configuration file \"$ROOTDIR/analysis/VeriFitAnalysis.properties\" not found."
+    echo -e "  The adapter needs to be configured to be able to run!"
+    echo -e "  See the \"VeriFitAnalysisExample.properties\" file for instructions and use it as a template."
+    exit 1
+fi
+if [ ! -f "./compilation/VeriFitCompilation.properties" ]; then
+    echo -e "ERROR: Configuration file \"$ROOTDIR/compilation/VeriFitCompilation.properties\" not found."
+    echo -e "  The adapter needs to be configured to be able to run!"
+    echo -e "  See the \"VeriFitCompilationExample.properties\" file for instructions and use it as a template."
+    exit 1
+fi
+
 
 # catch ctrl+c and kill all subprocesses
 trap 'killall' INT
 killall() {
     trap '' INT TERM     # ignore INT and TERM while shutting down
-    echo "Shutting down..."
+    echo -c "\nShutting down..."
     kill -TERM 0
     wait
     echo "All done."
-    exit
+    exit 0
 }
+
+
 
 # polls an address using curl until the request returns zero (i.e. the address responds)
 # patams: address - URL for curl to poll
