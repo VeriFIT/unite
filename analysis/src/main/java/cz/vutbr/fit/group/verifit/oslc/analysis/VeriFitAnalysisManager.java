@@ -25,8 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 import cz.vutbr.fit.group.verifit.oslc.analysis.servlet.ServiceProviderCatalogSingleton;
-import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
-import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisProperties;
 import cz.vutbr.fit.group.verifit.oslc.analysis.ServiceProviderInfo;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
@@ -55,7 +53,10 @@ import javax.ws.rs.core.Response.Status;
 // Start of user code imports
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.RequestRunner;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.SutAnalyse;
+import cz.vutbr.fit.group.verifit.oslc.analysis.clients.CompilationAdapterClient;
 import cz.vutbr.fit.group.verifit.oslc.analysis.exceptions.OslcResourceException;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisProperties;
 
 import org.eclipse.lyo.store.StoreAccessException;
 import org.eclipse.lyo.oslc4j.core.model.Link;
@@ -925,13 +926,13 @@ public class VeriFitAnalysisManager {
 			Map<String, Pair<String,Integer>> inputParamsMap = processAutoReqInputParams(newResource, propAutoResult);
 			
 			// check that the SUT to be executed exists
-			OslcClient client = new OslcClient();
-			Response response = client.getResource(inputParamsMap.get("SUT").getLeft());
-			if (response.getStatus() != 200)
-			{
-				throw new IOException("Failed to get refferenced SUT - make sure the compilation provider is running.\nResponse status code: " + response.getStatus());
+			SUT executedSUT = null;
+			try {
+				String sutURI = inputParamsMap.get("SUT").getLeft();
+				executedSUT = CompilationAdapterClient.getSUT(sutURI);
+			} catch (Exception e) {
+				throw new IOException("Failed to get refferenced SUT - make sure the compilation provider is running.\nClient response: " + e.getMessage());
 			}
-			SUT executedSUT = response.readEntity(SUT.class);
 			
 			// check if the SUT launch command or the SUT build command should be used and get it from the SUT
 			Pair<String,Integer> launchSUT = inputParamsMap.get("launchSUT");

@@ -4370,6 +4370,21 @@
 			]
 		}
 	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "{{password}}",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "{{username}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
@@ -4406,6 +4421,14 @@
 		{
 			"key": "compilation_provider",
 			"value": "http://localhost:8081/compilation"
+		},
+		{
+			"key": "username",
+			"value": "user"
+		},
+		{
+			"key": "password",
+			"value": "user"
 		}
 	]
 }

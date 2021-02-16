@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "f7fd15d8-f284-420c-809e-e464d2f7b0c6",
+		"_postman_id": "0ba65627-1f78-443d-86bd-f1d6866a87b5",
 		"name": "Tutorial",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1082,6 +1082,21 @@
 			]
 		}
 	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "{{password}}",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "{{username}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
@@ -1114,6 +1129,14 @@
 		{
 			"key": "compilation_port",
 			"value": "8081"
+		},
+		{
+			"key": "username",
+			"value": "user"
+		},
+		{
+			"key": "password",
+			"value": "user"
 		}
 	]
 }
