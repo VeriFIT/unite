@@ -38,6 +38,7 @@ import java.net.URI;
 import java.util.Properties;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.NoSuchElementException;
 import org.eclipse.lyo.store.ModelUnmarshallingException;
@@ -60,6 +61,7 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisProperties;
 
 import org.eclipse.lyo.store.StoreAccessException;
 import org.eclipse.lyo.oslc4j.core.model.Link;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
@@ -438,57 +440,39 @@ public class VeriFitAnalysisManager {
 	}    
     
 	/**
-     * TODO handmade because its abnormal (not as intended by lyo)
-	 * @param httpServletRequest
-	 * @param serviceProviderId
+     * Handles GET requests to Contribution resources with octet-stream response by directly returning the contents of the file
+     * that corresponds to the Contribution. The Contribution ID is a path to the file to be updated. 
 	 * @param contributionId
-	 * @return
+	 * @return Contents of the file corresponding to the Contribution resource
 	 */
-    public static File getContribution(HttpServletRequest httpServletRequest, final String serviceProviderId, final String contributionId)
+    public static File getContributionFile(String contributionId)
     {
-    	File aResource = null;
-
-    	// decode slashes in the file path
-		String filePath = contributionId.replaceAll("%2F", "/");
+    	// decode slashes in the file path 
+		String filePath = contributionId.replaceAll("%2F", "/"); 	// TODO probably replace by giving IDs to contributions
 		
-    	aResource = new File(filePath);
-
-        return aResource;
+		return new File(filePath);
     }
     
     /**
-     * TODO handmade because its abnormal (not as intended by lyo)
-     * @param httpServletRequest
-     * @param aResource
-     * @param serviceProviderId
+     * Handles PUT requests to Contribution resources with octet-stream data by directly replacing the contents of the file
+     * that corresponds to the Contribution. The Contribution ID is a path to the file to be updated. 
+     * @param fileInputStream
      * @param contributionId
-     * @return
      * @throws OslcResourceException
      */
-    public static Contribution updateContribution(HttpServletRequest httpServletRequest, final Contribution aResource, final String serviceProviderId, final String contributionId) throws OslcResourceException {
-        Contribution updatedResource = null;
-        
-        // Check that all the required properties are set
-        if (aResource == null || aResource.getValue() == null)
-        {
-        	throw new OslcResourceException("Failed to write a Contribution file - Value missing");        	
-        }
-
+    public static void updateContributionFile(InputStream fileInputStream, String contributionId) throws OslcResourceException
+    {  
     	// decode slashes in the file path
-		String filePath = contributionId.replaceAll("%2F", "/");
+		String filePath = contributionId.replaceAll("%2F", "/");	// TODO probably replace by giving IDs to contributions
 		
         // write the file - path is getPath and content is getValue
-		try (PrintWriter out = new PrintWriter(filePath))
-		{
-		    out.print(aResource.getValue());
-		} catch (IOException e)
+		try {
+			FileUtils.copyInputStreamToFile(fileInputStream, new File(filePath));
+		}
+		catch (IOException e)
 		{
 			throw new OslcResourceException("WARNING: Failed to write a Contribution file: " + e.getMessage());
 		}
-		
-		updatedResource = aResource;	// TODO not changed and has no URI because its not GETable
-		
-        return updatedResource;
     }
     
     /**

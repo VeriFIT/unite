@@ -17,7 +17,9 @@
 
 package cz.vutbr.fit.group.verifit.oslc.analysis.services;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -75,6 +77,7 @@ import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.exceptions.OslcResourceException;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisConstants;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import cz.vutbr.fit.group.verifit.oslc.analysis.servlet.ServiceProviderCatalogSingleton;
@@ -101,6 +104,42 @@ public class Contributions
     // End of user code
 
     // Start of user code class_methods
+
+    @PUT
+    @Path("contributions/{id}")
+    @Consumes({MediaType.APPLICATION_OCTET_STREAM, MediaType.TEXT_PLAIN})
+    public Response updateContributionFile( // TODO add @ApiOperation
+            @Context HttpServletRequest request,
+            @PathParam("id") final String id,
+            InputStream fileInputStream
+        ) throws IOException, ServletException
+    {
+
+        try {
+			VeriFitAnalysisManager.updateContributionFile(fileInputStream, id);
+		} catch (OslcResourceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        return Response.ok().header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();
+    }
+    
+
+    @GET
+    @Path("contributions/{id}")
+    @Produces({MediaType.APPLICATION_OCTET_STREAM, MediaType.TEXT_PLAIN})
+    public Response getContributionFile( // TODO add @ApiOperation
+                @PathParam("id") final String id
+        ) throws IOException, ServletException, URISyntaxException
+    {
+
+        final File aContribution = VeriFitAnalysisManager.getContributionFile(id);
+
+        return Response.ok(aContribution, MediaType.APPLICATION_OCTET_STREAM)
+        	      .header("Content-Disposition", "attachment; filename=\"" + aContribution.getName() + "\"" )
+        	      .build();
+
+    }
     // End of user code
 
     public Contributions()
