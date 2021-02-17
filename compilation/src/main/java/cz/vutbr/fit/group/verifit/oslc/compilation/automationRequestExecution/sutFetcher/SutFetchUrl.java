@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
 
 import cz.vutbr.fit.group.verifit.oslc.compilation.VeriFitCompilationManager;
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
 public class SutFetchUrl implements SutFetcher {
 
@@ -40,7 +41,7 @@ public class SutFetchUrl implements SutFetcher {
 		}
 		
 		try {
-			String fileName = VeriFitCompilationManager.getResourceIdFromUri(sourceUrl); // gets the last part of the URL
+			String fileName = Utils.getResourceIdFromUri(sourceUrl); // gets the last part of the URL
 			Path pathToFile = folderPath.resolve(fileName);
 			
 			FileUtils.copyURLToFile(

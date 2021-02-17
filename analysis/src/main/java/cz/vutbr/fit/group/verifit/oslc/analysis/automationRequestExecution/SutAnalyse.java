@@ -10,8 +10,6 @@
 
 package cz.vutbr.fit.group.verifit.oslc.analysis.automationRequestExecution;
 
-import static cz.vutbr.fit.group.verifit.oslc.analysis.utils.utils.getResourceIdFromUri;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -43,12 +41,13 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisResourcesFactory;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.ParserManager;
-import cz.vutbr.fit.group.verifit.oslc.analysis.utils.utils;
 
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
 
+import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.RequestRunner;
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
 
 /**
@@ -80,17 +79,17 @@ public class SutAnalyse extends RequestRunner
 		super();
 		
 		this.inputParamsMap = inputParamsMap;
-		this.execAutoRequestId = getResourceIdFromUri(execAutoRequest.getAbout());
+		this.execAutoRequestId = Utils.getResourceIdFromUri(execAutoRequest.getAbout());
 		this.execAutoRequest = execAutoRequest;
-		this.resAutoResultId = getResourceIdFromUri(resAutoResult.getAbout());
+		this.resAutoResultId = Utils.getResourceIdFromUri(resAutoResult.getAbout());
 		this.resAutoResult = resAutoResult;
-		this.execSutId = getResourceIdFromUri(execSut.getAbout());;
+		this.execSutId = Utils.getResourceIdFromUri(execSut.getAbout());;
 		this.execSut = execSut;
 
 		// load the AutomationPlanConfiguration
 		AutomationPlanConfManager autoPlanConfManager = AutomationPlanConfManager.getInstance();
 		this.autoPlanConf = autoPlanConfManager.getAutoPlanConf(
-				getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue())
+				Utils.getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue())
 			);
 	}
 
@@ -125,13 +124,13 @@ public class SutAnalyse extends RequestRunner
 
 			// set the states of the Automation Result and Request to "inProgress" - if they are not that already
 			if (!(execAutoRequest.getState().iterator().next().getValue()
-					.toASCIIString().equals(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS)))
+					.toASCIIString().equals(OslcValues.AUTOMATION_STATE_INPROGRESS)))
 			{
 				resAutoResult.setState(new HashSet<Link>());
-				resAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS)));
+				resAutoResult.addState(new Link(new URI(OslcValues.AUTOMATION_STATE_INPROGRESS)));
 				VeriFitAnalysisManager.updateAutomationResult(null, resAutoResult, resAutoResultId);
 				execAutoRequest.setState(new HashSet<Link>());
-				execAutoRequest.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS)));
+				execAutoRequest.addState(new Link(new URI(OslcValues.AUTOMATION_STATE_INPROGRESS)));
 				VeriFitAnalysisManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
 			}
 
@@ -139,18 +138,18 @@ public class SutAnalyse extends RequestRunner
 			Contribution analysisStdoutLog = new Contribution();
 		    analysisStdoutLog.setDescription("Standard output of the analysis. Provider messages are prefixed with #.");
 		    analysisStdoutLog.setTitle("Analysis stdout");
-		    analysisStdoutLog.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
+		    analysisStdoutLog.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING)));
 		    Contribution analysisStderrLog = new Contribution();
 		    analysisStderrLog.setDescription("Error output of the analysis. Provider messages are prefixed with #.");
 		    analysisStderrLog.setTitle("Analysis stderr");
-		    analysisStderrLog.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
+		    analysisStderrLog.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING)));
 
 
 		    // take a snapshot of SUT files modification times before executing the analysis
 		    Map<String, Long> snapshotBeforeAnalysis = takeDirSnapshot(execSut.getSUTdirectoryPath(), outputRegex);
 
 			// analyse SUT
-		    String executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_PASSED;
+		    String executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
 			try {
 				analysisStdoutLog.setValue("# Executing: " + stringToExecute + "\n");
 				Path SUTdirAsPath = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
@@ -158,13 +157,13 @@ public class SutAnalyse extends RequestRunner
 
 				if (analysisRes.timeouted)
 				{
-					executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_FAILED;
+					executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
 			    	analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis aborted due to a " + analysisRes.timeoutType + " timeout (" + timeout + " seconds)\n" //TODO
 			    							+ analysisRes.stdout);
 				}
 		    	else if (analysisRes.retCode != 0)
 		    	{
-					executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_FAILED;
+					executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
 			    	analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis failed (returned non-zero: " + analysisRes.retCode + ")\n"
 			    							+ analysisRes.stdout);
 				}
@@ -176,7 +175,7 @@ public class SutAnalyse extends RequestRunner
 
 			} catch (IOException e) {
 				// there was an error
-				executionVerdict = VeriFitAnalysisConstants.AUTOMATION_VERDICT_ERROR;
+				executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
 				analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis error");
 				analysisStderrLog.setValue(e.getMessage());	// get stderr
 
@@ -215,13 +214,13 @@ public class SutAnalyse extends RequestRunner
 			    	byte [] fileContents = Files.readAllBytes(FileSystems.getDefault().getPath(currFile.toString())); // TODO RAM usage
 			    	if (isBinaryFile(currFile))
 			    	{
-			    		newOrModifFile.setValue(utils.base64Encode(fileContents));
-			    		newOrModifFile.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_BASE64BINARY)));
+			    		newOrModifFile.setValue(Utils.base64Encode(fileContents));
+			    		newOrModifFile.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_BASE64BINARY)));
 			    	}
 		    		else
 		    		{
 		    			newOrModifFile.setValue(new String(fileContents));
-		    			newOrModifFile.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
+		    			newOrModifFile.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING)));
 		    		}
 				} catch (IOException e) {
 					newOrModifFile.setValue(e.getMessage());
@@ -255,18 +254,18 @@ public class SutAnalyse extends RequestRunner
 			// run the AutoResult contributions through a parser
 			ParserManager parserManagerInst = ParserManager.getInstance();
 			Set<Contribution> parsedContributions = parserManagerInst.parseContributionsForTool(
-					getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue()),
+					Utils.getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue()),
 					resAutoResult.getContribution());
 			resAutoResult.setContribution(parsedContributions);
 
 			// update the AutoResult state and verdict, and AutoRequest state
 			resAutoResult.setState(new HashSet<Link>());
-			resAutoResult.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
+			resAutoResult.addState(new Link(new URI(OslcValues.AUTOMATION_STATE_COMPLETE)));
 			resAutoResult.setVerdict(new HashSet<Link>());
 			resAutoResult.addVerdict(new Link(new URI(executionVerdict)));
-			VeriFitAnalysisManager.updateAutomationResult(null, resAutoResult, getResourceIdFromUri(resAutoResult.getAbout()));
+			VeriFitAnalysisManager.updateAutomationResult(null, resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
 			execAutoRequest.setState(new HashSet<Link>());
-			execAutoRequest.addState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
+			execAutoRequest.addState(new Link(new URI(OslcValues.AUTOMATION_STATE_COMPLETE)));
 			VeriFitAnalysisManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
 
 			// end the request execution (in case it is part of a request queue)

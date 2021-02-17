@@ -20,6 +20,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 
 import cz.vutbr.fit.group.verifit.oslc.compilation.VeriFitCompilationManager;
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
 public class SutFetchGit implements SutFetcher {
 
@@ -39,7 +40,7 @@ public class SutFetchGit implements SutFetcher {
 		        .setDirectory(folderPath.toFile())
 		        .call();
 		    
-		    return VeriFitCompilationManager.getResourceIdFromUri(new URI (url)); // gets the last part of the URL
+		    return Utils.getResourceIdFromUri(new URI (url)); // gets the last part of the URL
 		
 		} catch (GitAPIException | JGitInternalException | URISyntaxException e) {
 			throw new IOException("Git clone failed: " + e.getMessage());

@@ -92,7 +92,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 // Start of user code imports
-import cz.vutbr.fit.group.verifit.oslc.analysis.exceptions.OslcResourceException;
+import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
 import org.eclipse.lyo.oslc4j.core.model.Error;
 // End of user code
 

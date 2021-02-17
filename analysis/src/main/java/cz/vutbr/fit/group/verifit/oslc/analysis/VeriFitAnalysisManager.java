@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 import cz.vutbr.fit.group.verifit.oslc.analysis.servlet.ServiceProviderCatalogSingleton;
-import cz.vutbr.fit.group.verifit.oslc.analysis.utils.utils;
 import cz.vutbr.fit.group.verifit.oslc.analysis.ServiceProviderInfo;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
@@ -51,7 +50,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
 import cz.vutbr.fit.group.verifit.oslc.analysis.clients.CompilationAdapterClient;
-import cz.vutbr.fit.group.verifit.oslc.analysis.exceptions.OslcResourceException;
 import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
 
@@ -59,8 +57,6 @@ import org.eclipse.lyo.store.StoreAccessException;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
-
-import static cz.vutbr.fit.group.verifit.oslc.analysis.utils.utils.getResourceIdFromUri;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,14 +73,16 @@ import java.util.LinkedList;
 import java.util.regex.Pattern;
 import java.util.NoSuchElementException;
 import java.util.Map;
-import org.eclipse.lyo.client.OslcClient;	//TODO REMOVE LATER
-import javax.ws.rs.core.Response;	//TODO REMOVE LATER
 
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanLoading;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationRequestExecution.SutAnalyse;
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils.ResourceIdGen;
 
-import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.RequestRunner;
+import cz.vutbr.fit.group.verifit.oslc.shared.queuing.RequestRunnerQueues;
+import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
 // Start of user code pre_class_code
 // End of user code
 
@@ -106,28 +104,6 @@ public class VeriFitAnalysisManager {
     
     // Start of user code class_methods
 	
-	
-	/**
-	 * Check that the triplestore is running by sending a request. 
-	 * @throws Exception
-	 */
-	private static void checkStoreOnline() throws Exception
-	{
-
-        Store store = storePool.getStore();
-		try {
-			// Dont care if the graph exists or not, will be created later if needed
-			store.namedGraphExists(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES));
-			
-		} catch (URISyntaxException e) {
-			log.error("THIS SHOULD NEVER HAPPEN");
-			e.printStackTrace();
-	    } finally {
-	        storePool.releaseStore(store);
-	    }
-	}
-
-	
 	private static int getCurrentHighestAutomationRequestId() throws Exception
 	{
     	int currMaxReqId = 0;
@@ -144,7 +120,7 @@ public class VeriFitAnalysisManager {
 				{	
 					for (AutomationRequest autoReq : listAutoRequests)
 					{
-						int reqId = Integer.parseInt(getResourceIdFromUri(autoReq.getAbout()));
+						int reqId = Integer.parseInt(Utils.getResourceIdFromUri(autoReq.getAbout()));
 						if (reqId > currMaxReqId)
 						{
 							currMaxReqId = reqId;
@@ -158,44 +134,6 @@ public class VeriFitAnalysisManager {
 		return currMaxReqId;
 	}
 	
-	/**
-	 * Used to generate IDs for new resources in a synchronized way (datarace free)
-	 * @author od42
-	 */
-	private static class ResourceIdGen {
-	    int idCounter; 
-	    
-	    public ResourceIdGen ()
-	    {
-	    	idCounter = 0;
-	    };
-	    
-	    public ResourceIdGen (int start)
-	    {
-	    	idCounter = start;
-	    }
-	    
-	    /**
-	     * Get a new ID. This increments the internal ID counter. Synchronized.
-	     * @return New ID
-	     */
-	    public synchronized String getId() {
-	    	idCounter++;
-	        return Integer.toString(idCounter - 1);
-	    }
-	}
-	
-	/**
-	 * Check if a string is a console command by finding it in the system PATH
-	 * source - https://stackoverflow.com/a/23539220
-	 * @param command Command to look for
-	 * @return	Whether the command is in the system PATH
-	 */
-	private static Boolean isInPath(String command)
-	{
-		return Stream.of(System.getenv("PATH").split(Pattern.quote(File.pathSeparator))).map(Paths::get).anyMatch(path -> Files.exists(path.resolve(command)));
-	}
-
 	/**
 	 * Creates an AutomationPlan resource with the specified properties, and stores in the Adapter's catalog.
 	 * @param aResource			The new resource will copy properties from the specified aResource.
@@ -237,8 +175,8 @@ public class VeriFitAnalysisManager {
 			ParameterDefinition SUT = new ParameterDefinition();
 			SUT.setDescription("Refference to an SUT resource to analyse. SUTs are created using the compilation provider."); //TODO
 			SUT.setName("SUT");
-			SUT.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ONE)));
-			SUT.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING))); // TODO change to URI
+			SUT.setOccurs(new Link(new URI(OslcValues.OSLC_OCCURS_ONE)));
+			SUT.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING))); // TODO change to URI
 			newResource.addParameterDefinition(SUT);
 
 			ParameterDefinition outputFileRegex = new ParameterDefinition();
@@ -246,24 +184,24 @@ public class VeriFitAnalysisManager {
 					+ "be added as contributions to the Automation Result. The regex needs to match the "
 					+ "whole filename."); //TODO
 			outputFileRegex.setName("outputFileRegex");
-			outputFileRegex.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
-			outputFileRegex.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_STRING)));
+			outputFileRegex.setOccurs(new Link(new URI(OslcValues.OSLC_OCCURS_ZEROorONE)));
+			outputFileRegex.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING)));
 			outputFileRegex.setDefaultValue(".^");
 			newResource.addParameterDefinition(outputFileRegex);
 
 			ParameterDefinition zipOutputs = new ParameterDefinition();
 			zipOutputs.setDescription("If set to true, then all file contributions will be ZIPed and provided as a single zip contribution");
 			zipOutputs.setName("zipOutputs");
-			zipOutputs.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
-			zipOutputs.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_BOOL)));
+			zipOutputs.setOccurs(new Link(new URI(OslcValues.OSLC_OCCURS_ZEROorONE)));
+			zipOutputs.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_BOOL)));
 			zipOutputs.setDefaultValue("false");
 			newResource.addParameterDefinition(zipOutputs);
 
 			ParameterDefinition timeout = new ParameterDefinition();
 			timeout.setDescription("Timeout for the analysis. Zero means no timeout.");
 			timeout.setName("timeout");
-			timeout.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
-			timeout.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_INTEGER)));
+			timeout.setOccurs(new Link(new URI(OslcValues.OSLC_OCCURS_ZEROorONE)));
+			timeout.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_INTEGER)));
 			timeout.setDefaultValue("0");
 			newResource.addParameterDefinition(timeout);
 
@@ -271,8 +209,8 @@ public class VeriFitAnalysisManager {
 			toolCommand.setDescription("Used to omit the analysis tool launch command while executing analysis. True means the tool " + 
 			"will be used and False means the tool command will not be used. (eg. \"./tool ./sut args\" vs \"/sut args\").");
 			toolCommand.setName("toolCommand");
-			toolCommand.setOccurs(new Link(new URI(VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE)));
-			toolCommand.addValueType(new Link(new URI(VeriFitAnalysisConstants.OSLC_VAL_TYPE_BOOL)));
+			toolCommand.setOccurs(new Link(new URI(OslcValues.OSLC_OCCURS_ZEROorONE)));
+			toolCommand.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_BOOL)));
 			toolCommand.setDefaultValue("true");
 			newResource.addParameterDefinition(toolCommand);
 
@@ -334,7 +272,7 @@ public class VeriFitAnalysisManager {
 			newResource.setModified(timestamp);
 			//newResource.setInstanceShape(new URI(VeriFitAnalysisProperties.PATH_RESOURCE_SHAPES + "automationResult"));
 			//newResource.addServiceProvider(new URI(VeriFitAnalysisProperties.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
-			newResource.setDesiredState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
+			newResource.setDesiredState(new Link(new URI(OslcValues.AUTOMATION_STATE_COMPLETE)));
 			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationResult"));
 
 			// persist in the triplestore
@@ -367,126 +305,7 @@ public class VeriFitAnalysisManager {
 		}
 		
 		return newResource;
-    }
-    
-	/**
-	 * Check that the AutomationRequest contains the necessary input parameters based on its AutoPlan, fill the AutomationResult with output parameters (default values),
-	 * and return a simplified map of parameters (TODO refactor the map)
-	 * @param execAutoRequest			The AutomationRequest to execute. Needs to have a valid executesAutomationPlan property.
-	 * @param newAutoResult				The AutomationResult created by the AutoRequest.
-	 * @throws OslcResourceException 	When the executed AutomationRequest properties are invalid or missing
-	 * @return	A map of input parameters [ name, Pair(value,position) ]; position -1 means there was no position
-	 */
-	private static Map<String, Pair<String,Integer>> processAutoReqInputParams(AutomationRequest execAutoRequest, AutomationResult newAutoResult) throws OslcResourceException
-	{
-		// get the executed AutomationPlan resource			
-		String execAutoPlanId = utils.getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue());
-		AutomationPlan execAutoPlan = null;
-		try {
-			execAutoPlan = getAutomationPlan(null, execAutoPlanId);
-		} catch (Exception e) {
-			throw new OslcResourceException("AutomationPlan not found (id: " + execAutoPlanId + ")");			
-		}
-		
-		/// check the input parameters and create a map of "name" -> ("value", position)
-		Map<String, Pair<String,Integer>> inputParamsMap = new HashMap<String, Pair<String,Integer>>();
-		
-		// loop through autoPlan defined parameters to match them with the input params
-		for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
-		{
-			Integer paramPosition;
-			if (definedParam.getCommandlinePosition() != null)
-			{
-				paramPosition = definedParam.getCommandlinePosition();
-			}
-			else
-			{
-				paramPosition = -1;
-			}
-				
-			// find the corresponding autoRequest input parameter
-			boolean matched = false;
-			for (ParameterInstance submittedParam : execAutoRequest.getInputParameter())
-			{				
-				if (definedParam.getName().equals(submittedParam.getName()))
-				{
-					
-					// check if the value is allowed
-					Boolean validValue = true;
-					if (definedParam.getAllowedValue().size() > 0)
-					{
-						validValue = false;
-						for (String allowedValue : definedParam.getAllowedValue())
-						{
-							if (allowedValue.equals(submittedParam.getValue()))
-							{
-								validValue = true;
-								break;
-							}
-						}
-					}
-					if (!validValue)
-					{
-						throw new OslcResourceException("value '" + submittedParam.getValue() + "' not allowed for the '" + definedParam.getName() + "' parameter");
-					}
-					
-					inputParamsMap.put(definedParam.getName(), Pair.of(submittedParam.getValue(),paramPosition));
-					matched = true;
-				}
-			}
-			// try to use the default value if no matching input param found
-			if (!matched && definedParam.getDefaultValue() != null)
-			{
-				inputParamsMap.put(definedParam.getName(), Pair.of(definedParam.getDefaultValue(), paramPosition));
-				matched = true;
-
-				// add the default value as an output parameter to the Automation Result
-				ParameterInstance outputParameter = null;
-				outputParameter = new ParameterInstance();
-				outputParameter.setName(definedParam.getName());
-				outputParameter.setValue(definedParam.getDefaultValue());
-				newAutoResult.addOutputParameter(outputParameter);
-			}
-			
-			// check parameter occurrences
-			Boolean paramMissing = false;
-			switch (definedParam.getOccurs().getValue().toString())
-			{
-			case VeriFitAnalysisConstants.OSLC_OCCURS_ONE:
-				// TODO check for more then one when there should be exactly one
-			case VeriFitAnalysisConstants.OSLC_OCCURS_ONEorMany:
-				if (!matched)
-					paramMissing = true;
-				break;
-				
-			case VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorONE:
-				// TODO check for more then one when there should be max one
-				break;
-
-			case VeriFitAnalysisConstants.OSLC_OCCURS_ZEROorMany:
-				break;
-			}
-			
-			if (paramMissing == true)
-				throw new OslcResourceException("'" + definedParam.getName() + "' input parameter missing");
-		}
-		
-		// check that there were no unknown input parameters
-		for (ParameterInstance submittedParam : execAutoRequest.getInputParameter())
-		{				
-			boolean matched = false;
-			for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
-			{
-				if (definedParam.getName().equals(submittedParam.getName()))
-					matched = true;
-			}
-			
-			if (!matched)
-				throw new OslcResourceException("'" + submittedParam.getName() + "' input parameter not recognized");
-		}
-		
-		return inputParamsMap;
-	}    
+    }    
     
 	/**
      * Handles GET requests to Contribution resources with octet-stream response by directly returning the contents of the file
@@ -525,76 +344,12 @@ public class VeriFitAnalysisManager {
     }
     
     /**
-     * A map of queues of Automation Request runners. Each queue is meant to be used for a different Automation Plan (key to the map).
-     * The first runner in each queue will be started. 
-     */
-    public static class RequestRunnerQueues {
-    	
-    	private Map<String,List<RequestRunner>> queueMap;
-    	
-    	public RequestRunnerQueues()
-    	{
-    		queueMap = new HashMap<String,List<RequestRunner>>();
-    	}
-
-    	public synchronized Boolean queueExists(String queueName) 
-    	{
-    		return (queueMap.get(queueName) != null);
-    	}
-    	
-    	public synchronized Boolean empty(String queueName) 
-    	{
-    		List<RequestRunner> queue = queueMap.get(queueName);
-    		if(queue == null)
-    			return true;
-    		else
-    			return queue.isEmpty();
-    	}
-    	
-    	/**
-    	 * Adds a runner into a named queue. The runner will be started when it reaches the front of the queue (immediately if the queue is empty).
-    	 * @param queueName
-    	 * @param runner
-    	 */
-    	public synchronized void queueUp(String queueName, RequestRunner runner)
-    	{	
-    		// check if the queue exists - create it if it doesnt
-    		if (queueMap.get(queueName) == null)
-    		{
-    			queueMap.put(queueName, new LinkedList<RequestRunner>());
-    		}
-    		
-    		// queue up
-    		queueMap.get(queueName).add(runner);
-    		
-    		// start execution if first in line
-    		if (queueMap.get(queueName).size() == 1)
-    			runner.start();
-    	}
-    	
-    	/**
-    	 * Removes the first runner from a named queue. Meant to be called after the runner has finished execution. Will start the next runner in line.
-    	 * @param queueName
-    	 */
-    	public synchronized void popFirst(String queueName)
-    	{
-    		List<RequestRunner> queue = queueMap.get(queueName);
-    		if (!(queue == null)) // make sure the queue exists
-    		{
-    			queue.remove(0);
-    			if (!(queue.isEmpty()))	// start the next runner if there is one
-    				queue.get(0).start();
-    		}
-    	}
-    };
-    
-    /**
      * Call this function at the end of an Automation Requests execution. If the request is part of a queue, then it will be removed from it and the next requets will start its execution.
      * @param req
      */
     public static void finishedAutomationRequestExecution(AutomationRequest req)
     {
-    	String autoPlanId = utils.getResourceIdFromUri(req.getExecutesAutomationPlan().getValue());
+    	String autoPlanId = Utils.getResourceIdFromUri(req.getExecutesAutomationPlan().getValue());
     	
     	// if there is a request queue for this requests Automation Plan, then it means this request execution is currently
     	// at the front of the queue and needs to be removed
@@ -649,7 +404,7 @@ public class VeriFitAnalysisManager {
 
         // check that the store is online
         try {
-        	checkStoreOnline();
+        	Utils.checkStoreOnline(storePool);
 		} catch (Exception e) {
 			String hint = "Is the triplestore running?\n";
 			if (e.getMessage() == null)
@@ -909,7 +664,7 @@ public class VeriFitAnalysisManager {
 			newResource.setModified(timestamp);
 			//newResource.setInstanceShape(new URI(AnacondaAdapterConstants.PATH_RESOURCE_SHAPES + "automationRequest"));
 			//newResource.addServiceProvider(new URI(AnacondaAdapterConstants.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
-			newResource.setDesiredState(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_STATE_COMPLETE)));
+			newResource.setDesiredState(new Link(new URI(OslcValues.AUTOMATION_STATE_COMPLETE)));
 			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationRequest"));
 			
 
@@ -921,10 +676,19 @@ public class VeriFitAnalysisManager {
 			propAutoResult.setInputParameter(newResource.getInputParameter());
 			propAutoResult.setContributor(newResource.getContributor());
 			propAutoResult.setCreator(newResource.getCreator());
-			propAutoResult.addVerdict(new Link(new URI(VeriFitAnalysisConstants.AUTOMATION_VERDICT_UNAVAILABLE)));
+			propAutoResult.addVerdict(new Link(new URI(OslcValues.AUTOMATION_VERDICT_UNAVAILABLE)));
 			
-			// get the executed autoPlan, check input parameters, add output parameters to the AutoResult, and make an input map for the runner
-			Map<String, Pair<String,Integer>> inputParamsMap = processAutoReqInputParams(newResource, propAutoResult);
+			// get the executed autoPlan
+			String execAutoPlanId = Utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue());
+			AutomationPlan execAutoPlan = null;
+			try {
+				execAutoPlan = getAutomationPlan(null, execAutoPlanId);
+			} catch (Exception e) {
+				throw new OslcResourceException("AutomationPlan not found (id: " + execAutoPlanId + ")");			
+			}
+			
+			// check input parameters, add output parameters to the AutoResult, and make an input map for the runner
+			Map<String, Pair<String,Integer>> inputParamsMap = Utils.processAutoReqInputParams(newResource, propAutoResult, execAutoPlan);
 			
 			// check that the SUT to be executed exists
 			SUT executedSUT = null;
@@ -973,18 +737,18 @@ public class VeriFitAnalysisManager {
 
 			// load the automation plan's configuration from the conf. manager
 			Boolean oneInstanceOnly = AutomationPlanConfManager.getInstance()
-					.getAutoPlanConf(getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue()))
+					.getAutoPlanConf(Utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue()))
 					.getOneInstanceOnly();
 
 			// check whether the new Auto Request can start execution immediately or needs to wait in a queue
 			// and set its state accordingly (same for the Auto Result)
 			if (oneInstanceOnly == false) // no instance restrictions --> can run
 			{
-				requestState = VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS;
+				requestState = OslcValues.AUTOMATION_STATE_INPROGRESS;
 			}
 			else	// only one instance allowed at a time --> check queue
 			{
-				requestState = VeriFitAnalysisConstants.AUTOMATION_STATE_QUEUED;
+				requestState = OslcValues.AUTOMATION_STATE_QUEUED;
 			}			
 			newResource.addState(new Link(new URI(requestState)));
 			propAutoResult.addState(new Link(new URI(requestState)));
@@ -1037,14 +801,14 @@ public class VeriFitAnalysisManager {
         newResource = aResource;
         // Start of user code createAutomationRequest_storeFinalize
         
-        if (requestState.equals(VeriFitAnalysisConstants.AUTOMATION_STATE_INPROGRESS))
+        if (requestState.equals(OslcValues.AUTOMATION_STATE_INPROGRESS))
 		{
 			runner.start();
 		}
 		else	
 		{
 			AutoRequestQueues.queueUp(
-					utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue()),
+					Utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue()),
 					runner);
 		}
         

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisConstants;
+import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 
 public class NoBinaryFileValuesParser extends BasicParser implements IParser {
 
@@ -22,7 +23,7 @@ public class NoBinaryFileValuesParser extends BasicParser implements IParser {
 	{
 		for (Map<String, String> contrib : inputContributions)
 		{
-			if (contrib.get("valueType") == VeriFitAnalysisConstants.OSLC_VAL_TYPE_BASE64BINARY)
+			if (contrib.get("valueType") == OslcValues.OSLC_VAL_TYPE_BASE64BINARY)
 			{
 				contrib.remove("value");
 				contrib.remove("valueType");

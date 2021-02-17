@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
@@ -37,7 +38,9 @@ import cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution.su
 import cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution.sutFetcher.SutFetchUrl;
 import cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution.sutFetcher.SutFetcher;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
+import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.RequestRunner;
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
 /**
  * A thread for executing the Deploy SUT Automation Plan.
@@ -50,21 +53,21 @@ public class SutDeploy extends RequestRunner
 	private AutomationRequest execAutoRequest;
 	final private String resAutoResultId;
 	private AutomationResult resAutoResult;
-	final private Map<String, String> inputParamsMap;
+	final private Map<String, Pair<String,Integer>> inputParamsMap;
 	
 	/**
 	 * @param execAutoRequest	Executed AutomationRequest resource object
 	 * @param execAutoResult	Result AutomationResult resource object
 	 * @param inputParamsMap	Input parameters as a "name" => "value" map
 	 */
-	public SutDeploy(AutomationRequest execAutoRequest, AutomationResult resAutoResult, Map<String, String> inputParamsMap) 
+	public SutDeploy(AutomationRequest execAutoRequest, AutomationResult resAutoResult, Map<String, Pair<String,Integer>> inputParamsMap) 
 	{
 		super();
 		
 		this.inputParamsMap = inputParamsMap;
-		this.execAutoRequestId = VeriFitCompilationManager.getResourceIdFromUri(execAutoRequest.getAbout());
+		this.execAutoRequestId = Utils.getResourceIdFromUri(execAutoRequest.getAbout());
 		this.execAutoRequest = execAutoRequest;
-		this.resAutoResultId = VeriFitCompilationManager.getResourceIdFromUri(resAutoResult.getAbout());
+		this.resAutoResultId = Utils.getResourceIdFromUri(resAutoResult.getAbout());
 		this.resAutoResult = resAutoResult;
 	}
 
@@ -76,14 +79,14 @@ public class SutDeploy extends RequestRunner
 		
 		try {
 			
-			// get the input parameters
-			final String paramSourceGit = inputParamsMap.get("sourceGit");
-			final String paramSourceUrl = inputParamsMap.get("sourceUrl");
-			final String paramSourceBase64 = inputParamsMap.get("sourceBase64");
-			final String paramSourceFilePath = inputParamsMap.get("sourceFilePath");
-			final String paramBuildCommand = inputParamsMap.get("buildCommand");
-			final String paramLaunchCommand = inputParamsMap.get("launchCommand");
-			final String paramUnpackZip = inputParamsMap.get("unpackZip");
+			// get the input parameters	// TODO .getLeft() is ugly	
+			final String paramSourceGit = (inputParamsMap.get("sourceGit") == null) ? null : inputParamsMap.get("sourceGit").getLeft();
+			final String paramSourceUrl = (inputParamsMap.get("sourceUrl") == null) ? null : inputParamsMap.get("sourceUrl").getLeft();
+			final String paramSourceBase64 = (inputParamsMap.get("sourceBase64") == null) ? null : inputParamsMap.get("sourceBase64").getLeft();
+			final String paramSourceFilePath = (inputParamsMap.get("sourceFilePath") == null) ? null : inputParamsMap.get("sourceFilePath").getLeft();
+			final String paramBuildCommand = (inputParamsMap.get("buildCommand") == null) ? null : inputParamsMap.get("buildCommand").getLeft();
+			final String paramLaunchCommand = (inputParamsMap.get("launchCommand") == null) ? null : inputParamsMap.get("launchCommand").getLeft();
+			final String paramUnpackZip = (inputParamsMap.get("unpackZip") == null) ? null : inputParamsMap.get("unpackZip").getLeft();
 
 			// check wich one of the source parameters was used 
 			SutFetcher sutFetcher = null;
@@ -116,10 +119,10 @@ public class SutDeploy extends RequestRunner
 			
 			// set the states of the Automation Result and Request to "inProgress"
 			resAutoResult.setState(new HashSet<Link>());
-			resAutoResult.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_INPROGRESS)));
+			resAutoResult.addState(new Link(new URI(OslcValues.AUTOMATION_STATE_INPROGRESS)));
 			VeriFitCompilationManager.updateAutomationResult(null, resAutoResult, resAutoResultId);
 			execAutoRequest.setState(new HashSet<Link>());
-			execAutoRequest.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_INPROGRESS)));
+			execAutoRequest.addState(new Link(new URI(OslcValues.AUTOMATION_STATE_INPROGRESS)));
 			VeriFitCompilationManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
 			
 			
@@ -127,21 +130,21 @@ public class SutDeploy extends RequestRunner
 			Contribution fetchLog = new Contribution();
 		    fetchLog.setDescription("Output of the program fetching process. Provider messages are prefixed with #.");
 		    fetchLog.setTitle("Fetching Output");
-		    fetchLog.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
+		    fetchLog.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING)));
 		    //fetchLog.addType(new Link(new URI("http://purl.org/dc/dcmitype/Text"))); //TODO
 		    
 		    Contribution compStdoutLog = new Contribution();
 		    compStdoutLog.setDescription("Standard output of the compilation. Provider messages are prefixed with #.");
 		    compStdoutLog.setTitle("Compilation stdout");
-		    compStdoutLog.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
+		    compStdoutLog.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING)));
 		    Contribution compStderrLog = new Contribution();
 		    compStderrLog.setDescription("Error output of the compilation. Provider messages are prefixed with #.");
 		    compStderrLog.setTitle("Compilation stderr");
-		    compStderrLog.addValueType(new Link(new URI(VeriFitCompilationConstants.OSLC_VAL_TYPE_STRING)));
+		    compStderrLog.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING)));
 			
 		    
 		    Boolean performCompilation = true;	// flag to disable a part of the execution in case of an error
-			String executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_PASSED;
+			String executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
 		    
 			// fetch source file
 			Path folderPath = null;
@@ -162,7 +165,7 @@ public class SutDeploy extends RequestRunner
 				fetchLog.setValue("# SUT fetch successful\n");
 			
 			} catch (Exception e) {
-				executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_ERROR;
+				executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
 				fetchLog.setValue("# SUT fetch failed\n" + e.getMessage());
 	    		performCompilation = false;
 
@@ -185,7 +188,7 @@ public class SutDeploy extends RequestRunner
 			    	
 			    	if (compRes.retCode != 0)
 			    	{	// if the compilation returned non zero, set the verdict as failed
-						executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_FAILED;
+						executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
 				    	compStdoutLog.setValue("# Compilation failed (returned non-zero: " + compRes.retCode + ")\n"
 				    							+ compRes.stdout);
 			    	}
@@ -197,7 +200,7 @@ public class SutDeploy extends RequestRunner
 				    
 				} catch (IOException e) {
 					// there was an error
-					executionVerdict = VeriFitCompilationConstants.AUTOMATION_VERDICT_ERROR;
+					executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
 					compStdoutLog.setValue("# Compilation error");
 			    	compStderrLog.setValue(e.getMessage());
 		    		
@@ -211,7 +214,7 @@ public class SutDeploy extends RequestRunner
 			}
 	    	
 			// create the SUT resource if the compilation was successful
-			if (executionVerdict == VeriFitCompilationConstants.AUTOMATION_VERDICT_PASSED)
+			if (executionVerdict == OslcValues.AUTOMATION_VERDICT_PASSED)
 			{
 				SUT newSut = new SUT();
 				newSut.setTitle("SUT - " + execAutoRequest.getTitle());
@@ -222,17 +225,17 @@ public class SutDeploy extends RequestRunner
 				newSut.setCreator(execAutoRequest.getCreator());
 				newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(execAutoRequestId));
 				VeriFitCompilationManager.createSUT(newSut, execAutoRequestId); // TODO
-				resAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(VeriFitCompilationManager.getResourceIdFromUri(newSut.getAbout()))); // TODO
+				resAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(Utils.getResourceIdFromUri(newSut.getAbout()))); // TODO
 			}
 			
 			// update the AutoResult state and verdict, and AutoRequest state
 			resAutoResult.setState(new HashSet<Link>());
-			resAutoResult.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));
+			resAutoResult.addState(new Link(new URI(OslcValues.AUTOMATION_STATE_COMPLETE)));
 			resAutoResult.setVerdict(new HashSet<Link>());
 			resAutoResult.addVerdict(new Link(new URI(executionVerdict)));
-			VeriFitCompilationManager.updateAutomationResult(null, resAutoResult, VeriFitCompilationManager.getResourceIdFromUri(resAutoResult.getAbout()));
+			VeriFitCompilationManager.updateAutomationResult(null, resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
 			execAutoRequest.setState(new HashSet<Link>());
-			execAutoRequest.addState(new Link(new URI(VeriFitCompilationConstants.AUTOMATION_STATE_COMPLETE)));
+			execAutoRequest.addState(new Link(new URI(OslcValues.AUTOMATION_STATE_COMPLETE)));
 			VeriFitCompilationManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
 				
 		} catch (URISyntaxException e) {

@@ -18,7 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager.AutomationPlanConf;
-import cz.vutbr.fit.group.verifit.oslc.analysis.exceptions.OslcResourceException;
+import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
 
 import java.io.File;
@@ -31,7 +32,6 @@ import java.util.Properties;
 
 import static cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.PredefinedAutomationPlanDefinition.getDummyAutomationPlanConf;
 import static cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.PredefinedAutomationPlanDefinition.getDummyAutomationPlanDefinition;
-import static cz.vutbr.fit.group.verifit.oslc.analysis.utils.utils.parseResourcesFromXmlFile;
 
 public class AutomationPlanLoading {
 
@@ -112,7 +112,7 @@ public class AutomationPlanLoading {
     {
         AutomationPlan[] parsedResources = new AutomationPlan[0];
         try {
-            parsedResources = parseResourcesFromXmlFile(autoPlanDefFile, AutomationPlan.class);	// there should be only one
+            parsedResources = Utils.parseResourcesFromXmlFile(autoPlanDefFile, AutomationPlan.class);	// there should be only one
         } catch (FileNotFoundException e) {
         	throw new Exception("Failed to open definition .rdf file ("
                     + autoPlanDefFile.getName() + "): " + e.getMessage());

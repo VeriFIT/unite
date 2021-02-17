@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package cz.vutbr.fit.group.verifit.oslc.compilation.exceptions;
+package cz.vutbr.fit.group.verifit.oslc.shared.exceptions;
 
 public class OslcResourceException extends Exception {
 	

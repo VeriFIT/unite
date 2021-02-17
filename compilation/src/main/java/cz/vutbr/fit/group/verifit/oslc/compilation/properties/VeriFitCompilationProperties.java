@@ -8,27 +8,34 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package cz.vutbr.fit.group.verifit.oslc.compilation;
+package cz.vutbr.fit.group.verifit.oslc.compilation.properties;
 
-// Start of user code imports
-import java.util.Set;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
 // End of user code
 import java.util.Properties;
 
 public class VeriFitCompilationProperties
 {
-	
+
 	/**
-	 * Loads the Java properties configuration
+	 * Sets up properties for the adapter. Needs to be called on startup.
+	 * @throws FileNotFoundException When the configuration file does not exist
+	 * @throws IOException When some properties are missing in the conf file 
+	 */
+	public static void initializeProperties() throws FileNotFoundException, IOException
+	{
+		loadPropertiesFromFile();
+		updateProperties();
+	}
+
+	/**
+	 * Loads the Java properties from a configuration file and sets the appropriate internal variables
 	 * @throws FileNotFoundException	If the properties file is missing
 	 * @throws IOException				If one of the properties is missing
 	 */
-	public static void loadProperties() throws FileNotFoundException, IOException
+	private static void loadPropertiesFromFile() throws FileNotFoundException, IOException
 	{
 		Properties VeriFitCompilationProperties = new Properties();
 		VeriFitCompilationProperties.load(new FileInputStream(PROPERTIES_PATH));
@@ -72,15 +79,14 @@ public class VeriFitCompilationProperties
 		AUTHENTICATION_PASSWORD = VeriFitCompilationProperties.getProperty("password");	
 		if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
 			throw new IOException("password missing");
-		
-		
-		updateConstants();
 	}
+
 	
 	/**
+	 * Update properties which are derived from the configuration file (not directly loaded from it)
 	 * A bit messy - SERVER_URL is "null:null" on startup
 	 */
-	private static void updateConstants()
+	private static void updateProperties()
 	{
 		SERVER_URL = ADAPTER_HOST + ":" + ADAPTER_PORT + "/";
 	    PATH_AUTOMATION_SERVICE_PROVIDERS = SERVER_URL + ADAPTER_CONTEXT + "services/serviceProviders/";
@@ -109,6 +115,7 @@ public class VeriFitCompilationProperties
     /*
      *  Internal constants
      */
+	public static final String AUTOMATION_PROVIDER_ID = "A0";
 	public static String SERVER_URL = ADAPTER_HOST + ":" + ADAPTER_PORT + "/";
 	public static final String ADAPTER_CONTEXT = "compilation/";
     public static String PATH_AUTOMATION_SERVICE_PROVIDERS = SERVER_URL + ADAPTER_CONTEXT + "services/serviceProviders/";
