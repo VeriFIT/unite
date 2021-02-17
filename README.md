@@ -5,8 +5,9 @@ This is a development repository of the Universal OSLC Analysis Adapter which ai
 
 ## Directory structure
 - model - Lyo Designer modeling project used to generate base code
-- analysis - eclipse maven project, OSLC analysis adapter as a java webapp
-- compilation - eclipse maven project, OSLC compilation adapter as a java webapp
+- analysis - OSLC analysis adapter as a maven webapp project
+- compilation - OSLC compilation adapter as a maven webapp project
+- shared - Shared resources for both adapters as a maven project
 - sparql_triplestore - [Jetty](https://www.eclipse.org/jetty/) distribution with an [Apache Jena Fuseki](https://jena.apache.org/documentation/fuseki2/) SPARQL server WAR 
 - dev_tools - scripts used during the development
 
@@ -14,8 +15,8 @@ This is a development repository of the Universal OSLC Analysis Adapter which ai
 Things that need to be configured - analysis host&port, compilation host&port, triplestore host&port, and optionally dataset endpoints.
 Defaults are "localhost" and ports "8080, 8081, 8082".
 - Adapters configuration
-	- in *analysis/VeriFitAnalysis.properties* configure all properties (adapter host and port, sparql, ...)
-	- in *compilation/VeriFitCompilation.properties* configure all properties (adapter host and port, sparql, ...)
+    - create *analysis/VeriFitAnalysis.properties* based on *analysis/VeriFitAnalysisExample.properties* and configure all properties (adapter host and port, sparql, ...)
+    - create *compilation/VeriFitCompilation.properties* based on *compilation/VeriFitCompilationExample.properties* and configure all properties (adapter host and port, sparql, ...)
 - Fuseki SPARQL triplestore 
 	- in *sparql_triplestore/jetty-distribution/start.ini* change *jetty.http.host* and *jetty.http.port*
     - The triplestore comes with two non-persistent datasets. If you want persistent ones, create two new datasets using Fuseki's Web UI.
@@ -27,6 +28,8 @@ Defaults are "localhost" and ports "8080, 8081, 8082".
     - in *analysis/AnalysisToolDefinitions* define an AutomationPlan in a .rdf file and a .properties file for every tool that you want to run using the adapter. Use the "ExampleTool" definition as a guide on how to define your own. For more details refer to the [wiki](https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis/-/wikis/Usage-Guide/2.-Analysis-Tool-Definition).
 
 ## How To Run
+Make sure you run a build script (build.sh or build.bat) before attempting to run anything!
+
 #### Option 1) Run all at once
 The easiest way to run the Universal Analysis Adapter. Outputs of all three components of the Adapter will be saved in a ./log directory.
 

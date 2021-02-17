@@ -59,6 +59,13 @@
         <!-- Start of user code dependencies
         -->
         
+        <!-- shared code module -->
+		<dependency>  
+			<groupId>cz.vutbr.fit.group.verifit.oslc.shared</groupId>  
+			<artifactId>SharedResources</artifactId>  
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>  
+        
 		<!-- GIT dependencies https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
 		<dependency>
 		    <groupId>org.eclipse.jgit</groupId>
