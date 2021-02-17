@@ -50,12 +50,6 @@ import org.eclipse.lyo.store.StoreAccessException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-
-
-
-// Start of user code imports
-import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.RequestRunner;
-import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.SutAnalyse;
 import cz.vutbr.fit.group.verifit.oslc.analysis.clients.CompilationAdapterClient;
 import cz.vutbr.fit.group.verifit.oslc.analysis.exceptions.OslcResourceException;
 import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
@@ -88,7 +82,9 @@ import javax.ws.rs.core.Response;	//TODO REMOVE LATER
 
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanLoading;
+import cz.vutbr.fit.group.verifit.oslc.analysis.automationRequestExecution.SutAnalyse;
 
+import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.RequestRunner;
 // Start of user code pre_class_code
 // End of user code
 

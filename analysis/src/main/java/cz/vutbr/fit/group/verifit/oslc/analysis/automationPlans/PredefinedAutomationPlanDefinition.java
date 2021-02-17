@@ -16,11 +16,8 @@ import java.net.URISyntaxException;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc4j.core.model.Link;
-import org.eclipse.lyo.store.StoreAccessException;
 
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisConstants;
-import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
-import cz.vutbr.fit.group.verifit.oslc.analysis.exceptions.OslcResourceException;
 import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
 
 /**

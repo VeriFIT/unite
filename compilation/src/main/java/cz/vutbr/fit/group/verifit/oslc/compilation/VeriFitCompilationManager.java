@@ -53,7 +53,7 @@ import javax.ws.rs.core.Response.Status;
 
 // Start of user code imports
 import cz.vutbr.fit.group.verifit.oslc.compilation.automationPlans.AutomationPlanDefinition;
-import cz.vutbr.fit.group.verifit.oslc.compilation.automationPlans.SutDeployAutoPlanExecution;
+import cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution.SutDeploy;
 import cz.vutbr.fit.group.verifit.oslc.compilation.exceptions.OslcResourceException;
 
 import org.eclipse.lyo.store.StoreAccessException;
@@ -884,7 +884,7 @@ public class VeriFitCompilationManager {
         			+ " If yes, then it may be corrupted. Try restarting the Adapter.");
 		}
         
-        SutDeployAutoPlanExecution runner = null;
+        SutDeploy runner = null;
 		try {
 			// error response on empty creation POST
 	        if (aResource == null)
@@ -935,7 +935,7 @@ public class VeriFitCompilationManager {
 			newResource.setProducedAutomationResult(new Link(newAutoResult.getAbout())); // TODO
 			
 			// create a new thread to execute the automation request
-			runner = new SutDeployAutoPlanExecution(newResource, newAutoResult, inputParamsMap);
+			runner = new SutDeploy(newResource, newAutoResult, inputParamsMap);
 			
 
 		} catch (OslcResourceException e) {
