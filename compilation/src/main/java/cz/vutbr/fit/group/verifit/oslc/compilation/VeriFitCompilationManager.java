@@ -525,16 +525,7 @@ public class VeriFitCompilationManager {
         // Start of user code StoreInitialise
     	// connect to the triplestore
         // End of user code
-        Properties lyoStoreProperties = new Properties();
-        String lyoStorePropertiesFile = StorePool.class.getResource("/store.properties").getFile();
-        try {
-            lyoStoreProperties.load(new FileInputStream(lyoStorePropertiesFile));
-        } catch (IOException e) {
-            log.error("Failed to initialize Store. properties file for Store configuration could not be loaded.", e);
-            throw new RuntimeException(e);
-        }
-        
-        int initialPoolSize = Integer.parseInt(lyoStoreProperties.getProperty("initialPoolSize"));
+        int initialPoolSize = 100; // TODO
         URI defaultNamedGraph;
         URI sparqlQueryEndpoint;
         URI sparqlUpdateEndpoint;

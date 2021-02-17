@@ -10,6 +10,8 @@
 
 package cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans;
 
+import static cz.vutbr.fit.group.verifit.oslc.analysis.utils.utils.getResourceIdFromUri;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -31,12 +33,10 @@ import org.eclipse.lyo.oslc4j.core.model.Link;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisConstants;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisResourcesFactory;
-import cz.vutbr.fit.group.verifit.oslc.analysis.utils;
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.ParserManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.utils.utils;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
-
-import static cz.vutbr.fit.group.verifit.oslc.analysis.utils.getResourceIdFromUri;
 
 /**
  * A thread for executing analysis of an SUT.

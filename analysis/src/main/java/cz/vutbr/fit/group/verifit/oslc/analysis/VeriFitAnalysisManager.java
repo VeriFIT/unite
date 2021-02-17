@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 import cz.vutbr.fit.group.verifit.oslc.analysis.servlet.ServiceProviderCatalogSingleton;
+import cz.vutbr.fit.group.verifit.oslc.analysis.utils.utils;
 import cz.vutbr.fit.group.verifit.oslc.analysis.ServiceProviderInfo;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
@@ -57,13 +58,15 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.RequestRunner;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.SutAnalyse;
 import cz.vutbr.fit.group.verifit.oslc.analysis.clients.CompilationAdapterClient;
 import cz.vutbr.fit.group.verifit.oslc.analysis.exceptions.OslcResourceException;
+import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
-import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisProperties;
 
 import org.eclipse.lyo.store.StoreAccessException;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
+
+import static cz.vutbr.fit.group.verifit.oslc.analysis.utils.utils.getResourceIdFromUri;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,9 +89,6 @@ import javax.ws.rs.core.Response;	//TODO REMOVE LATER
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanLoading;
 
-import static cz.vutbr.fit.group.verifit.oslc.analysis.utils.getResourceIdFromUri;
-// End of user code
-
 // Start of user code pre_class_code
 // End of user code
 
@@ -109,6 +109,58 @@ public class VeriFitAnalysisManager {
     
     
     // Start of user code class_methods
+	
+	
+	/**
+	 * Check that the triplestore is running by sending a request. 
+	 * @throws Exception
+	 */
+	private static void checkStoreOnline() throws Exception
+	{
+
+        Store store = storePool.getStore();
+		try {
+			// Dont care if the graph exists or not, will be created later if needed
+			store.namedGraphExists(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES));
+			
+		} catch (URISyntaxException e) {
+			log.error("THIS SHOULD NEVER HAPPEN");
+			e.printStackTrace();
+	    } finally {
+	        storePool.releaseStore(store);
+	    }
+	}
+
+	
+	private static int getCurrentHighestAutomationRequestId() throws Exception
+	{
+    	int currMaxReqId = 0;
+    	try {
+    		// loop over all the Automation Requests in the triplestore (TODO potential performance issue for initialization with a large persistent database)
+    		for (int page = 0;; page++)
+    		{
+				List<AutomationRequest> listAutoRequests = VeriFitAnalysisManager.queryAutomationRequests(null, "", "", page, 100);
+				if (listAutoRequests.size() == 0)
+				{
+					break;	
+				}
+				else
+				{	
+					for (AutomationRequest autoReq : listAutoRequests)
+					{
+						int reqId = Integer.parseInt(getResourceIdFromUri(autoReq.getAbout()));
+						if (reqId > currMaxReqId)
+						{
+							currMaxReqId = reqId;
+						}
+					}
+				}
+    		}
+		} catch (WebApplicationException e) { 
+			throw new Exception(e.getMessage());
+		}
+		return currMaxReqId;
+	}
 	
 	/**
 	 * Used to generate IDs for new resources in a synchronized way (datarace free)
@@ -315,7 +367,7 @@ public class VeriFitAnalysisManager {
 			e.printStackTrace();
 			
 		} catch (WebApplicationException e) {
-			System.out.println("WARNING: AutomationResult creation failed: " + e.getMessage());
+			log.error("AutomationResult creation failed: " + e.getMessage());
 		}
 		
 		return newResource;
@@ -565,15 +617,15 @@ public class VeriFitAnalysisManager {
 	
     	// load configuration
     	try {
-    		VeriFitAnalysisProperties.loadProperties();
+    		VeriFitAnalysisProperties.initializeProperties();
     	} catch (FileNotFoundException e) {
-			System.out.println("ERROR: Adapter configuration: Failed to load Java properties: " + e.getMessage());
-			System.out.println("\t The adapter needs to be configured to be able to run!\n"
+    		log.error("Adapter configuration: Failed to load Java properties: " + e.getMessage()
+					+ "\t The adapter needs to be configured to be able to run!\n"
 					+ "\tSee the \"VeriFitAnalysisExample.properties\" file for instructions and use it as a template.");
 			System.exit(1);
   
     	} catch (IOException e) {
-			System.out.println("ERROR: Adapter configuration: Failed to load Java properties: " + e.getMessage());
+			log.error("Adapter configuration: Failed to load Java properties: " + e.getMessage());
 			System.exit(1);
 		}
 
@@ -581,16 +633,7 @@ public class VeriFitAnalysisManager {
         // Start of user code StoreInitialise
     	// connect to the triplestore
         // End of user code
-        Properties lyoStoreProperties = new Properties();
-        String lyoStorePropertiesFile = StorePool.class.getResource("/store.properties").getFile();
-        try {
-            lyoStoreProperties.load(new FileInputStream(lyoStorePropertiesFile));
-        } catch (IOException e) {
-            log.error("Failed to initialize Store. properties file for Store configuration could not be loaded.", e);
-            throw new RuntimeException(e);
-        }
-        
-        int initialPoolSize = Integer.parseInt(lyoStoreProperties.getProperty("initialPoolSize"));
+        int initialPoolSize = 100; // TODO
         URI defaultNamedGraph;
         URI sparqlQueryEndpoint;
         URI sparqlUpdateEndpoint;
@@ -609,22 +652,15 @@ public class VeriFitAnalysisManager {
 
 
         // check that the store is online
-        Store store = storePool.getStore();
-		try {
-			// Check the triplestore connection. Dont care if the graph exists or not, will be created later if needed
-			store.namedGraphExists(new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES));
-			
-		} catch (URISyntaxException e) {
-			// TODO should never be thrown (URI syntax)
-			e.printStackTrace();
-			
+        try {
+        	checkStoreOnline();
 		} catch (Exception e) {
-			String hint = "Is the triplestore running?";
+			String hint = "Is the triplestore running?\n";
 			if (e.getMessage() == null)
 				hint = "Are the endpoints correct? (server context, data set, endpoint)";
 	
-			System.out.println("ERROR: Adapter configuration: SPARQL triplestore initialization failed: " + e.getMessage()
-			+ "\n  Current configuration:\n    - query endpoint: " + sparqlQueryEndpoint + "\n    - update endpoint: " + sparqlUpdateEndpoint
+			log.error("Adapter configuration: SPARQL triplestore initialization failed: " + e.getMessage()
+			+ "\n\n  Current Triplestore configuration:\n    - query endpoint: " + sparqlQueryEndpoint + "\n    - update endpoint: " + sparqlUpdateEndpoint
 			+ "\n\n  " + hint);
 			System.exit(1);
 		}
@@ -632,41 +668,19 @@ public class VeriFitAnalysisManager {
     	// create AutomationPlans
 		try {
 			AutomationPlanLoading.loadAutomationPlans();
-		} catch (StoreAccessException e) {
-			System.out.println("ERROR: Adapter initialization: AutomationPlan creation: " + e.getMessage());
+		} catch (Exception e) {
+			log.error("Adapter initialization: Loading AutomationPlans: " + e.getMessage());
 			System.exit(1);
 		}
 
-		// check what the last AutomationRequest ID is
-    	// requests have a numerical ID
+		// check what the last AutomationRequest ID is (requests have a numerical ID) and initialize the ID generator to one higher
     	int initReqId = 0;
-    	int currMaxReqId = 0;
-    	try {
-    		// loop over all the Automation Requests in the triplestore (TODO potential performance issue for initialization with a large persistent database)
-    		for (int page = 0;; page++)
-    		{
-				List<AutomationRequest> listAutoRequests = VeriFitAnalysisManager.queryAutomationRequests(null, "", "", page, 100);
-				if (listAutoRequests.size() == 0)
-				{
-					break;	
-				}
-				else
-				{	
-					for (AutomationRequest autoReq : listAutoRequests)
-					{
-						int reqId = Integer.parseInt(getResourceIdFromUri(autoReq.getAbout()));
-						if (reqId > currMaxReqId)
-						{
-							currMaxReqId = reqId;
-						}
-					}
-				}
-    		}
-		} catch (WebApplicationException e) { 
-			System.out.println("ERROR: Adapter initialization: Failed to get latest AutomationRequest ID: " + e.getMessage());
+		try {
+			initReqId = getCurrentHighestAutomationRequestId() + 1;
+		} catch (Exception e) {
+			log.error("Adapter initialization: Failed to get latest AutomationRequest ID: " + e.getMessage());
 			System.exit(1);
-		}		
-    	initReqId = currMaxReqId + 1;
+		}
 		AutoRequestIdGen = new ResourceIdGen(initReqId);
         
         // End of user code
@@ -689,7 +703,7 @@ public class VeriFitAnalysisManager {
 
         ServiceProviderInfo r1 = new ServiceProviderInfo();
         r1.name = "VeriFit Analysis Provider";
-        r1.serviceProviderId = VeriFitAnalysisConstants.AUTOMATION_PROVIDER_ID;
+        r1.serviceProviderId = VeriFitAnalysisProperties.AUTOMATION_PROVIDER_ID;
 
         serviceProviderInfos = new ServiceProviderInfo[1];
         serviceProviderInfos[0] = r1;
@@ -995,7 +1009,7 @@ public class VeriFitAnalysisManager {
 			e.printStackTrace();
 			
 		} catch (Exception e) {
-			System.out.println("WARNING: AutomationResquest creation failed: " + e.getMessage());
+			log.error("AutomationResquest creation failed: " + e.getMessage());
 			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
 		}
 		

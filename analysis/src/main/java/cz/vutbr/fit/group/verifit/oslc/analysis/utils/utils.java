@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package cz.vutbr.fit.group.verifit.oslc.analysis;
+package cz.vutbr.fit.group.verifit.oslc.analysis.utils;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;

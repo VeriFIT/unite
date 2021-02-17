@@ -20,18 +20,18 @@ import org.eclipse.lyo.store.StoreAccessException;
 
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisConstants;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
-import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisProperties;
 import cz.vutbr.fit.group.verifit.oslc.analysis.exceptions.OslcResourceException;
+import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
 
 /**
  * This class defines AutomationPlans predefined for the adapter.
  * @author od42
  *
  */
-public class AutomationPlanDefinition {
+public class PredefinedAutomationPlanDefinition {
 
 	/**
-	 * TODO
+	 * Automation Plan for a Dummy tool which is used to test the adapter.
 	 */
 	public static AutomationPlan getDummyAutomationPlanDefinition()
 	{ 
@@ -78,6 +78,10 @@ public class AutomationPlanDefinition {
 		return null;
 	}
 
+	/**
+	 * AutomationPlan configuration for the Dummy tool (would be in a .properties file for normal tools).
+	 * @return
+	 */
 	public static AutomationPlanConfManager.AutomationPlanConf getDummyAutomationPlanConf()
 	{
 		return new AutomationPlanConfManager.AutomationPlanConf(
