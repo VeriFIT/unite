@@ -44,7 +44,7 @@ import org.eclipse.lyo.server.oauth.core.AuthenticationException;
 import cz.vutbr.fit.group.verifit.oslc.analysis.auth.AuthenticationApplication;
 
 // Start of user code imports
-import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisProperties;
+import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
 // End of user code
 
 // Start of user code pre_class_code

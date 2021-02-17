@@ -45,12 +45,6 @@ curl_poll()
     echo
 }
 
-# lookup analysis adapter config
-analysis_host=$(cat ../analysis/VeriFitAnalysis.properties | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
-analysis_port=$(cat ../analysis/VeriFitAnalysis.properties | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")
-analysis_url="$analysis_host:$analysis_port/analysis/"
-
-
 
 # make sure configuration files exist
 if [ ! -f "../analysis/VeriFitAnalysis.properties" ]; then
@@ -66,6 +60,11 @@ if [ ! -f "../compilation/VeriFitCompilation.properties" ]; then
     exit 1
 fi
 
+
+# lookup analysis adapter config
+analysis_host=$(cat ../analysis/VeriFitAnalysis.properties | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
+analysis_port=$(cat ../analysis/VeriFitAnalysis.properties | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")
+analysis_url="$analysis_host:$analysis_port/analysis/"
 
 
 
