@@ -26,11 +26,6 @@ public interface VeriFitAnalysisConstants
 {
     // Start of user code user constants
 	 
-    /*
-     *  Internal constants
-     */
-	public static final String AUTOMATION_PROVIDER_ID = "A0";
-
 	/*
 	 * OSLC Specification constants
 	 */

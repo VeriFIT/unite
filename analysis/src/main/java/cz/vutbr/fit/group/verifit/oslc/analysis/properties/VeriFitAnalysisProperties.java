@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package cz.vutbr.fit.group.verifit.oslc.analysis;
+package cz.vutbr.fit.group.verifit.oslc.analysis.properties;
 
 // Start of user code imports
 import java.util.Set;
@@ -28,11 +28,37 @@ public class VeriFitAnalysisProperties
 {
 	
 	/**
-	 * Loads the Java properties configuration
+	 * Sets up properties for the adapter. Needs to be called on startup.
+	 * @throws FileNotFoundException When the configuration file does not exist
+	 * @throws IOException When some properties are missing in the conf file 
+	 */
+	public static void initializeProperties() throws FileNotFoundException, IOException
+	{
+		loadPropertiesFromFile();
+		updateProperties();
+		setDummyToolPath();
+	}
+	
+	private static void setDummyToolPath()
+	{
+		// dummy
+		if (SystemUtils.IS_OS_LINUX)
+		{
+			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.sh").toFile().getAbsolutePath();
+			
+		}
+		else if (SystemUtils.IS_OS_WINDOWS)
+		{
+			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.bat").toFile().getAbsolutePath();
+		}
+	}
+	
+	/**
+	 * Loads the Java properties from a configuration file and sets the appropriate internal variables
 	 * @throws FileNotFoundException	If the properties file is missing
 	 * @throws IOException				If one of the properties is missing
 	 */
-	public static void loadProperties() throws FileNotFoundException, IOException
+	private static void loadPropertiesFromFile() throws FileNotFoundException, IOException
 	{
 		Properties VeriFitAnalysisProperties = new Properties();
 		VeriFitAnalysisProperties.load(new FileInputStream(PROPERTIES_PATH));
@@ -70,30 +96,18 @@ public class VeriFitAnalysisProperties
 		AUTHENTICATION_PASSWORD = VeriFitAnalysisProperties.getProperty("password");	
 		if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
 			throw new IOException("password missing");
-		
-		updateConstants();
 	}
 	
 	/**
+	 * Update properties which are derived from the configuration file (not directly loaded from it)
 	 * A bit messy - SERVER_URL is "null:null" on startup
 	 */
-	private static void updateConstants()
+	private static void updateProperties()
 	{
 		SERVER_URL = ADAPTER_HOST + ":" + ADAPTER_PORT + "/";
 	    PATH_AUTOMATION_SERVICE_PROVIDERS = SERVER_URL + ADAPTER_CONTEXT + "services/serviceProviders/";
 	    PATH_RESOURCE_SHAPES = SERVER_URL + ADAPTER_CONTEXT + "services/resourceShapes/";
 	    
-
-		// dummy
-		if (SystemUtils.IS_OS_LINUX)
-		{
-			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.sh").toFile().getAbsolutePath();
-			
-		}
-		else if (SystemUtils.IS_OS_WINDOWS)
-		{
-			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.bat").toFile().getAbsolutePath();
-		}	
 	}
 	
 	/*
@@ -119,8 +133,9 @@ public class VeriFitAnalysisProperties
     /*
      *  Internal constants
      */
-	public static String SERVER_URL = ADAPTER_HOST + ":" + ADAPTER_PORT + "/";
+	public static final String AUTOMATION_PROVIDER_ID = "A0";
 	public static final String ADAPTER_CONTEXT = "analysis/";
+	public static String SERVER_URL = ADAPTER_HOST + ":" + ADAPTER_PORT + "/";
     public static String PATH_AUTOMATION_SERVICE_PROVIDERS = SERVER_URL + ADAPTER_CONTEXT + "services/serviceProviders/";
     public static String PATH_RESOURCE_SHAPES = SERVER_URL + ADAPTER_CONTEXT + "services/resourceShapes/";
 }
