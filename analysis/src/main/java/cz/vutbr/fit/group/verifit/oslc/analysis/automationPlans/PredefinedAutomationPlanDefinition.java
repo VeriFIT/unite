@@ -38,8 +38,8 @@ public class PredefinedAutomationPlanDefinition {
 			ParameterDefinition arguments = new ParameterDefinition();
 			arguments.setDescription("Specify which arguments should be passed to the command line.");
 			arguments.setName("arguments");
-			arguments.setOccurs(new Link(new URI(OslcValues.OSLC_OCCURS_ONE)));
-			arguments.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING)));	
+			arguments.setOccurs(OslcValues.OSLC_OCCURS_ONE);
+			arguments.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);	
 			arguments.setCommandlinePosition(1);
 	
 			// special paramDefinition specifying that the SUT call command should be placed at this position
@@ -47,14 +47,14 @@ public class PredefinedAutomationPlanDefinition {
 			launchSUT.setDescription("This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position"); //TODO
 			launchSUT.setName("launchSUT");
 			launchSUT.setDefaultValue("2");
-			launchSUT.setOccurs(new Link(new URI(OslcValues.OSLC_OCCURS_ZEROorONE)));
+			launchSUT.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			
 			// special paramDefinition specifying that the SUT call command should be placed at this position
 			ParameterDefinition SUTbuildCommand = new ParameterDefinition();
 			SUTbuildCommand.setDescription("This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position"); //TODO
 			SUTbuildCommand.setName("SUTbuildCommand");
 			SUTbuildCommand.setDefaultValue("3");
-			SUTbuildCommand.setOccurs(new Link(new URI(OslcValues.OSLC_OCCURS_ZEROorONE)));
+			SUTbuildCommand.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 	
 			// create the autoPlan
 			AutomationPlan propertiesPlan = new AutomationPlan();

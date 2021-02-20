@@ -53,6 +53,9 @@ import org.eclipse.lyo.oslc4j.core.model.Occurs;
 import org.eclipse.lyo.oslc4j.core.model.OslcConstants;
 import org.eclipse.lyo.oslc4j.core.model.Representation;
 import org.eclipse.lyo.oslc4j.core.model.ValueType;
+
+import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+
 import org.eclipse.lyo.oslc4j.core.model.ResourceShape;
 import org.eclipse.lyo.oslc4j.core.model.ResourceShapeFactory;
 
@@ -134,6 +137,13 @@ public class AutomationRequest
     // Start of user code classAttributes
     // End of user code
     // Start of user code classMethods
+
+    public void replaceState(Link state)
+    {
+		setState(new HashSet<Link>());
+		addState(state);
+    }
+    
     // End of user code
     public AutomationRequest()
     {

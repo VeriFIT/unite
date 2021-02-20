@@ -17,8 +17,11 @@
 
 package org.eclipse.lyo.oslc.domains.auto;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -75,6 +78,8 @@ import org.eclipse.lyo.oslc.domains.Person;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 // Start of user code imports
 // End of user code
+import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
 // Start of user code preClassCode
 // End of user code
@@ -149,6 +154,19 @@ public class AutomationResult
     // Start of user code classAttributes
     // End of user code
     // Start of user code classMethods
+
+    public void replaceState(Link state)
+    {
+		setState(new HashSet<Link>());
+		addState(state);
+    }
+
+    public void replaceVerdict(Link verdict)
+    {
+		setVerdict(new HashSet<Link>());
+		addVerdict(verdict);
+    }
+ 
     // End of user code
     public AutomationResult()
     {

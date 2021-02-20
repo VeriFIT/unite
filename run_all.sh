@@ -49,7 +49,7 @@ fi
 trap 'killall' INT
 killall() {
     trap '' INT TERM     # ignore INT and TERM while shutting down
-    echo -c "\nShutting down..."
+    echo -e "\nShutting down..."
     kill -TERM 0
     wait
     echo "All done."

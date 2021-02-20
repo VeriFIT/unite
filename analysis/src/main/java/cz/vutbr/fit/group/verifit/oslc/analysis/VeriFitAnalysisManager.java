@@ -75,6 +75,7 @@ import java.util.NoSuchElementException;
 import java.util.Map;
 
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager.AutomationPlanConf;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanLoading;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationRequestExecution.SutAnalyse;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
@@ -175,8 +176,8 @@ public class VeriFitAnalysisManager {
 			ParameterDefinition SUT = new ParameterDefinition();
 			SUT.setDescription("Refference to an SUT resource to analyse. SUTs are created using the compilation provider."); //TODO
 			SUT.setName("SUT");
-			SUT.setOccurs(new Link(new URI(OslcValues.OSLC_OCCURS_ONE)));
-			SUT.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING))); // TODO change to URI
+			SUT.setOccurs(OslcValues.OSLC_OCCURS_ONE);
+			SUT.addValueType(OslcValues.OSLC_VAL_TYPE_STRING); // TODO change to URI
 			newResource.addParameterDefinition(SUT);
 
 			ParameterDefinition outputFileRegex = new ParameterDefinition();
@@ -184,24 +185,24 @@ public class VeriFitAnalysisManager {
 					+ "be added as contributions to the Automation Result. The regex needs to match the "
 					+ "whole filename."); //TODO
 			outputFileRegex.setName("outputFileRegex");
-			outputFileRegex.setOccurs(new Link(new URI(OslcValues.OSLC_OCCURS_ZEROorONE)));
-			outputFileRegex.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING)));
+			outputFileRegex.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
+			outputFileRegex.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 			outputFileRegex.setDefaultValue(".^");
 			newResource.addParameterDefinition(outputFileRegex);
 
 			ParameterDefinition zipOutputs = new ParameterDefinition();
 			zipOutputs.setDescription("If set to true, then all file contributions will be ZIPed and provided as a single zip contribution");
 			zipOutputs.setName("zipOutputs");
-			zipOutputs.setOccurs(new Link(new URI(OslcValues.OSLC_OCCURS_ZEROorONE)));
-			zipOutputs.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_BOOL)));
+			zipOutputs.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
+			zipOutputs.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
 			zipOutputs.setDefaultValue("false");
 			newResource.addParameterDefinition(zipOutputs);
 
 			ParameterDefinition timeout = new ParameterDefinition();
 			timeout.setDescription("Timeout for the analysis. Zero means no timeout.");
 			timeout.setName("timeout");
-			timeout.setOccurs(new Link(new URI(OslcValues.OSLC_OCCURS_ZEROorONE)));
-			timeout.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_INTEGER)));
+			timeout.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
+			timeout.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
 			timeout.setDefaultValue("0");
 			newResource.addParameterDefinition(timeout);
 
@@ -209,8 +210,8 @@ public class VeriFitAnalysisManager {
 			toolCommand.setDescription("Used to omit the analysis tool launch command while executing analysis. True means the tool " + 
 			"will be used and False means the tool command will not be used. (eg. \"./tool ./sut args\" vs \"/sut args\").");
 			toolCommand.setName("toolCommand");
-			toolCommand.setOccurs(new Link(new URI(OslcValues.OSLC_OCCURS_ZEROorONE)));
-			toolCommand.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_BOOL)));
+			toolCommand.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
+			toolCommand.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
 			toolCommand.setDefaultValue("true");
 			newResource.addParameterDefinition(toolCommand);
 
@@ -231,10 +232,6 @@ public class VeriFitAnalysisManager {
 	        }
 	        newResource = aResource;
 
-		} catch (URISyntaxException e) {
-			// TODO should never be thrown (URI syntax)
-			e.printStackTrace();
-			
 		} catch (WebApplicationException e) {
 			throw new StoreAccessException("AutomationPlan creation failed: " + e.getMessage());
 		}
@@ -272,7 +269,7 @@ public class VeriFitAnalysisManager {
 			newResource.setModified(timestamp);
 			//newResource.setInstanceShape(new URI(VeriFitAnalysisProperties.PATH_RESOURCE_SHAPES + "automationResult"));
 			//newResource.addServiceProvider(new URI(VeriFitAnalysisProperties.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
-			newResource.setDesiredState(new Link(new URI(OslcValues.AUTOMATION_STATE_COMPLETE)));
+			newResource.setDesiredState(OslcValues.AUTOMATION_STATE_COMPLETE);
 			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationResult"));
 
 			// persist in the triplestore
@@ -296,10 +293,6 @@ public class VeriFitAnalysisManager {
 	        }
 	        newResource = aResource;
 
-		} catch (URISyntaxException e) {
-			// TODO should never be thrown (URI syntax)
-			e.printStackTrace();
-			
 		} catch (WebApplicationException e) {
 			log.error("AutomationResult creation failed: " + e.getMessage());
 		}
@@ -316,7 +309,7 @@ public class VeriFitAnalysisManager {
     public static File getContributionFile(String contributionId)
     {
     	// decode slashes in the file path 
-		String filePath = contributionId.replaceAll("%2F", "/"); 	// TODO probably replace by giving IDs to contributions
+		String filePath = Utils.decodeFilePathFromId(contributionId);
 		
 		return new File(filePath);
     }
@@ -331,7 +324,7 @@ public class VeriFitAnalysisManager {
     public static void updateContributionFile(InputStream fileInputStream, String contributionId) throws OslcResourceException
     {  
     	// decode slashes in the file path
-		String filePath = contributionId.replaceAll("%2F", "/");	// TODO probably replace by giving IDs to contributions
+		String filePath = Utils.decodeFilePathFromId(contributionId);
 		
         // write the file - path is getPath and content is getValue
 		try {
@@ -639,7 +632,7 @@ public class VeriFitAnalysisManager {
         
         // TODO check triplestore online
         // ......
-        String requestState = null;
+        Link requestState = null;
         SutAnalyse runner = null;
 		try {
 			// error response on empty creation POST
@@ -664,7 +657,7 @@ public class VeriFitAnalysisManager {
 			newResource.setModified(timestamp);
 			//newResource.setInstanceShape(new URI(AnacondaAdapterConstants.PATH_RESOURCE_SHAPES + "automationRequest"));
 			//newResource.addServiceProvider(new URI(AnacondaAdapterConstants.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
-			newResource.setDesiredState(new Link(new URI(OslcValues.AUTOMATION_STATE_COMPLETE)));
+			newResource.setDesiredState(OslcValues.AUTOMATION_STATE_COMPLETE);
 			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationRequest"));
 			
 
@@ -676,7 +669,7 @@ public class VeriFitAnalysisManager {
 			propAutoResult.setInputParameter(newResource.getInputParameter());
 			propAutoResult.setContributor(newResource.getContributor());
 			propAutoResult.setCreator(newResource.getCreator());
-			propAutoResult.addVerdict(new Link(new URI(OslcValues.AUTOMATION_VERDICT_UNAVAILABLE)));
+			propAutoResult.addVerdict(OslcValues.AUTOMATION_VERDICT_UNAVAILABLE);
 			
 			// get the executed autoPlan
 			String execAutoPlanId = Utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue());
@@ -736,13 +729,11 @@ public class VeriFitAnalysisManager {
 			}
 
 			// load the automation plan's configuration from the conf. manager
-			Boolean oneInstanceOnly = AutomationPlanConfManager.getInstance()
-					.getAutoPlanConf(Utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue()))
-					.getOneInstanceOnly();
+			AutomationPlanConf execAutoPlanConf = AutomationPlanConfManager.getInstance().getAutoPlanConf(execAutoPlanId);
 
 			// check whether the new Auto Request can start execution immediately or needs to wait in a queue
 			// and set its state accordingly (same for the Auto Result)
-			if (oneInstanceOnly == false) // no instance restrictions --> can run
+			if (execAutoPlanConf.getOneInstanceOnly() == false) // no instance restrictions --> can run
 			{
 				requestState = OslcValues.AUTOMATION_STATE_INPROGRESS;
 			}
@@ -750,8 +741,8 @@ public class VeriFitAnalysisManager {
 			{
 				requestState = OslcValues.AUTOMATION_STATE_QUEUED;
 			}			
-			newResource.addState(new Link(new URI(requestState)));
-			propAutoResult.addState(new Link(new URI(requestState)));
+			newResource.addState(requestState);
+			propAutoResult.addState(requestState);
 			
 			// persist the AutomationResult and set the setProducedAutomationResult() link for the AutoRequest
 		    AutomationResult newAutoResult = VeriFitAnalysisManager.createAutomationResult(propAutoResult, newID);
@@ -763,10 +754,6 @@ public class VeriFitAnalysisManager {
 			
 		} catch (OslcResourceException | RuntimeException | IOException e) {
 			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
-			
-		} catch (URISyntaxException e) {
-			// TODO should never be thrown (URI syntax)
-			e.printStackTrace();
 			
 		} catch (Exception e) {
 			log.error("AutomationResquest creation failed: " + e.getMessage());

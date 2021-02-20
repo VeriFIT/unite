@@ -11,17 +11,21 @@
 package cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 
 /**
@@ -37,53 +41,41 @@ public abstract class RequestRunner extends Thread {
 	
 	public class ExecutionResult {
 		public int retCode;
-		public String stdout;
-		public String stderr;
+		public File stdoutFile;
+		public File stderrFile;
 		public Boolean timeouted;
 		public String timeoutType;
+		public Long totalTime;
 	};
 
 	/**
-	 * Executes a string in a directory.
+	 * Executes a string in a directory while redirecting its output into files with an optional timeout.
+	 * Stdout gets redirected to "stdoutID" and Stderr to "stderrID" where ID is the value of the "id" parameter.
 	 * 
 	 * @param folderPath      Path to the directory
 	 * @param stringToExecute 
 	 * @param timeout         Time limit for execution in seconds. Zero
 	 *                        means no time limit
+	 * @param id 			  Identifier 
 	 * @return a "ExecutionResult" object that holds the stdout, stderr, return code,
 	 *         and timeout flag
 	 * @throws IOException when the command execution fails (error)
 	 */
-	protected ExecutionResult executeString(Path folderPath, String stringToExecute, int timeout) throws IOException {
-		Process process;
+	protected ExecutionResult executeString(Path folderPath, String stringToExecute, int timeout, String id) throws IOException
+	{
+		// identify the OS
 		String shell = (SystemUtils.IS_OS_LINUX ? "/bin/bash" : "cmd");	// TODO assumes that "not linux" means "windows"
 		String shellArg = (SystemUtils.IS_OS_LINUX ? "-c" : "/c");
-		process = Runtime.getRuntime().exec(new String[] {shell, shellArg, stringToExecute}, null, folderPath.toFile());	// launch string as "bash -c" or "cmd /c"	
 		
+		// execute string in directory
+		Instant timeStampStart = Instant.now(); // get start time for measuring execution time
+		Process process = Runtime.getRuntime().exec(new String[] {shell, shellArg, stringToExecute}, null, folderPath.toFile());	// launch string as "bash -c" or "cmd /c"	
+
+		// redirect outputs to files
 		InputStream stdout = process.getInputStream();
 		InputStream stderr = process.getErrorStream();
-		InputStreamReader stdoutReader = new InputStreamReader(stdout);
-		BufferedReader stdoutBuffReader = new BufferedReader(stdoutReader);
-		InputStreamReader stderrReader = new InputStreamReader(stderr);
-		BufferedReader stderrBuffReader = new BufferedReader(stderrReader);
-
-		// spawn two threads to capture stdout and stderr while this thread takes care of the timeout
-		ExecutorService outCaptureThreads = Executors.newFixedThreadPool(2);
-		Future<String> stdoutLog = outCaptureThreads.submit(() -> {
-			String line, output = "";		
-			while ((line = stdoutBuffReader.readLine()) != null) {
-				output = output.concat(line + "\n");
-			}
-			return output;
-		});
-		Future<String> stderrLog = outCaptureThreads.submit(() -> {
-			String line, output = "";		
-			while ((line = stderrBuffReader.readLine()) != null) {
-				output = output.concat(line + "\n");
-			}
-			return output;
-		});
-		outCaptureThreads.shutdown();
+		File stdoutFile = folderPath.resolve("stdout" + id).toFile();
+		File stderrFile = folderPath.resolve("stderr" + id).toFile();
 
 		// wait for the process to exit
 		Boolean exitedInTime = true;
@@ -92,6 +84,9 @@ public abstract class RequestRunner extends Thread {
 			// with timeout
 			if (timeout > 0) {
 				exitedInTime = process.waitFor(timeout, TimeUnit.SECONDS);
+				FileUtils.copyInputStreamToFile(stdout, stdoutFile);
+				FileUtils.copyInputStreamToFile(stderr, stderrFile);
+				
 				if (!exitedInTime) {
 					// try to kill gracefully
 					timeoutType = "graceful";
@@ -107,24 +102,28 @@ public abstract class RequestRunner extends Thread {
 			// no timeout
 			else {
 				process.waitFor();
+				FileUtils.copyInputStreamToFile(stdout, stdoutFile);
+				FileUtils.copyInputStreamToFile(stderr, stderrFile);
 			}
 
 		} catch (InterruptedException e) {
 			// TODO Dont know what that means really
 			e.printStackTrace();
 		}
+		
+		// compute total execution time
+		Instant timeStampEnd = Instant.now(); // get execution end time
+		long totalTime = Duration.between(timeStampStart, timeStampEnd).toMillis();
 
+		
+		// produce result
 		ExecutionResult res = new ExecutionResult();
 		res.retCode = process.exitValue();
+		res.stdoutFile = stdoutFile;
+		res.stderrFile = stderrFile;
 		res.timeouted = !exitedInTime;
 		res.timeoutType = timeoutType;
-		try {
-			res.stdout = stdoutLog.get();
-			res.stderr = stderrLog.get();
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace(); // TODO
-		}
-
+		res.totalTime = totalTime;
 		return res;
 	}
 } 

@@ -10,27 +10,31 @@
 
 package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisConstants;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 
-public class NoBinaryFileValuesParser extends BasicParser implements IParser {
+public class AddAllNonBinaryFileValues extends DefaultParser {
 
 	@Override
-	public List<Map<String, String>> parse(List<Map<String, String>> inputContributions)
-	{
+	public List<Map<String, String>> parse(List<Map<String, String>> inputContributions) {
+
 		for (Map<String, String> contrib : inputContributions)
 		{
-			if (contrib.get("valueType") == OslcValues.OSLC_VAL_TYPE_BASE64BINARY)
+			String fileURI = contrib.get("fileURI");
+			if (fileURI != null // if is file
+				&& contrib.get("valueType") != OslcValues.OSLC_VAL_TYPE_BASE64BINARY.getValue().toString()) // and is not binary
 			{
-				contrib.remove("value");
-				contrib.remove("valueType");
-			}
+				try {
+					contrib.put("value", loadFileContents(fileURI));
+				} catch (IOException e) {
+					contrib.put("value", "Failed to load contents of this file: " + e.getMessage());
+				}
+			}	
 		}
 		
 		return inputContributions;
 	}
-
 }
