@@ -57,7 +57,7 @@ public final class ParserManager {
     public Set<Contribution> parseContributionsForTool(String toolIdentifier, Set<Contribution> outputContributions)
     {
     	// get a parser plugin implementation for the specified tool, default to the basic one (does nothing)
-    	IParser parser = toolParsers.getOrDefault(toolIdentifier, new BasicParser());
+    	IParser parser = toolParsers.getOrDefault(toolIdentifier, new DefaultParser());
     	
     	// prepare the parser input
     	List<Map<String,String>> parserInput = new LinkedList<Map<String,String>>();

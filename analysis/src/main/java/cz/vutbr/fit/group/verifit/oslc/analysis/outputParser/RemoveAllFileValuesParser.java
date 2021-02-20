@@ -13,18 +13,15 @@ package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser;
 import java.util.List;
 import java.util.Map;
 
-public class NoFileValuesParser extends BasicParser implements IParser {
+public class RemoveAllFileValuesParser implements IParser {
 
 	@Override
-	public List<Map<String, String>> parse(List<Map<String, String>> inputContributions)
-	{		
+	public List<Map<String, String>> parse(List<Map<String, String>> inputContributions) {
+
 		for (Map<String, String> contrib : inputContributions)
 		{
-			if (!contrib.get("name").equals("Analysis stdout") && !contrib.get("name").equals("Analysis stderr"))
-			{
+			if (contrib.get("fileURI") != null) // if is file
 				contrib.remove("value");
-				contrib.remove("valueType");
-			}
 		}
 		
 		return inputContributions;
