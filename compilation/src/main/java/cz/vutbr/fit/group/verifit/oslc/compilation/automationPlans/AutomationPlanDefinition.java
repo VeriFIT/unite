@@ -126,18 +126,6 @@ public class AutomationPlanDefinition {
 			launchCommand.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 						
 			
-			/*
-			 * Utility parameters
-			 */
-			ParameterDefinition timeout = new ParameterDefinition();
-			timeout.setDescription("Timeout for the compilation. Zero means no timeout.");
-			timeout.setName("timeout");
-			timeout.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
-			timeout.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
-			timeout.setDefaultValue("0");
-			
-			
-			
 			// create the autoPlan
 			AutomationPlan propertiesPlan = new AutomationPlan();
 			propertiesPlan.setTitle("SUT Deploy");
@@ -150,7 +138,6 @@ public class AutomationPlanDefinition {
 			propertiesPlan.addParameterDefinition(unpackZip);
 			propertiesPlan.addParameterDefinition(buildCommand);
 			propertiesPlan.addParameterDefinition(launchCommand);
-			propertiesPlan.addParameterDefinition(timeout);
 			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
 			VeriFitCompilationManager.createAutomationPlan(propertiesPlan);
 	

@@ -10,6 +10,7 @@
 
 package cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -85,7 +86,6 @@ public class SutDeploy extends RequestRunner
 		final String paramBuildCommand = (inputParamsMap.get("buildCommand") == null) ? null : inputParamsMap.get("buildCommand").getLeft();
 		final String paramLaunchCommand = (inputParamsMap.get("launchCommand") == null) ? null : inputParamsMap.get("launchCommand").getLeft();
 		final String paramUnpackZip = (inputParamsMap.get("unpackZip") == null) ? null : inputParamsMap.get("unpackZip").getLeft();
-		final String paramTimeout = (inputParamsMap.get("timeout") == null) ? null : inputParamsMap.get("timeout").getLeft();
 
 		// check wich one of the source parameters was used 
 		SutFetcher sutFetcher = null;
@@ -123,16 +123,15 @@ public class SutDeploy extends RequestRunner
 		VeriFitCompilationManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
 		
 		
-		// prepare result contributions - program fetching, compilation
+		// prepare result contributions
 		Contribution fetchLog = new Contribution();
-		fetchLog.setDescription("Output of the program fetching process. Provider messages are prefixed with #.");
+		fetchLog.setDescription("Output of the program fetching process.");
 		fetchLog.setTitle("Fetching Output");
 		fetchLog.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
-		//fetchLog.addType(new Link(new URI("http://purl.org/dc/dcmitype/Text"))); //TODO
 		
 		Contribution executionTime = new Contribution();
 		executionTime.setDescription("Total execution time of the analysis in milliseconds."); // TODO CHECK really milliseconds?
-		executionTime.setTitle("stdout");
+		executionTime.setTitle("executionTime");
 		executionTime.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 		
 		Contribution statusMessage = new Contribution();
@@ -145,18 +144,21 @@ public class SutDeploy extends RequestRunner
 		returnCode.setTitle("returnCode");
 		returnCode.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);	
 		
-		
 		Contribution compStdoutLog = new Contribution();
 		compStdoutLog.setDescription("Standard output of the compilation.");
 		compStdoutLog.setTitle("stdout");
 		compStdoutLog.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		
 		Contribution compStderrLog = new Contribution();
 		compStderrLog.setDescription("Error output of the compilation.");
 		compStderrLog.setTitle("stderr");
 		compStderrLog.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 		
 		
-		Boolean performCompilation = true;	// flag to disable a part of the execution in case of an error
+		// init compilation toggle flag
+		Boolean performCompilation = true;
+		if (paramBuildCommand == null || paramBuildCommand.equals("")) // Do not compile if there was no buildCommand (e.g. for static analysis)
+			performCompilation = false;
 		Link executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
 		
 		// fetch source file
@@ -168,37 +170,33 @@ public class SutDeploy extends RequestRunner
 			
 		    // get the source file
 			filenameSUT = sutFetcher.fetchSut(ProgramSource, folderPath);
-		    
+			fetchLog.setValue("TODO currently only shows error messages");
+			
 		    // unzip the SUT if requested
-		    if (paramUnpackZip.equals("true") || paramUnpackZip.equals("True"))
+		    if (paramUnpackZip.equalsIgnoreCase("true"))
 		    {
-		    	unzipFile(folderPath, filenameSUT);
+		    	File sutZipFile = folderPath.resolve(filenameSUT).toFile();
+		    	Utils.unzipFile(folderPath, sutZipFile);
 		    }
 		    
 		    statusMessage.setValue("SUT fetch successful\n");
 		
 		} catch (Exception e) {
 			executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
-			statusMessage.setValue("# SUT fetch failed: " + e.getMessage() + "\n");
+			statusMessage.setValue("SUT fetch failed: " + e.getMessage() + "\n");
 			fetchLog.setValue(e.getMessage());
 			performCompilation = false;
 
 		} finally {
-			// create the fetching log Contribution and add it to the AutomationResult
 			resAutoResult.addContribution(fetchLog);
 		}
 		
-		    
-		// Do not compile if there was no buildCommand (e.g. for static analysis)
-		if (paramBuildCommand == null || paramBuildCommand.equals("")) //TODO
-			performCompilation = false;
-
-		// compile source file if the fetching did not fail
+		// compile source file if the fetching did not fail and compilation was requested
 		if (performCompilation)
 		{
 			ExecutionResult compRes = null;
 			try {
-				compRes = executeString(folderPath, paramBuildCommand, Integer.parseInt(paramTimeout), this.execAutoRequestId);
+				compRes = executeString(folderPath, paramBuildCommand, 0, this.execAutoRequestId);
 		    	
 		    	if (compRes.retCode != 0)
 		    	{	// if the compilation returned non zero, set the verdict as failed
@@ -227,6 +225,7 @@ public class SutDeploy extends RequestRunner
 				returnCode.setValue(Integer.toString(compRes.retCode));
 				resAutoResult.addContribution(returnCode);
 
+				// load stdout and stderr file contents into contribution values
 				try {
 					compStdoutLog.setValue(new String(Files.readAllBytes(compRes.stdoutFile.toPath())));
 				} catch (IOException e) {
@@ -240,6 +239,9 @@ public class SutDeploy extends RequestRunner
 				}
 		    	resAutoResult.addContribution(compStderrLog);
 			}
+		} else {
+			statusMessage.setValue(statusMessage.getValue() + "Compilation not performed" + "\n");
+			resAutoResult.addContribution(statusMessage); // TODO add infos abou stuff below too
 		}
 		
 		
@@ -294,30 +296,5 @@ public class SutDeploy extends RequestRunner
 	{
 	    String currentDate = new Date().toString().replace(' ', '-');
 	    return "req" + autoRequestId + "." + currentDate;
-	}
-	
-	/**
-	 * TODO
-	 * @param folderPath
-	 * @param filename
-	 * @throws IOException
-	 */
-	protected void unzipFile(Path folderPath, String filename) throws IOException
-	{
-		Path pathToFile = folderPath.resolve(filename);
-
-    	ZipFile zf = new ZipFile(pathToFile.toFile());
-        Enumeration<? extends ZipEntry> zipEntries = zf.entries();
-        while(zipEntries.hasMoreElements())
-        {
-        	ZipEntry entry = zipEntries.nextElement();
-        	if (entry.isDirectory()) {
-                Path dirToCreate = folderPath.resolve(entry.getName());
-                Files.createDirectories(dirToCreate);
-            } else {
-            	Path fileToCreate = folderPath.resolve(entry.getName());
-                Files.copy(zf.getInputStream(entry), fileToCreate);
-            }
-        }
 	}
 }

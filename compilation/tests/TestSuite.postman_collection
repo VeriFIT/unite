@@ -706,6 +706,9 @@
 											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">\" + sourceVal + \"</rdf:value>\");",
 											"});",
 											"",
+											"pm.test(\"AutomationResult should contain a executionTime\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">executionTime</dcterms:title>\");",
+											"});",
 											"",
 											"// the only difference compared to the last request (below)",
 											"pm.test(\"AutomationResult state should be #complete\", function () {",
@@ -723,29 +726,41 @@
 											"pm.test(\"AutomationResult should contain contributions\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:contribution\");",
 											"});",
+											"pm.test(\"AutomationResult should contain the statusMessage\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">statusMessage</dcterms:title>\");",
+											"});",
+											"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch successful\\nCompilation completed successfully\");",
+											"});",
+											"pm.test(\"AutomationResult should contain a returnCode\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">returnCode</dcterms:title>\");",
+											"});",
+											"pm.test(\"AutomationResult returnCode should have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
+											"});",
 											"pm.test(\"AutomationResult should contain the fetching output\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Fetching Output</dcterms:title>\");",
 											"});",
 											"pm.test(\"AutomationResult fetching output should have the expected value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"># SUT fetch successful\\n</rdf:value>\");",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">TODO currently only shows error messages</rdf:value>\");",
 											"});",
 											"pm.test(\"AutomationResult should contain compilation stdout\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Compilation stdout</dcterms:title>\");",
+											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">stdout</dcterms:title>\");",
 											"});",
 											"pm.test(\"AutomationResult compilation stdout should have the expected value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"># Compilation completed successfully\\n\");",
+											"    pm.expect(pm.response.text()).to.include(\">gcc -g TestEchoProgram.cpp -o testEcho\");",
 											"});",
 											"pm.test(\"AutomationResult should contain compilation stderr\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Compilation stderr</dcterms:title>\");",
+											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">stderr</dcterms:title>\");",
 											"});",
 											"pm.test(\"AutomationResult compilation stderr be empty (~)\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 											"});",
-											"pm.test(\"AutomationResult compilation contributions should have valueType string\", function () {",
+											"pm.test(\"AutomationResult compilation contributions should have valueType string and integer\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"http://www.w3.org/2001/XMLSchema#string\");",
 											"    pm.expect(pm.response.text()).to.not.include(\"http://www.w3.org/2001/XMLSchema#base64binary\");",
 											"    pm.expect(pm.response.text()).to.not.include(\"http://www.w3.org/2001/XMLSchema#boolean\");",
-											"    pm.expect(pm.response.text()).to.not.include(\"http://www.w3.org/2001/XMLSchema#integer\");",
+											"    pm.expect(pm.response.text()).to.include(\"http://www.w3.org/2001/XMLSchema#integer\");",
 											"});"
 										],
 										"type": "text/javascript"
@@ -1083,11 +1098,6 @@
 											"    pm.response.to.have.status(200);",
 											"});",
 											"",
-											"pm.test(\"Should be produced by the expected AutomationRequest\", function () {",
-											"    ",
-											"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
-											"});",
-											"",
 											"pm.test(\"State should be complete\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 											"});",
@@ -1097,14 +1107,8 @@
 											"});",
 											"",
 											"",
-											"pm.test(\"Should contain the Compilation stdout\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
-											"});",
 											"pm.test(\"Check the Compilation stdout\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"# Compilation failed\");",
-											"});",
-											"pm.test(\"Should contain the Compilation stderr\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"Compilation stderr\");",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 											"});",
 											"pm.test(\"Check the Compilation stderr\", function () {",
 											"    if (pm.response.text().includes(\"asdfasdf: command not found\"))",
@@ -1121,11 +1125,15 @@
 											"    }",
 											"});",
 											"",
-											"pm.test(\"Should contain the program Fetching Output\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
-											"});",
 											"pm.test(\"Check program fetching output\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"# SUT fetch successful\");",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
+											"});",
+											"",
+											"pm.test(\"Check the statusMessage \", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch successful\\nCompilation failed\");",
+											"});",
+											"pm.test(\"Check returnCode\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">1</rdf:value>\");",
 											"});",
 											""
 										],
@@ -1187,6 +1195,204 @@
 									""
 								]
 							}
+						}
+					]
+				},
+				{
+					"name": "compilation error",
+					"item": [
+						{
+							"name": "program with a syntax error",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// save the request ID as a global variable for later tests to use",
+											"const response = xml2Json(pm.response.text());",
+											"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+											"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+											"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
+											"pm.globals.set('requestId', resourceId);",
+											"",
+											"var serverAddr = pm.variables.get(\"server_address\");",
+											"",
+											"pm.test(\"Response code should be 201 (created)\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/xml"
+									},
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgramError.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgramError.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+								},
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"createAutomationRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "check the result error",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var requestId = pm.globals.get('requestId');",
+											"var serverAddr = pm.variables.get(\"server_address\");",
+											"var server_context = pm.variables.get(\"server_context\");",
+											"",
+											"pm.test(\"Response code should be 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"State should be complete\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+											"});",
+											"",
+											"pm.test(\"Verdict should be failed\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#failed\\\"/>\");",
+											"});",
+											"",
+											"pm.test(\"Should not contain an SUT refference\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\");",
+											"});",
+											"",
+											"",
+											"pm.test(\"AutomationResult fetching output should have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
+											"});",
+											"pm.test(\"AutomationResult compilation stdout should have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
+											"});",
+											"pm.test(\"Check the Compilation stderr\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"TestEchoProgramError.cpp: In function \");",
+											"    pm.expect(pm.response.text()).to.include(\"int main(int, char**)\");",
+											"});",
+											"",
+											"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch successful\\nCompilation failed\");",
+											"});",
+											"pm.test(\"AutomationResult returnCode should have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">1</rdf:value>\");",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// wait for the request execution to finish",
+											" var result_wait_time = pm.variables.get('result_wait_time'); setTimeout(function(){}, [result_wait_time]);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"automationResults",
+										"{{requestId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "check that SUT does not exist",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code should be 404 (not found)\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/sUTs/{{requestId}}",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"sUTs",
+										"{{requestId}}"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},
@@ -1601,7 +1807,7 @@
 			]
 		},
 		{
-			"name": "Test compilation methods",
+			"name": "Test fetching methods",
 			"item": [
 				{
 					"name": "sourceUrl",
@@ -1689,11 +1895,6 @@
 													"    pm.response.to.have.status(200);",
 													"});",
 													"",
-													"pm.test(\"Should be produced by the expected AutomationRequest\", function () {",
-													"    ",
-													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
-													"});",
-													"",
 													"pm.test(\"State should be complete\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 													"});",
@@ -1707,24 +1908,21 @@
 													"});",
 													"",
 													"",
-													"pm.test(\"Should contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
+													"pm.test(\"AutomationResult fetching output should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">TODO currently only shows error messages</rdf:value>\");",
 													"});",
-													"pm.test(\"Check the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# Compilation completed successfully\");",
+													"pm.test(\"AutomationResult compilation stdout should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 													"});",
-													"pm.test(\"Should contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stderr\");",
-													"});",
-													"pm.test(\"Check the Compilation stderr\", function () {",
+													"pm.test(\"AutomationResult compilation stderr be empty (~)\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 													"});",
 													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch successful\\nCompilation completed successfully\");",
 													"});",
-													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch successful\");",
+													"pm.test(\"AutomationResult returnCode should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
 													"});",
 													""
 												],
@@ -1788,211 +1986,6 @@
 													"});",
 													"pm.test(\"SUT producedByAutomationRequest should match the AutomationRequest with ID \" + requestId, function () {",
 													"    pm.expect(pm.response.text()).to.include(\"oslc_auto:producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
-													"});"
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "GET",
-										"header": [
-											{
-												"key": "Accept",
-												"type": "text",
-												"value": "application/rdf+xml"
-											}
-										],
-										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/sUTs/{{requestId}}",
-											"host": [
-												"{{server_address}}"
-											],
-											"path": [
-												"{{server_context}}",
-												"services",
-												"resources",
-												"sUTs",
-												"{{requestId}}"
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "compilation error",
-							"item": [
-								{
-									"name": "program with a syntax error",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"// save the request ID as a global variable for later tests to use",
-													"const response = xml2Json(pm.response.text());",
-													"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
-													"var resourceAboutSplit = resrouceAbout.split(\"/\");",
-													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
-													"pm.globals.set('requestId', resourceId);",
-													"",
-													"var serverAddr = pm.variables.get(\"server_address\");",
-													"",
-													"pm.test(\"Response code should be 201 (created)\", function () {",
-													"    pm.response.to.have.status(201);",
-													"});"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "POST",
-										"header": [
-											{
-												"key": "Content-Type",
-												"name": "Content-Type",
-												"type": "text",
-												"value": "application/xml"
-											},
-											{
-												"key": "Accept",
-												"type": "text",
-												"value": "application/rdf+xml"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgramError.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgramError.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
-										},
-										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
-											"host": [
-												"{{server_address}}"
-											],
-											"path": [
-												"{{server_context}}",
-												"services",
-												"resources",
-												"createAutomationRequest"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "check the result error",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"var requestId = pm.globals.get('requestId');",
-													"var serverAddr = pm.variables.get(\"server_address\");",
-													"var server_context = pm.variables.get(\"server_context\");",
-													"",
-													"pm.test(\"Response code should be 200 (OK)\", function () {",
-													"    pm.response.to.have.status(200);",
-													"});",
-													"",
-													"pm.test(\"Should be produced by the expected AutomationRequest\", function () {",
-													"    ",
-													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
-													"});",
-													"",
-													"pm.test(\"State should be complete\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
-													"});",
-													"",
-													"pm.test(\"Verdict should be failed\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#failed\\\"/>\");",
-													"});",
-													"",
-													"pm.test(\"Should not contain an SUT refference\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\");",
-													"});",
-													"",
-													"pm.test(\"Should contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
-													"});",
-													"pm.test(\"Check the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# Compilation failed (returned non-zero: 1)\");",
-													"});",
-													"pm.test(\"Should contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stderr\");",
-													"});",
-													"pm.test(\"Check the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"TestEchoProgramError.cpp: In function \");",
-													"    pm.expect(pm.response.text()).to.include(\"int main(int, char**)\");",
-													"});",
-													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
-													"});",
-													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch successful\");",
-													"});",
-													""
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													"// wait for the request execution to finish",
-													" var result_wait_time = pm.variables.get('result_wait_time'); setTimeout(function(){}, [result_wait_time]);"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "GET",
-										"header": [
-											{
-												"key": "Accept",
-												"type": "text",
-												"value": "application/rdf+xml"
-											}
-										],
-										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
-											"host": [
-												"{{server_address}}"
-											],
-											"path": [
-												"{{server_context}}",
-												"services",
-												"resources",
-												"automationResults",
-												"{{requestId}}"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "check that SUT does not exist",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.test(\"Response code should be 404 (not found)\", function () {",
-													"    pm.response.to.have.status(404);",
 													"});"
 												],
 												"type": "text/javascript"
@@ -2116,6 +2109,7 @@
 													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
 													"});",
 													"",
+													"",
 													"pm.test(\"State should be complete\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 													"});",
@@ -2128,19 +2122,26 @@
 													"    pm.expect(pm.response.text()).to.not.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\");",
 													"});",
 													"",
-													"pm.test(\"Should not contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stdout\");",
-													"});",
-													"pm.test(\"Should not contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stderr\");",
+													"",
+													"pm.test(\"Check program fetching output\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"Download from url failed: Host unreachable or URL not found - http://www.stud.fit.vutbr.cz/~xvasic25/NonExistentFile\");",
 													"});",
 													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch failed\");",
 													"});",
-													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch failed\\nDownload from url failed: Host unreachable or URL not found - http://www.stud.fit.vutbr.cz/~xvasic25/NonExistentFile\");",
+													"",
+													"pm.test(\"Should not contain the Compilation stdout\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"stdout\");",
 													"});",
+													"pm.test(\"Should not contain the Compilation stderr\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"stderr\");",
+													"});",
+													"pm.test(\"Should not contain the returnCode\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"returnCode\");",
+													"});",
+													"",
+													"",
 													""
 												],
 												"type": "text/javascript"
@@ -2334,6 +2335,7 @@
 													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
 													"});",
 													"",
+													"",
 													"pm.test(\"State should be complete\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 													"});",
@@ -2346,18 +2348,24 @@
 													"    pm.expect(pm.response.text()).to.not.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\");",
 													"});",
 													"",
-													"pm.test(\"Should not contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stdout\");",
-													"});",
-													"pm.test(\"Should not contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stderr\");",
+													"",
+													"",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch failed\");",
 													"});",
 													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"pm.test(\"Should not contain the Compilation stdout\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"stdout\");",
 													"});",
+													"pm.test(\"Should not contain the Compilation stderr\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"stderr\");",
+													"});",
+													"pm.test(\"Should not contain the returnCode\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"returnCode\");",
+													"});",
+													"",
 													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch failed\\nDownload from url failed: Host unreachable or URL not found - www.UnreachableServerXXasdfasdfagwer.cz\");",
+													"    pm.expect(pm.response.text()).to.include(\"Download from url failed: Host unreachable or URL not found - www.UnreachableServerXXasdfasdfagwer.cz\");",
 													"});",
 													""
 												],
@@ -2579,11 +2587,6 @@
 													"    pm.response.to.have.status(200);",
 													"});",
 													"",
-													"pm.test(\"Should be produced by the expected AutomationRequest\", function () {",
-													"    ",
-													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
-													"});",
-													"",
 													"pm.test(\"State should be complete\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 													"});",
@@ -2596,24 +2599,22 @@
 													"    pm.expect(pm.response.text()).to.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\" + requestId);",
 													"});",
 													"",
-													"pm.test(\"Should contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
+													"",
+													"pm.test(\"AutomationResult fetching output should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">TODO currently only shows error messages</rdf:value>\");",
 													"});",
-													"pm.test(\"Check the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# Compilation completed successfully\");",
+													"pm.test(\"AutomationResult compilation stdout should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 													"});",
-													"pm.test(\"Should contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stderr\");",
-													"});",
-													"pm.test(\"Check the Compilation stderr\", function () {",
+													"pm.test(\"AutomationResult compilation stderr be empty (~)\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 													"});",
 													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch successful\\nCompilation completed successfully\");",
 													"});",
-													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch successful\");",
+													"pm.test(\"AutomationResult returnCode should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
 													"});",
 													""
 												],
@@ -2677,211 +2678,6 @@
 													"});",
 													"pm.test(\"SUT producedByAutomationRequest should match the AutomationRequest with ID \" + requestId, function () {",
 													"    pm.expect(pm.response.text()).to.include(\"oslc_auto:producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
-													"});"
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "GET",
-										"header": [
-											{
-												"key": "Accept",
-												"type": "text",
-												"value": "application/rdf+xml"
-											}
-										],
-										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/sUTs/{{requestId}}",
-											"host": [
-												"{{server_address}}"
-											],
-											"path": [
-												"{{server_context}}",
-												"services",
-												"resources",
-												"sUTs",
-												"{{requestId}}"
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "compilation error",
-							"item": [
-								{
-									"name": "program with a syntax error",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"// save the request ID as a global variable for later tests to use",
-													"const response = xml2Json(pm.response.text());",
-													"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
-													"var resourceAboutSplit = resrouceAbout.split(\"/\");",
-													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
-													"pm.globals.set('requestId', resourceId);",
-													"",
-													"var serverAddr = pm.variables.get(\"server_address\");",
-													"",
-													"pm.test(\"Response code should be 201 (created)\", function () {",
-													"    pm.response.to.have.status(201);",
-													"});"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "POST",
-										"header": [
-											{
-												"key": "Content-Type",
-												"name": "Content-Type",
-												"type": "text",
-												"value": "application/xml"
-											},
-											{
-												"key": "Accept",
-												"type": "text",
-												"value": "application/rdf+xml"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceGit</oslc:name>\n\t\t\t<rdf:value>https://github.com/od42/test-error.git</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
-										},
-										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
-											"host": [
-												"{{server_address}}"
-											],
-											"path": [
-												"{{server_context}}",
-												"services",
-												"resources",
-												"createAutomationRequest"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "check the result error",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"var requestId = pm.globals.get('requestId');",
-													"var serverAddr = pm.variables.get(\"server_address\");",
-													"var server_context = pm.variables.get(\"server_context\");",
-													"",
-													"pm.test(\"Response code should be 200 (OK)\", function () {",
-													"    pm.response.to.have.status(200);",
-													"});",
-													"",
-													"pm.test(\"Should be produced by the expected AutomationRequest\", function () {",
-													"    ",
-													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
-													"});",
-													"",
-													"pm.test(\"State should be complete\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
-													"});",
-													"",
-													"pm.test(\"Verdict should be failed\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#failed\\\"/>\");",
-													"});",
-													"",
-													"pm.test(\"Should not contain an SUT refference\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\");",
-													"});",
-													"",
-													"pm.test(\"Should contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
-													"});",
-													"pm.test(\"Check the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# Compilation failed (returned non-zero: 1)\");",
-													"});",
-													"pm.test(\"Should contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stderr\");",
-													"});",
-													"pm.test(\"Check the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"TestEchoProgram.cpp: In function \");",
-													"    pm.expect(pm.response.text()).to.include(\"int main(int, char**)\");",
-													"});",
-													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
-													"});",
-													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch successful\");",
-													"});",
-													""
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													"// wait for the request execution to finish",
-													" var result_wait_time = pm.variables.get('result_wait_time'); setTimeout(function(){}, [result_wait_time]);"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "GET",
-										"header": [
-											{
-												"key": "Accept",
-												"type": "text",
-												"value": "application/rdf+xml"
-											}
-										],
-										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
-											"host": [
-												"{{server_address}}"
-											],
-											"path": [
-												"{{server_context}}",
-												"services",
-												"resources",
-												"automationResults",
-												"{{requestId}}"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "check that SUT does not exist",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.test(\"Response code should be 404 (not found)\", function () {",
-													"    pm.response.to.have.status(404);",
 													"});"
 												],
 												"type": "text/javascript"
@@ -3005,6 +2801,7 @@
 													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
 													"});",
 													"",
+													"",
 													"pm.test(\"State should be complete\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 													"});",
@@ -3017,18 +2814,22 @@
 													"    pm.expect(pm.response.text()).to.not.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\");",
 													"});",
 													"",
-													"pm.test(\"Should not contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stdout\");",
-													"});",
-													"pm.test(\"Should not contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stderr\");",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch failed\");",
 													"});",
 													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"pm.test(\"Should not contain the Compilation stdout\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"stdout\");",
 													"});",
+													"pm.test(\"Should not contain the Compilation stderr\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"stderr\");",
+													"});",
+													"pm.test(\"Should not contain the returnCode\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"returnCode\");",
+													"});",
+													"",
 													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch failed\\nGit clone failed: https://github.com/od42/non-existent-repo.git: Authentication is required but no CredentialsProvider has been registered\");",
+													"    pm.expect(pm.response.text()).to.include(\"Git clone failed: https://github.com/od42/non-existent-repo.git: Authentication is required but no CredentialsProvider has been registered\");",
 													"});",
 													""
 												],
@@ -3223,6 +3024,7 @@
 													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
 													"});",
 													"",
+													"",
 													"pm.test(\"State should be complete\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 													"});",
@@ -3235,18 +3037,21 @@
 													"    pm.expect(pm.response.text()).to.not.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\");",
 													"});",
 													"",
-													"pm.test(\"Should not contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stdout\");",
-													"});",
-													"pm.test(\"Should not contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stderr\");",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch failed\");",
 													"});",
 													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"pm.test(\"Should not contain the Compilation stdout\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"stdout\");",
+													"});",
+													"pm.test(\"Should not contain the Compilation stderr\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"stderr\");",
+													"});",
+													"pm.test(\"Should not contain the returnCode\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"returnCode\");",
 													"});",
 													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch failed\\nGit clone failed: Exception caught during execution of fetch command\");",
+													"    pm.expect(pm.response.text()).to.include(\"Git clone failed: Exception caught during execution of fetch command\");",
 													"});",
 													""
 												],
@@ -3468,11 +3273,6 @@
 													"    pm.response.to.have.status(200);",
 													"});",
 													"",
-													"pm.test(\"Should be produced by the expected AutomationRequest\", function () {",
-													"    ",
-													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
-													"});",
-													"",
 													"pm.test(\"State should be complete\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 													"});",
@@ -3486,24 +3286,21 @@
 													"});",
 													"",
 													"",
-													"pm.test(\"Should contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
+													"pm.test(\"AutomationResult fetching output should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">TODO currently only shows error messages</rdf:value>\");",
 													"});",
-													"pm.test(\"Check the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# Compilation completed successfully\");",
+													"pm.test(\"AutomationResult compilation stdout should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 													"});",
-													"pm.test(\"Should contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stderr\");",
-													"});",
-													"pm.test(\"Check the Compilation stderr\", function () {",
+													"pm.test(\"AutomationResult compilation stderr be empty (~)\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 													"});",
 													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch successful\\nCompilation completed successfully\");",
 													"});",
-													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch successful\");",
+													"pm.test(\"AutomationResult returnCode should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
 													"});",
 													""
 												],
@@ -3690,6 +3487,7 @@
 													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
 													"});",
 													"",
+													"",
 													"pm.test(\"State should be complete\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 													"});",
@@ -3702,18 +3500,22 @@
 													"    pm.expect(pm.response.text()).to.not.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\");",
 													"});",
 													"",
-													"pm.test(\"Should not contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stdout\");",
-													"});",
-													"pm.test(\"Should not contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stderr\");",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch failed\");",
 													"});",
 													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"pm.test(\"Should not contain the Compilation stdout\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"stdout\");",
 													"});",
+													"pm.test(\"Should not contain the Compilation stderr\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"stderr\");",
+													"});",
+													"pm.test(\"Should not contain the returnCode\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"returnCode\");",
+													"});",
+													"",
 													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch failed\\nIllegal base64 character \");",
+													"    pm.expect(pm.response.text()).to.include(\"Illegal base64 character \");",
 													"});",
 													""
 												],
@@ -3889,37 +3691,6 @@
 									"response": []
 								},
 								{
-									"name": "base64 no newline",
-									"request": {
-										"method": "POST",
-										"header": [
-											{
-												"key": "Content-Type",
-												"name": "Content-Type",
-												"type": "text",
-												"value": "application/xml"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cppI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
-										},
-										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
-											"host": [
-												"{{server_address}}"
-											],
-											"path": [
-												"{{server_context}}",
-												"services",
-												"resources",
-												"createAutomationRequest"
-											]
-										}
-									},
-									"response": []
-								},
-								{
 									"name": "check the result error",
 									"event": [
 										{
@@ -3939,6 +3710,7 @@
 													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
 													"});",
 													"",
+													"",
 													"pm.test(\"State should be complete\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 													"});",
@@ -3951,18 +3723,22 @@
 													"    pm.expect(pm.response.text()).to.not.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\");",
 													"});",
 													"",
-													"pm.test(\"Should not contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stdout\");",
-													"});",
-													"pm.test(\"Should not contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stderr\");",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch failed\");",
 													"});",
 													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"pm.test(\"Should not contain the Compilation stdout\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"stdout\");",
 													"});",
+													"pm.test(\"Should not contain the Compilation stderr\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"stderr\");",
+													"});",
+													"pm.test(\"Should not contain the returnCode\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"returnCode\");",
+													"});",
+													"",
 													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch failed\\nInvalid format of sourceBase64 value. No \\\"\\\\n\\\" delimiter found. Expected format: filename\\\\nbase64\");",
+													"    pm.expect(pm.response.text()).to.include(\"Invalid format of sourceBase64 value. No \\\"\\\\n\\\" delimiter found. Expected format: filename\\\\nbase64\");",
 													"});",
 													""
 												],
@@ -4184,11 +3960,6 @@
 													"    pm.response.to.have.status(200);",
 													"});",
 													"",
-													"pm.test(\"Should be produced by the expected AutomationRequest\", function () {",
-													"    ",
-													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
-													"});",
-													"",
 													"pm.test(\"State should be complete\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 													"});",
@@ -4202,24 +3973,21 @@
 													"});",
 													"",
 													"",
-													"pm.test(\"Should contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
+													"pm.test(\"AutomationResult fetching output should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">TODO currently only shows error messages</rdf:value>\");",
 													"});",
-													"pm.test(\"Check the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# Compilation completed successfully\");",
+													"pm.test(\"AutomationResult compilation stdout should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 													"});",
-													"pm.test(\"Should contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stderr\");",
-													"});",
-													"pm.test(\"Check the Compilation stderr\", function () {",
+													"pm.test(\"AutomationResult compilation stderr be empty (~)\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 													"});",
 													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch successful\\nCompilation completed successfully\");",
 													"});",
-													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch successful\");",
+													"pm.test(\"AutomationResult returnCode should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
 													"});",
 													""
 												],
@@ -4408,11 +4176,6 @@
 													"    pm.response.to.have.status(200);",
 													"});",
 													"",
-													"pm.test(\"Should be produced by the expected AutomationRequest\", function () {",
-													"    ",
-													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
-													"});",
-													"",
 													"pm.test(\"State should be complete\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 													"});",
@@ -4426,24 +4189,21 @@
 													"});",
 													"",
 													"",
-													"pm.test(\"Should contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
+													"pm.test(\"AutomationResult fetching output should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">TODO currently only shows error messages</rdf:value>\");",
 													"});",
-													"pm.test(\"Check the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# Compilation completed successfully\");",
+													"pm.test(\"AutomationResult compilation stdout should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 													"});",
-													"pm.test(\"Should contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stderr\");",
-													"});",
-													"pm.test(\"Check the Compilation stderr\", function () {",
+													"pm.test(\"AutomationResult compilation stderr be empty (~)\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 													"});",
 													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch successful\\nCompilation completed successfully\");",
 													"});",
-													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch successful\");",
+													"pm.test(\"AutomationResult returnCode should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
 													"});",
 													""
 												],
@@ -4507,211 +4267,6 @@
 													"});",
 													"pm.test(\"SUT producedByAutomationRequest should match the AutomationRequest with ID \" + requestId, function () {",
 													"    pm.expect(pm.response.text()).to.include(\"oslc_auto:producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
-													"});"
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "GET",
-										"header": [
-											{
-												"key": "Accept",
-												"type": "text",
-												"value": "application/rdf+xml"
-											}
-										],
-										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/sUTs/{{requestId}}",
-											"host": [
-												"{{server_address}}"
-											],
-											"path": [
-												"{{server_context}}",
-												"services",
-												"resources",
-												"sUTs",
-												"{{requestId}}"
-											]
-										}
-									},
-									"response": []
-								}
-							]
-						},
-						{
-							"name": "compilation error",
-							"item": [
-								{
-									"name": "program with a syntax error",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"// save the request ID as a global variable for later tests to use",
-													"const response = xml2Json(pm.response.text());",
-													"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
-													"var resourceAboutSplit = resrouceAbout.split(\"/\");",
-													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
-													"pm.globals.set('requestId', resourceId);",
-													"",
-													"var serverAddr = pm.variables.get(\"server_address\");",
-													"",
-													"pm.test(\"Response code should be 201 (created)\", function () {",
-													"    pm.response.to.have.status(201);",
-													"});"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "POST",
-										"header": [
-											{
-												"key": "Content-Type",
-												"name": "Content-Type",
-												"type": "text",
-												"value": "application/xml"
-											},
-											{
-												"key": "Accept",
-												"type": "text",
-												"value": "application/rdf+xml"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFilePath</oslc:name>\n\t\t\t<rdf:value>./tests/resources/TestEchoProgramError.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgramError.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
-										},
-										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
-											"host": [
-												"{{server_address}}"
-											],
-											"path": [
-												"{{server_context}}",
-												"services",
-												"resources",
-												"createAutomationRequest"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "check the result error",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"var requestId = pm.globals.get('requestId');",
-													"var serverAddr = pm.variables.get(\"server_address\");",
-													"var server_context = pm.variables.get(\"server_context\");",
-													"",
-													"pm.test(\"Response code should be 200 (OK)\", function () {",
-													"    pm.response.to.have.status(200);",
-													"});",
-													"",
-													"pm.test(\"Should be produced by the expected AutomationRequest\", function () {",
-													"    ",
-													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
-													"});",
-													"",
-													"pm.test(\"State should be complete\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
-													"});",
-													"",
-													"pm.test(\"Verdict should be failed\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#failed\\\"/>\");",
-													"});",
-													"",
-													"pm.test(\"Should not contain an SUT refference\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\");",
-													"});",
-													"",
-													"pm.test(\"Should contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
-													"});",
-													"pm.test(\"Check the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# Compilation failed (returned non-zero: 1)\");",
-													"});",
-													"pm.test(\"Should contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stderr\");",
-													"});",
-													"pm.test(\"Check the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"TestEchoProgramError.cpp: In function \");",
-													"    pm.expect(pm.response.text()).to.include(\"int main(int, char**)\");",
-													"});",
-													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
-													"});",
-													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch successful\");",
-													"});",
-													""
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													"// wait for the request execution to finish",
-													" var result_wait_time = pm.variables.get('result_wait_time'); setTimeout(function(){}, [result_wait_time]);"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "GET",
-										"header": [
-											{
-												"key": "Accept",
-												"type": "text",
-												"value": "application/rdf+xml"
-											}
-										],
-										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
-											"host": [
-												"{{server_address}}"
-											],
-											"path": [
-												"{{server_context}}",
-												"services",
-												"resources",
-												"automationResults",
-												"{{requestId}}"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "check that SUT does not exist",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.test(\"Response code should be 404 (not found)\", function () {",
-													"    pm.response.to.have.status(404);",
 													"});"
 												],
 												"type": "text/javascript"
@@ -4838,6 +4393,7 @@
 													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
 													"});",
 													"",
+													"",
 													"pm.test(\"State should be complete\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 													"});",
@@ -4850,18 +4406,22 @@
 													"    pm.expect(pm.response.text()).to.not.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\");",
 													"});",
 													"",
-													"pm.test(\"Should not contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stdout\");",
-													"});",
-													"pm.test(\"Should not contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stderr\");",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch failed\");",
 													"});",
 													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"pm.test(\"Should not contain the Compilation stdout\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"stdout\");",
 													"});",
+													"pm.test(\"Should not contain the Compilation stderr\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"stderr\");",
+													"});",
+													"pm.test(\"Should not contain the returnCode\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"returnCode\");",
+													"});",
+													"",
 													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch failed\\nFetch from file system failed: Source '\");",
+													"    pm.expect(pm.response.text()).to.include(\"Fetch from file system failed: Source '\");",
 													"     pm.expect(pm.response.text()).to.include(\"NonExistentFile' does not exist\");",
 													"});",
 													""
@@ -5083,11 +4643,6 @@
 													"    pm.response.to.have.status(200);",
 													"});",
 													"",
-													"pm.test(\"Should be produced by the expected AutomationRequest\", function () {",
-													"    ",
-													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
-													"});",
-													"",
 													"pm.test(\"State should be complete\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 													"});",
@@ -5101,24 +4656,21 @@
 													"});",
 													"",
 													"",
-													"pm.test(\"Should contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
+													"pm.test(\"AutomationResult fetching output should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">TODO currently only shows error messages</rdf:value>\");",
 													"});",
-													"pm.test(\"Check the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# Compilation completed successfully\");",
+													"pm.test(\"AutomationResult compilation stdout should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 													"});",
-													"pm.test(\"Should contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stderr\");",
-													"});",
-													"pm.test(\"Check the Compilation stderr\", function () {",
+													"pm.test(\"AutomationResult compilation stderr be empty (~)\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 													"});",
 													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch successful\\nCompilation completed successfully\");",
 													"});",
-													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch successful\");",
+													"pm.test(\"AutomationResult returnCode should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
 													"});",
 													""
 												],
@@ -5307,9 +4859,220 @@
 													"    pm.response.to.have.status(200);",
 													"});",
 													"",
-													"pm.test(\"Should be produced by the expected AutomationRequest\", function () {",
-													"    ",
-													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
+													"pm.test(\"State should be complete\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+													"});",
+													"",
+													"pm.test(\"Verdict should be passed\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
+													"});",
+													"",
+													"pm.test(\"Should contain an SUT refference ID \" + requestId, function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\" + requestId);",
+													"});",
+													"",
+													"",
+													"pm.test(\"AutomationResult fetching output should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">TODO currently only shows error messages</rdf:value>\");",
+													"});",
+													"pm.test(\"AutomationResult compilation stdout should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
+													"});",
+													"pm.test(\"AutomationResult compilation stderr be empty (~)\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
+													"});",
+													"",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch successful\\nCompilation completed successfully\");",
+													"});",
+													"pm.test(\"AutomationResult returnCode should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// wait for the request execution to finish",
+													"var result_wait_time = pm.variables.get('result_wait_time');",
+													"setTimeout(function(){}, [result_wait_time]);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check the SUT",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// get global variable to use in this test",
+													"var requestId = pm.globals.get('requestId');",
+													"var serverAddr = pm.variables.get(\"server_address\");",
+													"var server_context = pm.variables.get(\"server_context\");",
+													"",
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"pm.test(\"SUT should have the expected ID: \" + requestId, function () {",
+													"    pm.expect(pm.response.text()).to.include(\"fit:SUT rdf:about=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\" + requestId);",
+													"});",
+													"pm.test(\"SUT producedByAutomationRequest should match the AutomationRequest with ID \" + requestId, function () {",
+													"    pm.expect(pm.response.text()).to.include(\"oslc_auto:producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/sUTs/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"sUTs",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "filePath",
+							"item": [
+								{
+									"name": "basic",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// save the request ID as a global variable for later tests to use",
+													"const response = xml2Json(pm.response.text());",
+													"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+													"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
+													"pm.globals.set('requestId', resourceId);",
+													"",
+													"pm.test(\"Response code should be 201 (created)\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"name": "Content-Type",
+												"type": "text",
+												"value": "application/xml"
+											},
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFilePath</oslc:name>\n\t\t\t<rdf:value>./tests/resources/TestEchoProgram.zip</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>unpackZip</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+										},
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"createAutomationRequest"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check the result",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var requestId = pm.globals.get('requestId');",
+													"var serverAddr = pm.variables.get(\"server_address\");",
+													"var server_context = pm.variables.get(\"server_context\");",
+													"",
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
 													"});",
 													"",
 													"pm.test(\"State should be complete\", function () {",
@@ -5325,24 +5088,21 @@
 													"});",
 													"",
 													"",
-													"pm.test(\"Should contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
+													"pm.test(\"AutomationResult fetching output should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">TODO currently only shows error messages</rdf:value>\");",
 													"});",
-													"pm.test(\"Check the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# Compilation completed successfully\");",
+													"pm.test(\"AutomationResult compilation stdout should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 													"});",
-													"pm.test(\"Should contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stderr\");",
-													"});",
-													"pm.test(\"Check the Compilation stderr\", function () {",
+													"pm.test(\"AutomationResult compilation stderr be empty (~)\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
 													"});",
 													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch successful\\nCompilation completed successfully\");",
 													"});",
-													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch successful\");",
+													"pm.test(\"AutomationResult returnCode should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
 													"});",
 													""
 												],
@@ -5529,6 +5289,7 @@
 													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
 													"});",
 													"",
+													"",
 													"pm.test(\"State should be complete\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 													"});",
@@ -5541,19 +5302,26 @@
 													"    pm.expect(pm.response.text()).to.not.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\");",
 													"});",
 													"",
-													"pm.test(\"Should not contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stdout\");",
-													"});",
-													"pm.test(\"Should not contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stderr\");",
+													"",
+													"pm.test(\"Check program fetching output\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">error in opening zip file<\");",
 													"});",
 													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch failed\");",
 													"});",
-													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch failed\\n\");",
+													"",
+													"pm.test(\"Should not contain the Compilation stdout\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"stdout\");",
 													"});",
+													"pm.test(\"Should not contain the Compilation stderr\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"stderr\");",
+													"});",
+													"pm.test(\"Should not contain the returnCode\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"returnCode\");",
+													"});",
+													"",
+													"",
 													""
 												],
 												"type": "text/javascript"
@@ -5665,230 +5433,6 @@
 									}
 								}
 							]
-						},
-						{
-							"name": "filePath",
-							"item": [
-								{
-									"name": "basic",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"// save the request ID as a global variable for later tests to use",
-													"const response = xml2Json(pm.response.text());",
-													"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
-													"var resourceAboutSplit = resrouceAbout.split(\"/\");",
-													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
-													"pm.globals.set('requestId', resourceId);",
-													"",
-													"pm.test(\"Response code should be 201 (created)\", function () {",
-													"    pm.response.to.have.status(201);",
-													"});"
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "POST",
-										"header": [
-											{
-												"key": "Content-Type",
-												"name": "Content-Type",
-												"type": "text",
-												"value": "application/xml"
-											},
-											{
-												"key": "Accept",
-												"type": "text",
-												"value": "application/rdf+xml"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFilePath</oslc:name>\n\t\t\t<rdf:value>./tests/resources/TestEchoProgram.zip</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>unpackZip</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
-										},
-										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
-											"host": [
-												"{{server_address}}"
-											],
-											"path": [
-												"{{server_context}}",
-												"services",
-												"resources",
-												"createAutomationRequest"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "check the result",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"var requestId = pm.globals.get('requestId');",
-													"var serverAddr = pm.variables.get(\"server_address\");",
-													"var server_context = pm.variables.get(\"server_context\");",
-													"",
-													"pm.test(\"Response code should be 200 (OK)\", function () {",
-													"    pm.response.to.have.status(200);",
-													"});",
-													"",
-													"pm.test(\"Should be produced by the expected AutomationRequest\", function () {",
-													"    ",
-													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
-													"});",
-													"",
-													"pm.test(\"State should be complete\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
-													"});",
-													"",
-													"pm.test(\"Verdict should be passed\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
-													"});",
-													"",
-													"pm.test(\"Should contain an SUT refference ID \" + requestId, function () {",
-													"    pm.expect(pm.response.text()).to.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\" + requestId);",
-													"});",
-													"",
-													"",
-													"pm.test(\"Should contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stdout\");",
-													"});",
-													"pm.test(\"Check the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# Compilation completed successfully\");",
-													"});",
-													"pm.test(\"Should contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Compilation stderr\");",
-													"});",
-													"pm.test(\"Check the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
-													"});",
-													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
-													"});",
-													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch successful\");",
-													"});",
-													""
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													"// wait for the request execution to finish",
-													"var result_wait_time = pm.variables.get('result_wait_time');",
-													"setTimeout(function(){}, [result_wait_time]);"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "GET",
-										"header": [
-											{
-												"key": "Accept",
-												"type": "text",
-												"value": "application/rdf+xml"
-											}
-										],
-										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
-											"host": [
-												"{{server_address}}"
-											],
-											"path": [
-												"{{server_context}}",
-												"services",
-												"resources",
-												"automationResults",
-												"{{requestId}}"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "check the SUT",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"// get global variable to use in this test",
-													"var requestId = pm.globals.get('requestId');",
-													"var serverAddr = pm.variables.get(\"server_address\");",
-													"var server_context = pm.variables.get(\"server_context\");",
-													"",
-													"pm.test(\"Response code should be 200 (OK)\", function () {",
-													"    pm.response.to.have.status(200);",
-													"});",
-													"pm.test(\"SUT should have the expected ID: \" + requestId, function () {",
-													"    pm.expect(pm.response.text()).to.include(\"fit:SUT rdf:about=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\" + requestId);",
-													"});",
-													"pm.test(\"SUT producedByAutomationRequest should match the AutomationRequest with ID \" + requestId, function () {",
-													"    pm.expect(pm.response.text()).to.include(\"oslc_auto:producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
-													"});"
-												],
-												"type": "text/javascript"
-											}
-										},
-										{
-											"listen": "prerequest",
-											"script": {
-												"exec": [
-													""
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
-									"request": {
-										"method": "GET",
-										"header": [
-											{
-												"key": "Accept",
-												"type": "text",
-												"value": "application/rdf+xml"
-											}
-										],
-										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/sUTs/{{requestId}}",
-											"host": [
-												"{{server_address}}"
-											],
-											"path": [
-												"{{server_context}}",
-												"services",
-												"resources",
-												"sUTs",
-												"{{requestId}}"
-											]
-										}
-									},
-									"response": []
-								}
-							]
 						}
 					],
 					"event": [
@@ -5998,11 +5542,6 @@
 													"    pm.response.to.have.status(200);",
 													"});",
 													"",
-													"pm.test(\"Should be produced by the expected AutomationRequest\", function () {",
-													"    ",
-													"    pm.expect(pm.response.text()).to.include(\":producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
-													"});",
-													"",
 													"pm.test(\"State should be complete\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
 													"});",
@@ -6016,20 +5555,22 @@
 													"});",
 													"",
 													"",
+													"pm.test(\"AutomationResult fetching output should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">TODO currently only shows error messages</rdf:value>\");",
+													"});",
 													"pm.test(\"Should not contain the Compilation stdout\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stdout\");",
+													"    pm.expect(pm.response.text()).to.not.include(\"stdout\");",
 													"});",
 													"pm.test(\"Should not contain the Compilation stderr\", function () {",
-													"    pm.expect(pm.response.text()).to.not.include(\"Compilation stderr\");",
+													"    pm.expect(pm.response.text()).to.not.include(\"stderr\");",
 													"});",
 													"",
-													"pm.test(\"Should contain the program Fetching Output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Fetching Output\");",
+													"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch successful\\nCompilation not performed\");",
 													"});",
-													"pm.test(\"Check program fetching output\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"# SUT fetch successful\");",
-													"});",
-													""
+													"pm.test(\"Should not contain the returnCode\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"returnCode\");",
+													"});"
 												],
 												"type": "text/javascript"
 											}
@@ -6303,23 +5844,21 @@
 											"pm.test(\"AutomationResult should contain contributions\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:contribution\");",
 											"});",
-											"pm.test(\"AutomationResult should contain the fetching output\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Fetching Output</dcterms:title>\");",
-											"});",
 											"pm.test(\"AutomationResult fetching output should have the expected value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"># SUT fetch successful\\n</rdf:value>\");",
-											"});",
-											"pm.test(\"AutomationResult should contain compilation stdout\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Compilation stdout</dcterms:title>\");",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">TODO currently only shows error messages</rdf:value>\");",
 											"});",
 											"pm.test(\"AutomationResult compilation stdout should have the expected value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"># Compilation completed successfully\\n\");",
-											"});",
-											"pm.test(\"AutomationResult should contain compilation stderr\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Compilation stderr</dcterms:title>\");",
+											"    pm.expect(pm.response.text()).to.include(\">gcc -g TestEchoProgram.cpp -o testEcho\");",
 											"});",
 											"pm.test(\"AutomationResult compilation stderr be empty (~)\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
+											"});",
+											"",
+											"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">SUT fetch successful\\nCompilation completed successfully\");",
+											"});",
+											"pm.test(\"AutomationResult returnCode should have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
 											"});"
 										],
 										"type": "text/javascript"

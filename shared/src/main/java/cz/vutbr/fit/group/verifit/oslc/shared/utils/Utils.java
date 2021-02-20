@@ -43,7 +43,9 @@ import java.util.Map;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 public class Utils {
@@ -171,9 +173,10 @@ public class Utils {
 	 * @param modifFiles List of files to zip (no directories)
 	 * @param dirToZipFrom  This path will be used to make the filesToZip paths relative
 	 * @param pathToZip  Path where to place the new ZIP file
+	 * @return The zip file
 	 * @throws IOException
 	 */
-	public static void zipFiles(Collection<File> modifFiles, Path dirToZipFrom, Path pathToZip) throws IOException
+	public static File zipFiles(Collection<File> modifFiles, Path dirToZipFrom, Path pathToZip) throws IOException
 	{
 		FileOutputStream fileOutStream = new FileOutputStream(pathToZip.toString());
 		ZipOutputStream zipOutStream = new ZipOutputStream(fileOutStream);
@@ -198,8 +201,32 @@ public class Utils {
 		fileOutStream.flush();
 		zipOutStream.close();
 		fileOutStream.close();
+		
+		return pathToZip.toFile();
 	}
-	
+
+	/**
+	 * Unzips a given ZIP file.
+	 * @param dirToUnzipTo 
+	 * @param zipFile
+	 * @throws IOException
+	 */
+	public static void unzipFile(Path dirToUnzipTo, File zipFile) throws IOException
+	{
+    	ZipFile zf = new ZipFile(zipFile);
+        Enumeration<? extends ZipEntry> zipEntries = zf.entries();
+        while(zipEntries.hasMoreElements())
+        {
+        	ZipEntry entry = zipEntries.nextElement();
+        	if (entry.isDirectory()) {
+                Path dirToCreate = dirToUnzipTo.resolve(entry.getName());
+                Files.createDirectories(dirToCreate);
+            } else {
+            	Path fileToCreate = dirToUnzipTo.resolve(entry.getName());
+                Files.copy(zf.getInputStream(entry), fileToCreate);
+            }
+        }
+	}
 
 	/**
 	 * Encode slashes in the file path so that they dont get mistaken with URL separators
@@ -208,7 +235,9 @@ public class Utils {
 	 */
 	public static String encodeFilePathAsId(File f)
 	{
-		return f.getPath().replaceAll("/", "%2F");
+		return f.getPath()
+				.replaceAll("/", "%2F")
+				.replaceAll("\\\\", "%5C");
 	}
 
 	/**
@@ -218,7 +247,8 @@ public class Utils {
 	 */
 	public static String decodeFilePathFromId(String id)
 	{
-		return id.replaceAll("%2F", "/"); 
+		return id.replaceAll("%2F", "/")
+				.replaceAll("%5C", "\\\\"); 
 	}
 	
 	/** TODO make into a class
@@ -295,16 +325,16 @@ public class Utils {
 			// check parameter occurrences
 			Boolean paramMissing = false;
 			Link paramOccurs = definedParam.getOccurs();
-			if (paramOccurs == OslcValues.OSLC_OCCURS_ONE) {
+			if (paramOccurs.equals(OslcValues.OSLC_OCCURS_ONE)) {
 				// TODO check for more then one when there should be exactly one
 				if (!matched)
 					paramMissing = true;
-			} else if (paramOccurs == OslcValues.OSLC_OCCURS_ONEorMany) {
+			} else if (paramOccurs.equals(OslcValues.OSLC_OCCURS_ONEorMany)) {
 				if (!matched)
 					paramMissing = true;				
-			} else if (paramOccurs == OslcValues.OSLC_OCCURS_ZEROorONE) {
+			} else if (paramOccurs.equals(OslcValues.OSLC_OCCURS_ZEROorONE)) {
 				// TODO check for more then one when there should be max one
-			} else if (paramOccurs == OslcValues.OSLC_OCCURS_ZEROorMany) {
+			} else if (paramOccurs.equals(OslcValues.OSLC_OCCURS_ZEROorMany)) {
 				// not relevant
 			}
 			

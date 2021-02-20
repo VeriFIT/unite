@@ -120,7 +120,7 @@ public class SutAnalyse extends RequestRunner
 	    // prepare Contribution resources
 		Contribution executionTime = new Contribution();
 		executionTime.setDescription("Total execution time of the analysis in milliseconds."); // TODO CHECK really milliseconds?
-		executionTime.setTitle("executiontime");
+		executionTime.setTitle("executionTime");
 		executionTime.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
 	    
 		Contribution statusMessage = new Contribution();
@@ -210,9 +210,9 @@ public class SutAnalyse extends RequestRunner
 			modifFiles.add(analysisRes.stderrFile);
 	    	
 	    	// add file URIs to standard output contributions and add them to the automation result
-	    	analysisStdout.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(Utils.encodeFilePathAsId(analysisRes.stdoutFile)));
+	    	analysisStdout.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(analysisRes.stdoutFile.getPath()));
 	    	resAutoResult.addContribution(analysisStdout);
-	    	analysisStderr.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(Utils.encodeFilePathAsId(analysisRes.stderrFile)));
+	    	analysisStderr.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(analysisRes.stderrFile.getPath()));
 			resAutoResult.addContribution(analysisStderr);
 	    	
 			// create a zip of all file contributions if needed
@@ -256,9 +256,9 @@ public class SutAnalyse extends RequestRunner
 		Contribution zipedContribs = new Contribution();
 		Path pathToZip = zipDir.resolve(zipName);
 
-		Utils.zipFiles(modifFiles, zipDir, pathToZip);
+		File newZipFile = Utils.zipFiles(modifFiles, zipDir, pathToZip);
 
-		String fileId = Utils.encodeFilePathAsId(pathToZip.toFile());
+		String fileId = Utils.encodeFilePathAsId(newZipFile);
 		zipedContribs.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(fileId));
 		zipedContribs.setDescription("This is a ZIP of all other file contributions. "
 				+ "To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property."); // TODO

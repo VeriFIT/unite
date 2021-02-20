@@ -70,14 +70,6 @@ public abstract class RequestRunner extends Thread {
 		// execute string in directory
 		Instant timeStampStart = Instant.now(); // get start time for measuring execution time
 		Process process = Runtime.getRuntime().exec(new String[] {shell, shellArg, stringToExecute}, null, folderPath.toFile());	// launch string as "bash -c" or "cmd /c"	
-		
-		// redirect outputs to files
-		InputStream stdout = process.getInputStream();
-		InputStream stderr = process.getErrorStream();
-		File stdoutFile = folderPath.resolve("stdout" + id).toFile();
-		File stderrFile = folderPath.resolve("stderr" + id).toFile();
-		FileUtils.copyInputStreamToFile(stdout, stdoutFile);
-		FileUtils.copyInputStreamToFile(stderr, stderrFile);
 
 		// wait for the process to exit
 		Boolean exitedInTime = true;
@@ -111,6 +103,14 @@ public abstract class RequestRunner extends Thread {
 		// compute total execution time
 		Instant timeStampEnd = Instant.now(); // get execution end time
 		long totalTime = Duration.between(timeStampStart, timeStampEnd).toMillis();
+
+		// redirect outputs to files
+		InputStream stdout = process.getInputStream();
+		InputStream stderr = process.getErrorStream();
+		File stdoutFile = folderPath.resolve("stdout" + id).toFile();
+		File stderrFile = folderPath.resolve("stderr" + id).toFile();
+		FileUtils.copyInputStreamToFile(stdout, stdoutFile);
+		FileUtils.copyInputStreamToFile(stderr, stderrFile);
 		
 		// produce result
 		ExecutionResult res = new ExecutionResult();
