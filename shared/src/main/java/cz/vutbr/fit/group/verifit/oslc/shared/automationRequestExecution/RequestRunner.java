@@ -71,6 +71,12 @@ public abstract class RequestRunner extends Thread {
 		Instant timeStampStart = Instant.now(); // get start time for measuring execution time
 		Process process = Runtime.getRuntime().exec(new String[] {shell, shellArg, stringToExecute}, null, folderPath.toFile());	// launch string as "bash -c" or "cmd /c"	
 
+		// redirect outputs to files
+		InputStream stdout = process.getInputStream();
+		InputStream stderr = process.getErrorStream();
+		File stdoutFile = folderPath.resolve("stdout" + id).toFile();
+		File stderrFile = folderPath.resolve("stderr" + id).toFile();
+
 		// wait for the process to exit
 		Boolean exitedInTime = true;
 		String timeoutType = "";
@@ -78,6 +84,9 @@ public abstract class RequestRunner extends Thread {
 			// with timeout
 			if (timeout > 0) {
 				exitedInTime = process.waitFor(timeout, TimeUnit.SECONDS);
+				FileUtils.copyInputStreamToFile(stdout, stdoutFile);
+				FileUtils.copyInputStreamToFile(stderr, stderrFile);
+				
 				if (!exitedInTime) {
 					// try to kill gracefully
 					timeoutType = "graceful";
@@ -93,6 +102,8 @@ public abstract class RequestRunner extends Thread {
 			// no timeout
 			else {
 				process.waitFor();
+				FileUtils.copyInputStreamToFile(stdout, stdoutFile);
+				FileUtils.copyInputStreamToFile(stderr, stderrFile);
 			}
 
 		} catch (InterruptedException e) {
@@ -104,13 +115,6 @@ public abstract class RequestRunner extends Thread {
 		Instant timeStampEnd = Instant.now(); // get execution end time
 		long totalTime = Duration.between(timeStampStart, timeStampEnd).toMillis();
 
-		// redirect outputs to files
-		InputStream stdout = process.getInputStream();
-		InputStream stderr = process.getErrorStream();
-		File stdoutFile = folderPath.resolve("stdout" + id).toFile();
-		File stderrFile = folderPath.resolve("stderr" + id).toFile();
-		FileUtils.copyInputStreamToFile(stdout, stdoutFile);
-		FileUtils.copyInputStreamToFile(stderr, stderrFile);
 		
 		// produce result
 		ExecutionResult res = new ExecutionResult();

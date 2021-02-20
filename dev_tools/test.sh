@@ -89,7 +89,11 @@ analysisRes=$?
 #echo "Analysis adapter Tested Tools test suite" 
 #newman run ../analysis/tests/TestSuite_TestedTools.postman_collection
 
-
+echo -e "\nShutting down the adaters" 
+trap '' INT TERM     # ignore INT and TERM while shutting down
+kill -TERM 0
+wait
+echo "All done."
 
 # return non-zero if there were failed tests
 if [ "$compilationRes" -ne 0 ] || [ "$analysisRes" -ne 0 ] ; then

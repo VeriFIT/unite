@@ -1812,7 +1812,7 @@
 									"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
 									"});",
 									"pm.test(\"AutomationResult analysis stdout should have the expected value\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"# Analysis completed successfully\")",
+									"    pm.expect(pm.response.text()).to.include(\"Analysis completed successfully\")",
 									"    pm.expect(pm.response.text()).to.include(\"[!] Overall Profiling [DONE] in \");",
 									"    pm.expect(pm.response.text()).to.include(\"[!] Prerun [DONE] in \");",
 									"    pm.expect(pm.response.text()).to.include(\"[!] Batch Job Run [DONE] in \");",
