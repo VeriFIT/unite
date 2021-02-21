@@ -108,7 +108,13 @@ public class Contributions
     @PUT
     @Path("contributions/{id}")
     @Consumes({MediaType.APPLICATION_OCTET_STREAM, MediaType.TEXT_PLAIN})
-    public Response updateContributionFile( // TODO add @ApiOperation
+    @ApiOperation(
+            value = "UPDATE the contents of a contribution file by using its fit:fileURI as the ID of a contribution.",
+            notes = "UPDATE the contents of a contribution file by using its fit:fileURI as the ID of a contribution. Allows clients to directly upload a contribution file "
+            		+ "as an octet stream to modify its value. TODO This is a temporary solution.",
+            produces = MediaType.APPLICATION_OCTET_STREAM + ", " + MediaType.TEXT_PLAIN
+        )
+    public Response updateContributionFile(
             @Context HttpServletRequest request,
             @PathParam("id") final String id,
             InputStream fileInputStream
@@ -128,7 +134,13 @@ public class Contributions
     @GET
     @Path("contributions/{id}")
     @Produces({MediaType.APPLICATION_OCTET_STREAM, MediaType.TEXT_PLAIN})
-    public Response getContributionFile( // TODO add @ApiOperation
+    @ApiOperation(
+        value = "GET the contents of a contribution file by using its fit:fileURI as the ID of a contribution.",
+        notes = "GET the contents of a contribution file by using its fit:fileURI as the ID of a contribution. Allows clients to directly download a contribution file "
+        		+ "as an octet stream. TODO This is a temporary solution.",
+        produces = MediaType.APPLICATION_OCTET_STREAM + ", " + MediaType.TEXT_PLAIN
+    )
+    public Response getContributionFile(
                 @PathParam("id") final String id
         ) throws IOException, ServletException, URISyntaxException
     {
