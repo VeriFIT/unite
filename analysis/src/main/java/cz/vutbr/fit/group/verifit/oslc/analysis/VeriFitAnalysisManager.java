@@ -19,16 +19,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletContextEvent;
 import java.util.List;
 import java.util.ArrayList;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
-
 import cz.vutbr.fit.group.verifit.oslc.analysis.servlet.ServiceProviderCatalogSingleton;
 import cz.vutbr.fit.group.verifit.oslc.analysis.ServiceProviderInfo;
-
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
@@ -37,7 +34,6 @@ import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc.domains.Person;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
-
 import java.net.URI;
 import java.util.Properties;
 import java.io.FileInputStream;
@@ -50,6 +46,9 @@ import org.eclipse.lyo.store.StorePool;
 import org.eclipse.lyo.store.StoreAccessException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
+
+
+
 
 // Start of user code imports
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
@@ -368,14 +367,25 @@ public class VeriFitAnalysisManager {
         // Start of user code StoreInitialise
     	// connect to the triplestore
         // End of user code
-        int initialPoolSize = 100; // TODO
+        /* Unwanted generated code
+		Properties lyoStoreProperties = new Properties();
+        String lyoStorePropertiesFile = StorePool.class.getResource("/store.properties").getFile();
+        try {
+            lyoStoreProperties.load(new FileInputStream(lyoStorePropertiesFile));
+        } catch (IOException e) {
+            log.error("Failed to initialize Store. properties file for Store configuration could not be loaded.", e);
+            throw new RuntimeException(e);
+        }
+        
+        */
+		int initialPoolSize = 100; // TODO
         URI defaultNamedGraph;
         URI sparqlQueryEndpoint;
         URI sparqlUpdateEndpoint;
         try {
-			defaultNamedGraph = new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES);
-			sparqlQueryEndpoint = new URI(VeriFitAnalysisProperties.SPARQL_SERVER_QUERY_ENDPOINT);
-			sparqlUpdateEndpoint = new URI(VeriFitAnalysisProperties.SPARQL_SERVER_UPDATE_ENDPOINT);
+            defaultNamedGraph = new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES);
+            sparqlQueryEndpoint = new URI(VeriFitAnalysisProperties.SPARQL_SERVER_QUERY_ENDPOINT);
+            sparqlUpdateEndpoint = new URI(VeriFitAnalysisProperties.SPARQL_SERVER_UPDATE_ENDPOINT);
         } catch (URISyntaxException e) {
             log.error("Failed to initialize Store. One of the configuration property ('defaultNamedGraph' or 'sparqlQueryEndpoint' or 'sparqlUpdateEndpoint') is not a valid URI.", e);
             throw new RuntimeException(e);

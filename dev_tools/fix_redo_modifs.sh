@@ -11,16 +11,61 @@
 # SPDX-License-Identifier: EPL-2.0
 ##########################
 
-cd "${BASH_SOURCE%/*}"
+USRPATH=$PWD                        # get the call directory
+ROOTDIR=$(dirname $(realpath $0))   # get the script directory
+cd $ROOTDIR                         # move to the script directory
+
+# */resources contains store.properties which we dont use and load properties from elsewhere
+rm -rf ../analysis/src/main/resources/
+rm -rf ../compilation/src/main/resources/
+
+sed -i 's|Properties lyoStoreProperties = new Properties();|/* Unwanted generated code\n\t\tProperties lyoStoreProperties = new Properties();|' \
+../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/VeriFitAnalysisManager.java
+sed -i 's|int initialPoolSize = Integer.parseInt(lyoStoreProperties.getProperty("initialPoolSize"));|*/\n\t\tint initialPoolSize = 100; // TODO|' \
+../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/VeriFitAnalysisManager.java
+sed -i 's|defaultNamedGraph = new URI(lyoStoreProperties.getProperty("defaultNamedGraph"));|defaultNamedGraph = new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES);|' \
+../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/VeriFitAnalysisManager.java
+sed -i 's|sparqlQueryEndpoint = new URI(lyoStoreProperties.getProperty("sparqlQueryEndpoint"));|sparqlQueryEndpoint = new URI(VeriFitAnalysisProperties.SPARQL_SERVER_QUERY_ENDPOINT);|' \
+../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/VeriFitAnalysisManager.java
+sed -i 's|sparqlUpdateEndpoint = new URI(lyoStoreProperties.getProperty("sparqlUpdateEndpoint"));|sparqlUpdateEndpoint = new URI(VeriFitAnalysisProperties.SPARQL_SERVER_UPDATE_ENDPOINT);|' \
+../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/VeriFitAnalysisManager.java
+
+sed -i 's|Properties lyoStoreProperties = new Properties();|/* Unwanted generated code\n\t\tProperties lyoStoreProperties = new Properties();|' \
+../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/VeriFitCompilationManager.java
+sed -i 's|int initialPoolSize = Integer.parseInt(lyoStoreProperties.getProperty("initialPoolSize"));|*/\n\t\tint initialPoolSize = 100; // TODO|' \
+../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/VeriFitCompilationManager.java
+sed -i 's|defaultNamedGraph = new URI(lyoStoreProperties.getProperty("defaultNamedGraph"));|defaultNamedGraph = new URI(VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES);|' \
+../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/VeriFitCompilationManager.java
+sed -i 's|sparqlQueryEndpoint = new URI(lyoStoreProperties.getProperty("sparqlQueryEndpoint"));|sparqlQueryEndpoint = new URI(VeriFitCompilationProperties.SPARQL_SERVER_QUERY_ENDPOINT);|' \
+../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/VeriFitCompilationManager.java
+sed -i 's|sparqlUpdateEndpoint = new URI(lyoStoreProperties.getProperty("sparqlUpdateEndpoint"));|sparqlUpdateEndpoint = new URI(VeriFitCompilationProperties.SPARQL_SERVER_UPDATE_ENDPOINT);|' \
+../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/VeriFitCompilationManager.java
+
+
+# override authentication configuration
+sed -i 's|private static final Boolean ignoreResourceProtection = false;|private static final Boolean ignoreResourceProtection = !(VeriFitAnalysisProperties.AUTHENTICATION_ENABLED);|' \
+../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/servlet/CredentialsFilter.java
+
+sed -i 's|private static final Boolean ignoreResourceProtection = false;|private static final Boolean ignoreResourceProtection = !(VeriFitCompilationProperties.AUTHENTICATION_ENABLED);|' \
+../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/servlet/CredentialsFilter.java
+
 
 # my POST handler throws and exception
-sed -i "s|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource, final String serviceProviderId)|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource, final String serviceProviderId) throws OslcResourceException|" \
-../compilation/src/main/java/verifit/compilation/VeriFitCompilationManager.java
-sed -i "s|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource, final String serviceProviderId)|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource, final String serviceProviderId) throws OslcResourceException|" \
-../analysis/src/main/java/verifit/analysis/VeriFitAnalysisManager.java
+sed -i 's|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource)|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource) throws OslcResourceException|' \
+../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/VeriFitAnalysisManager.java
+
+sed -i 's|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource)|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource) throws OslcResourceException|' \
+../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/VeriFitCompilationManager.java
+
 
 # catch the added exception and send an error response
-sed -i "s|return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();|return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();\\n        } catch (OslcResourceException e) {\\n               Error errorResource = new Error();\\n               errorResource.setStatusCode(\"400\");\\n               errorResource.setMessage(e.getMessage());\\n               return Response.status(400).entity(errorResource).build();|" \
-../compilation/src/main/java/verifit/compilation/services/ServiceProviderService1.java
-sed -i "s|return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();|return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();\\n        } catch (OslcResourceException e) {\\n               Error errorResource = new Error();\\n               errorResource.setStatusCode(\"400\");\\n               errorResource.setMessage(e.getMessage());\\n               return Response.status(400).entity(errorResource).build();|" \
-../analysis/src/main/java/verifit/analysis/services/ServiceProviderService1.java
+
+sed -i 's|AutomationRequest newResource = VeriFitAnalysisManager.createAutomationRequest(httpServletRequest, aResource);|try {\n\t\tAutomationRequest newResource = VeriFitAnalysisManager.createAutomationRequest(httpServletRequest, aResource);|' \
+../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/services/ServiceProviderService1.java
+sed -i 's|return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();|return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();\n\t\t} catch (OslcResourceException e) {\n\t\tError errorResource = new Error();\n\t\t\terrorResource.setStatusCode(\"400\");\n\t\t\terrorResource.setMessage(e.getMessage());\n\t\t\treturn Response.status(400).entity(errorResource).build();\n\t\t}|' \
+../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/services/ServiceProviderService1.java
+
+sed -i 's|AutomationRequest newResource = VeriFitCompilationManager.createAutomationRequest(httpServletRequest, aResource);|try {\n\t\tAutomationRequest newResource = VeriFitCompilationManager.createAutomationRequest(httpServletRequest, aResource);|' \
+../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/services/ServiceProviderService1.java
+sed -i 's|return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();|return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();\n\t\t} catch (OslcResourceException e) {\n\t\tError errorResource = new Error();\n\t\t\terrorResource.setStatusCode(\"400\");\n\t\t\terrorResource.setMessage(e.getMessage());\n\t\t\treturn Response.status(400).entity(errorResource).build();\n\t\t}|' \
+../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/services/ServiceProviderService1.java

@@ -11,7 +11,8 @@
 # SPDX-License-Identifier: EPL-2.0
 ##########################
 
-cd "${BASH_SOURCE%/*}"
+USRPATH=$PWD                        # get the call directory
+ROOTDIR=$(dirname $(realpath $0))   # get the script directory
+cd $ROOTDIR                         # move to the script directory
 
-./fix_move_domains.sh
 ./fix_redo_modifs.sh

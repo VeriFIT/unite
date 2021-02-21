@@ -21,7 +21,6 @@ import javax.ws.rs.core.Response;
 import org.eclipse.lyo.client.OSLCConstants;
 import org.eclipse.lyo.client.OslcClient;
 import org.eclipse.lyo.oslc4j.core.model.ServiceProviderCatalog;
-
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 
 // Start of user code imports

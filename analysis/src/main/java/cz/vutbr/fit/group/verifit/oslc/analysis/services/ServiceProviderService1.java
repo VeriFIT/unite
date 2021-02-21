@@ -584,19 +584,16 @@ public class ServiceProviderService1
             final AutomationRequest aResource
         ) throws IOException, ServletException
     {
-    	try {
-	        AutomationRequest newResource = VeriFitAnalysisManager.createAutomationRequest(httpServletRequest, aResource);
-	        httpServletResponse.setHeader("ETag", VeriFitAnalysisManager.getETagFromAutomationRequest(newResource));
-	        return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();
-	    } catch (OslcResourceException e) {
-			Error errorResource = new Error();
+        try {
+		AutomationRequest newResource = VeriFitAnalysisManager.createAutomationRequest(httpServletRequest, aResource);
+        httpServletResponse.setHeader("ETag", VeriFitAnalysisManager.getETagFromAutomationRequest(newResource));
+        return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();
+		} catch (OslcResourceException e) {
+		Error errorResource = new Error();
 			errorResource.setStatusCode("400");
 			errorResource.setMessage(e.getMessage());
 			return Response.status(400).entity(errorResource).build();
-		 } catch (Exception e) {
-			e.printStackTrace();
-			throw new WebApplicationException(e);
-		 }
+		}
     }
 
     /**

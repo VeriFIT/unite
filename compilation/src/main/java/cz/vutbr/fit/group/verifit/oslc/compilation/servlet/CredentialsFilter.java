@@ -52,17 +52,8 @@ import cz.vutbr.fit.group.verifit.oslc.compilation.properties.VeriFitCompilation
 
 public class CredentialsFilter implements Filter {
     //For debugging, it might be convenient sometimes to deactivate oauth authentication. By enabling this flag, all http requests are no longer protected.
-    private static final Boolean ignoreResourceProtection = false ||
+    private static final Boolean ignoreResourceProtection = !(VeriFitCompilationProperties.AUTHENTICATION_ENABLED);
     // Start of user code override_ignoreResourceProtection
-    
-	/*
-	 * NOTE: the variable above is final and outside of the user code block protected from code generation.
-	 * The line below is a way of modifying the variable in a way that does not get deleted with code generation.
-	 * After code gen. the final variable assignment will end with a ";" which will cause a syntax error with the
-	 * line bellow. That will remind the developer to fix this code gen issue by replacing the ";" with "||". 
-	 */
-	!(VeriFitCompilationProperties.AUTHENTICATION_ENABLED);
-    
     // End of user code
 
     // Start of user code class_attributes

@@ -78,7 +78,6 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisConstants;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import cz.vutbr.fit.group.verifit.oslc.analysis.servlet.ServiceProviderCatalogSingleton;
-
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
