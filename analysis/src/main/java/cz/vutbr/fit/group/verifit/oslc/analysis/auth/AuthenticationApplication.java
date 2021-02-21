@@ -23,8 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.eclipse.lyo.server.oauth.core.Application;
 import org.eclipse.lyo.server.oauth.core.token.LRUCache;
-
-
 import org.eclipse.lyo.server.oauth.core.AuthenticationException;
 
 // Start of user code imports

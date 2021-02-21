@@ -10,7 +10,6 @@
 
 package cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans;
 
-import org.apache.jena.atlas.logging.Log;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.store.StoreAccessException;
 import org.slf4j.Logger;
@@ -26,8 +25,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Properties;
 
 import static cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.PredefinedAutomationPlanDefinition.getDummyAutomationPlanConf;

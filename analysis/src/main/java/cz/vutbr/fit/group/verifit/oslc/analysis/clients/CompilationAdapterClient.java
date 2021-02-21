@@ -17,15 +17,18 @@
 
 package cz.vutbr.fit.group.verifit.oslc.analysis.clients;
 
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import org.eclipse.lyo.client.OSLCConstants;
 import org.eclipse.lyo.client.OslcClient;
 import org.eclipse.lyo.oslc4j.core.model.ServiceProviderCatalog;
-import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
-import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
+
+// Start of user code imports
+import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
+import javax.ws.rs.client.ClientBuilder;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+// End of user code
 
 
 // Start of user code pre_class_code

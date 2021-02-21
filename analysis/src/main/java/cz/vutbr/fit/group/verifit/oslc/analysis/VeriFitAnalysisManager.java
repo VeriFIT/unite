@@ -19,13 +19,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletContextEvent;
 import java.util.List;
 import java.util.ArrayList;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
+
 import cz.vutbr.fit.group.verifit.oslc.analysis.servlet.ServiceProviderCatalogSingleton;
 import cz.vutbr.fit.group.verifit.oslc.analysis.ServiceProviderInfo;
+
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
@@ -34,12 +37,11 @@ import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc.domains.Person;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
+
 import java.net.URI;
 import java.util.Properties;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.NoSuchElementException;
 import org.eclipse.lyo.store.ModelUnmarshallingException;
@@ -49,41 +51,30 @@ import org.eclipse.lyo.store.StoreAccessException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import cz.vutbr.fit.group.verifit.oslc.analysis.clients.CompilationAdapterClient;
+// Start of user code imports
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils.ResourceIdGen;
+import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
+import cz.vutbr.fit.group.verifit.oslc.shared.queuing.RequestRunnerQueues;
+
 import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
-import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
-
-import org.eclipse.lyo.store.StoreAccessException;
-import org.eclipse.lyo.oslc4j.core.model.Link;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.stream.Stream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.regex.Pattern;
-import java.util.NoSuchElementException;
-import java.util.Map;
-
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager.AutomationPlanConf;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanLoading;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationRequestExecution.SutAnalyse;
-import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
-import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils.ResourceIdGen;
+import cz.vutbr.fit.group.verifit.oslc.analysis.clients.CompilationAdapterClient;
 
-import cz.vutbr.fit.group.verifit.oslc.shared.queuing.RequestRunnerQueues;
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
-import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
+import java.util.Date;
+import java.util.Map;
+import java.io.File;
+import java.io.InputStream;
+import java.io.FileNotFoundException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.lyo.oslc4j.core.model.Link;
+// End of user code
+
 // Start of user code pre_class_code
 // End of user code
 
@@ -382,9 +373,9 @@ public class VeriFitAnalysisManager {
         URI sparqlQueryEndpoint;
         URI sparqlUpdateEndpoint;
         try {
-            defaultNamedGraph = new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES);
-            sparqlQueryEndpoint = new URI(VeriFitAnalysisProperties.SPARQL_SERVER_QUERY_ENDPOINT);
-            sparqlUpdateEndpoint = new URI(VeriFitAnalysisProperties.SPARQL_SERVER_UPDATE_ENDPOINT);
+			defaultNamedGraph = new URI(VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES);
+			sparqlQueryEndpoint = new URI(VeriFitAnalysisProperties.SPARQL_SERVER_QUERY_ENDPOINT);
+			sparqlUpdateEndpoint = new URI(VeriFitAnalysisProperties.SPARQL_SERVER_UPDATE_ENDPOINT);
         } catch (URISyntaxException e) {
             log.error("Failed to initialize Store. One of the configuration property ('defaultNamedGraph' or 'sparqlQueryEndpoint' or 'sparqlUpdateEndpoint') is not a valid URI.", e);
             throw new RuntimeException(e);

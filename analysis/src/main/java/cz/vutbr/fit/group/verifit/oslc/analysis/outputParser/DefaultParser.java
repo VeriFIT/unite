@@ -10,15 +10,12 @@
 
 package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
 /**

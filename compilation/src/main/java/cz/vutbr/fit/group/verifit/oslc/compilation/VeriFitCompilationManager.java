@@ -38,7 +38,6 @@ import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 import java.net.URI;
 import java.util.Properties;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.NoSuchElementException;
@@ -61,26 +60,13 @@ import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils.ResourceIdGen;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
 
-import org.eclipse.lyo.store.StoreAccessException;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.apache.commons.io.FileDeleteStrategy;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.stream.Stream;
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.NoSuchElementException;
 import java.util.Map;
 // End of user code
 

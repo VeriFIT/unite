@@ -17,11 +17,8 @@
 
 package org.eclipse.lyo.oslc.domains.auto;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -78,8 +75,6 @@ import org.eclipse.lyo.oslc.domains.Person;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 // Start of user code imports
 // End of user code
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
-import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
 // Start of user code preClassCode
 // End of user code

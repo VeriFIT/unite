@@ -17,9 +17,7 @@
 
 package cz.vutbr.fit.group.verifit.oslc.analysis.services;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -77,15 +75,18 @@ import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
-import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisConstants;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import cz.vutbr.fit.group.verifit.oslc.analysis.servlet.ServiceProviderCatalogSingleton;
+
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 // Start of user code imports
+import java.io.InputStream;
+import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
+import java.io.File;
 // End of user code
 
 // Start of user code pre_class_code

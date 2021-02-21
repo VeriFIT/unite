@@ -22,7 +22,6 @@ import java.util.Set;
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 
-import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
 
 public final class ParserManager {
     

@@ -11,41 +11,27 @@
 package cz.vutbr.fit.group.verifit.oslc.analysis.automationRequestExecution;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
+import org.eclipse.lyo.oslc.domains.auto.Contribution;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 
-import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisConstants;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisResourcesFactory;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.ParserManager;
-
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
-import org.eclipse.lyo.oslc.domains.auto.Contribution;
-
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.RequestRunner;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.GetModifFilesBySnapshot;
