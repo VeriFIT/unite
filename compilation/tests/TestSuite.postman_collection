@@ -104,9 +104,6 @@
 											"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
 											"pm.globals.set('requestId', requestId);",
 											"",
-											"// wait for the resource creation to finish",
-											" var result_wait_time = pm.variables.get('result_wait_time');",
-											" setTimeout(function(){}, [100]);",
 											"",
 											"// get global variable to use in this test",
 											"var serverAddr = pm.variables.get(\"server_address\");",
@@ -164,7 +161,7 @@
 											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>buildCommand</oslc:name>\");",
 											"});",
 											"pm.test(\"AutomationRequest should contain the expected buildCommand input value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">\" + buildCommand + \"</rdf:value>\");",
+											"    pm.expect(pm.response.text()).to.include(\">\" + buildCommand + \"</rdf:value>\");",
 											"});",
 											"pm.test(\"AutomationRequest should contain a launchCommand input parameter\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>launchCommand</oslc:name>\");",
@@ -195,10 +192,11 @@
 											"",
 											"pm.globals.set(\"AutomationPlanId\", \"0\");",
 											"",
-											"pm.globals.set(\"buildCommand\", \"make\");",
-											"pm.globals.set(\"launchCommand\", \"./testEcho\");",
-											"pm.globals.set(\"sourceType\", \"sourceGit\");",
-											"pm.globals.set(\"sourceVal\", \"https://github.com/od42/test.git\");",
+											"// compile a lot of times to make the request execution longer",
+											"pm.globals.set(\"buildCommand\", \"gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo &amp; gcc -g TestEchoProgram.cpp -o my_echo\");",
+											"pm.globals.set(\"launchCommand\", \"./my_echo\");",
+											"pm.globals.set(\"sourceType\", \"sourceBase64\");",
+											"pm.globals.set(\"sourceVal\", \"TestEchoProgram.cpp\\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K\");",
 											"",
 											"pm.globals.set(\"reqCreator\", \"https://pajda.fit.vutbr.cz/xvasic\");",
 											"pm.globals.set(\"reqTitle\", \"Test title\");",
@@ -304,7 +302,7 @@
 											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>buildCommand</oslc:name>\");",
 											"});",
 											"pm.test(\"AutomationRequest should contain the expected buildCommand input value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">\" + buildCommand + \"</rdf:value>\");",
+											"    pm.expect(pm.response.text()).to.include(\">\" + buildCommand + \"</rdf:value>\");",
 											"});",
 											"pm.test(\"AutomationRequest should contain a launchCommand input parameter\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>launchCommand</oslc:name>\");",
@@ -428,7 +426,7 @@
 											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>buildCommand</oslc:name>\");",
 											"});",
 											"pm.test(\"AutomationResult should contain the expected buildCommand input value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">\" + buildCommand + \"</rdf:value>\");",
+											"    pm.expect(pm.response.text()).to.include(\">\" + buildCommand + \"</rdf:value>\");",
 											"});",
 											"pm.test(\"AutomationResult should contain a launchCommand input parameter\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>launchCommand</oslc:name>\");",
@@ -559,7 +557,7 @@
 											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>buildCommand</oslc:name>\");",
 											"});",
 											"pm.test(\"AutomationRequest should contain the expected buildCommand input value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">\" + buildCommand + \"</rdf:value>\");",
+											"    pm.expect(pm.response.text()).to.include(\">\" + buildCommand + \"</rdf:value>\");",
 											"});",
 											"pm.test(\"AutomationRequest should contain a launchCommand input parameter\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>launchCommand</oslc:name>\");",
@@ -691,7 +689,7 @@
 											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>buildCommand</oslc:name>\");",
 											"});",
 											"pm.test(\"AutomationResult should contain the expected buildCommand input value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">\" + buildCommand + \"</rdf:value>\");",
+											"    pm.expect(pm.response.text()).to.include(\">\" + buildCommand + \"</rdf:value>\");",
 											"});",
 											"pm.test(\"AutomationResult should contain a launchCommand input parameter\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>launchCommand</oslc:name>\");",
@@ -748,7 +746,7 @@
 											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">stdout</dcterms:title>\");",
 											"});",
 											"pm.test(\"AutomationResult compilation stdout should have the expected value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\">gcc -g TestEchoProgram.cpp -o testEcho\");",
+											"    pm.expect(pm.response.text()).to.include(\"><\");",
 											"});",
 											"pm.test(\"AutomationResult should contain compilation stderr\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">stderr</dcterms:title>\");",
@@ -856,7 +854,7 @@
 											"    pm.expect(pm.response.text()).to.include(\"<fit:buildCommand\");",
 											"});",
 											"pm.test(\"SUT buildCommand should have the expected value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<fit:buildCommand rdf:parseType=\\\"Literal\\\">\" + buildCommand + \"</fit:buildCommand>\");",
+											"    pm.expect(pm.response.text()).to.include(\">\" + buildCommand + \"</fit:buildCommand>\");",
 											"});",
 											"pm.test(\"SUT should contain a launchCommand property\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<fit:launchCommand\");",
@@ -1066,7 +1064,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>asdfasdf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>asdfasdf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
 									"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
@@ -1299,7 +1297,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
@@ -1349,7 +1347,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
@@ -1399,7 +1397,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/23452346342\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/23452346342\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
@@ -1546,7 +1544,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>invalid input</oslc:name>\n\t\t\t<rdf:value>invalid value</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>invalid input</oslc:name>\n\t\t\t<rdf:value>invalid value</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
@@ -5532,7 +5530,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgram.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 										},
 										"url": {
 											"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
@@ -5779,11 +5777,10 @@
 											"",
 											"pm.globals.set(\"AutomationPlanId\", \"0\");",
 											"",
-											"pm.globals.set(\"buildCommand\", \"make\");",
+											"pm.globals.set(\"buildCommand\", \"gcc -g TestEchoProgram.cpp -o my_echo\");",
 											"pm.globals.set(\"launchCommand\", \"./testEcho\");",
-											"pm.globals.set(\"sourceType\", \"sourceGit\");",
-											"pm.globals.set(\"sourceVal\", \"https://github.com/od42/test.git\");",
-											"",
+											"pm.globals.set(\"sourceType\", \"sourceBase64\");",
+											"pm.globals.set(\"sourceVal\", \"TestEchoProgram.cpp\\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K\");",
 											"pm.globals.set(\"reqCreator\", \"https://pajda.fit.vutbr.cz/xvasic\");",
 											"pm.globals.set(\"reqTitle\", \"Test title\");",
 											"pm.globals.set(\"reqDescription\", \"Test description\");"
@@ -5870,7 +5867,7 @@
 											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">TODO currently only shows error messages</rdf:value>\");",
 											"});",
 											"pm.test(\"AutomationResult compilation stdout should have the expected value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\">gcc -g TestEchoProgram.cpp -o testEcho\");",
+											"    pm.expect(pm.response.text()).to.include(\"><\");",
 											"});",
 											"pm.test(\"AutomationResult compilation stderr be empty (~)\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
