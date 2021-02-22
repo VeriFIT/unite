@@ -12,15 +12,33 @@
 
 SLEEP=1
 
-HELP=" Launches the sparql triplestore, and then the analysis adapter and the compilation adapter.
- The triplestore needs to finish startup before both adapters, which is controled by polling the 
- triplestore using curl until it responds
-
- Usage: run_all.sh"
+HELP="
+   Launches the sparql triplestore, the analysis adapter and
+   the compilation adapter. The triplestore needs to finish
+   startup before both adapters, which is controled by polling
+   the triplestore using curl until it responds.
+"
+USAGE="   Usage: run_all.sh [-t|h]
+      -t ... \"tail\" - Opens tail -f for each output log in new gnome-terminals.
+      -h ... help
+"
 
 # process arguments
-if [ "$#" -ne 0 ]; then
-    echo -e " Invalid arguments\n Usage: run_all.sh"
+if [ "$#" -eq 0 ]; then
+    : # all good
+elif [ "$#" -eq 1 ]; then
+    if [ "$1" = "-h" ]; then
+        echo "$HELP"
+        echo "$USAGE"
+        exit 0
+    elif [ "$1" != "-t" ]; then
+        echo -e "Invalid arguments\n"
+        echo "$USAGE"
+        exit 1
+    fi
+else
+    echo -e "Invalid arguments\n"
+    echo "$USAGE"
     exit 1
 fi
 
@@ -28,7 +46,6 @@ fi
 USRPATH=$PWD                        # get the call directory
 ROOTDIR=$(dirname $(realpath $0))   # get the script directory
 cd $ROOTDIR                         # move to the script directory
-
 
 # make sure configuration files exist
 if [ ! -f "./analysis/VeriFitAnalysis.properties" ]; then
@@ -45,14 +62,22 @@ if [ ! -f "./compilation/VeriFitCompilation.properties" ]; then
 fi
 
 
+killTailTerminals(){
+    kill $(ps -ef | grep "tail -f .*/logs/../logs/../logs/analysis_" | head -1 | awk '{ print $2 }') &> /dev/null   # funny path /logs/../logs/../logs/ to avoid killing unwanted tail commands 
+    kill $(ps -ef | grep "tail -f .*/logs/../logs/../logs/compilation_" | head -1 | awk '{ print $2 }') &> /dev/null
+    kill $(ps -ef | grep "tail -f .*/logs/../logs/../logs/triplestore_" | head -1 | awk '{ print $2 }') &> /dev/null
+}
+
 # catch ctrl+c and kill all subprocesses
 trap 'killall' INT
 killall() {
     trap '' INT TERM     # ignore INT and TERM while shutting down
     echo -e "\nShutting down..."
     kill -TERM 0
+    killTailTerminals
     wait
     echo "All done."
+
     exit 0
 }
 
@@ -89,11 +114,18 @@ analysis_url="$analysis_host:$analysis_port/analysis/"
 
 
 # create log files and append headings
-mkdir $USRPATH/logs &> /dev/null
+mkdir $USRPATH &> /dev/null
 CURTIME=$(date +%F_%T)
 echo -e "####################################################\n## Run started at: $CURTIME" > "$USRPATH/logs/triplestore_$CURTIME.log"
 echo -e "####################################################\n## Run started at: $CURTIME" > "$USRPATH/logs/compilation_$CURTIME.log"
 echo -e "####################################################\n## Run started at: $CURTIME" > "$USRPATH/logs/analysis_$CURTIME.log"
+
+# open new terminals that tail the log files and record their PIDs to kill later
+if [ "$1" = "-t" ]; then
+    gnome-terminal --title="tail: Triplestore Log" -- /bin/bash -c "tail -f $USRPATH/logs/../logs/../logs/triplestore_$CURTIME.log" # funny path /logs/../logs/../logs/ to avoid killing unwanted tail commands 
+    gnome-terminal --title="tail: Compilation Log" -- /bin/bash -c "tail -f $USRPATH/logs/../logs/../logs/compilation_$CURTIME.log"
+    gnome-terminal --title="tail: Analysis Log" -- /bin/bash -c "tail -f $USRPATH/logs/../logs/../logs/analysis_$CURTIME.log"
+fi
 
 # start the triplestore
 echo "Starting the Triplestore"
