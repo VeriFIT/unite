@@ -25,6 +25,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
+import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
@@ -33,6 +34,7 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanCo
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.ParserManager;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionParameter;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.RequestRunner;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.GetModifFilesBySnapshot;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
@@ -45,13 +47,13 @@ import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
  */
 public class SutAnalyse extends RequestRunner
 {
+	final private List<ExecutionParameter> execParameters;
 	final private String execAutoRequestId;
 	private AutomationRequest execAutoRequest;
 	final private String resAutoResultId;
 	private AutomationResult resAutoResult;
 	final private String execSutId;
 	private SUT execSut;
-	final private Map<String, Pair<String,Integer>> inputParamsMap;
 
 	final private AutomationPlanConfManager.AutomationPlanConf autoPlanConf;
 	
@@ -60,13 +62,14 @@ public class SutAnalyse extends RequestRunner
 	 * @param execAutoRequest	Executed AutomationRequest resource object
 	 * @param resAutoResult		Result AutomationResult resource object
 	 * @param execSut			Executed SUT resource object
+	 * @param execParameters	Execution parameters
 	 * @param inputParamsMap	Input parameters as a map of "name" => "(value, position)"
 	 */
-	public SutAnalyse(AutomationRequest execAutoRequest, AutomationResult resAutoResult, SUT execSut, Map<String, Pair<String,Integer>> inputParamsMap) 
+	public SutAnalyse(AutomationRequest execAutoRequest, AutomationResult resAutoResult, SUT execSut, List<ExecutionParameter> execParameters) 
 	{
 		super();
-		
-		this.inputParamsMap = inputParamsMap;
+
+		this.execParameters = execParameters;
 		this.execAutoRequestId = Utils.getResourceIdFromUri(execAutoRequest.getAbout());
 		this.execAutoRequest = execAutoRequest;
 		this.resAutoResultId = Utils.getResourceIdFromUri(resAutoResult.getAbout());
@@ -86,11 +89,23 @@ public class SutAnalyse extends RequestRunner
 	 */
 	public void run()
 	{
-		// get non-commandline input parameters (dont have commandline position - getRight() == -1)
-		final String outputRegex = this.inputParamsMap.get("outputFileRegex").getLeft();
-		final String zipOutputs = this.inputParamsMap.get("zipOutputs").getLeft();
-		final String timeout = this.inputParamsMap.get("timeout").getLeft();
-		final String toolCommand = this.inputParamsMap.get("toolCommand").getLeft();
+		// input parameters
+		String outputRegex = null;
+		String zipOutputs = null;
+		String timeout = null;
+		String toolCommand = null;
+		
+		// extract values from parameters
+		for (ExecutionParameter param : this.execParameters)
+		{ 
+			if (param.getName().equals("outputFileRegex")) outputRegex = param.getValue();
+			else if (param.getName().equals("zipOutputs")) zipOutputs = param.getValue();
+			else if (param.getName().equals("timeout")) timeout = param.getValue();
+			else if (param.getName().equals("toolCommand")) toolCommand = param.getValue();
+		}
+
+		// build the string to execute later from command line input parameters (those that have a commandline position)
+		final String stringToExecute = buildStringToExecFromParams(toolCommand, this.execParameters);
 
 		// set the states of the Automation Result and Request to "inProgress" - if they are not that already
 		if (!(execAutoRequest.getState().iterator().next().getValue()
@@ -101,7 +116,6 @@ public class SutAnalyse extends RequestRunner
 			execAutoRequest.replaceState(OslcValues.AUTOMATION_STATE_INPROGRESS);
 			VeriFitAnalysisManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
 		}
-
 
 	    // prepare Contribution resources
 		Contribution executionTime = new Contribution();
@@ -137,7 +151,6 @@ public class SutAnalyse extends RequestRunner
 	    Link executionVerdict;
 	    ExecutionResult analysisRes = null;
 		try {
-			final String stringToExecute = buildStringToExecFromParams(toolCommand, this.inputParamsMap);
 			final Path SUTdirAsPath = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
 			
 			statusMessage.setValue("Executing: " + stringToExecute + "\n  In dir: " + SUTdirAsPath + "\n");
@@ -256,10 +269,10 @@ public class SutAnalyse extends RequestRunner
 
 	/**
 	 * Build the string to execute from input parameters based on their positions
-	 * @param inputParamsMap
+	 * @param execParams
 	 * @return The string to execute
 	 */
-	private String buildStringToExecFromParams(String toolCommand, Map<String, Pair<String,Integer>> inputParamsMap)
+	private String buildStringToExecFromParams(String toolCommand, List<ExecutionParameter> execParams)
 	{
 		toolCommand = (toolCommand.equalsIgnoreCase("true") ? this.autoPlanConf.getLaunchCommand() : ""); // insert the analysis tool launch command if the parameter was true
 		
@@ -267,14 +280,18 @@ public class SutAnalyse extends RequestRunner
 			+  toolCommand + " "
 			+ this.autoPlanConf.getToolSpecificArgs();
 		
-		// sort all input params based on their command line position and append them to the string to execute
-		List<Pair<String,Integer>> inputParamsList = new ArrayList<Pair<String,Integer>>(inputParamsMap.values());
-		inputParamsList.sort((Pair<String,Integer> a, Pair<String,Integer> b) -> a.getRight().compareTo(b.getRight()));
-		for (Pair<String, Integer> param : inputParamsList)
+		List<ExecutionParameter> cmdLineParams = new ArrayList<ExecutionParameter>();
+		for (ExecutionParameter param : execParams)
 		{
-			if (param.getRight() != -1) // -1 means "not a commandline parameter" -> dont add those
-				buildStringToExecute += " " + param.getLeft();
-
+			if (param.isCmdLineParameter())
+				cmdLineParams.add(param);
+		}
+		
+		// sort all input params based on their command line position and append them to the string to execute
+		cmdLineParams.sort((ExecutionParameter a, ExecutionParameter b) -> a.getCmdPosition().compareTo(b.getCmdPosition()));
+		for (ExecutionParameter param : cmdLineParams)
+		{
+			buildStringToExecute += " " + param.getValue();
 		}
 		return buildStringToExecute;
 	}

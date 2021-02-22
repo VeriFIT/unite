@@ -328,7 +328,7 @@
 											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:producedAutomationResult rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationResults/\" + requestId);",
 											"});",
 											"",
-											""
+											" setTimeout(function(){}, [500]);"
 										],
 										"type": "text/javascript"
 									}

@@ -53,6 +53,9 @@ import org.eclipse.lyo.oslc4j.core.model.Occurs;
 import org.eclipse.lyo.oslc4j.core.model.OslcConstants;
 import org.eclipse.lyo.oslc4j.core.model.Representation;
 import org.eclipse.lyo.oslc4j.core.model.ValueType;
+
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
+
 import org.eclipse.lyo.oslc4j.core.model.ResourceShape;
 import org.eclipse.lyo.oslc4j.core.model.ResourceShapeFactory;
 
@@ -143,6 +146,13 @@ public class AutomationPlan
         super(about);
     
         // Start of user code constructor2
+		this.setIdentifier(Utils.getResourceIdFromUri(about));
+		Date timestamp = new Date();
+		this.setCreated(timestamp);
+		this.setModified(timestamp);
+		//this.setInstanceShape(new URI(VeriFitAnalysisProperties.PATH_RESOURCE_SHAPES + "automationPlan"));
+		//this.addServiceProvider(new URI(VeriFitAnalysisProperties.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
+		//this.addType(new URI("http://open-services.net/ns/auto#AutomationPlan"));
         // End of user code
     }
     

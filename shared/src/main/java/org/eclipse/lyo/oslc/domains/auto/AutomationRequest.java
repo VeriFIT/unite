@@ -53,6 +53,10 @@ import org.eclipse.lyo.oslc4j.core.model.Occurs;
 import org.eclipse.lyo.oslc4j.core.model.OslcConstants;
 import org.eclipse.lyo.oslc4j.core.model.Representation;
 import org.eclipse.lyo.oslc4j.core.model.ValueType;
+
+import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
+
 import org.eclipse.lyo.oslc4j.core.model.ResourceShape;
 import org.eclipse.lyo.oslc4j.core.model.ResourceShapeFactory;
 
@@ -155,6 +159,14 @@ public class AutomationRequest
         super(about);
     
         // Start of user code constructor2
+		this.setIdentifier(Utils.getResourceIdFromUri(about));
+		Date timestamp = new Date();
+		this.setCreated(timestamp);
+		this.setModified(timestamp);
+		this.replaceState(OslcValues.AUTOMATION_STATE_NEW);
+		this.setDesiredState(OslcValues.AUTOMATION_STATE_COMPLETE);
+		//this.setInstanceShape();
+		//this.addType();
         // End of user code
     }
     

@@ -10,22 +10,6 @@
 
 package cz.vutbr.fit.group.verifit.oslc.shared.utils;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
-import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
-import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
-import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
-import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
-import org.eclipse.lyo.oslc4j.core.model.Link;
-import org.eclipse.lyo.oslc4j.provider.jena.JenaModelHelper;
-import org.eclipse.lyo.store.Store;
-import org.eclipse.lyo.store.StorePool;
-
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
-import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -37,16 +21,27 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
+import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
+import org.eclipse.lyo.oslc4j.core.model.Link;
+import org.eclipse.lyo.oslc4j.provider.jena.JenaModelHelper;
+import org.eclipse.lyo.store.Store;
+import org.eclipse.lyo.store.StorePool;
+
+import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
 
 public class Utils {
 
@@ -251,40 +246,27 @@ public class Utils {
 				.replaceAll("%5C", "\\\\"); 
 	}
 	
-	/** TODO make into a class
-	 * Check that the AutomationRequest contains the necessary input parameters based on its AutoPlan, fill the AutomationResult with output parameters (default values),
-	 * and return a simplified map of parameters (TODO refactor the map)
-	 * @param execAutoRequest			The AutomationRequest to execute
-	 * @param newAutoResult				The AutomationResult created by the AutoRequest.
-	 * @param execAutoPlan				The AutomationPlan refferenced by the executed AutomationRequest
-	 * @throws OslcResourceException 	When the executed AutomationRequest properties are invalid or missing
-	 * @return	A map of input parameters [ name, Pair(value,position) ]; position -1 means there was no position
+	/**
+	 * TODO make into a class
+	 * Checks that all input parameters are valid (occurs, allowed value) that there are no unknown parameters and creates output parameters using default values.
+	 * @param inputParameters
+	 * @param parameterDefinitions
+	 * @return Output parameters for an AutomationResult
+	 * @throws OslcResourceException
 	 */
-	public static Map<String, Pair<String,Integer>> processAutoReqInputParams(AutomationRequest execAutoRequest, AutomationResult newAutoResult, AutomationPlan execAutoPlan) throws OslcResourceException
+	public static Set<ParameterInstance> checkInputParamsAndProduceOuputParams(final Set<ParameterInstance> inputParameters, final Set<ParameterDefinition> parameterDefinitions) throws OslcResourceException
 	{
-		/// check the input parameters and create a map of "name" -> ("value", position)
-		Map<String, Pair<String,Integer>> inputParamsMap = new HashMap<String, Pair<String,Integer>>();
+		Set<ParameterInstance> outputParams = new HashSet<ParameterInstance>();
 		
 		// loop through autoPlan defined parameters to match them with the input params
-		for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
-		{
-			Integer paramPosition;
-			if (definedParam.getCommandlinePosition() != null)
-			{
-				paramPosition = definedParam.getCommandlinePosition();
-			}
-			else
-			{
-				paramPosition = -1;
-			}
-				
-			// find the corresponding autoRequest input parameter
+		for (ParameterDefinition definedParam : parameterDefinitions)
+		{				
+			// find the corresponding autoRequest input parameter to check allowed values
 			boolean matched = false;
-			for (ParameterInstance submittedParam : execAutoRequest.getInputParameter())
+			for (ParameterInstance submittedParam : inputParameters)
 			{				
 				if (definedParam.getName().equals(submittedParam.getName()))
 				{
-					
 					// check if the value is allowed
 					Boolean validValue = true;
 					if (definedParam.getAllowedValue().size() > 0)
@@ -304,22 +286,19 @@ public class Utils {
 						throw new OslcResourceException("value '" + submittedParam.getValue() + "' not allowed for the '" + definedParam.getName() + "' parameter");
 					}
 					
-					inputParamsMap.put(definedParam.getName(), Pair.of(submittedParam.getValue(),paramPosition));
 					matched = true;
 				}
 			}
 			// try to use the default value if no matching input param found
 			if (!matched && definedParam.getDefaultValue() != null)
 			{
-				inputParamsMap.put(definedParam.getName(), Pair.of(definedParam.getDefaultValue(), paramPosition));
 				matched = true;
 
 				// add the default value as an output parameter to the Automation Result
-				ParameterInstance outputParameter = null;
-				outputParameter = new ParameterInstance();
+				ParameterInstance outputParameter = new ParameterInstance();
 				outputParameter.setName(definedParam.getName());
 				outputParameter.setValue(definedParam.getDefaultValue());
-				newAutoResult.addOutputParameter(outputParameter);
+				outputParams.add(outputParameter);
 			}
 			
 			// check parameter occurrences
@@ -343,10 +322,10 @@ public class Utils {
 		}
 		
 		// check that there were no unknown input parameters
-		for (ParameterInstance submittedParam : execAutoRequest.getInputParameter())
+		for (ParameterInstance submittedParam : inputParameters)
 		{				
 			boolean matched = false;
-			for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
+			for (ParameterDefinition definedParam : parameterDefinitions)
 			{
 				if (definedParam.getName().equals(submittedParam.getName()))
 					matched = true;
@@ -356,6 +335,6 @@ public class Utils {
 				throw new OslcResourceException("'" + submittedParam.getName() + "' input parameter not recognized");
 		}
 		
-		return inputParamsMap;
+		return outputParams;
 	}
 }

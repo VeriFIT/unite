@@ -54,6 +54,7 @@ import javax.ws.rs.core.Response.Status;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils.ResourceIdGen;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionParameter;
 import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
 import cz.vutbr.fit.group.verifit.oslc.shared.queuing.RequestRunnerQueues;
 
@@ -66,6 +67,7 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.clients.CompilationAdapterClient
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
@@ -150,21 +152,19 @@ public class VeriFitAnalysisManager {
     	}
         
 		try {
+
 			String newID = aResource.getIdentifier();
-			newResource = aResource;
-			newResource.setAbout(VeriFitAnalysisResourcesFactory.constructURIForAutomationPlan(newID));
-			
-			// resources set by the service provider
-			newResource.setIdentifier(newID);
-			Date timestamp = new Date();
-			newResource.setCreated(timestamp);
-			newResource.setModified(timestamp);
-			//newResource.setInstanceShape(new URI(VeriFitAnalysisProperties.PATH_RESOURCE_SHAPES + "automationPlan"));
-			//newResource.addServiceProvider(new URI(VeriFitAnalysisProperties.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
-			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationPlan"));
+			newResource = VeriFitAnalysisResourcesFactory.createAutomationPlan(newID);
+			newResource.setParameterDefinition(aResource.getParameterDefinition());
+			newResource.setUsesExecutionEnvironment(aResource.getUsesExecutionEnvironment());
+			newResource.setTitle(aResource.getTitle());
+			newResource.setDescription(aResource.getDescription());
+			newResource.setCreator(aResource.getCreator());
+			newResource.setContributor(aResource.getContributor());
+			newResource.setExtendedProperties(aResource.getExtendedProperties());
 			
 			ParameterDefinition SUT = new ParameterDefinition();
-			SUT.setDescription("Refference to an SUT resource to analyse. SUTs are created using the compilation provider."); //TODO
+			SUT.setDescription("Refference to an SUT resource to analyse. SUTs are created using the compilation provider.");
 			SUT.setName("SUT");
 			SUT.setOccurs(OslcValues.OSLC_OCCURS_ONE);
 			SUT.addValueType(OslcValues.OSLC_VAL_TYPE_STRING); // TODO change to URI
@@ -173,7 +173,7 @@ public class VeriFitAnalysisManager {
 			ParameterDefinition outputFileRegex = new ParameterDefinition();
 			outputFileRegex.setDescription("Files that change during execution and match this regex will "
 					+ "be added as contributions to the Automation Result. The regex needs to match the "
-					+ "whole filename."); //TODO
+					+ "whole filename.");
 			outputFileRegex.setName("outputFileRegex");
 			outputFileRegex.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			outputFileRegex.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
@@ -208,19 +208,15 @@ public class VeriFitAnalysisManager {
 			// persist in the triplestore
 	        Store store = storePool.getStore();
 	        try {
-	            URI uri = newResource.getAbout();
-	            
-	            aResource.setAbout(uri);
 	            try {
-	                store.updateResources(storePool.getDefaultNamedGraphUri(), aResource);
+	                store.updateResources(storePool.getDefaultNamedGraphUri(), newResource);
 	            } catch (StoreAccessException e) {
-	                log.error("Failed to create resource: '" + aResource.getAbout() + "'", e);            
-	                throw new WebApplicationException("Failed to create resource: '" + aResource.getAbout() + "'", e, Status.INTERNAL_SERVER_ERROR);
+	                log.error("Failed to create resource: '" + newResource.getAbout() + "'", e);            
+	                throw new WebApplicationException("Failed to create resource: '" + newResource.getAbout() + "'", e, Status.INTERNAL_SERVER_ERROR);
 	            }
 	        } finally {
 	            storePool.releaseStore(store);
 	        }
-	        newResource = aResource;
 
 		} catch (WebApplicationException e) {
 			throw new StoreAccessException("AutomationPlan creation failed: " + e.getMessage());
@@ -229,66 +225,66 @@ public class VeriFitAnalysisManager {
 		return newResource;
     }
     
-    /**
-     * Creates an AutomationResult resource with the specified properties, and stores in the Adapter's catalog.
-     * @param aResource			The new resource will copy properties from the specified aResource.
-     * @param newID				ID to assign to the new Result (meant to be the same as the Request ID)
-     * @return					The newly created resource. Or null if one of the required properties was missing.
-     */
-    public static AutomationResult createAutomationResult(final AutomationResult aResource, final String newID)
-    {
-    	AutomationResult newResource = null;
-    	
-    	// check that required properties are specified in the input parameter
-    	if (aResource == null || aResource.getTitle() == null || aResource.getTitle().isEmpty() ||
-    		aResource.getState() == null || aResource.getState().isEmpty() ||
-    		aResource.getVerdict() == null || aResource.getVerdict().isEmpty() ||
-    		aResource.getReportsOnAutomationPlan().getValue() == null)
-    	{
-    		return null;
-    	}
-        
-		try {
-			newResource = aResource;
-			aResource.setAbout(VeriFitAnalysisResourcesFactory.constructURIForAutomationResult(newID));
-			
-			// resources set by the service provider
-			newResource.setIdentifier(newID);
-			Date timestamp = new Date();
-			newResource.setCreated(timestamp);
-			newResource.setModified(timestamp);
-			//newResource.setInstanceShape(new URI(VeriFitAnalysisProperties.PATH_RESOURCE_SHAPES + "automationResult"));
-			//newResource.addServiceProvider(new URI(VeriFitAnalysisProperties.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
-			newResource.setDesiredState(OslcValues.AUTOMATION_STATE_COMPLETE);
-			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationResult"));
+    
 
+	/**
+	 * 
+	 * @param autoRequest
+	 * @param outputParams
+	 * @return
+	 * @throws OslcResourceException
+	 */
+    public static AutomationResult createAutomationResultForAutomationRequest(final AutomationRequest autoRequest, final Set<ParameterInstance> outputParams) throws OslcResourceException
+    {
+    	String id = autoRequest.getIdentifier();
+    	AutomationResult newAutoResult = VeriFitAnalysisResourcesFactory.createAutomationResult(id);
+    	
+		newAutoResult.setTitle("Result - " + autoRequest.getTitle());
+		newAutoResult.setReportsOnAutomationPlan(autoRequest.getExecutesAutomationPlan());
+		newAutoResult.setProducedByAutomationRequest(VeriFitAnalysisResourcesFactory.constructLinkForAutomationRequest(id));
+		newAutoResult.setInputParameter(autoRequest.getInputParameter());
+		newAutoResult.setOutputParameter(outputParams);
+		newAutoResult.setContributor(autoRequest.getContributor());
+		newAutoResult.setCreator(autoRequest.getCreator());
+		newAutoResult.setState(autoRequest.getState());
+		newAutoResult.setDesiredState(autoRequest.getDesiredState());
+		
+    	// check that required properties are specified in the input parameter
+    	if (newAutoResult == null || newAutoResult.getTitle() == null || newAutoResult.getTitle().isEmpty() ||
+			newAutoResult.getState() == null || newAutoResult.getState().isEmpty() ||
+			newAutoResult.getVerdict() == null || newAutoResult.getVerdict().isEmpty() ||
+			newAutoResult.getReportsOnAutomationPlan().getValue() == null)
+    	{
+    		throw new OslcResourceException("Failed to create Automation Result - Missing properties");
+    	}
+		
+
+		try {
 			// persist in the triplestore
 	        Store store = storePool.getStore();
 	        try {
-	            URI uri = newResource.getAbout();
+	            URI uri = newAutoResult.getAbout();
 	            
 	            if (store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
 	                log.error("Cannot create a resource that already exists: '" + uri + "'");
 	                throw new WebApplicationException("Cannot create a resource that already exists: '" + uri + "'", Status.SEE_OTHER);
 	            }
-	            aResource.setAbout(uri);
 	            try {
-	                store.appendResource(storePool.getDefaultNamedGraphUri(), aResource);
+	                store.appendResource(storePool.getDefaultNamedGraphUri(), newAutoResult);
 	            } catch (StoreAccessException e) {
-	                log.error("Failed to create resource: '" + aResource.getAbout() + "'", e);            
-	                throw new WebApplicationException("Failed to create resource: '" + aResource.getAbout() + "'", e, Status.INTERNAL_SERVER_ERROR);
+	                log.error("Failed to create resource: '" + newAutoResult.getAbout() + "'", e);            
+	                throw new WebApplicationException("Failed to create resource: '" + newAutoResult.getAbout() + "'", e, Status.INTERNAL_SERVER_ERROR);
 	            }
 	        } finally {
 	            storePool.releaseStore(store);
 	        }
-	        newResource = aResource;
 
 		} catch (WebApplicationException e) {
 			log.error("AutomationResult creation failed: " + e.getMessage());
 		}
 		
-		return newResource;
-    }    
+		return newAutoResult;
+    }
     
 	/**
      * Handles GET requests to Contribution resources with octet-stream response by directly returning the contents of the file
@@ -436,7 +432,6 @@ public class VeriFitAnalysisManager {
     {
         
         // Start of user code contextDestroyed
-        // TODO Implement code to shutdown connections to data backbone etc...
         // End of user code
     }
 
@@ -482,9 +477,6 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code queryAutomationPlans
-        // TODO Implement code to return a set of resources.
-        // An empty List should imply that no resources where found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code
         return resources;
     }
@@ -513,9 +505,6 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code queryAutomationResults
-        // TODO Implement code to return a set of resources.
-        // An empty List should imply that no resources where found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code
         return resources;
     }
@@ -544,9 +533,6 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code queryAutomationRequests
-        // TODO Implement code to return a set of resources.
-        // An empty List should imply that no resources where found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code
         return resources;
     }
@@ -569,9 +555,6 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code AutomationPlanSelector
-        // TODO Implement code to return a set of resources, based on search criteria 
-        // An empty List should imply that no resources where found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code
         return resources;
     }
@@ -594,9 +577,6 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code AutomationResultSelector
-        // TODO Implement code to return a set of resources, based on search criteria 
-        // An empty List should imply that no resources where found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code
         return resources;
     }
@@ -619,13 +599,10 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code AutomationRequestSelector
-        // TODO Implement code to return a set of resources, based on search criteria 
-        // An empty List should imply that no resources where found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code
         return resources;
     }
-    public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource) throws OslcResourceException
+    public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, AutomationRequest aResource) throws OslcResourceException
     {
         AutomationRequest newResource = null;
         
@@ -633,7 +610,6 @@ public class VeriFitAnalysisManager {
         
         // TODO check triplestore online
         // ......
-        Link requestState = null;
         SutAnalyse runner = null;
 		try {
 			// error response on empty creation POST
@@ -645,34 +621,22 @@ public class VeriFitAnalysisManager {
 				throw new OslcResourceException("executesAutomationPlan property missing");
 			if (aResource.getTitle() == null || aResource.getTitle().isEmpty())
 				throw new OslcResourceException("title property missing");
-	        
-			// copy the properties specified in the POST request
+			
+			
+			// create a basic Automation Request (with core properties like creation time, identifier, ...)
+			// and set relevant properties from the Automation Request received from the client
 			String newID = AutoRequestIdGen.getId();
-			newResource = aResource;
-			newResource.setAbout(VeriFitAnalysisResourcesFactory.constructURIForAutomationRequest(newID));
+			newResource = VeriFitAnalysisResourcesFactory.createAutomationRequest(newID);
+			newResource.setInputParameter(aResource.getInputParameter());
+			newResource.setTitle(aResource.getTitle());
+			newResource.setDescription(aResource.getDescription());
+			newResource.setExecutesAutomationPlan(aResource.getExecutesAutomationPlan());
+			newResource.setCreator(aResource.getCreator());
+			newResource.setContributor(aResource.getContributor());
+			newResource.setExtendedProperties(aResource.getExtendedProperties());
 			
-			// resources set by the service provider
-			newResource.setIdentifier(newID);
-			Date timestamp = new Date();
-			newResource.setCreated(timestamp);
-			newResource.setModified(timestamp);
-			//newResource.setInstanceShape(new URI(AnacondaAdapterConstants.PATH_RESOURCE_SHAPES + "automationRequest"));
-			//newResource.addServiceProvider(new URI(AnacondaAdapterConstants.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
-			newResource.setDesiredState(OslcValues.AUTOMATION_STATE_COMPLETE);
-			//newResource.addType(new URI("http://open-services.net/ns/auto#AutomationRequest"));
 			
-
-			// create an AutomationResult for this AutoRequest; output parameters will be set by processAutoReqInputParams()
-			AutomationResult propAutoResult = new AutomationResult();
-			propAutoResult.setTitle("Result - " + newResource.getTitle());
-			propAutoResult.setReportsOnAutomationPlan(newResource.getExecutesAutomationPlan());
-			propAutoResult.setProducedByAutomationRequest(VeriFitAnalysisResourcesFactory.constructLinkForAutomationRequest(newID));
-			propAutoResult.setInputParameter(newResource.getInputParameter());
-			propAutoResult.setContributor(newResource.getContributor());
-			propAutoResult.setCreator(newResource.getCreator());
-			propAutoResult.addVerdict(OslcValues.AUTOMATION_VERDICT_UNAVAILABLE);
-			
-			// get the executed autoPlan
+			// get the executed autoPlan and load its configuration
 			String execAutoPlanId = Utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue());
 			AutomationPlan execAutoPlan = null;
 			try {
@@ -680,78 +644,114 @@ public class VeriFitAnalysisManager {
 			} catch (Exception e) {
 				throw new OslcResourceException("AutomationPlan not found (id: " + execAutoPlanId + ")");			
 			}
+			AutomationPlanConf execAutoPlanConf = AutomationPlanConfManager.getInstance().getAutoPlanConf(execAutoPlanId);
+
+			// check whether the new Auto Request can start execution immediately or needs to wait in a queue
+			// and set its state accordingly
+			if (execAutoPlanConf.getOneInstanceOnly() == false) {	// no instance restrictions --> can run
+				newResource.replaceState(OslcValues.AUTOMATION_STATE_INPROGRESS);
+			} else {	// only one instance allowed at a time --> check queue
+				newResource.replaceState(OslcValues.AUTOMATION_STATE_QUEUED);
+			}			
 			
-			// check input parameters, add output parameters to the AutoResult, and make an input map for the runner
-			Map<String, Pair<String,Integer>> inputParamsMap = Utils.processAutoReqInputParams(newResource, propAutoResult, execAutoPlan);
+			
+			// check input parameters, and create output parameters
+			Set<ParameterInstance> outputParams = Utils.checkInputParamsAndProduceOuputParams(newResource.getInputParameter(), execAutoPlan.getParameterDefinition());
+
+			// get some values from input parameters
+			String executedSutId = null;
+			for ( ParameterInstance param : newResource.getInputParameter())
+			{ 
+				if (param.getName().equals("SUT"))
+				{
+					executedSutId = param.getValue();
+				}
+			}
 			
 			// check that the SUT to be executed exists
 			SUT executedSUT = null;
 			try {
-				String sutURI = inputParamsMap.get("SUT").getLeft();
-				executedSUT = CompilationAdapterClient.getSUT(sutURI);
+				executedSUT = CompilationAdapterClient.getSUT(executedSutId);
 			} catch (Exception e) {
 				throw new IOException("Failed to get refferenced SUT - make sure the compilation provider is running.\nClient response: " + e.getMessage());
 			}
 			
-			// check if the SUT launch command or the SUT build command should be used and get it from the SUT
-			Pair<String,Integer> launchSUT = inputParamsMap.get("launchSUT");
-			Pair<String,Integer> SUTbuildCommand = inputParamsMap.get("SUTbuildCommand");
-			if (launchSUT != null)
-			{
-				String launchCmd = executedSUT.getLaunchCommand();
-				if (launchCmd == null)
-					throw new OslcResourceException("paramer launchSUT - referenced SUT is missing a launchCommand");
-				else	
-					inputParamsMap.put("launchSUT", Pair.of(launchCmd, Integer.parseInt(launchSUT.getLeft())));
-			}
-			if (SUTbuildCommand != null)
-			{
-				String buildCmd = executedSUT.getBuildCommand();
-				if (buildCmd == null)
-					throw new OslcResourceException("paramer SUTbuildCommand - referenced SUT is missing a buildCommand");
-				else	
-					inputParamsMap.put("SUTbuildCommand", Pair.of(buildCmd, Integer.parseInt(SUTbuildCommand.getLeft())));
-			}
+			// create an AutomationResult for this AutoRequest; output parameters will be set by processAutoReqInputParams()
+			AutomationResult newAutoResult = createAutomationResultForAutomationRequest(newResource, outputParams);
+			newResource.setProducedAutomationResult(new Link(newAutoResult.getAbout()));
+			
+			// create Execution Parameters for the runner
+			List<ExecutionParameter> execParams = ExecutionParameter.createExecutionParameters(newAutoResult.getInputParameter(), newAutoResult.getOutputParameter(), execAutoPlan.getParameterDefinition());
+			
 
-			if (launchSUT != null || SUTbuildCommand != null)
-			{
-				// modify the output parameters of the automation result (was added by processAutoReqInputParams)
-				for (ParameterInstance param : propAutoResult.getOutputParameter())
+			// process special input parameters
+			for ( ParameterInstance param : newAutoResult.getInputParameter())
+			{ 
+				if (param.getName().equals("launchSUT") || param.getName().equals("SUTbuildCommand"))
 				{
+					// add the value as an updated output parameter
+					ExecutionParameter newSpecialExecParam = null;
+					
 					if (param.getName().equals("launchSUT"))
 					{
-						param.setValue(executedSUT.getLaunchCommand());
+						String launchCmd = executedSUT.getLaunchCommand();
+						if (launchCmd == null)
+							throw new OslcResourceException("paramer launchSUT - referenced SUT is missing a launchCommand");
+						newSpecialExecParam = new ExecutionParameter(
+							param.getName(),
+							launchCmd,
+							Integer.parseInt(param.getValue())
+						);
 					}
 					else if (param.getName().equals("SUTbuildCommand"))
 					{
-						param.setValue(executedSUT.getBuildCommand());
+						String buildCmd = executedSUT.getBuildCommand();
+						if (buildCmd == null)
+							throw new OslcResourceException("paramer SUTbuildCommand - referenced SUT is missing a buildCommand");
+						newSpecialExecParam = new ExecutionParameter(
+							param.getName(),
+							buildCmd,
+							Integer.parseInt(param.getValue())
+						);
 					}
+					execParams.add(newSpecialExecParam);
 				}
 			}
-
-			// load the automation plan's configuration from the conf. manager
-			AutomationPlanConf execAutoPlanConf = AutomationPlanConfManager.getInstance().getAutoPlanConf(execAutoPlanId);
-
-			// check whether the new Auto Request can start execution immediately or needs to wait in a queue
-			// and set its state accordingly (same for the Auto Result)
-			if (execAutoPlanConf.getOneInstanceOnly() == false) // no instance restrictions --> can run
-			{
-				requestState = OslcValues.AUTOMATION_STATE_INPROGRESS;
+			for ( ParameterInstance param : newAutoResult.getOutputParameter())
+			{ 
+				if (param.getName().equals("launchSUT") || param.getName().equals("SUTbuildCommand"))
+				{
+					// add the value as an updated output parameter
+					ExecutionParameter newSpecialExecParam = null;
+					
+					if (param.getName().equals("launchSUT"))
+					{
+						String launchCmd = executedSUT.getLaunchCommand();
+						if (launchCmd == null)
+							throw new OslcResourceException("paramer launchSUT - referenced SUT is missing a launchCommand");
+						newSpecialExecParam = new ExecutionParameter(
+							param.getName(),
+							launchCmd,
+							Integer.parseInt(param.getValue())
+						);
+					}
+					else if (param.getName().equals("SUTbuildCommand"))
+					{
+						String buildCmd = executedSUT.getBuildCommand();
+						if (buildCmd == null)
+							throw new OslcResourceException("paramer SUTbuildCommand - referenced SUT is missing a buildCommand");
+						newSpecialExecParam = new ExecutionParameter(
+							param.getName(),
+							buildCmd,
+							Integer.parseInt(param.getValue())
+						);
+					}
+					execParams.add(newSpecialExecParam);
+				}
 			}
-			else	// only one instance allowed at a time --> check queue
-			{
-				requestState = OslcValues.AUTOMATION_STATE_QUEUED;
-			}			
-			newResource.addState(requestState);
-			propAutoResult.addState(requestState);
 			
-			// persist the AutomationResult and set the setProducedAutomationResult() link for the AutoRequest
-		    AutomationResult newAutoResult = VeriFitAnalysisManager.createAutomationResult(propAutoResult, newID);
-			newResource.setProducedAutomationResult(new Link(newAutoResult.getAbout())); // TODO
-
 			// create a new thread to execute the automation request - and start it OR queue it up
-			runner = new SutAnalyse(newResource, newAutoResult, executedSUT, inputParamsMap);
-			
+			runner = new SutAnalyse(newResource, newAutoResult, executedSUT, execParams);
 			
 		} catch (OslcResourceException | RuntimeException | IOException e) {
 			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
@@ -761,13 +761,14 @@ public class VeriFitAnalysisManager {
 			throw new OslcResourceException("AutomationRequest NOT created - " + e.getMessage());
 		}
 		
-        
+
+		// hack for the generated code below
+		aResource = newResource;
         // End of user code
         Store store = storePool.getStore();
         try {
             URI uri = null;
             // Start of user code createAutomationRequest_storeSetUri
-            //TODO: Set the uri of the resource to be created. Replace this code within the protected user code.
             
             uri = newResource.getAbout();
             
@@ -788,12 +789,12 @@ public class VeriFitAnalysisManager {
         }
         newResource = aResource;
         // Start of user code createAutomationRequest_storeFinalize
-        
+        Link requestState = newResource.getState().iterator().next(); // TODO will always contain one state
         if (requestState.equals(OslcValues.AUTOMATION_STATE_INPROGRESS))
-		{
+        {
 			runner.start();
 		}
-		else	
+        else
 		{
 			AutoRequestQueues.queueUp(
 					Utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue()),
@@ -848,9 +849,6 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code getAutomationRequest
-        // TODO Implement code to return a resource
-        // return 'null' if the resource was not found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code
         return aResource;
     }
@@ -934,9 +932,6 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code getAutomationResult
-        // TODO Implement code to return a resource
-        // return 'null' if the resource was not found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code
         return aResource;
     }
@@ -1020,9 +1015,6 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code getAutomationPlan
-        // TODO Implement code to return a resource
-        // return 'null' if the resource was not found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code
         return aResource;
     }

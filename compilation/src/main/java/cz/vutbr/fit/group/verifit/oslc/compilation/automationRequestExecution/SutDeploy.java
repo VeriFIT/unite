@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -40,6 +41,7 @@ import cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution.su
 import cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution.sutFetcher.SutFetcher;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionParameter;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.RequestRunner;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
@@ -54,18 +56,18 @@ public class SutDeploy extends RequestRunner
 	private AutomationRequest execAutoRequest;
 	final private String resAutoResultId;
 	private AutomationResult resAutoResult;
-	final private Map<String, Pair<String,Integer>> inputParamsMap;
+	final private List<ExecutionParameter> execParameters;
 	
 	/**
 	 * @param execAutoRequest	Executed AutomationRequest resource object
 	 * @param execAutoResult	Result AutomationResult resource object
 	 * @param inputParamsMap	Input parameters as a "name" => "value" map
 	 */
-	public SutDeploy(AutomationRequest execAutoRequest, AutomationResult resAutoResult, Map<String, Pair<String,Integer>> inputParamsMap) 
+	public SutDeploy(AutomationRequest execAutoRequest, AutomationResult resAutoResult, List<ExecutionParameter> execParameters) 
 	{
 		super();
-		
-		this.inputParamsMap = inputParamsMap;
+
+		this.execParameters = execParameters;
 		this.execAutoRequestId = Utils.getResourceIdFromUri(execAutoRequest.getAbout());
 		this.execAutoRequest = execAutoRequest;
 		this.resAutoResultId = Utils.getResourceIdFromUri(resAutoResult.getAbout());
@@ -77,16 +79,27 @@ public class SutDeploy extends RequestRunner
 	 */
 	public void run()
 	{
+		// input parameters
+		String paramSourceGit = null;
+		String paramSourceUrl =  null;
+		String paramSourceBase64 =  null;
+		String paramSourceFilePath =  null;
+		String paramBuildCommand =  null;
+		String paramLaunchCommand =  null;
+		String paramUnpackZip =  null;
 		
-		// get the input parameters	// TODO .getLeft() is ugly	
-		final String paramSourceGit = (inputParamsMap.get("sourceGit") == null) ? null : inputParamsMap.get("sourceGit").getLeft();
-		final String paramSourceUrl = (inputParamsMap.get("sourceUrl") == null) ? null : inputParamsMap.get("sourceUrl").getLeft();
-		final String paramSourceBase64 = (inputParamsMap.get("sourceBase64") == null) ? null : inputParamsMap.get("sourceBase64").getLeft();
-		final String paramSourceFilePath = (inputParamsMap.get("sourceFilePath") == null) ? null : inputParamsMap.get("sourceFilePath").getLeft();
-		final String paramBuildCommand = (inputParamsMap.get("buildCommand") == null) ? null : inputParamsMap.get("buildCommand").getLeft();
-		final String paramLaunchCommand = (inputParamsMap.get("launchCommand") == null) ? null : inputParamsMap.get("launchCommand").getLeft();
-		final String paramUnpackZip = (inputParamsMap.get("unpackZip") == null) ? null : inputParamsMap.get("unpackZip").getLeft();
-
+		// extract values from parameters
+		for (ExecutionParameter param : this.execParameters)
+		{ 
+			if (param.getName().equals("sourceGit")) paramSourceGit = param.getValue();
+			else if (param.getName().equals("sourceUrl")) paramSourceUrl = param.getValue();
+			else if (param.getName().equals("sourceBase64")) paramSourceBase64 = param.getValue();
+			else if (param.getName().equals("sourceFilePath")) paramSourceFilePath = param.getValue();
+			else if (param.getName().equals("buildCommand")) paramBuildCommand = param.getValue();
+			else if (param.getName().equals("launchCommand")) paramLaunchCommand = param.getValue();
+			else if (param.getName().equals("unpackZip")) paramUnpackZip = param.getValue();
+		}
+		
 		// check wich one of the source parameters was used 
 		SutFetcher sutFetcher = null;
 		String ProgramDefinition = "";	//TODO use something else than a string (speed)
@@ -256,7 +269,7 @@ public class SutDeploy extends RequestRunner
 			newSut.setSUTdirectoryPath(folderPath.toAbsolutePath().toString());
 			newSut.setCreator(execAutoRequest.getCreator());
 			newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(execAutoRequestId));
-			VeriFitCompilationManager.createSUT(newSut, execAutoRequestId); // TODO
+			newSut = VeriFitCompilationManager.createSUT(newSut, execAutoRequestId); // TODO
 			resAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(Utils.getResourceIdFromUri(newSut.getAbout()))); // TODO
 		}
 		
