@@ -127,6 +127,9 @@ public class Contribution
         super(about);
     
         // Start of user code constructor2
+		Date timestamp = new Date();
+		this.setCreated(timestamp);
+		this.setModified(timestamp);
         // End of user code
     }
     

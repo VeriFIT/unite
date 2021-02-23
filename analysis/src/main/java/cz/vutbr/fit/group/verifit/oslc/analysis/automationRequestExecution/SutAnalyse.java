@@ -11,42 +11,32 @@
 package cz.vutbr.fit.group.verifit.oslc.analysis.automationRequestExecution;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
+import org.eclipse.lyo.oslc.domains.auto.Contribution;
+import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 
-import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisConstants;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisResourcesFactory;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.ParserManager;
-
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
-import org.eclipse.lyo.oslc.domains.auto.Contribution;
-
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionParameter;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.RequestRunner;
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.GetModifFilesBySnapshot;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
 
@@ -57,13 +47,13 @@ import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
  */
 public class SutAnalyse extends RequestRunner
 {
+	final private List<ExecutionParameter> execParameters;
 	final private String execAutoRequestId;
 	private AutomationRequest execAutoRequest;
 	final private String resAutoResultId;
 	private AutomationResult resAutoResult;
 	final private String execSutId;
 	private SUT execSut;
-	final private Map<String, Pair<String,Integer>> inputParamsMap;
 
 	final private AutomationPlanConfManager.AutomationPlanConf autoPlanConf;
 	
@@ -72,13 +62,14 @@ public class SutAnalyse extends RequestRunner
 	 * @param execAutoRequest	Executed AutomationRequest resource object
 	 * @param resAutoResult		Result AutomationResult resource object
 	 * @param execSut			Executed SUT resource object
+	 * @param execParameters	Execution parameters
 	 * @param inputParamsMap	Input parameters as a map of "name" => "(value, position)"
 	 */
-	public SutAnalyse(AutomationRequest execAutoRequest, AutomationResult resAutoResult, SUT execSut, Map<String, Pair<String,Integer>> inputParamsMap) 
+	public SutAnalyse(AutomationRequest execAutoRequest, AutomationResult resAutoResult, SUT execSut, List<ExecutionParameter> execParameters) 
 	{
 		super();
-		
-		this.inputParamsMap = inputParamsMap;
+
+		this.execParameters = execParameters;
 		this.execAutoRequestId = Utils.getResourceIdFromUri(execAutoRequest.getAbout());
 		this.execAutoRequest = execAutoRequest;
 		this.resAutoResultId = Utils.getResourceIdFromUri(resAutoResult.getAbout());
@@ -98,269 +89,249 @@ public class SutAnalyse extends RequestRunner
 	 */
 	public void run()
 	{
+		// input parameters
+		String outputRegex = null;
+		String zipOutputs = null;
+		String timeout = null;
+		String toolCommand = null;
 		
+		// extract values from parameters
+		for (ExecutionParameter param : this.execParameters)
+		{ 
+			if (param.getName().equals("outputFileRegex")) outputRegex = param.getValue();
+			else if (param.getName().equals("zipOutputs")) zipOutputs = param.getValue();
+			else if (param.getName().equals("timeout")) timeout = param.getValue();
+			else if (param.getName().equals("toolCommand")) toolCommand = param.getValue();
+		}
+
+		// build the string to execute later from command line input parameters (those that have a commandline position)
+		final String stringToExecute = buildStringToExecFromParams(toolCommand, this.execParameters);
+
+		// set the states of the Automation Result and Request to "inProgress" - if they are not that already
+		if (!(execAutoRequest.getState().iterator().next().getValue()
+				.equals(OslcValues.AUTOMATION_STATE_INPROGRESS.getValue())))
+		{
+			resAutoResult.replaceState(OslcValues.AUTOMATION_STATE_INPROGRESS);
+			VeriFitAnalysisManager.updateAutomationResult(null, resAutoResult, resAutoResultId);
+			execAutoRequest.replaceState(OslcValues.AUTOMATION_STATE_INPROGRESS);
+			VeriFitAnalysisManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
+		}
+
+	    // prepare Contribution resources
+		Contribution executionTime = new Contribution();
+		executionTime.setDescription("Total execution time of the analysis in milliseconds."); // TODO CHECK really milliseconds?
+		executionTime.setTitle("executionTime");
+		executionTime.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
+	    
+		Contribution statusMessage = new Contribution();
+		statusMessage.setDescription("Status messages from the adapter about the execution.");
+		statusMessage.setTitle("statusMessage");
+		statusMessage.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+	    
+		Contribution returnCode = new Contribution();
+		returnCode.setDescription("Return code of the execution. If non-zero, then the verdict will be #failed.");
+		returnCode.setTitle("returnCode");
+		returnCode.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);	
+		
+		Contribution analysisStdout = new Contribution();
+	    analysisStdout.setDescription("Standard output of the analysis.");
+	    analysisStdout.setTitle("stdout");
+	    analysisStdout.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+	    
+	    Contribution analysisStderr = new Contribution();
+	    analysisStderr.setDescription("Error output of the analysis.");
+	    analysisStderr.setTitle("stderr");
+	    analysisStderr.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		
+	    // take a snapshot of SUT files modification times before executing the analysis
+	    GetModifFilesBySnapshot snapshotter = new GetModifFilesBySnapshot(new File(execSut.getSUTdirectoryPath()));
+	    snapshotter.takeBeforeSnapshot(outputRegex);
+	    
+		// execute analysis
+	    Link executionVerdict;
+	    ExecutionResult analysisRes = null;
 		try {
-			// get non-commandline input parameters (dont have commandline position - getRight() == -1)
-			final String outputRegex = inputParamsMap.get("outputFileRegex").getLeft();
-			final String zipOutputs = inputParamsMap.get("zipOutputs").getLeft();
-			final String timeout = inputParamsMap.get("timeout").getLeft();
-			final String toolCommand = inputParamsMap.get("toolCommand").getLeft();
+			final Path SUTdirAsPath = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
 			
-
-			// Build the string to execute from commandline input parameters based on their positions TODO maybe move somewhere else
-			String buildStringToExecute = ""
-				+ (toolCommand.equalsIgnoreCase("true") ? this.autoPlanConf.getLaunchCommand() : "") + " "
-				+ this.autoPlanConf.getToolSpecificArgs() + " ";
-			List<Pair<String,Integer>> inputParamsList = new ArrayList<Pair<String,Integer>>(inputParamsMap.values());
-			inputParamsList.sort((Pair<String,Integer> a, Pair<String,Integer> b) -> a.getRight().compareTo(b.getRight()));
-			for (Pair<String, Integer> param : inputParamsList)
+			statusMessage.setValue("Executing: " + stringToExecute + "\n  In dir: " + SUTdirAsPath + "\n");
+	    	analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), this.execAutoRequestId);
+	    	
+			if (analysisRes.timeouted)
 			{
-				if (param.getRight() != -1) // skip the non commandline input params
-					buildStringToExecute += param.getLeft() + " ";
-
+				executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
+				statusMessage.setValue(statusMessage.getValue() + "Analysis aborted due to a " + analysisRes.timeoutType + " timeout (" + timeout + " seconds).");
 			}
-			final String stringToExecute = buildStringToExecute;
-
-
-			// set the states of the Automation Result and Request to "inProgress" - if they are not that already
-			if (!(execAutoRequest.getState().iterator().next().getValue()
-					.toASCIIString().equals(OslcValues.AUTOMATION_STATE_INPROGRESS)))
-			{
-				resAutoResult.setState(new HashSet<Link>());
-				resAutoResult.addState(new Link(new URI(OslcValues.AUTOMATION_STATE_INPROGRESS)));
-				VeriFitAnalysisManager.updateAutomationResult(null, resAutoResult, resAutoResultId);
-				execAutoRequest.setState(new HashSet<Link>());
-				execAutoRequest.addState(new Link(new URI(OslcValues.AUTOMATION_STATE_INPROGRESS)));
-				VeriFitAnalysisManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
+	    	else if (analysisRes.retCode != 0)
+	    	{
+				executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
+				statusMessage.setValue(statusMessage.getValue() + "Analysis failed (returned non-zero: " + analysisRes.retCode + ").");
 			}
+	    	else
+	    	{
+	    		executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
+	    		statusMessage.setValue(statusMessage.getValue() + "Analysis completed successfully.");
+	    	}
 
-		    // prepare stdin & stdout contributions
-			Contribution analysisStdoutLog = new Contribution();
-		    analysisStdoutLog.setDescription("Standard output of the analysis. Provider messages are prefixed with #.");
-		    analysisStdoutLog.setTitle("Analysis stdout");
-		    analysisStdoutLog.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING)));
-		    Contribution analysisStderrLog = new Contribution();
-		    analysisStderrLog.setDescription("Error output of the analysis. Provider messages are prefixed with #.");
-		    analysisStderrLog.setTitle("Analysis stderr");
-		    analysisStderrLog.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING)));
+		} catch (IOException e) {
+			executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
+			statusMessage.setValue(statusMessage.getValue() + "Analysis execution error: " + e.getMessage());
+		} finally {
+			resAutoResult.addContribution(statusMessage); // TODO add infos abou stuff below too
+		}
 
-
-		    // take a snapshot of SUT files modification times before executing the analysis
-		    Map<String, Long> snapshotBeforeAnalysis = takeDirSnapshot(execSut.getSUTdirectoryPath(), outputRegex);
-
-			// analyse SUT
-		    String executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
-			try {
-				analysisStdoutLog.setValue("# Executing: " + stringToExecute + "\n");
-				Path SUTdirAsPath = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
-		    	ExecutionResult analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout));
-
-				if (analysisRes.timeouted)
-				{
-					executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
-			    	analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis aborted due to a " + analysisRes.timeoutType + " timeout (" + timeout + " seconds)\n" //TODO
-			    							+ analysisRes.stdout);
-				}
-		    	else if (analysisRes.retCode != 0)
-		    	{
-					executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
-			    	analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis failed (returned non-zero: " + analysisRes.retCode + ")\n"
-			    							+ analysisRes.stdout);
-				}
-		    	else
-		    	{
-		    		analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis completed successfully\n" + analysisRes.stdout);
-		    	}
-		    	analysisStderrLog.setValue(analysisRes.stderr);
-
-			} catch (IOException e) {
-				// there was an error
-				executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
-				analysisStdoutLog.setValue(analysisStdoutLog.getValue() + "# Analysis error");
-				analysisStderrLog.setValue(e.getMessage());	// get stderr
-
-			}
-
-			// add the compilation Contributions to the Automation Result
-	    	resAutoResult.addContribution(analysisStdoutLog);
-	    	resAutoResult.addContribution(analysisStderrLog);
-
-		    // take a snapshot of SUT files modification times after executing the analysis
-	    	// and add all the new ones / modified ones as contributions
-			Map<String, Long> snapshotAfterAnalysis = takeDirSnapshot(execSut.getSUTdirectoryPath(), outputRegex);
-			List<File> modifFiles = new ArrayList<File>(); // for optional zip later
-		    for (Map.Entry<String,Long> newFile : snapshotAfterAnalysis.entrySet())
-		    {
-		    	if (snapshotBeforeAnalysis.containsKey(newFile.getKey()))
-		    	{ // if the file existed before the analysis, check if his modif time changed
-		    		Long oldTimestamp = snapshotBeforeAnalysis.get(newFile.getKey());
-		    		if (newFile.getValue() <= oldTimestamp)
-		    		{ // the file was not modified
-		    			continue;
-		    		}
-		    	}
-
-		    	// the file did not exist before analysis OR was modified --> add it as contribution to the AutoResult
-				File currFile = new File(newFile.getKey());
-				modifFiles.add(currFile);
-			    Contribution newOrModifFile = new Contribution();
-	    		String fileId = currFile.getPath().replaceAll("/", "%2F"); // encode slashes in the file path
-			    newOrModifFile.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(fileId));
-			    newOrModifFile.setDescription("This file was modified or created during execution of this Automation Request. "
-			    		+ "To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property. "
-			    		+ "To modify the file send a regular OSLC update PUT request for a Contribution resource to the URI in fit:fileURI."); // TODO
-			    newOrModifFile.setTitle(currFile.getName());
-			    try {
-			    	byte [] fileContents = Files.readAllBytes(FileSystems.getDefault().getPath(currFile.toString())); // TODO RAM usage
-			    	if (isBinaryFile(currFile))
-			    	{
-			    		newOrModifFile.setValue(Utils.base64Encode(fileContents));
-			    		newOrModifFile.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_BASE64BINARY)));
-			    	}
-		    		else
-		    		{
-		    			newOrModifFile.setValue(new String(fileContents));
-		    			newOrModifFile.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING)));
-		    		}
-				} catch (IOException e) {
-					newOrModifFile.setValue(e.getMessage());
-				}
-		    	resAutoResult.addContribution(newOrModifFile);
-			}
-
+		// only do more processing if there was no exception during execution
+		if (executionVerdict != OslcValues.AUTOMATION_VERDICT_ERROR)
+		{
+			// add general compilation Contributions to the Automation Result
+			
+			executionTime.setValue(Long.toString(analysisRes.totalTime));
+			resAutoResult.addContribution(executionTime);
+			returnCode.setValue(Integer.toString(analysisRes.retCode));
+			resAutoResult.addContribution(returnCode);	
+	    
+			// take a snapshot of SUT files after analysis and get a list of modified ones
+	    	snapshotter.takeAfterSnapshot();
+	    	Collection<File> modifFiles = snapshotter.getModifFiles();
+	    	
+	    	// remove the stdout and stderr files from the list of modified files from the snapshot (if they are there)
+	    	// (will be added manually with special description etc..)
+			modifFiles.remove(analysisRes.stdoutFile);
+			modifFiles.remove(analysisRes.stderrFile);
+		
+	    	// add all modified or produced files as contributions to the automation result
+	    	Collection<Contribution> fileContributions = createFileContributions(modifFiles);
+	    	for (Contribution c : fileContributions) {
+	    		resAutoResult.addContribution(c);
+	    	}
+	    	
+	    	// now add them back in there (for zip later)
+			modifFiles.add(analysisRes.stdoutFile);
+			modifFiles.add(analysisRes.stderrFile);
+	    	
+	    	// add file URIs to standard output contributions and add them to the automation result
+	    	analysisStdout.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(analysisRes.stdoutFile.getPath()));
+	    	resAutoResult.addContribution(analysisStdout);
+	    	analysisStderr.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(analysisRes.stderrFile.getPath()));
+			resAutoResult.addContribution(analysisStderr);
+	    	
 			// create a zip of all file contributions if needed
 			if (zipOutputs.equalsIgnoreCase("true"))
 			{
-				Contribution zipedContribs = new Contribution();
-				String zipName = "out" + execAutoRequestId + ".zip";
-				Path pathToDir = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
-				Path pathToZip = pathToDir.resolve(zipName);;
-
+				final String zipName = "out" + this.execAutoRequestId + ".zip";
+				final Path zipDir = FileSystems.getDefault().getPath(this.execSut.getSUTdirectoryPath());
+				
 				try {
-					zipFiles(modifFiles, pathToDir, pathToZip);
-
-					String fileId =  pathToZip.toString().replaceAll("/", "%2F"); // encode slashes in the file path
-					zipedContribs.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(fileId));
-					zipedContribs.setDescription("This is a ZIP of all other file contributions. "
-							+ "To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property."); // TODO
-					zipedContribs.setTitle(zipName);
-					resAutoResult.addContribution(zipedContribs);
-				} catch (Exception e)
-				{
-					System.out.println("WARNING failed to ZIP outputs: " + e.getMessage());
+					Contribution zipContrib = zipAllFileContributions(modifFiles, zipName, zipDir);
+					resAutoResult.addContribution(zipContrib);
+				} catch (Exception e) {
+					System.out.println("ERROR: failed to ZIP outputs: " + e.getMessage()); // TODO
 				}
 			}
-
+			
 			// run the AutoResult contributions through a parser
 			ParserManager parserManagerInst = ParserManager.getInstance();
 			Set<Contribution> parsedContributions = parserManagerInst.parseContributionsForTool(
 					Utils.getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue()),
 					resAutoResult.getContribution());
 			resAutoResult.setContribution(parsedContributions);
-
-			// update the AutoResult state and verdict, and AutoRequest state
-			resAutoResult.setState(new HashSet<Link>());
-			resAutoResult.addState(new Link(new URI(OslcValues.AUTOMATION_STATE_COMPLETE)));
-			resAutoResult.setVerdict(new HashSet<Link>());
-			resAutoResult.addVerdict(new Link(new URI(executionVerdict)));
-			VeriFitAnalysisManager.updateAutomationResult(null, resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
-			execAutoRequest.setState(new HashSet<Link>());
-			execAutoRequest.addState(new Link(new URI(OslcValues.AUTOMATION_STATE_COMPLETE)));
-			VeriFitAnalysisManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
-
-			// end the request execution (in case it is part of a request queue)
-			VeriFitAnalysisManager.finishedAutomationRequestExecution(execAutoRequest);
-
-		} catch (URISyntaxException e) {
-			// TODO should never be thrown (URI syntax)
-			e.printStackTrace();
 		}
+		
+		// update the AutoResult state and verdict, and AutoRequest state
+		resAutoResult.replaceState(OslcValues.AUTOMATION_STATE_COMPLETE);
+		resAutoResult.replaceVerdict(executionVerdict);
+		VeriFitAnalysisManager.updateAutomationResult(null, resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
+		execAutoRequest.setState(new HashSet<Link>());
+		execAutoRequest.addState(OslcValues.AUTOMATION_STATE_COMPLETE);
+		VeriFitAnalysisManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
+
+		// end the request execution (in case it is part of a request queue)
+		VeriFitAnalysisManager.finishedAutomationRequestExecution(execAutoRequest);
 	}
+
 	
 
-	/**
-	 * Takes a snapshot of all file names and their modification times
-	 * @param folderPath	Directory to take a snapshot of 
-	 * @param fileRegex 	Only files matching this regex will be snapshoted
-	 * @return	A map of (key: file_path; value: file_modification_time)
-	 */
-	protected Map<String, Long> takeDirSnapshot(String folderPath, String fileRegex)
-	{
-		Map<String, Long> files = new HashMap<String, Long>();
+
+	private Contribution zipAllFileContributions(Collection<File> modifFiles, String zipName, Path zipDir) throws IOException {
+		Contribution zipedContribs = new Contribution();
+		Path pathToZip = zipDir.resolve(zipName);
+
+		File newZipFile = Utils.zipFiles(modifFiles, zipDir, pathToZip);
+
+		String fileId = Utils.encodeFilePathAsId(newZipFile);
+		zipedContribs.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(fileId));
+		zipedContribs.setDescription("This is a ZIP of all other file contributions. "
+				+ "To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property."); // TODO
+		zipedContribs.setTitle(zipName);
+		zipedContribs.addValueType(OslcValues.OSLC_VAL_TYPE_BASE64BINARY);
 		
-		// get all files in a directory recursively and loop over them
-		Iterator<File> it = FileUtils.iterateFiles(new File(folderPath), null, true);
-		while (it.hasNext())
-		{
-            File currFile = it.next();
-        	// TODO do I need read permissions to check the modification date?
-        	if (Pattern.matches(fileRegex, currFile.getName()))  
-        	{
-	        	String path = currFile.getPath();
-	        	Long timestamp = currFile.lastModified();
-	        	
-	        	files.put(path, timestamp);
-        	}
-		}
-		
-		return files;
+		return zipedContribs;
 	}
 
 	/**
-	 * ZIPs all specified files into a new ZIP file from the perspective of a directory.
-	 * All files have to be inside of that directory.
-	 * 
-	 * @param filesToZip List of files to zip (no directories)
-	 * @param dirToZipFrom  This path will be used to make the filesToZip paths relative
-	 * @param pathToZip  Path where to place the new ZIP file
-	 * @throws IOException
+	 * Build the string to execute from input parameters based on their positions
+	 * @param execParams
+	 * @return The string to execute
 	 */
-	protected void zipFiles(List<File> filesToZip, Path dirToZipFrom, Path pathToZip) throws IOException
+	private String buildStringToExecFromParams(String toolCommand, List<ExecutionParameter> execParams)
 	{
-		FileOutputStream fileOutStream = new FileOutputStream(pathToZip.toString());
-		ZipOutputStream zipOutStream = new ZipOutputStream(fileOutStream);
-
-		for (File currFile : filesToZip)
+		toolCommand = (toolCommand.equalsIgnoreCase("true") ? this.autoPlanConf.getLaunchCommand() : ""); // insert the analysis tool launch command if the parameter was true
+		
+		String buildStringToExecute = ""
+			+  toolCommand + " "
+			+ this.autoPlanConf.getToolSpecificArgs();
+		
+		List<ExecutionParameter> cmdLineParams = new ArrayList<ExecutionParameter>();
+		for (ExecutionParameter param : execParams)
 		{
-			// relativize the file path to the dir path
-			String relativeFilePath = new File(dirToZipFrom.toString()).toURI().relativize(new File(currFile.getPath()).toURI()).getPath();
-
-			byte[] buffer = new byte[1024];
-			FileInputStream fileInStream = new FileInputStream(currFile);
-			zipOutStream.putNextEntry(new ZipEntry(relativeFilePath));
-			int length;
-			while ((length = fileInStream.read(buffer)) > 0) {
-				zipOutStream.write(buffer, 0, length);
+			if (param.isCmdLineParameter())
+				cmdLineParams.add(param);
+		}
+		
+		// sort all input params based on their command line position and append them to the string to execute
+		cmdLineParams.sort((ExecutionParameter a, ExecutionParameter b) -> a.getCmdPosition().compareTo(b.getCmdPosition()));
+		for (ExecutionParameter param : cmdLineParams)
+		{
+			buildStringToExecute += " " + param.getValue();
+		}
+		return buildStringToExecute;
+	}
+	
+	/**
+	 * Creates contributions for a list of files
+	 * @param modifFiles
+	 * @param resAutoResult2
+	 */
+	private Collection<Contribution> createFileContributions(Collection<File> modifFiles)
+	{
+		Collection<Contribution> contributions = new HashSet<Contribution>();
+		
+		for (File currFile : modifFiles)
+		{
+			Contribution newContrib = new Contribution();
+			String fileId = Utils.encodeFilePathAsId(currFile);
+		    newContrib.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(fileId));
+		    newContrib.setDescription("File produced or modified during execution of this Automation Request. "
+		    		+ "To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property. "
+		    		+ "To modify the file send a regular OSLC update PUT request for a Contribution resource to the URI in fit:fileURI "
+		    		+ "with content type application/octet-stream.");
+		    newContrib.setTitle(currFile.getName());
+		    
+	    	try {
+	    		// set value type (binary or not)
+				if (Utils.isBinaryFile(currFile)) {
+					newContrib.addValueType(OslcValues.OSLC_VAL_TYPE_BASE64BINARY);
+				} else {
+					newContrib.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+				}
+			} catch (IOException e) {
+				System.out.println("WARNING: failed probe file type of \"" + currFile.getName() + "\": " + e.getMessage()); // TODO
+				newContrib.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 			}
-			zipOutStream.closeEntry();
-			fileInStream.close();
+	    	
+		    contributions.add(newContrib);
 		}
 		
-		zipOutStream.flush();
-		fileOutStream.flush();
-		zipOutStream.close();
-		fileOutStream.close();
+		return contributions;
 	}
 	
-	/**
-	 * @author https://stackoverflow.com/a/39903784
-	 * @param f
-	 * @return
-	 * @throws IOException
-	 */
-	boolean isBinaryFile(File f) throws IOException {
-        String type = Files.probeContentType(f.toPath());
-        if (type == null) {
-            //type couldn't be determined, assume binary
-            return true;
-        } else if (type.startsWith("text")
-        		|| type.contains("xml")	// TODO text xml inside of an xml property?
-        		|| type.contains("json")
-        		|| type.contains("html")) {
-            return false;
-        } else {
-            //type isn't text
-            return true;
-        }
-    }
 }

@@ -10,32 +10,38 @@
 
 package cz.vutbr.fit.group.verifit.oslc.shared.utils;
 
-import org.apache.commons.lang3.tuple.Pair;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Base64;
+import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
+
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
-import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
-import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
 import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
+import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.eclipse.lyo.oslc4j.provider.jena.JenaModelHelper;
 import org.eclipse.lyo.store.Store;
 import org.eclipse.lyo.store.StorePool;
 
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Base64.Decoder;
-import java.util.Base64.Encoder;
 
 public class Utils {
 
@@ -105,6 +111,11 @@ public class Utils {
 		return uriPath.substring(uriPath.lastIndexOf('/') + 1);
 	}
 	
+	public static String getResourceIdFromUri(String uri)
+	{
+		return uri.substring(uri.lastIndexOf('/') + 1);
+	}
+	
 
 	/**
 	 * Check that the triplestore is running by sending a request. 
@@ -126,40 +137,136 @@ public class Utils {
 	    }
 	}
 	
+
 	/**
-	 * Check that the AutomationRequest contains the necessary input parameters based on its AutoPlan, fill the AutomationResult with output parameters (default values),
-	 * and return a simplified map of parameters (TODO refactor the map)
-	 * @param execAutoRequest			The AutomationRequest to execute
-	 * @param newAutoResult				The AutomationResult created by the AutoRequest.
-	 * @param execAutoPlan				The AutomationPlan refferenced by the executed AutomationRequest
-	 * @throws OslcResourceException 	When the executed AutomationRequest properties are invalid or missing
-	 * @return	A map of input parameters [ name, Pair(value,position) ]; position -1 means there was no position
+	 * @author https://stackoverflow.com/a/39903784
+	 * @param f
+	 * @return
+	 * @throws IOException
 	 */
-	public static Map<String, Pair<String,Integer>> processAutoReqInputParams(AutomationRequest execAutoRequest, AutomationResult newAutoResult, AutomationPlan execAutoPlan) throws OslcResourceException
+	public static boolean isBinaryFile(File f) throws IOException {
+        String type = Files.probeContentType(f.toPath());
+        if (type == null) {
+            //type couldn't be determined, assume binary
+            return true;
+        } else if (type.startsWith("text")
+        		|| type.contains("xml")	// TODO text xml inside of an xml property?
+        		|| type.contains("json")
+        		|| type.contains("html")) {
+            return false;
+        } else {
+            //type isn't text
+            return true;
+        }
+    }
+	
+
+	/**
+	 * ZIPs all specified files into a new ZIP file from the perspective of a directory.
+	 * All files have to be inside of that directory.
+	 * 
+	 * @param modifFiles List of files to zip (no directories)
+	 * @param dirToZipFrom  This path will be used to make the filesToZip paths relative
+	 * @param pathToZip  Path where to place the new ZIP file
+	 * @return The zip file
+	 * @throws IOException
+	 */
+	public static File zipFiles(Collection<File> modifFiles, Path dirToZipFrom, Path pathToZip) throws IOException
 	{
-		/// check the input parameters and create a map of "name" -> ("value", position)
-		Map<String, Pair<String,Integer>> inputParamsMap = new HashMap<String, Pair<String,Integer>>();
+		FileOutputStream fileOutStream = new FileOutputStream(pathToZip.toString());
+		ZipOutputStream zipOutStream = new ZipOutputStream(fileOutStream);
+
+		for (File currFile : modifFiles)
+		{
+			// relativize the file path to the dir path
+			String relativeFilePath = new File(dirToZipFrom.toString()).toURI().relativize(new File(currFile.getPath()).toURI()).getPath();
+
+			byte[] buffer = new byte[1024];
+			FileInputStream fileInStream = new FileInputStream(currFile);
+			zipOutStream.putNextEntry(new ZipEntry(relativeFilePath));
+			int length;
+			while ((length = fileInStream.read(buffer)) > 0) {
+				zipOutStream.write(buffer, 0, length);
+			}
+			zipOutStream.closeEntry();
+			fileInStream.close();
+		}
+		
+		zipOutStream.flush();
+		fileOutStream.flush();
+		zipOutStream.close();
+		fileOutStream.close();
+		
+		return pathToZip.toFile();
+	}
+
+	/**
+	 * Unzips a given ZIP file.
+	 * @param dirToUnzipTo 
+	 * @param zipFile
+	 * @throws IOException
+	 */
+	public static void unzipFile(Path dirToUnzipTo, File zipFile) throws IOException
+	{
+    	ZipFile zf = new ZipFile(zipFile);
+        Enumeration<? extends ZipEntry> zipEntries = zf.entries();
+        while(zipEntries.hasMoreElements())
+        {
+        	ZipEntry entry = zipEntries.nextElement();
+        	if (entry.isDirectory()) {
+                Path dirToCreate = dirToUnzipTo.resolve(entry.getName());
+                Files.createDirectories(dirToCreate);
+            } else {
+            	Path fileToCreate = dirToUnzipTo.resolve(entry.getName());
+                Files.copy(zf.getInputStream(entry), fileToCreate);
+            }
+        }
+	}
+
+	/**
+	 * Encode slashes in the file path so that they dont get mistaken with URL separators
+	 * @param f
+	 * @return
+	 */
+	public static String encodeFilePathAsId(File f)
+	{
+		return f.getPath()
+				.replaceAll("/", "%2F")
+				.replaceAll("\\\\", "%5C");
+	}
+
+	/**
+	 * Decode slashes from an URI into a file.
+	 * @param id
+	 * @return
+	 */
+	public static String decodeFilePathFromId(String id)
+	{
+		return id.replaceAll("%2F", "/")
+				.replaceAll("%5C", "\\\\"); 
+	}
+	
+	/**
+	 * TODO make into a class
+	 * Checks that all input parameters are valid (occurs, allowed value) that there are no unknown parameters and creates output parameters using default values.
+	 * @param inputParameters
+	 * @param parameterDefinitions
+	 * @return Output parameters for an AutomationResult
+	 * @throws OslcResourceException
+	 */
+	public static Set<ParameterInstance> checkInputParamsAndProduceOuputParams(final Set<ParameterInstance> inputParameters, final Set<ParameterDefinition> parameterDefinitions) throws OslcResourceException
+	{
+		Set<ParameterInstance> outputParams = new HashSet<ParameterInstance>();
 		
 		// loop through autoPlan defined parameters to match them with the input params
-		for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
-		{
-			Integer paramPosition;
-			if (definedParam.getCommandlinePosition() != null)
-			{
-				paramPosition = definedParam.getCommandlinePosition();
-			}
-			else
-			{
-				paramPosition = -1;
-			}
-				
-			// find the corresponding autoRequest input parameter
+		for (ParameterDefinition definedParam : parameterDefinitions)
+		{				
+			// find the corresponding autoRequest input parameter to check allowed values
 			boolean matched = false;
-			for (ParameterInstance submittedParam : execAutoRequest.getInputParameter())
+			for (ParameterInstance submittedParam : inputParameters)
 			{				
 				if (definedParam.getName().equals(submittedParam.getName()))
 				{
-					
 					// check if the value is allowed
 					Boolean validValue = true;
 					if (definedParam.getAllowedValue().size() > 0)
@@ -179,41 +286,35 @@ public class Utils {
 						throw new OslcResourceException("value '" + submittedParam.getValue() + "' not allowed for the '" + definedParam.getName() + "' parameter");
 					}
 					
-					inputParamsMap.put(definedParam.getName(), Pair.of(submittedParam.getValue(),paramPosition));
 					matched = true;
 				}
 			}
 			// try to use the default value if no matching input param found
 			if (!matched && definedParam.getDefaultValue() != null)
 			{
-				inputParamsMap.put(definedParam.getName(), Pair.of(definedParam.getDefaultValue(), paramPosition));
 				matched = true;
 
 				// add the default value as an output parameter to the Automation Result
-				ParameterInstance outputParameter = null;
-				outputParameter = new ParameterInstance();
+				ParameterInstance outputParameter = new ParameterInstance();
 				outputParameter.setName(definedParam.getName());
 				outputParameter.setValue(definedParam.getDefaultValue());
-				newAutoResult.addOutputParameter(outputParameter);
+				outputParams.add(outputParameter);
 			}
 			
 			// check parameter occurrences
 			Boolean paramMissing = false;
-			switch (definedParam.getOccurs().getValue().toString())
-			{
-			case OslcValues.OSLC_OCCURS_ONE:
+			Link paramOccurs = definedParam.getOccurs();
+			if (paramOccurs.equals(OslcValues.OSLC_OCCURS_ONE)) {
 				// TODO check for more then one when there should be exactly one
-			case OslcValues.OSLC_OCCURS_ONEorMany:
 				if (!matched)
 					paramMissing = true;
-				break;
-				
-			case OslcValues.OSLC_OCCURS_ZEROorONE:
+			} else if (paramOccurs.equals(OslcValues.OSLC_OCCURS_ONEorMany)) {
+				if (!matched)
+					paramMissing = true;				
+			} else if (paramOccurs.equals(OslcValues.OSLC_OCCURS_ZEROorONE)) {
 				// TODO check for more then one when there should be max one
-				break;
-
-			case OslcValues.OSLC_OCCURS_ZEROorMany:
-				break;
+			} else if (paramOccurs.equals(OslcValues.OSLC_OCCURS_ZEROorMany)) {
+				// not relevant
 			}
 			
 			if (paramMissing == true)
@@ -221,10 +322,10 @@ public class Utils {
 		}
 		
 		// check that there were no unknown input parameters
-		for (ParameterInstance submittedParam : execAutoRequest.getInputParameter())
+		for (ParameterInstance submittedParam : inputParameters)
 		{				
 			boolean matched = false;
-			for (ParameterDefinition definedParam : execAutoPlan.getParameterDefinition())
+			for (ParameterDefinition definedParam : parameterDefinitions)
 			{
 				if (definedParam.getName().equals(submittedParam.getName()))
 					matched = true;
@@ -234,6 +335,6 @@ public class Utils {
 				throw new OslcResourceException("'" + submittedParam.getName() + "' input parameter not recognized");
 		}
 		
-		return inputParamsMap;
+		return outputParams;
 	}
 }

@@ -23,12 +23,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.eclipse.lyo.server.oauth.core.Application;
 import org.eclipse.lyo.server.oauth.core.token.LRUCache;
-
-import cz.vutbr.fit.group.verifit.oslc.compilation.properties.VeriFitCompilationProperties;
-
 import org.eclipse.lyo.server.oauth.core.AuthenticationException;
 
 // Start of user code imports
+import cz.vutbr.fit.group.verifit.oslc.compilation.properties.VeriFitCompilationProperties;
+
 // End of user code
 
 // Start of user code pre_class_code

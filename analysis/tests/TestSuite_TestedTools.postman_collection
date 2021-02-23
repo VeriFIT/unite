@@ -6,6 +6,55 @@
 	},
 	"item": [
 		{
+			"name": "get OS to adjust the test suite",
+			"item": [
+				{
+					"name": "get OS",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response code should be 200 (OK)\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.globals.set(\"currentOS\", pm.response.text());"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server_address}}/{{server_context}}/services/resources/getOS",
+							"host": [
+								"{{server_address}}"
+							],
+							"path": [
+								"{{server_context}}",
+								"services",
+								"resources",
+								"getOS"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "anaconda",
 			"item": [
 				{
@@ -20,19 +69,15 @@
 									"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
 									"var resourceAboutSplit = resrouceAbout.split(\"/\");",
 									"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
-									"pm.globals.set('sutId', requestId);",
+									"pm.globals.set('requestId', requestId);",
+									"",
 									"",
 									"pm.test(\"Response code should be 201 (created)\", function () {",
 									"    pm.response.to.have.status(201);",
 									"});",
 									"",
-									"// wait for the request execution to finish",
-									"var result_wait_time = pm.variables.get('result_wait_time');",
-									"setTimeout(function(){}, [result_wait_time]);",
-									"",
-									"",
 									"var compilation_provider = pm.variables.get(\"compilation_provider\");",
-									"var sutId = pm.globals.get(\"sutId\");",
+									"var sutId = requestId;",
 									"pm.globals.set(\"SUT\", compilation_provider + \"/services/resources/sUTs/\" + sutId);"
 								],
 								"type": "text/javascript"
@@ -76,6 +121,84 @@
 								"services",
 								"resources",
 								"createAutomationRequest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "wait for #complete (analysis tools/anaconda/create sut)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+									"",
+									"var waitCounter = pm.globals.get(\"waitCounter\");",
+									"if(!waitCounter) {",
+									"    waitCounter = 0;",
+									"}",
+									"",
+									"if (pm.response.code != 200) { // wait for the resource to be created",
+									"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"        setTimeout(function(){}, [1000]); // 1 second",
+									"        waitCounter++;",
+									"        postman.setNextRequest(pm.info.requestName);",
+									"    } else { // timeout, reset counter",
+									"        waitCounter = 0;",
+									"    }",
+									"} else { // wait for the automation to complete",
+									"    const response = xml2Json(pm.response.text());",
+									"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+									"    var waitCounter = pm.globals.get(\"waitCounter\");",
+									"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+									"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"            setTimeout(function(){}, [1000]); // 1 second",
+									"            waitCounter++;",
+									"            postman.setNextRequest(pm.info.requestName);",
+									"        } else { // timeout, reset counter",
+									"            waitCounter = 0;",
+									"        }",
+									"    } else { // wait doen, reset counter",
+									"            waitCounter = 0;",
+									"    }",
+									"}",
+									"",
+									"pm.globals.set(\"waitCounter\", waitCounter);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/rdf+xml"
+							}
+						],
+						"url": {
+							"raw": "{{compilation_provider}}/services/resources/automationRequests/{{requestId}}",
+							"host": [
+								"{{compilation_provider}}"
+							],
+							"path": [
+								"services",
+								"resources",
+								"automationRequests",
+								"{{requestId}}"
 							]
 						}
 					},
@@ -227,6 +350,85 @@
 					"response": []
 				},
 				{
+					"name": "wait for #complete (analysis tools/anaconda/analyse)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+									"",
+									"var waitCounter = pm.globals.get(\"waitCounter\");",
+									"if(!waitCounter) {",
+									"    waitCounter = 0;",
+									"}",
+									"",
+									"if (pm.response.code != 200) { // wait for the resource to be created",
+									"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"        setTimeout(function(){}, [1000]); // 1 second",
+									"        waitCounter++;",
+									"        postman.setNextRequest(pm.info.requestName);",
+									"    } else { // timeout, reset counter",
+									"        waitCounter = 0;",
+									"    }",
+									"} else { // wait for the automation to complete",
+									"    const response = xml2Json(pm.response.text());",
+									"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+									"    var waitCounter = pm.globals.get(\"waitCounter\");",
+									"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+									"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"            setTimeout(function(){}, [1000]); // 1 second",
+									"            waitCounter++;",
+									"            postman.setNextRequest(pm.info.requestName);",
+									"        } else { // timeout, reset counter",
+									"            waitCounter = 0;",
+									"        }",
+									"    } else { // wait doen, reset counter",
+									"            waitCounter = 0;",
+									"    }",
+									"}",
+									"",
+									"pm.globals.set(\"waitCounter\", waitCounter);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/rdf+xml"
+							}
+						],
+						"url": {
+							"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+							"host": [
+								"{{server_address}}"
+							],
+							"path": [
+								"{{server_context}}",
+								"services",
+								"resources",
+								"automationRequests",
+								"{{requestId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "check result",
 					"event": [
 						{
@@ -246,10 +448,7 @@
 									"pm.test(\"Response code should be 200 (OK)\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
-									"pm.test(\"AutomationResult desiredState should be #complete\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"oslc_auto:desiredState rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
-									"});",
-									"// the only difference compared to the last request (below)",
+									"",
 									"pm.test(\"AutomationResult state should be #complete\", function () {",
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
@@ -261,15 +460,15 @@
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
 									"});",
 									"",
-									"pm.test(\"AutomationResult should contain analysis stdout\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Analysis stdout</dcterms:title>\");",
+									"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Analysis completed successfully\");",
+									"});",
+									"pm.test(\"returnCode should be 0\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
 									"});",
 									"pm.test(\"AutomationResult analysis stdout should have the expected value\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"# Analysis completed successfully\\nANaConDA \");",
+									"    pm.expect(pm.response.text()).to.include(\"ANaConDA \");",
 									"    pm.expect(pm.response.text()).to.include(\"Hello World!\\n</rdf:value>\");",
-									"});",
-									"pm.test(\"AutomationResult should contain analysis stderr\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Analysis stderr</dcterms:title>\");",
 									"});",
 									"pm.test(\"AutomationResult analysis stderr be empty (~)\", function () {",
 									"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
@@ -282,9 +481,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// wait for the request execution to finish",
-									" var result_wait_time = pm.variables.get('result_wait_time');",
-									" setTimeout(function(){}, [result_wait_time]);"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -332,19 +529,14 @@
 									"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
 									"var resourceAboutSplit = resrouceAbout.split(\"/\");",
 									"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
-									"pm.globals.set('sutId', requestId);",
+									"pm.globals.set('requestId', requestId);",
 									"",
 									"pm.test(\"Response code should be 201 (created)\", function () {",
 									"    pm.response.to.have.status(201);",
 									"});",
 									"",
-									"// wait for the request execution to finish",
-									"var result_wait_time = pm.variables.get('result_wait_time');",
-									"setTimeout(function(){}, [result_wait_time]);",
-									"",
-									"",
 									"var compilation_provider = pm.variables.get(\"compilation_provider\");",
-									"var sutId = pm.globals.get(\"sutId\");",
+									"var sutId = requestId;",
 									"pm.globals.set(\"SUT\", compilation_provider + \"/services/resources/sUTs/\" + sutId);"
 								],
 								"type": "text/javascript"
@@ -388,6 +580,84 @@
 								"services",
 								"resources",
 								"createAutomationRequest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "wait for #complete (analysis tools/valgrind/create sut)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+									"",
+									"var waitCounter = pm.globals.get(\"waitCounter\");",
+									"if(!waitCounter) {",
+									"    waitCounter = 0;",
+									"}",
+									"",
+									"if (pm.response.code != 200) { // wait for the resource to be created",
+									"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"        setTimeout(function(){}, [1000]); // 1 second",
+									"        waitCounter++;",
+									"        postman.setNextRequest(pm.info.requestName);",
+									"    } else { // timeout, reset counter",
+									"        waitCounter = 0;",
+									"    }",
+									"} else { // wait for the automation to complete",
+									"    const response = xml2Json(pm.response.text());",
+									"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+									"    var waitCounter = pm.globals.get(\"waitCounter\");",
+									"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+									"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"            setTimeout(function(){}, [1000]); // 1 second",
+									"            waitCounter++;",
+									"            postman.setNextRequest(pm.info.requestName);",
+									"        } else { // timeout, reset counter",
+									"            waitCounter = 0;",
+									"        }",
+									"    } else { // wait doen, reset counter",
+									"            waitCounter = 0;",
+									"    }",
+									"}",
+									"",
+									"pm.globals.set(\"waitCounter\", waitCounter);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/rdf+xml"
+							}
+						],
+						"url": {
+							"raw": "{{compilation_provider}}/services/resources/automationRequests/{{requestId}}",
+							"host": [
+								"{{compilation_provider}}"
+							],
+							"path": [
+								"services",
+								"resources",
+								"automationRequests",
+								"{{requestId}}"
 							]
 						}
 					},
@@ -539,6 +809,85 @@
 					"response": []
 				},
 				{
+					"name": "wait for #complete (analysis tools/valgrind/memcheck)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+									"",
+									"var waitCounter = pm.globals.get(\"waitCounter\");",
+									"if(!waitCounter) {",
+									"    waitCounter = 0;",
+									"}",
+									"",
+									"if (pm.response.code != 200) { // wait for the resource to be created",
+									"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"        setTimeout(function(){}, [1000]); // 1 second",
+									"        waitCounter++;",
+									"        postman.setNextRequest(pm.info.requestName);",
+									"    } else { // timeout, reset counter",
+									"        waitCounter = 0;",
+									"    }",
+									"} else { // wait for the automation to complete",
+									"    const response = xml2Json(pm.response.text());",
+									"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+									"    var waitCounter = pm.globals.get(\"waitCounter\");",
+									"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+									"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"            setTimeout(function(){}, [1000]); // 1 second",
+									"            waitCounter++;",
+									"            postman.setNextRequest(pm.info.requestName);",
+									"        } else { // timeout, reset counter",
+									"            waitCounter = 0;",
+									"        }",
+									"    } else { // wait doen, reset counter",
+									"            waitCounter = 0;",
+									"    }",
+									"}",
+									"",
+									"pm.globals.set(\"waitCounter\", waitCounter);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/rdf+xml"
+							}
+						],
+						"url": {
+							"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+							"host": [
+								"{{server_address}}"
+							],
+							"path": [
+								"{{server_context}}",
+								"services",
+								"resources",
+								"automationRequests",
+								"{{requestId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "check result",
 					"event": [
 						{
@@ -573,14 +922,14 @@
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
 									"});",
 									"",
-									"pm.test(\"AutomationResult should contain analysis stdout\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Analysis stdout</dcterms:title>\");",
+									"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Analysis completed successfully\");",
+									"});",
+									"pm.test(\"returnCode should be 0\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
 									"});",
 									"pm.test(\"AutomationResult analysis stdout should have the expected value\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"# Analysis completed successfully\\nHelloWorld!\\n\");",
-									"});",
-									"pm.test(\"AutomationResult should contain analysis stderr\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Analysis stderr</dcterms:title>\");",
+									"    pm.expect(pm.response.text()).to.include(\"HelloWorld!\\n\");",
 									"});",
 									"pm.test(\"AutomationResult analysis stderr should have the expected value\", function () {",
 									"    pm.expect(pm.response.text()).to.include(\"Memcheck, a memory error detector\\n\");",
@@ -593,9 +942,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// wait for the request execution to finish",
-									" var result_wait_time = pm.variables.get('result_wait_time');",
-									" setTimeout(function(){}, [result_wait_time]);"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -693,6 +1040,85 @@
 					"response": []
 				},
 				{
+					"name": "wait for #complete (analysis tools/valgrind/helgrind)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+									"",
+									"var waitCounter = pm.globals.get(\"waitCounter\");",
+									"if(!waitCounter) {",
+									"    waitCounter = 0;",
+									"}",
+									"",
+									"if (pm.response.code != 200) { // wait for the resource to be created",
+									"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"        setTimeout(function(){}, [1000]); // 1 second",
+									"        waitCounter++;",
+									"        postman.setNextRequest(pm.info.requestName);",
+									"    } else { // timeout, reset counter",
+									"        waitCounter = 0;",
+									"    }",
+									"} else { // wait for the automation to complete",
+									"    const response = xml2Json(pm.response.text());",
+									"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+									"    var waitCounter = pm.globals.get(\"waitCounter\");",
+									"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+									"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"            setTimeout(function(){}, [1000]); // 1 second",
+									"            waitCounter++;",
+									"            postman.setNextRequest(pm.info.requestName);",
+									"        } else { // timeout, reset counter",
+									"            waitCounter = 0;",
+									"        }",
+									"    } else { // wait doen, reset counter",
+									"            waitCounter = 0;",
+									"    }",
+									"}",
+									"",
+									"pm.globals.set(\"waitCounter\", waitCounter);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/rdf+xml"
+							}
+						],
+						"url": {
+							"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+							"host": [
+								"{{server_address}}"
+							],
+							"path": [
+								"{{server_context}}",
+								"services",
+								"resources",
+								"automationRequests",
+								"{{requestId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "check result",
 					"event": [
 						{
@@ -712,9 +1138,6 @@
 									"pm.test(\"Response code should be 200 (OK)\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
-									"pm.test(\"AutomationResult desiredState should be #complete\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"oslc_auto:desiredState rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
-									"});",
 									"",
 									"pm.test(\"AutomationResult state should be #complete\", function () {",
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
@@ -727,14 +1150,14 @@
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
 									"});",
 									"",
-									"pm.test(\"AutomationResult should contain analysis stdout\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Analysis stdout</dcterms:title>\");",
+									"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Analysis completed successfully\");",
+									"});",
+									"pm.test(\"returnCode should be 0\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
 									"});",
 									"pm.test(\"AutomationResult analysis stdout should have the expected value\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"# Analysis completed successfully\\nHelloWorld!\\n\");",
-									"});",
-									"pm.test(\"AutomationResult should contain analysis stderr\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Analysis stderr</dcterms:title>\");",
+									"    pm.expect(pm.response.text()).to.include(\"HelloWorld!\\n\");",
 									"});",
 									"pm.test(\"AutomationResult analysis stderr should have the expected value\", function () {",
 									"    pm.expect(pm.response.text()).to.include(\"Helgrind, a thread error detector\\n\");",
@@ -747,9 +1170,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// wait for the request execution to finish",
-									" var result_wait_time = pm.variables.get('result_wait_time');",
-									" setTimeout(function(){}, [result_wait_time]);"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -797,19 +1218,14 @@
 									"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
 									"var resourceAboutSplit = resrouceAbout.split(\"/\");",
 									"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
-									"pm.globals.set('sutId', requestId);",
+									"pm.globals.set('requestId', requestId);",
 									"",
 									"pm.test(\"Response code should be 201 (created)\", function () {",
 									"    pm.response.to.have.status(201);",
 									"});",
 									"",
-									"// wait for the request execution to finish",
-									"var result_wait_time = pm.variables.get('result_wait_time');",
-									"setTimeout(function(){}, [result_wait_time]);",
-									"",
-									"",
 									"var compilation_provider = pm.variables.get(\"compilation_provider\");",
-									"var sutId = pm.globals.get(\"sutId\");",
+									"var sutId = requestId;",
 									"pm.globals.set(\"SUT\", compilation_provider + \"/services/resources/sUTs/\" + sutId);"
 								],
 								"type": "text/javascript"
@@ -853,6 +1269,84 @@
 								"services",
 								"resources",
 								"createAutomationRequest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "wait for #complete (analysis tools/grep/create sut)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+									"",
+									"var waitCounter = pm.globals.get(\"waitCounter\");",
+									"if(!waitCounter) {",
+									"    waitCounter = 0;",
+									"}",
+									"",
+									"if (pm.response.code != 200) { // wait for the resource to be created",
+									"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"        setTimeout(function(){}, [1000]); // 1 second",
+									"        waitCounter++;",
+									"        postman.setNextRequest(pm.info.requestName);",
+									"    } else { // timeout, reset counter",
+									"        waitCounter = 0;",
+									"    }",
+									"} else { // wait for the automation to complete",
+									"    const response = xml2Json(pm.response.text());",
+									"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+									"    var waitCounter = pm.globals.get(\"waitCounter\");",
+									"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+									"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"            setTimeout(function(){}, [1000]); // 1 second",
+									"            waitCounter++;",
+									"            postman.setNextRequest(pm.info.requestName);",
+									"        } else { // timeout, reset counter",
+									"            waitCounter = 0;",
+									"        }",
+									"    } else { // wait doen, reset counter",
+									"            waitCounter = 0;",
+									"    }",
+									"}",
+									"",
+									"pm.globals.set(\"waitCounter\", waitCounter);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/rdf+xml"
+							}
+						],
+						"url": {
+							"raw": "{{compilation_provider}}/services/resources/automationRequests/{{requestId}}",
+							"host": [
+								"{{compilation_provider}}"
+							],
+							"path": [
+								"services",
+								"resources",
+								"automationRequests",
+								"{{requestId}}"
 							]
 						}
 					},
@@ -1004,6 +1498,85 @@
 					"response": []
 				},
 				{
+					"name": "wait for #complete (analysis tools/grep/analyse)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+									"",
+									"var waitCounter = pm.globals.get(\"waitCounter\");",
+									"if(!waitCounter) {",
+									"    waitCounter = 0;",
+									"}",
+									"",
+									"if (pm.response.code != 200) { // wait for the resource to be created",
+									"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"        setTimeout(function(){}, [1000]); // 1 second",
+									"        waitCounter++;",
+									"        postman.setNextRequest(pm.info.requestName);",
+									"    } else { // timeout, reset counter",
+									"        waitCounter = 0;",
+									"    }",
+									"} else { // wait for the automation to complete",
+									"    const response = xml2Json(pm.response.text());",
+									"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+									"    var waitCounter = pm.globals.get(\"waitCounter\");",
+									"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+									"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"            setTimeout(function(){}, [1000]); // 1 second",
+									"            waitCounter++;",
+									"            postman.setNextRequest(pm.info.requestName);",
+									"        } else { // timeout, reset counter",
+									"            waitCounter = 0;",
+									"        }",
+									"    } else { // wait doen, reset counter",
+									"            waitCounter = 0;",
+									"    }",
+									"}",
+									"",
+									"pm.globals.set(\"waitCounter\", waitCounter);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/rdf+xml"
+							}
+						],
+						"url": {
+							"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+							"host": [
+								"{{server_address}}"
+							],
+							"path": [
+								"{{server_context}}",
+								"services",
+								"resources",
+								"automationRequests",
+								"{{requestId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "check result",
 					"event": [
 						{
@@ -1023,10 +1596,7 @@
 									"pm.test(\"Response code should be 200 (OK)\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
-									"pm.test(\"AutomationResult desiredState should be #complete\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"oslc_auto:desiredState rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
-									"});",
-									"// the only difference compared to the last request (below)",
+									"",
 									"pm.test(\"AutomationResult state should be #complete\", function () {",
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
@@ -1038,14 +1608,14 @@
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
 									"});",
 									"",
-									"pm.test(\"AutomationResult should contain analysis stdout\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Analysis stdout</dcterms:title>\");",
+									"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Analysis completed successfully\");",
+									"});",
+									"pm.test(\"returnCode should be 0\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
 									"});",
 									"pm.test(\"AutomationResult analysis stdout should have the expected value\", function () {",
 									"    pm.expect(pm.response.text()).to.include(\"int main(int argc, char** argv)\\n\");",
-									"});",
-									"pm.test(\"AutomationResult should contain analysis stderr\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Analysis stderr</dcterms:title>\");",
 									"});",
 									"pm.test(\"AutomationResult analysis stderr be empty (~)\", function () {",
 									"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
@@ -1058,9 +1628,7 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// wait for the request execution to finish",
-									" var result_wait_time = pm.variables.get('result_wait_time');",
-									" setTimeout(function(){}, [result_wait_time]);"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1108,19 +1676,14 @@
 									"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
 									"var resourceAboutSplit = resrouceAbout.split(\"/\");",
 									"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
-									"pm.globals.set('sutId', requestId);",
+									"pm.globals.set('requestId', requestId);",
 									"",
 									"pm.test(\"Response code should be 201 (created)\", function () {",
 									"    pm.response.to.have.status(201);",
 									"});",
 									"",
-									"// wait for the request execution to finish",
-									"var result_wait_time = pm.variables.get('result_wait_time');",
-									"setTimeout(function(){}, [result_wait_time]);",
-									"",
-									"",
 									"var compilation_provider = pm.variables.get(\"compilation_provider\");",
-									"var sutId = pm.globals.get(\"sutId\");",
+									"var sutId = requestId;",
 									"pm.globals.set(\"SUT\", compilation_provider + \"/services/resources/sUTs/\" + sutId);"
 								],
 								"type": "text/javascript"
@@ -1164,6 +1727,84 @@
 								"services",
 								"resources",
 								"createAutomationRequest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "wait for #complete (analysis tools/infer/create sut)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+									"",
+									"var waitCounter = pm.globals.get(\"waitCounter\");",
+									"if(!waitCounter) {",
+									"    waitCounter = 0;",
+									"}",
+									"",
+									"if (pm.response.code != 200) { // wait for the resource to be created",
+									"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"        setTimeout(function(){}, [1000]); // 1 second",
+									"        waitCounter++;",
+									"        postman.setNextRequest(pm.info.requestName);",
+									"    } else { // timeout, reset counter",
+									"        waitCounter = 0;",
+									"    }",
+									"} else { // wait for the automation to complete",
+									"    const response = xml2Json(pm.response.text());",
+									"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+									"    var waitCounter = pm.globals.get(\"waitCounter\");",
+									"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+									"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"            setTimeout(function(){}, [1000]); // 1 second",
+									"            waitCounter++;",
+									"            postman.setNextRequest(pm.info.requestName);",
+									"        } else { // timeout, reset counter",
+									"            waitCounter = 0;",
+									"        }",
+									"    } else { // wait doen, reset counter",
+									"            waitCounter = 0;",
+									"    }",
+									"}",
+									"",
+									"pm.globals.set(\"waitCounter\", waitCounter);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/rdf+xml"
+							}
+						],
+						"url": {
+							"raw": "{{compilation_provider}}/services/resources/automationRequests/{{requestId}}",
+							"host": [
+								"{{compilation_provider}}"
+							],
+							"path": [
+								"services",
+								"resources",
+								"automationRequests",
+								"{{requestId}}"
 							]
 						}
 					},
@@ -1253,10 +1894,6 @@
 									"    pm.response.to.have.status(201);",
 									"});",
 									"",
-									"// wait for the request execution to finish",
-									" var result_wait_time = pm.variables.get('result_wait_time');",
-									" setTimeout(function(){}, [result_wait_time]);",
-									"",
 									"// save the request ID as a global variable for later tests to use",
 									"const response = xml2Json(pm.response.text());",
 									"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
@@ -1312,6 +1949,85 @@
 					"response": []
 				},
 				{
+					"name": "wait for #complete (analysis tools/infer/analyse)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+									"",
+									"var waitCounter = pm.globals.get(\"waitCounter\");",
+									"if(!waitCounter) {",
+									"    waitCounter = 0;",
+									"}",
+									"",
+									"if (pm.response.code != 200) { // wait for the resource to be created",
+									"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"        setTimeout(function(){}, [1000]); // 1 second",
+									"        waitCounter++;",
+									"        postman.setNextRequest(pm.info.requestName);",
+									"    } else { // timeout, reset counter",
+									"        waitCounter = 0;",
+									"    }",
+									"} else { // wait for the automation to complete",
+									"    const response = xml2Json(pm.response.text());",
+									"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+									"    var waitCounter = pm.globals.get(\"waitCounter\");",
+									"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+									"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"            setTimeout(function(){}, [1000]); // 1 second",
+									"            waitCounter++;",
+									"            postman.setNextRequest(pm.info.requestName);",
+									"        } else { // timeout, reset counter",
+									"            waitCounter = 0;",
+									"        }",
+									"    } else { // wait doen, reset counter",
+									"            waitCounter = 0;",
+									"    }",
+									"}",
+									"",
+									"pm.globals.set(\"waitCounter\", waitCounter);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/rdf+xml"
+							}
+						],
+						"url": {
+							"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+							"host": [
+								"{{server_address}}"
+							],
+							"path": [
+								"{{server_context}}",
+								"services",
+								"resources",
+								"automationRequests",
+								"{{requestId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "check result",
 					"event": [
 						{
@@ -1331,10 +2047,6 @@
 									"pm.test(\"Response code should be 200 (OK)\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
-									"pm.test(\"AutomationResult desiredState should be #complete\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"oslc_auto:desiredState rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
-									"});",
-									"// the only difference compared to the last request (below)",
 									"pm.test(\"AutomationResult state should be #complete\", function () {",
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
@@ -1346,8 +2058,11 @@
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
 									"});",
 									"",
-									"pm.test(\"AutomationResult should contain analysis stdout\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Analysis stdout</dcterms:title>\");",
+									"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Analysis completed successfully\");",
+									"});",
+									"pm.test(\"returnCode should be 0\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
 									"});",
 									"pm.test(\"AutomationResult analysis stdout should have the expected value\", function () {",
 									"    pm.expect(pm.response.text()).to.include(",
@@ -1356,9 +2071,6 @@
 									"    +\"\\n\"",
 									"    + \"     RESOURCE_LEAK: 2\\n\"",
 									"    + \"  NULL_DEREFERENCE: 1\");",
-									"});",
-									"pm.test(\"AutomationResult should contain analysis stderr\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Analysis stderr</dcterms:title>\");",
 									"});",
 									"pm.test(\"AutomationResult analysis stderr should have the expected value\", function () {",
 									"    pm.expect(pm.response.text()).to.include(",
@@ -1450,19 +2162,14 @@
 									"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
 									"var resourceAboutSplit = resrouceAbout.split(\"/\");",
 									"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
-									"pm.globals.set('sutId', requestId);",
+									"pm.globals.set('requestId', requestId);",
 									"",
 									"pm.test(\"Response code should be 201 (created)\", function () {",
 									"    pm.response.to.have.status(201);",
 									"});",
 									"",
-									"// wait for the request execution to finish",
-									"var result_wait_time = pm.variables.get('result_wait_time');",
-									"setTimeout(function(){}, [result_wait_time]);",
-									"",
-									"",
 									"var compilation_provider = pm.variables.get(\"compilation_provider\");",
-									"var sutId = pm.globals.get(\"sutId\");",
+									"var sutId = requestId;",
 									"pm.globals.set(\"SUT\", compilation_provider + \"/services/resources/sUTs/\" + sutId);"
 								],
 								"type": "text/javascript"
@@ -1506,6 +2213,84 @@
 								"services",
 								"resources",
 								"createAutomationRequest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "wait for #complete (analysis tools/perun/create sut)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+									"",
+									"var waitCounter = pm.globals.get(\"waitCounter\");",
+									"if(!waitCounter) {",
+									"    waitCounter = 0;",
+									"}",
+									"",
+									"if (pm.response.code != 200) { // wait for the resource to be created",
+									"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"        setTimeout(function(){}, [1000]); // 1 second",
+									"        waitCounter++;",
+									"        postman.setNextRequest(pm.info.requestName);",
+									"    } else { // timeout, reset counter",
+									"        waitCounter = 0;",
+									"    }",
+									"} else { // wait for the automation to complete",
+									"    const response = xml2Json(pm.response.text());",
+									"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+									"    var waitCounter = pm.globals.get(\"waitCounter\");",
+									"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+									"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"            setTimeout(function(){}, [1000]); // 1 second",
+									"            waitCounter++;",
+									"            postman.setNextRequest(pm.info.requestName);",
+									"        } else { // timeout, reset counter",
+									"            waitCounter = 0;",
+									"        }",
+									"    } else { // wait doen, reset counter",
+									"            waitCounter = 0;",
+									"    }",
+									"}",
+									"",
+									"pm.globals.set(\"waitCounter\", waitCounter);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/rdf+xml"
+							}
+						],
+						"url": {
+							"raw": "{{compilation_provider}}/services/resources/automationRequests/{{requestId}}",
+							"host": [
+								"{{compilation_provider}}"
+							],
+							"path": [
+								"services",
+								"resources",
+								"automationRequests",
+								"{{requestId}}"
 							]
 						}
 					},
@@ -1637,15 +2422,92 @@
 					"response": []
 				},
 				{
+					"name": "wait for #complete (analysis tools/perun/init)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+									"",
+									"var waitCounter = pm.globals.get(\"waitCounter\");",
+									"if(!waitCounter) {",
+									"    waitCounter = 0;",
+									"}",
+									"",
+									"if (pm.response.code != 200) { // wait for the resource to be created",
+									"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"        setTimeout(function(){}, [1000]); // 1 second",
+									"        waitCounter++;",
+									"        postman.setNextRequest(pm.info.requestName);",
+									"    } else { // timeout, reset counter",
+									"        waitCounter = 0;",
+									"    }",
+									"} else { // wait for the automation to complete",
+									"    const response = xml2Json(pm.response.text());",
+									"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+									"    var waitCounter = pm.globals.get(\"waitCounter\");",
+									"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+									"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"            setTimeout(function(){}, [1000]); // 1 second",
+									"            waitCounter++;",
+									"            postman.setNextRequest(pm.info.requestName);",
+									"        } else { // timeout, reset counter",
+									"            waitCounter = 0;",
+									"        }",
+									"    } else { // wait doen, reset counter",
+									"            waitCounter = 0;",
+									"    }",
+									"}",
+									"",
+									"pm.globals.set(\"waitCounter\", waitCounter);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/rdf+xml"
+							}
+						],
+						"url": {
+							"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+							"host": [
+								"{{server_address}}"
+							],
+							"path": [
+								"{{server_context}}",
+								"services",
+								"resources",
+								"automationRequests",
+								"{{requestId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "check result",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// wait for the request execution to finish",
-									" var result_wait_time = pm.variables.get('result_wait_time');",
-									" setTimeout(function(){}, [result_wait_time]);"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1667,10 +2529,6 @@
 									"pm.test(\"Response code should be 200 (OK)\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
-									"pm.test(\"AutomationResult desiredState should be #complete\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"oslc_auto:desiredState rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
-									"});",
-									"// the only difference compared to the last request (below)",
 									"pm.test(\"AutomationResult state should be #complete\", function () {",
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
@@ -1682,15 +2540,14 @@
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
 									"});",
 									"",
-									"pm.test(\"AutomationResult should contain analysis stdout\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Analysis stdout</dcterms:title>\");",
+									"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Analysis completed successfully\");",
+									"});",
+									"pm.test(\"returnCode should be 0\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
 									"});",
 									"pm.test(\"AutomationResult analysis stdout should have the expected value\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"# Analysis completed successfully\")",
 									"    pm.expect(pm.response.text()).to.include(\"In order to automatically run jobs configure the matrix at:\\n\\n    .perun/local.yml\");",
-									"});",
-									"pm.test(\"AutomationResult should contain analysis stderr\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Analysis stderr</dcterms:title>\");",
 									"});",
 									"pm.test(\"AutomationResult analysis stderr be empty (~)\", function () {",
 									"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
@@ -1783,15 +2640,92 @@
 					"response": []
 				},
 				{
+					"name": "wait for #complete (analysis tools/perun/collect)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+									"",
+									"var waitCounter = pm.globals.get(\"waitCounter\");",
+									"if(!waitCounter) {",
+									"    waitCounter = 0;",
+									"}",
+									"",
+									"if (pm.response.code != 200) { // wait for the resource to be created",
+									"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"        setTimeout(function(){}, [1000]); // 1 second",
+									"        waitCounter++;",
+									"        postman.setNextRequest(pm.info.requestName);",
+									"    } else { // timeout, reset counter",
+									"        waitCounter = 0;",
+									"    }",
+									"} else { // wait for the automation to complete",
+									"    const response = xml2Json(pm.response.text());",
+									"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+									"    var waitCounter = pm.globals.get(\"waitCounter\");",
+									"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+									"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+									"            setTimeout(function(){}, [1000]); // 1 second",
+									"            waitCounter++;",
+									"            postman.setNextRequest(pm.info.requestName);",
+									"        } else { // timeout, reset counter",
+									"            waitCounter = 0;",
+									"        }",
+									"    } else { // wait doen, reset counter",
+									"            waitCounter = 0;",
+									"    }",
+									"}",
+									"",
+									"pm.globals.set(\"waitCounter\", waitCounter);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/rdf+xml"
+							}
+						],
+						"url": {
+							"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+							"host": [
+								"{{server_address}}"
+							],
+							"path": [
+								"{{server_context}}",
+								"services",
+								"resources",
+								"automationRequests",
+								"{{requestId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "check result",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// wait for the request execution to finish",
-									" var result_wait_time = pm.variables.get('result_wait_time');",
-									" setTimeout(function(){}, [result_wait_time]);"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1813,10 +2747,6 @@
 									"pm.test(\"Response code should be 200 (OK)\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
-									"pm.test(\"AutomationResult desiredState should be #complete\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"oslc_auto:desiredState rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
-									"});",
-									"// the only difference compared to the last request (below)",
 									"pm.test(\"AutomationResult state should be #complete\", function () {",
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
@@ -1827,18 +2757,17 @@
 									"    pm.expect(pm.response.text()).to.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
 									"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
 									"});",
-									"",
-									"pm.test(\"AutomationResult should contain analysis stdout\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Analysis stdout</dcterms:title>\");",
+									"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Analysis completed successfully\");",
+									"});",
+									"pm.test(\"returnCode should be 0\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\">0</rdf:value>\");",
 									"});",
 									"pm.test(\"AutomationResult analysis stdout should have the expected value\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"# Analysis completed successfully\")",
+									"    pm.expect(pm.response.text()).to.include(\"Analysis completed successfully\")",
 									"    pm.expect(pm.response.text()).to.include(\"[!] Overall Profiling [DONE] in \");",
 									"    pm.expect(pm.response.text()).to.include(\"[!] Prerun [DONE] in \");",
 									"    pm.expect(pm.response.text()).to.include(\"[!] Batch Job Run [DONE] in \");",
-									"});",
-									"pm.test(\"AutomationResult should contain analysis stderr\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">Analysis stderr</dcterms:title>\");",
 									"});",
 									"pm.test(\"AutomationResult analysis stderr be empty (~)\", function () {",
 									"    pm.expect(pm.response.text()).to.include(\"<rdf:value rdf:parseType=\\\"Literal\\\"></rdf:value>\");",
@@ -1928,8 +2857,8 @@
 			"value": "http://localhost:8080"
 		},
 		{
-			"key": "result_wait_time",
-			"value": "5000"
+			"key": "result_wait_timeout",
+			"value": "30"
 		},
 		{
 			"key": "server_context",

@@ -42,7 +42,10 @@ import org.eclipse.lyo.server.oauth.core.token.SimpleTokenStrategy;
 import org.eclipse.lyo.server.oauth.core.AuthenticationException;
 
 import cz.vutbr.fit.group.verifit.oslc.compilation.auth.AuthenticationApplication;
+
+// Start of user code imports
 import cz.vutbr.fit.group.verifit.oslc.compilation.properties.VeriFitCompilationProperties;
+// End of user code
 
 // Start of user code pre_class_code
 // End of user code

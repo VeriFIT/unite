@@ -75,6 +75,8 @@ import org.eclipse.lyo.oslc.domains.Person;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 // Start of user code imports
 // End of user code
+import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
 // Start of user code preClassCode
 // End of user code
@@ -149,6 +151,19 @@ public class AutomationResult
     // Start of user code classAttributes
     // End of user code
     // Start of user code classMethods
+
+    public void replaceState(Link state)
+    {
+		setState(new HashSet<Link>());
+		addState(state);
+    }
+
+    public void replaceVerdict(Link verdict)
+    {
+		setVerdict(new HashSet<Link>());
+		addVerdict(verdict);
+    }
+ 
     // End of user code
     public AutomationResult()
     {
@@ -163,6 +178,15 @@ public class AutomationResult
         super(about);
     
         // Start of user code constructor2
+		this.setIdentifier(Utils.getResourceIdFromUri(about));
+		Date timestamp = new Date();
+		this.setCreated(timestamp);
+		this.setModified(timestamp);
+		this.replaceState(OslcValues.AUTOMATION_STATE_NEW);
+		this.setDesiredState(OslcValues.AUTOMATION_STATE_COMPLETE);
+		this.replaceVerdict(OslcValues.AUTOMATION_VERDICT_UNAVAILABLE);
+		//this.setInstanceShape(new URI(VeriFitAnalysisProperties.PATH_RESOURCE_SHAPES + "automationResult"));
+		//this.addType(new URI("http://open-services.net/ns/auto#AutomationResult"));
         // End of user code
     }
     

@@ -53,6 +53,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.UriBuilder;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.wink.json4j.JSONException;
 import org.apache.wink.json4j.JSONObject;
 import org.eclipse.lyo.oslc4j.provider.json4j.JsonHelper;
@@ -114,6 +115,18 @@ public class ServiceProviderService1
     // End of user code
 
     // Start of user code class_methods
+    @GET
+    @Path("getOS")
+    @Produces({MediaType.TEXT_PLAIN})
+    @ApiOperation(
+        value = "GET the OS (windows or linux)'}",
+        produces = MediaType.TEXT_PLAIN
+    )
+    public Response getOS()
+    {
+    	String os = SystemUtils.IS_OS_LINUX ? "linux" : "windows"; // TODO assumes that "not linux" means "windows"
+		return Response.status(200).entity(os).build();
+    }
     // End of user code
 
     public ServiceProviderService1()
@@ -727,19 +740,16 @@ public class ServiceProviderService1
             final AutomationRequest aResource
         ) throws IOException, ServletException
     {
-    	try {
-	        AutomationRequest newResource = VeriFitCompilationManager.createAutomationRequest(httpServletRequest, aResource);
-	        httpServletResponse.setHeader("ETag", VeriFitCompilationManager.getETagFromAutomationRequest(newResource));
-	        return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();
-	    } catch (OslcResourceException e) {
-			Error errorResource = new Error();
+        try {
+		AutomationRequest newResource = VeriFitCompilationManager.createAutomationRequest(httpServletRequest, aResource);
+        httpServletResponse.setHeader("ETag", VeriFitCompilationManager.getETagFromAutomationRequest(newResource));
+        return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();
+		} catch (OslcResourceException e) {
+		Error errorResource = new Error();
 			errorResource.setStatusCode("400");
 			errorResource.setMessage(e.getMessage());
 			return Response.status(400).entity(errorResource).build();
-		 } catch (Exception e) {
-			e.printStackTrace();
-			throw new WebApplicationException(e);
-		 }
+		}
     }
 
     /**

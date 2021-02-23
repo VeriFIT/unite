@@ -57,7 +57,8 @@ import org.eclipse.lyo.oslc4j.core.model.ResourceShape;
 import org.eclipse.lyo.oslc4j.core.model.ResourceShapeFactory;
 
 import cz.vutbr.fit.group.verifit.oslc.domain.FitDomainConstants;
-
+import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
@@ -129,6 +130,10 @@ public class SUT
         super(about);
     
         // Start of user code constructor2
+		this.setIdentifier(Utils.getResourceIdFromUri(about));
+		Date timestamp = new Date();
+		this.setCreated(timestamp);
+		this.setModified(timestamp);
         // End of user code
     }
     

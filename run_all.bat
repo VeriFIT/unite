@@ -4,11 +4,26 @@ setlocal EnableDelayedExpansion
 set LF=^
 
 
-set HELP= Launches the sparql triplestore, and then the analysis adapter and the compilation adapter.!LF!^
- The triplestore needs to finish startup before both adapters, which is controled by polling the!LF!^
- triplestore using curl until it responds!LF!^
- !LF!^
- Usage: run_all.bat!LF!
+set HELP=   Launches the sparql triplestore, and then the analysis adapter and the compilation adapter.!LF!^
+   The triplestore needs to finish startup before both adapters, which is controled by polling the!LF!^
+   triplestore using curl until it responds!LF!
+
+set USAGE=   Usage: test.bat [-h]!LF!^
+      -h ... help!LF!
+
+:: process arguments
+if "%1" == "-h" (
+    echo.
+    echo !HELP!
+    echo !USAGE!
+    echo.
+    exit 0
+) else if not "%1" == "" ( 
+    echo Invalid arguments
+    echo.
+    echo !USAGE!
+    exit 1
+) 
 
 :: process arguments
 IF not "%1" == "" ( 
@@ -35,6 +50,13 @@ if not exist ".\compilation\VeriFitCompilation.properties" (
     exit 1
 )
 
+:: get and output version
+set /p VERSION=<VERSION.md
+echo.
+echo ########################################################
+echo     OSLC Universal Analysis, %VERSION%
+echo ########################################################
+echo.
 
 :: lookup triplestore config
 FOR /F "tokens=*" %%g IN ('findstr jetty.http.host sparql_triplestore\jetty-distribution\start.ini') do (SET TRIPESTORE_HOST=%%g)
@@ -71,9 +93,9 @@ set CURTIME=%DATE%_%TIME:~0,2%.%TIME:~3,2%.%TIME:~6,2%
 set CURTIME=%CURTIME: =0%
 set CURTIME=%CURTIME:\=-%
 set CURTIME=%CURTIME:/=-%
-echo ####################################################!LF!## Run started at: %CURTIME% > %USRPATH%\logs\triplestore_%CURTIME%.txt
-echo ####################################################!LF!## Run started at: %CURTIME% > %USRPATH%\logs\compilation_%CURTIME%.txt
-echo ####################################################!LF!## Run started at: %CURTIME% > %USRPATH%\logs\analysis_%CURTIME%.txt
+echo ########################################################!LF!    Running version: %VERSION%!LF!    Started at: %CURTIME%!LF!########################################################!LF!> %USRPATH%\logs\triplestore_%CURTIME%.txt
+echo ########################################################!LF!    Running version: %VERSION%!LF!    Started at: %CURTIME%!LF!########################################################!LF!> %USRPATH%\logs\compilation_%CURTIME%.txt
+echo ########################################################!LF!    Running version: %VERSION%!LF!    Started at: %CURTIME%!LF!########################################################!LF!> %USRPATH%\logs\analysis_%CURTIME%.txt
 
 :: start the triplestore
 echo Starting the Triplestore

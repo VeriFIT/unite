@@ -10,6 +10,7 @@
 
 package cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -19,6 +20,7 @@ import java.nio.file.Path;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -39,6 +41,7 @@ import cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution.su
 import cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution.sutFetcher.SutFetcher;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionParameter;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.RequestRunner;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
@@ -53,18 +56,18 @@ public class SutDeploy extends RequestRunner
 	private AutomationRequest execAutoRequest;
 	final private String resAutoResultId;
 	private AutomationResult resAutoResult;
-	final private Map<String, Pair<String,Integer>> inputParamsMap;
+	final private List<ExecutionParameter> execParameters;
 	
 	/**
 	 * @param execAutoRequest	Executed AutomationRequest resource object
 	 * @param execAutoResult	Result AutomationResult resource object
 	 * @param inputParamsMap	Input parameters as a "name" => "value" map
 	 */
-	public SutDeploy(AutomationRequest execAutoRequest, AutomationResult resAutoResult, Map<String, Pair<String,Integer>> inputParamsMap) 
+	public SutDeploy(AutomationRequest execAutoRequest, AutomationResult resAutoResult, List<ExecutionParameter> execParameters) 
 	{
 		super();
-		
-		this.inputParamsMap = inputParamsMap;
+
+		this.execParameters = execParameters;
 		this.execAutoRequestId = Utils.getResourceIdFromUri(execAutoRequest.getAbout());
 		this.execAutoRequest = execAutoRequest;
 		this.resAutoResultId = Utils.getResourceIdFromUri(resAutoResult.getAbout());
@@ -76,172 +79,207 @@ public class SutDeploy extends RequestRunner
 	 */
 	public void run()
 	{
+		// input parameters
+		String paramSourceGit = null;
+		String paramSourceUrl =  null;
+		String paramSourceBase64 =  null;
+		String paramSourceFilePath =  null;
+		String paramBuildCommand =  null;
+		String paramLaunchCommand =  null;
+		String paramUnpackZip =  null;
 		
-		try {
-			
-			// get the input parameters	// TODO .getLeft() is ugly	
-			final String paramSourceGit = (inputParamsMap.get("sourceGit") == null) ? null : inputParamsMap.get("sourceGit").getLeft();
-			final String paramSourceUrl = (inputParamsMap.get("sourceUrl") == null) ? null : inputParamsMap.get("sourceUrl").getLeft();
-			final String paramSourceBase64 = (inputParamsMap.get("sourceBase64") == null) ? null : inputParamsMap.get("sourceBase64").getLeft();
-			final String paramSourceFilePath = (inputParamsMap.get("sourceFilePath") == null) ? null : inputParamsMap.get("sourceFilePath").getLeft();
-			final String paramBuildCommand = (inputParamsMap.get("buildCommand") == null) ? null : inputParamsMap.get("buildCommand").getLeft();
-			final String paramLaunchCommand = (inputParamsMap.get("launchCommand") == null) ? null : inputParamsMap.get("launchCommand").getLeft();
-			final String paramUnpackZip = (inputParamsMap.get("unpackZip") == null) ? null : inputParamsMap.get("unpackZip").getLeft();
-
-			// check wich one of the source parameters was used 
-			SutFetcher sutFetcher = null;
-			String ProgramDefinition = "";	//TODO use something else than a string (speed)
-			String ProgramSource = "";
-			if (paramSourceGit != null)
-			{
-				sutFetcher = new SutFetchGit();
-				ProgramSource = paramSourceGit;
-			}
-			else if (paramSourceUrl != null)
-			{
-				sutFetcher = new SutFetchUrl();
-				ProgramSource = paramSourceUrl;
-			}
-			else if (paramSourceBase64 != null)
-			{
-				sutFetcher = new SutFetchBase64();
-				ProgramSource = paramSourceBase64;
-			}
-			else if (paramSourceFilePath != null)
-			{
-				sutFetcher = new SutFetchFileSystem();
-				ProgramSource = paramSourceFilePath;
-			}
-			else
-			{
-		    	System.out.println("This should never happen!!");
-			}
-			
-			// set the states of the Automation Result and Request to "inProgress"
-			resAutoResult.setState(new HashSet<Link>());
-			resAutoResult.addState(new Link(new URI(OslcValues.AUTOMATION_STATE_INPROGRESS)));
-			VeriFitCompilationManager.updateAutomationResult(null, resAutoResult, resAutoResultId);
-			execAutoRequest.setState(new HashSet<Link>());
-			execAutoRequest.addState(new Link(new URI(OslcValues.AUTOMATION_STATE_INPROGRESS)));
-			VeriFitCompilationManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
-			
-			
-		    // prepare result contributions - program fetching, compilation
-			Contribution fetchLog = new Contribution();
-		    fetchLog.setDescription("Output of the program fetching process. Provider messages are prefixed with #.");
-		    fetchLog.setTitle("Fetching Output");
-		    fetchLog.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING)));
-		    //fetchLog.addType(new Link(new URI("http://purl.org/dc/dcmitype/Text"))); //TODO
-		    
-		    Contribution compStdoutLog = new Contribution();
-		    compStdoutLog.setDescription("Standard output of the compilation. Provider messages are prefixed with #.");
-		    compStdoutLog.setTitle("Compilation stdout");
-		    compStdoutLog.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING)));
-		    Contribution compStderrLog = new Contribution();
-		    compStderrLog.setDescription("Error output of the compilation. Provider messages are prefixed with #.");
-		    compStderrLog.setTitle("Compilation stderr");
-		    compStderrLog.addValueType(new Link(new URI(OslcValues.OSLC_VAL_TYPE_STRING)));
-			
-		    
-		    Boolean performCompilation = true;	// flag to disable a part of the execution in case of an error
-			String executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
-		    
-			// fetch source file
-			Path folderPath = null;
-			try {
-				// create the program path and name
-				folderPath = createSutDir(execAutoRequestId);
-				String filenameSUT = "";	// used for optional unpacking later
-				
-			    // get the source file
-		    	filenameSUT = sutFetcher.fetchSut(ProgramSource, folderPath);
-			    
-			    // unzip the SUT if requested
-			    if (paramUnpackZip.equals("true") || paramUnpackZip.equals("True"))
-			    {
-			    	unzipFile(folderPath, filenameSUT);
-			    }
-			    
-				fetchLog.setValue("# SUT fetch successful\n");
-			
-			} catch (Exception e) {
-				executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
-				fetchLog.setValue("# SUT fetch failed\n" + e.getMessage());
-	    		performCompilation = false;
-
-			} finally {
-				// create the fetching log Contribution and add it to the AutomationResult
-				fetchLog = VeriFitCompilationManager.createContribution(fetchLog);
-		    	resAutoResult.addContribution(fetchLog);
-			}
-			
-			    
-			// Do not compile if there was no buildCommand (e.g. for static analysis)
-			if (paramBuildCommand == null || paramBuildCommand.equals("")) //TODO
-				performCompilation = false;
-
-			// compile source file if the fetching did not fail
-			if (performCompilation)
-			{
-				try {
-					ExecutionResult compRes = executeString(folderPath, paramBuildCommand, 0);
-			    	
-			    	if (compRes.retCode != 0)
-			    	{	// if the compilation returned non zero, set the verdict as failed
-						executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
-				    	compStdoutLog.setValue("# Compilation failed (returned non-zero: " + compRes.retCode + ")\n"
-				    							+ compRes.stdout);
-			    	}
-			    	else
-			    	{
-				    	compStdoutLog.setValue("# Compilation completed successfully\n" + compRes.stdout);
-			    	}
-			    	compStderrLog.setValue(compRes.stderr);
-				    
-				} catch (IOException e) {
-					// there was an error
-					executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
-					compStdoutLog.setValue("# Compilation error");
-			    	compStderrLog.setValue(e.getMessage());
-		    		
-				} finally {
-					// create the compilation Contributions and add them to the Automation Result
-					compStdoutLog = VeriFitCompilationManager.createContribution(compStdoutLog);
-					compStderrLog = VeriFitCompilationManager.createContribution(compStderrLog);
-			    	resAutoResult.addContribution(compStdoutLog);
-			    	resAutoResult.addContribution(compStderrLog);
-				}
-			}
-	    	
-			// create the SUT resource if the compilation was successful
-			if (executionVerdict == OslcValues.AUTOMATION_VERDICT_PASSED)
-			{
-				SUT newSut = new SUT();
-				newSut.setTitle("SUT - " + execAutoRequest.getTitle());
-				newSut.setLaunchCommand(paramLaunchCommand);
-				if (!(paramBuildCommand == null || paramBuildCommand.equals(""))) //TODO
-					newSut.setBuildCommand(paramBuildCommand);
-				newSut.setSUTdirectoryPath(folderPath.toAbsolutePath().toString());
-				newSut.setCreator(execAutoRequest.getCreator());
-				newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(execAutoRequestId));
-				VeriFitCompilationManager.createSUT(newSut, execAutoRequestId); // TODO
-				resAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(Utils.getResourceIdFromUri(newSut.getAbout()))); // TODO
-			}
-			
-			// update the AutoResult state and verdict, and AutoRequest state
-			resAutoResult.setState(new HashSet<Link>());
-			resAutoResult.addState(new Link(new URI(OslcValues.AUTOMATION_STATE_COMPLETE)));
-			resAutoResult.setVerdict(new HashSet<Link>());
-			resAutoResult.addVerdict(new Link(new URI(executionVerdict)));
-			VeriFitCompilationManager.updateAutomationResult(null, resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
-			execAutoRequest.setState(new HashSet<Link>());
-			execAutoRequest.addState(new Link(new URI(OslcValues.AUTOMATION_STATE_COMPLETE)));
-			VeriFitCompilationManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
-				
-		} catch (URISyntaxException e) {
-			// TODO should never be thrown (URI syntax)
-			e.printStackTrace();
+		// extract values from parameters
+		for (ExecutionParameter param : this.execParameters)
+		{ 
+			if (param.getName().equals("sourceGit")) paramSourceGit = param.getValue();
+			else if (param.getName().equals("sourceUrl")) paramSourceUrl = param.getValue();
+			else if (param.getName().equals("sourceBase64")) paramSourceBase64 = param.getValue();
+			else if (param.getName().equals("sourceFilePath")) paramSourceFilePath = param.getValue();
+			else if (param.getName().equals("buildCommand")) paramBuildCommand = param.getValue();
+			else if (param.getName().equals("launchCommand")) paramLaunchCommand = param.getValue();
+			else if (param.getName().equals("unpackZip")) paramUnpackZip = param.getValue();
 		}
+		
+		// check wich one of the source parameters was used 
+		SutFetcher sutFetcher = null;
+		String ProgramDefinition = "";	//TODO use something else than a string (speed)
+		String ProgramSource = "";
+		if (paramSourceGit != null)
+		{
+			sutFetcher = new SutFetchGit();
+			ProgramSource = paramSourceGit;
+		}
+		else if (paramSourceUrl != null)
+		{
+			sutFetcher = new SutFetchUrl();
+			ProgramSource = paramSourceUrl;
+		}
+		else if (paramSourceBase64 != null)
+		{
+			sutFetcher = new SutFetchBase64();
+			ProgramSource = paramSourceBase64;
+		}
+		else if (paramSourceFilePath != null)
+		{
+			sutFetcher = new SutFetchFileSystem();
+			ProgramSource = paramSourceFilePath;
+		}
+		else
+		{
+			System.out.println("This should never happen!!");
+		}
+		
+		// set the states of the Automation Result and Request to "inProgress"
+		resAutoResult.replaceState(OslcValues.AUTOMATION_STATE_INPROGRESS);
+		VeriFitCompilationManager.updateAutomationResult(null, resAutoResult, resAutoResultId);
+		execAutoRequest.replaceState(OslcValues.AUTOMATION_STATE_INPROGRESS);
+		VeriFitCompilationManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
+		
+		
+		// prepare result contributions
+		Contribution fetchLog = new Contribution();
+		fetchLog.setDescription("Output of the program fetching process.");
+		fetchLog.setTitle("Fetching Output");
+		fetchLog.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		
+		Contribution executionTime = new Contribution();
+		executionTime.setDescription("Total execution time of the analysis in milliseconds."); // TODO CHECK really milliseconds?
+		executionTime.setTitle("executionTime");
+		executionTime.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		
+		Contribution statusMessage = new Contribution();
+		statusMessage.setDescription("Status messages from the adapter about the execution.");
+		statusMessage.setTitle("statusMessage");
+		statusMessage.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		
+		Contribution returnCode = new Contribution();
+		returnCode.setDescription("Return code of the execution. If non-zero, then the verdict will be #failed.");
+		returnCode.setTitle("returnCode");
+		returnCode.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);	
+		
+		Contribution compStdoutLog = new Contribution();
+		compStdoutLog.setDescription("Standard output of the compilation.");
+		compStdoutLog.setTitle("stdout");
+		compStdoutLog.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		
+		Contribution compStderrLog = new Contribution();
+		compStderrLog.setDescription("Error output of the compilation.");
+		compStderrLog.setTitle("stderr");
+		compStderrLog.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		
+		
+		// init compilation toggle flag
+		Boolean performCompilation = true;
+		if (paramBuildCommand == null || paramBuildCommand.equals("")) // Do not compile if there was no buildCommand (e.g. for static analysis)
+			performCompilation = false;
+		Link executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
+		
+		// fetch source file
+		Path folderPath = null;
+		try {
+			// create the program path and name
+			folderPath = createSutDir(execAutoRequestId);
+			String filenameSUT = "";	// used for optional unpacking later
+			
+		    // get the source file
+			filenameSUT = sutFetcher.fetchSut(ProgramSource, folderPath);
+			fetchLog.setValue("TODO currently only shows error messages");
+			
+		    // unzip the SUT if requested
+		    if (paramUnpackZip.equalsIgnoreCase("true"))
+		    {
+		    	File sutZipFile = folderPath.resolve(filenameSUT).toFile();
+		    	Utils.unzipFile(folderPath, sutZipFile);
+		    }
+		    
+		    statusMessage.setValue("SUT fetch successful\n");
+		
+		} catch (Exception e) {
+			executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
+			statusMessage.setValue("SUT fetch failed: " + e.getMessage() + "\n");
+			fetchLog.setValue(e.getMessage());
+			performCompilation = false;
+
+		} finally {
+			resAutoResult.addContribution(fetchLog);
+		}
+		
+		// compile source file if the fetching did not fail and compilation was requested
+		if (performCompilation)
+		{
+			ExecutionResult compRes = null;
+			try {
+				compRes = executeString(folderPath, paramBuildCommand, 0, this.execAutoRequestId);
+		    	
+		    	if (compRes.retCode != 0)
+		    	{	// if the compilation returned non zero, set the verdict as failed
+					executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
+					statusMessage.setValue(statusMessage.getValue() +  "Compilation failed (returned non-zero: " + compRes.retCode + ")\n");
+		    	}
+		    	else
+		    	{
+		    		statusMessage.setValue(statusMessage.getValue() +  "Compilation completed successfully\n");
+		    	}				    
+			} catch (IOException e) {
+				// there was an error
+				executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
+				statusMessage.setValue(statusMessage.getValue() +  "Compilation execution error");
+				
+			} finally {
+				resAutoResult.addContribution(statusMessage); // TODO add infos abou stuff below too
+			}
+			
+			// only do more processing if there was no exception during execution
+			if (executionVerdict != OslcValues.AUTOMATION_VERDICT_ERROR)
+			{
+				// add contributions to the automation result
+				executionTime.setValue(Long.toString(compRes.totalTime));
+				resAutoResult.addContribution(executionTime);
+				returnCode.setValue(Integer.toString(compRes.retCode));
+				resAutoResult.addContribution(returnCode);
+
+				// load stdout and stderr file contents into contribution values
+				try {
+					compStdoutLog.setValue(new String(Files.readAllBytes(compRes.stdoutFile.toPath())));
+				} catch (IOException e) {
+					compStdoutLog.setValue("Failed to load contents of this file: " + e.getMessage());
+				}
+		    	resAutoResult.addContribution(compStdoutLog);
+		    	try {
+					compStderrLog.setValue(new String(Files.readAllBytes(compRes.stderrFile.toPath())));
+				} catch (IOException e) {
+					compStderrLog.setValue("Failed to load contents of this file: " + e.getMessage());
+				}
+		    	resAutoResult.addContribution(compStderrLog);
+			}
+		} else {
+			statusMessage.setValue(statusMessage.getValue() + "Compilation not performed" + "\n");
+			resAutoResult.addContribution(statusMessage); // TODO add infos abou stuff below too
+		}
+		
+		
+		// create the SUT resource if the compilation was successful
+		if (executionVerdict == OslcValues.AUTOMATION_VERDICT_PASSED)
+		{
+			SUT newSut = new SUT();
+			newSut.setTitle("SUT - " + execAutoRequest.getTitle());
+			newSut.setLaunchCommand(paramLaunchCommand);
+			if (!(paramBuildCommand == null || paramBuildCommand.equals(""))) //TODO
+				newSut.setBuildCommand(paramBuildCommand);
+			newSut.setSUTdirectoryPath(folderPath.toAbsolutePath().toString());
+			newSut.setCreator(execAutoRequest.getCreator());
+			newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(execAutoRequestId));
+			newSut = VeriFitCompilationManager.createSUT(newSut, execAutoRequestId); // TODO
+			resAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(Utils.getResourceIdFromUri(newSut.getAbout()))); // TODO
+		}
+		
+		// update the AutoResult state and verdict, and AutoRequest state
+		resAutoResult.replaceState(OslcValues.AUTOMATION_STATE_COMPLETE);
+		resAutoResult.replaceVerdict(executionVerdict);
+		VeriFitCompilationManager.updateAutomationResult(null, resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
+		execAutoRequest.setState(new HashSet<Link>());
+		execAutoRequest.addState(OslcValues.AUTOMATION_STATE_COMPLETE);
+		VeriFitCompilationManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
 	}
 	
 
@@ -271,30 +309,5 @@ public class SutDeploy extends RequestRunner
 	{
 	    String currentDate = new Date().toString().replace(' ', '-');
 	    return "req" + autoRequestId + "." + currentDate;
-	}
-	
-	/**
-	 * TODO
-	 * @param folderPath
-	 * @param filename
-	 * @throws IOException
-	 */
-	protected void unzipFile(Path folderPath, String filename) throws IOException
-	{
-		Path pathToFile = folderPath.resolve(filename);
-
-    	ZipFile zf = new ZipFile(pathToFile.toFile());
-        Enumeration<? extends ZipEntry> zipEntries = zf.entries();
-        while(zipEntries.hasMoreElements())
-        {
-        	ZipEntry entry = zipEntries.nextElement();
-        	if (entry.isDirectory()) {
-                Path dirToCreate = folderPath.resolve(entry.getName());
-                Files.createDirectories(dirToCreate);
-            } else {
-            	Path fileToCreate = folderPath.resolve(entry.getName());
-                Files.copy(zf.getInputStream(entry), fileToCreate);
-            }
-        }
 	}
 }

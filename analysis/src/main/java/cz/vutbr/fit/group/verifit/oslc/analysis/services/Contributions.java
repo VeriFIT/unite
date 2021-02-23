@@ -17,9 +17,7 @@
 
 package cz.vutbr.fit.group.verifit.oslc.analysis.services;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -77,7 +75,6 @@ import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
-import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisConstants;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import cz.vutbr.fit.group.verifit.oslc.analysis.servlet.ServiceProviderCatalogSingleton;
@@ -86,6 +83,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 // Start of user code imports
+import java.io.InputStream;
+import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
+import java.io.File;
 // End of user code
 
 // Start of user code pre_class_code
@@ -108,7 +108,13 @@ public class Contributions
     @PUT
     @Path("contributions/{id}")
     @Consumes({MediaType.APPLICATION_OCTET_STREAM, MediaType.TEXT_PLAIN})
-    public Response updateContributionFile( // TODO add @ApiOperation
+    @ApiOperation(
+            value = "UPDATE the contents of a contribution file by using its fit:fileURI as the ID of a contribution.",
+            notes = "UPDATE the contents of a contribution file by using its fit:fileURI as the ID of a contribution. Allows clients to directly upload a contribution file "
+            		+ "as an octet stream to modify its value. TODO This is a temporary solution.",
+            produces = MediaType.APPLICATION_OCTET_STREAM + ", " + MediaType.TEXT_PLAIN
+        )
+    public Response updateContributionFile(
             @Context HttpServletRequest request,
             @PathParam("id") final String id,
             InputStream fileInputStream
@@ -128,7 +134,13 @@ public class Contributions
     @GET
     @Path("contributions/{id}")
     @Produces({MediaType.APPLICATION_OCTET_STREAM, MediaType.TEXT_PLAIN})
-    public Response getContributionFile( // TODO add @ApiOperation
+    @ApiOperation(
+        value = "GET the contents of a contribution file by using its fit:fileURI as the ID of a contribution.",
+        notes = "GET the contents of a contribution file by using its fit:fileURI as the ID of a contribution. Allows clients to directly download a contribution file "
+        		+ "as an octet stream. TODO This is a temporary solution.",
+        produces = MediaType.APPLICATION_OCTET_STREAM + ", " + MediaType.TEXT_PLAIN
+    )
+    public Response getContributionFile(
                 @PathParam("id") final String id
         ) throws IOException, ServletException, URISyntaxException
     {

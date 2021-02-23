@@ -11,7 +11,6 @@
 package cz.vutbr.fit.group.verifit.oslc.analysis.properties;
 
 // Start of user code imports
-import java.util.Set;
 
 import org.apache.commons.lang3.SystemUtils;
 
@@ -19,8 +18,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashSet;
 // End of user code
 import java.util.Properties;
 
