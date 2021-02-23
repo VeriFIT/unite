@@ -122,8 +122,8 @@ main() {
         echo
         echo "Running Analysis adapter Tested Tools test suite" 
         time newman run ../analysis/tests/TestSuite_TestedTools.postman_collection
+        analysisToolsRes=$?
     fi
-    analysisToolsRes=$?
 
     echo -e "\nShutting down the adaters" 
     trap '' INT TERM     # ignore INT and TERM while shutting down
