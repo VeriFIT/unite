@@ -98,6 +98,12 @@ curl_poll()
     echo
 }
 
+# get and output version
+VERSION=$(cat ./VERSION.md 2>/dev/null)
+echo -e "\n########################################################"
+echo -e "    OSLC Universal Analysis, $VERSION"
+echo -e "########################################################\n"
+
 
 # lookup triplestore config
 triplestore_host=$(cat sparql_triplestore/jetty-distribution/start.ini | grep "^ *jetty.http.host=" | sed "s/^ *jetty.http.host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
@@ -114,11 +120,11 @@ analysis_url="$analysis_host:$analysis_port/analysis/"
 
 
 # create log files and append headings
-mkdir $USRPATH &> /dev/null
+mkdir $USRPATH/logs &> /dev/null
 CURTIME=$(date +%F_%T)
-echo -e "####################################################\n## Run started at: $CURTIME" > "$USRPATH/logs/triplestore_$CURTIME.log"
-echo -e "####################################################\n## Run started at: $CURTIME" > "$USRPATH/logs/compilation_$CURTIME.log"
-echo -e "####################################################\n## Run started at: $CURTIME" > "$USRPATH/logs/analysis_$CURTIME.log"
+echo -e "########################################################\n    Running version: $VERSION\n    Started at: $CURTIME\n########################################################\n" > "$USRPATH/logs/triplestore_$CURTIME.log"
+echo -e "########################################################\n    Running version: $VERSION\n    Started at: $CURTIME\n########################################################\n" > "$USRPATH/logs/compilation_$CURTIME.log"
+echo -e "########################################################\n    Running version: $VERSION\n    Started at: $CURTIME\n########################################################\n" > "$USRPATH/logs/analysis_$CURTIME.log"
 
 # open new terminals that tail the log files and record their PIDs to kill later
 if [ "$1" = "-t" ]; then

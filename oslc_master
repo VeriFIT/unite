@@ -30,6 +30,9 @@ ANALYSIS_INI=$ROOTDIR/analysis/VeriFitAnalysis.properties
 # duration for polling (via curl)
 SLEEP=3
 
+# adapter version
+VERSION=$(cat ./VERSION.md 2>/dev/null)
+
 # $1... = (optional) message
 usage()
 {
@@ -123,8 +126,10 @@ mklog()
     mkdir -p $LOGDIR || exit 1
     rotate_logs "$LOGDIR" "$1"
     (
-    echo "####################################################"
-    echo "## Run started at: $(date +%F_%T)"
+    echo "########################################################"
+    echo "    Running version: $VERSION"
+    echo "    Started at: $(date +%F_%T)"
+    echo "########################################################"
     ) >"$LOGDIR/$1.log"
 }
 
@@ -142,6 +147,16 @@ curl_poll()
 start()
 {
     trap 'stop; exit 0' INT TERM HUP
+
+    # make the LOGDIR
+    mkdir -p $LOGDIR || exit 1
+
+    # output version
+    log -v
+    log -v "########################################################"
+    log -v "    OSLC Universal Analysis, $VERSION"
+    log -v "########################################################"
+    log -v
 
     # make sure configuration files exist
     if [ ! -f "./analysis/VeriFitAnalysis.properties" ]; then
