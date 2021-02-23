@@ -11,6 +11,9 @@ Contribution changes
 Run script additions
 - run\_all.sh now has a -t option to launch terminals with "tail -f log\_files" 
 
+test suite changes
+- does not use sleep for synchronization anymore (waiting for automation to finish), uses get requests in a cycle instead
+
 Other
 - added CHANGELOG and VERSION
 - version now shows on startup
