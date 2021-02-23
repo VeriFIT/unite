@@ -209,8 +209,6 @@ public class VeriFitCompilationManager {
 		newAutoResult.setContributor(autoRequest.getContributor());
 		newAutoResult.setCreator(autoRequest.getCreator());
 		
-		newAutoResult.replaceVerdict(OslcValues.AUTOMATION_VERDICT_UNAVAILABLE);
-		
     	// check that required properties are specified in the input parameter
     	if (newAutoResult == null || newAutoResult.getTitle() == null || newAutoResult.getTitle().isEmpty() ||
 			newAutoResult.getState() == null || newAutoResult.getState().isEmpty() ||
