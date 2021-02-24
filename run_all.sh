@@ -63,6 +63,30 @@ curl_poll()
     echo
 }
 
+# Check that all required configuration files exist.
+# Outputs an error message and exits the script if 
+# a conf file is missing.
+checkConfFiles()
+{
+    if [ ! -f "./analysis/VeriFitAnalysis.properties" ]; then
+        echo -e "ERROR: Configuration file \"$ROOTDIR/analysis/VeriFitAnalysis.properties\" not found."
+        echo -e "  The adapter needs to be configured to be able to run!"
+        echo -e "  See the \"VeriFitAnalysisExample.properties\" file for instructions and use it as a template."
+        exit 1
+    fi
+    if [ ! -f "./compilation/VeriFitCompilation.properties" ]; then
+        echo -e "ERROR: Configuration file \"$ROOTDIR/compilation/VeriFitCompilation.properties\" not found."
+        echo -e "  The adapter needs to be configured to be able to run!"
+        echo -e "  See the \"VeriFitCompilationExample.properties\" file for instructions and use it as a template."
+        exit 1
+    fi
+    if [ ! -f "./sparql_triplestore/jetty-distribution/start.ini" ]; then
+        echo -e "ERROR: Configuration file \"$ROOTDIR/sparql_triplestore/jetty-distribution/start.ini\" not found."
+        echo -e "  The adapter needs to be configured to be able to run!"
+        echo -e "  See the \"startExample.ini\" file for instructions and use it as a template."
+        exit 1
+    fi
+}
 
 main () {
     # process arguments
@@ -85,18 +109,7 @@ main () {
     fi
 
     # make sure configuration files exist
-    if [ ! -f "./analysis/VeriFitAnalysis.properties" ]; then
-        echo -e "ERROR: Configuration file \"$ROOTDIR/analysis/VeriFitAnalysis.properties\" not found."
-        echo -e "  The adapter needs to be configured to be able to run!"
-        echo -e "  See the \"VeriFitAnalysisExample.properties\" file for instructions and use it as a template."
-        exit 1
-    fi
-    if [ ! -f "./compilation/VeriFitCompilation.properties" ]; then
-        echo -e "ERROR: Configuration file \"$ROOTDIR/compilation/VeriFitCompilation.properties\" not found."
-        echo -e "  The adapter needs to be configured to be able to run!"
-        echo -e "  See the \"VeriFitCompilationExample.properties\" file for instructions and use it as a template."
-        exit 1
-    fi
+    checkConfFiles
 
     # get and output version
     VERSION=$(cat ./VERSION.md 2>/dev/null)

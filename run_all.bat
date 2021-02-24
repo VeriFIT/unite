@@ -49,6 +49,12 @@ if not exist ".\compilation\VeriFitCompilation.properties" (
     echo   See the "VeriFitCompilationExample.properties" file for instructions and use it as a template.
     exit 1
 )
+if not exist ".\sparql_triplestore\jetty-distribution\start.ini" (
+    echo ERROR: Configuration file "%ROOTDIR%\sparql_triplestore\jetty-distribution\start.ini" not found.
+    echo   The adapter needs to be configured to be able to run!
+    echo   See the "startExample.ini" file for instructions and use it as a template.
+    exit 1
+)
 
 :: get and output version
 set /p VERSION=<VERSION.md
