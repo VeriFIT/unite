@@ -18,7 +18,7 @@ Defaults are "localhost" and ports "8080, 8081, 8082".
     - create *analysis/VeriFitAnalysis.properties* based on *analysis/VeriFitAnalysisExample.properties* and configure all properties (adapter host and port, sparql, ...)
     - create *compilation/VeriFitCompilation.properties* based on *compilation/VeriFitCompilationExample.properties* and configure all properties (adapter host and port, sparql, ...)
 - Fuseki SPARQL triplestore 
-	- in *sparql_triplestore/jetty-distribution/start.ini* change *jetty.http.host* and *jetty.http.port*
+	- create *sparql_triplestore/jetty-distribution/start.ini* based on *sparql_triplestore/jetty-distribution/startExample.ini* (change *jetty.http.host* and *jetty.http.port*)
     - The triplestore comes with two non-persistent datasets. If you want persistent ones, create two new datasets using Fuseki's Web UI.
         1) open a Web browser at *host*:*port*/fuseki/
         2) go to "manage datasets -> add new dataset"

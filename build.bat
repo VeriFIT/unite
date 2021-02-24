@@ -7,35 +7,57 @@ set USRPATH=%CD%
 set ROOTDIR=%~dp0
 cd %ROOTDIR%
 
-echo #########################################################
-echo #### Building and Installing shared resources
-echo #########################################################
+echo.
+echo ############################################################
+echo     Checking configuration files
+echo ############################################################
+echo.
+call :confFileCheckOrDefault .\analysis\VeriFitAnalysis.properties .\analysis\VeriFitAnalysisExample.properties
+call :confFileCheckOrDefault .\compilation\VeriFitCompilation.properties .\compilation\VeriFitCompilationExample.properties
+call :confFileCheckOrDefault .\sparql_triplestore\jetty-distribution\start.ini .\sparql_triplestore\jetty-distribution\startExample.ini
+
+echo.
+echo ############################################################
+echo     Building and Installing shared resources
+echo ############################################################
+echo.
 cd shared
 call mvn clean install
-echo #### Done
 
-echo #########################################################
-echo #### Building and Installing the Compilation adapter
-echo #########################################################
+echo.
+echo ############################################################
+echo     Building and Installing the Compilation adapter
+echo ############################################################
+echo.
 cd ..\compilation
 call mvn clean install
-echo #### Done
 
 
-echo #########################################################
-echo #### Building and Installing the Analysis adapter
-echo #########################################################
+echo.
+echo ############################################################
+echo     Building and Installing the Analysis adapter
+echo ############################################################
+echo.
 cd ..\analysis
 call mvn clean install
-echo #### Done
 
 echo.
-echo #### ALL DONE ####
+echo ##### ALL DONE #############################################
 echo.
 
-echo     Make sure to create configuration files for both adapters
-echo     by creating analysis/VeriFitAnalysis.properties and
-echo     by creating compilation/VeriFitCompilation.properties.
-echo     Both directories contian a *Example.properties file that
-echo     can be used as a template.
-echo.
+
+
+
+:: Checks if a conf file exists. If not, then a default one is created.
+:: $1 = file to check
+:: $2 = default file to copy if not found
+:confFileCheckOrDefault
+    echo -n Checking %~1:
+    if not exist %~1 (
+        echo Not found
+        echo     Creating a default one
+        copy %~2 %~1
+    ) else (
+        echo OK
+    )
+exit /B 0
