@@ -44,7 +44,7 @@ call mvn clean install
 echo.
 echo ##### ALL DONE #############################################
 echo.
-
+exit 0
 
 
 
@@ -52,11 +52,11 @@ echo.
 :: $1 = file to check
 :: $2 = default file to copy if not found
 :confFileCheckOrDefault
-    echo -n Checking %~1:
+    echo |set /p="Checking %~1: "
     if not exist %~1 (
         echo Not found
         echo     Creating a default one
-        copy %~2 %~1
+        copy %~2 %~1 >nul
     ) else (
         echo OK
     )

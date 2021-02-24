@@ -1,3 +1,7 @@
+### v1.3.0
+Moved triplestore conf out of the repository
+build script now creates conf files
+
 ### v1.2.0
 New contributions
 - executionTime - Duration of execution in milliseconds
