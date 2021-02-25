@@ -10,14 +10,11 @@
 # SPDX-License-Identifier: EPL-2.0
 ##########################
 
-# Launch the triplestore
-# Then install, lanuch and test the adapter
-
 HELP="
    Runs the run_all script and then Postman testsuites for the adapter using Newman.
 "
-USAGE="   Usage: $0 [-a]
-      -t ... \"tools\" - Runs an additional testsuite which requires some analysis
+USAGE="   Usage: $0 [-t]
+      -t ... tools - Runs an additional testsuite which requires some analysis
                          tools to be installed (i.e. will not work on all machines)
       -h ... help
 "
@@ -25,7 +22,9 @@ USAGE="   Usage: $0 [-a]
 USRPATH=$PWD                        # get the call directory
 ROOTDIR=$(dirname $(realpath $0))   # get the script directory
 cd $ROOTDIR                         # move to the script directory
-
+cd ..
+ADAPTER_ROOT_DIR=$PWD               # get the adapter root directory
+cd $ROOTDIR                         # move back to the script directory
 
 # catch ctrl+c and kill all subprocesses
 trap 'killall' INT
@@ -55,6 +54,31 @@ curl_poll()
 }
 
 
+# Check that all required configuration files exist.
+# Outputs an error message and exits the script if 
+# a conf file is missing.
+checkConfFiles()
+{
+    if [ ! -f "$ADAPTER_ROOT_DIR/analysis/VeriFitAnalysis.properties" ]; then
+        echo -e "ERROR: Configuration file \"$ADAPTER_ROOT_DIR/analysis/VeriFitAnalysis.properties\" not found."
+        echo -e "  The adapter needs to be configured to be able to run!"
+        echo -e "  See the \"VeriFitAnalysisExample.properties\" file for instructions and use it as a template."
+        exit 1
+    fi
+    if [ ! -f "$ADAPTER_ROOT_DIR/compilation/VeriFitCompilation.properties" ]; then
+        echo -e "ERROR: Configuration file \"$ADAPTER_ROOT_DIR/compilation/VeriFitCompilation.properties\" not found."
+        echo -e "  The adapter needs to be configured to be able to run!"
+        echo -e "  See the \"VeriFitCompilationExample.properties\" file for instructions and use it as a template."
+        exit 1
+    fi
+    if [ ! -f "$ADAPTER_ROOT_DIR/sparql_triplestore/jetty-distribution/start.ini" ]; then
+        echo -e "ERROR: Configuration file \"$ADAPTER_ROOT_DIR/sparql_triplestore/jetty-distribution/start.ini\" not found."
+        echo -e "  The adapter needs to be configured to be able to run!"
+        echo -e "  See the \"startExample.ini\" file for instructions and use it as a template."
+        exit 1
+    fi
+}
+
 main() {
     # process arguments
     if [ "$#" -eq 0 ]; then
@@ -76,29 +100,17 @@ main() {
     fi
 
     # make sure configuration files exist
-    if [ ! -f "../analysis/VeriFitAnalysis.properties" ]; then
-        echo -e "ERROR: Configuration file \"$ROOTDIR/../analysis/VeriFitAnalysis.properties\" not found."
-        echo -e "  The adapter needs to be configured to be able to run!"
-        echo -e "  See the \"VeriFitAnalysisExample.properties\" file for instructions and use it as a template."
-        exit 1
-    fi
-    if [ ! -f "../compilation/VeriFitCompilation.properties" ]; then
-        echo -e "ERROR: Configuration file \"$ROOTDIR/../compilation/VeriFitCompilation.properties\" not found."
-        echo -e "  The adapter needs to be configured to be able to run!"
-        echo -e "  See the \"VeriFitCompilationExample.properties\" file for instructions and use it as a template."
-        exit 1
-    fi
-
+    checkConfFiles
 
     # lookup analysis adapter config
-    analysis_host=$(cat ../analysis/VeriFitAnalysis.properties | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
-    analysis_port=$(cat ../analysis/VeriFitAnalysis.properties | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")
+    analysis_host=$(cat $ADAPTER_ROOT_DIR/analysis/VeriFitAnalysis.properties | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
+    analysis_port=$(cat $ADAPTER_ROOT_DIR/analysis/VeriFitAnalysis.properties | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")
     analysis_url="$analysis_host:$analysis_port/analysis/"
 
 
 
     echo "Booting up the Universal Analysis Adapter"
-    ../run_all.sh &>$USRPATH/logs/run_all.log &
+    $ADAPTER_ROOT_DIR/run_all.sh &>/dev/null &
     curl_poll "$analysis_url"       # poll the analysis adapter because that one starts last in the run script
     echo -e "Adapter up and running\n"
 
@@ -109,19 +121,19 @@ main() {
     
     echo
     echo "Running Compilation adapter test suite" 
-    time newman run ../compilation/tests/TestSuite.postman_collection
+    time newman run $ADAPTER_ROOT_DIR/compilation/tests/TestSuite.postman_collection
     compilationRes=$?
 
 
     echo
     echo "Running Analysis adapter test suite" 
-    time newman run ../analysis/tests/TestSuite.postman_collection
+    time newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite.postman_collection
     analysisRes=$?
 
     if [ "$1" = "-t" ]; then
         echo
         echo "Running Analysis adapter Tested Tools test suite" 
-        time newman run ../analysis/tests/TestSuite_TestedTools.postman_collection
+        time newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_TestedTools.postman_collection
         analysisToolsRes=$?
     fi
 
