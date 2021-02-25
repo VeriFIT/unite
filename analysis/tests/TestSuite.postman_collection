@@ -136,7 +136,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -154,7 +154,6 @@
 											"} else { // wait for the automation to complete",
 											"    const response = xml2Json(pm.response.text());",
 											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-											"    var waitCounter = pm.globals.get(\"waitCounter\");",
 											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 											"            setTimeout(function(){}, [1000]); // 1 second",
@@ -297,7 +296,6 @@
 											"    pm.response.to.have.status(201);",
 											"});",
 											"",
-											"",
 											"// save the request ID as a global variable for later tests to use",
 											"const response = xml2Json(pm.response.text());",
 											"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
@@ -314,8 +312,6 @@
 											"var reqTitle = pm.globals.get(\"reqTitle\");",
 											"var reqDescription = pm.globals.get(\"reqDescription\");",
 											"var reqCreator = pm.globals.get(\"reqCreator\");",
-											"",
-											"",
 											"",
 											"",
 											"pm.test(\"Response body should contain an AutomationRequest\", function () {",
@@ -377,8 +373,6 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-											"",
-											"",
 											"// setup global variables for future requests (GETs)",
 											"// attempt to make this sequence of requests into a template that can then be change in this place to change the test",
 											"",
@@ -672,7 +666,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -690,7 +684,6 @@
 											"} else { // wait for the automation to complete",
 											"    const response = xml2Json(pm.response.text());",
 											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-											"    var waitCounter = pm.globals.get(\"waitCounter\");",
 											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 											"            setTimeout(function(){}, [1000]); // 1 second",
@@ -1215,7 +1208,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -1233,7 +1226,6 @@
 													"} else { // wait for the automation to complete",
 													"    const response = xml2Json(pm.response.text());",
 													"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-													"    var waitCounter = pm.globals.get(\"waitCounter\");",
 													"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 													"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 													"            setTimeout(function(){}, [1000]); // 1 second",
@@ -1809,7 +1801,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -1827,7 +1819,6 @@
 													"} else { // wait for the automation to complete",
 													"    const response = xml2Json(pm.response.text());",
 													"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-													"    var waitCounter = pm.globals.get(\"waitCounter\");",
 													"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 													"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 													"            setTimeout(function(){}, [1000]); // 1 second",
@@ -2033,7 +2024,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -2051,7 +2042,6 @@
 													"} else { // wait for the automation to complete",
 													"    const response = xml2Json(pm.response.text());",
 													"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-													"    var waitCounter = pm.globals.get(\"waitCounter\");",
 													"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 													"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 													"            setTimeout(function(){}, [1000]); // 1 second",
@@ -2227,12 +2217,7 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-											"var os = pm.globals.get(\"currentOS\");",
-											"if (os == \"linux\"){",
-											"    pm.globals.set(\"sutLaunchCommandPrefix\", \"./\");",
-											"} else {",
-											"    pm.globals.set(\"sutLaunchCommandPrefix\", \"\");",
-											"}",
+											"",
 											""
 										],
 										"type": "text/javascript"
@@ -2256,7 +2241,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>analysis test</dcterms:title>\n\t<dcterms:description>analysis test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{compilation_provider}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n        <oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>{{sutLaunchCommandPrefix}}my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>analysis test</dcterms:title>\n\t<dcterms:description>analysis test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{compilation_provider}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n        <oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
 									"raw": "{{compilation_provider}}/services/resources/createAutomationRequest",
@@ -2279,7 +2264,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -2297,7 +2282,6 @@
 											"} else { // wait for the automation to complete",
 											"    const response = xml2Json(pm.response.text());",
 											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-											"    var waitCounter = pm.globals.get(\"waitCounter\");",
 											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 											"            setTimeout(function(){}, [1000]); // 1 second",
@@ -2419,7 +2403,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -2437,7 +2421,6 @@
 											"} else { // wait for the automation to complete",
 											"    const response = xml2Json(pm.response.text());",
 											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-											"    var waitCounter = pm.globals.get(\"waitCounter\");",
 											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 											"            setTimeout(function(){}, [1000]); // 1 second",
@@ -2635,7 +2618,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -2653,7 +2636,6 @@
 											"} else { // wait for the automation to complete",
 											"    const response = xml2Json(pm.response.text());",
 											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-											"    var waitCounter = pm.globals.get(\"waitCounter\");",
 											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 											"            setTimeout(function(){}, [1000]); // 1 second",
@@ -2872,7 +2854,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -2890,7 +2872,6 @@
 											"} else { // wait for the automation to complete",
 											"    const response = xml2Json(pm.response.text());",
 											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-											"    var waitCounter = pm.globals.get(\"waitCounter\");",
 											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 											"            setTimeout(function(){}, [1000]); // 1 second",
@@ -3091,7 +3072,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -3109,7 +3090,6 @@
 											"} else { // wait for the automation to complete",
 											"    const response = xml2Json(pm.response.text());",
 											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-											"    var waitCounter = pm.globals.get(\"waitCounter\");",
 											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 											"            setTimeout(function(){}, [1000]); // 1 second",
@@ -3317,7 +3297,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -3335,7 +3315,6 @@
 											"} else { // wait for the automation to complete",
 											"    const response = xml2Json(pm.response.text());",
 											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-											"    var waitCounter = pm.globals.get(\"waitCounter\");",
 											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 											"            setTimeout(function(){}, [1000]); // 1 second",
@@ -3542,7 +3521,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -3560,7 +3539,6 @@
 											"} else { // wait for the automation to complete",
 											"    const response = xml2Json(pm.response.text());",
 											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-											"    var waitCounter = pm.globals.get(\"waitCounter\");",
 											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 											"            setTimeout(function(){}, [1000]); // 1 second",
@@ -3774,7 +3752,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -3792,7 +3770,6 @@
 											"} else { // wait for the automation to complete",
 											"    const response = xml2Json(pm.response.text());",
 											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-											"    var waitCounter = pm.globals.get(\"waitCounter\");",
 											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 											"            setTimeout(function(){}, [1000]); // 1 second",
@@ -4000,7 +3977,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -4018,7 +3995,6 @@
 											"} else { // wait for the automation to complete",
 											"    const response = xml2Json(pm.response.text());",
 											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-											"    var waitCounter = pm.globals.get(\"waitCounter\");",
 											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 											"            setTimeout(function(){}, [1000]); // 1 second",
@@ -4272,7 +4248,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -4290,7 +4266,6 @@
 											"} else { // wait for the automation to complete",
 											"    const response = xml2Json(pm.response.text());",
 											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-											"    var waitCounter = pm.globals.get(\"waitCounter\");",
 											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 											"            setTimeout(function(){}, [1000]); // 1 second",
@@ -4421,7 +4396,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -4439,7 +4414,6 @@
 											"} else { // wait for the automation to complete",
 											"    const response = xml2Json(pm.response.text());",
 											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-											"    var waitCounter = pm.globals.get(\"waitCounter\");",
 											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 											"            setTimeout(function(){}, [1000]); // 1 second",
@@ -4646,7 +4620,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -4664,7 +4638,6 @@
 											"} else { // wait for the automation to complete",
 											"    const response = xml2Json(pm.response.text());",
 											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-											"    var waitCounter = pm.globals.get(\"waitCounter\");",
 											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 											"            setTimeout(function(){}, [1000]); // 1 second",
@@ -4790,7 +4763,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -4808,7 +4781,6 @@
 											"} else { // wait for the automation to complete",
 											"    const response = xml2Json(pm.response.text());",
 											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
-											"    var waitCounter = pm.globals.get(\"waitCounter\");",
 											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
 											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
 											"            setTimeout(function(){}, [1000]); // 1 second",
@@ -6242,10 +6214,6 @@
 			"value": "http://localhost:8080"
 		},
 		{
-			"key": "result_wait_timeout",
-			"value": "30"
-		},
-		{
 			"key": "server_context",
 			"value": "analysis"
 		},
@@ -6260,6 +6228,10 @@
 		{
 			"key": "password",
 			"value": "user"
+		},
+		{
+			"key": "automation_wait_time",
+			"value": "30"
 		}
 	]
 }

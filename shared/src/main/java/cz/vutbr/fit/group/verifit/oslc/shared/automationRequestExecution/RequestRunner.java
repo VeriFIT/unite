@@ -64,8 +64,8 @@ public abstract class RequestRunner extends Thread {
 	protected ExecutionResult executeString(Path folderPath, String stringToExecute, int timeout, String id) throws IOException
 	{
 		// identify the OS
-		String shell = (SystemUtils.IS_OS_LINUX ? "/bin/bash" : "cmd");	// TODO assumes that "not linux" means "windows"
-		String shellArg = (SystemUtils.IS_OS_LINUX ? "-c" : "/c");
+		String shell = (SystemUtils.IS_OS_LINUX ? "/bin/bash" : "powershell.exe");	// TODO assumes that "not linux" means "windows"
+		String shellArg = (SystemUtils.IS_OS_LINUX ? "-c" : "");
 		
 		// execute string in directory
 		Instant timeStampStart = Instant.now(); // get start time for measuring execution time
