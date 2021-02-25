@@ -46,7 +46,7 @@ public class VeriFitAnalysisProperties
 		}
 		else if (SystemUtils.IS_OS_WINDOWS)
 		{
-			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.bat").toFile().getAbsolutePath();
+			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.ps1").toFile().getAbsolutePath();
 		}
 	}
 	

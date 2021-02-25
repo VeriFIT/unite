@@ -247,7 +247,7 @@
 											"if (os == \"linux\"){",
 											"    pm.globals.set(\"sleepBuildCommand\", \" ; sleep 2\");",
 											"} else {",
-											"    pm.globals.set(\"sleepBuildCommand\", \" &amp; ping -n 2 127.0.0.1 > null\");",
+											"    pm.globals.set(\"sleepBuildCommand\", \" ; Start-Sleep -Seconds 2\");",
 											"}",
 											"",
 											"pm.globals.set(\"launchCommand\", \"./my_echo\");",
@@ -442,6 +442,7 @@
 											"var reqTitle = pm.variables.get(\"reqTitle\");",
 											"var reqDescription = pm.variables.get(\"reqDescription\");",
 											"",
+											"pm.globals.set(\"waitCounter\", 0);",
 											"",
 											"pm.test(\"Response code should be 200 (OK)\", function () {",
 											"    pm.response.to.have.status(200);",
@@ -556,8 +557,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
-											"",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
 											"    waitCounter = 0;",
@@ -1169,6 +1169,8 @@
 											"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
 											"pm.globals.set('requestId', resourceId);",
 											"",
+											"pm.globals.set(\"waitCounter\", 0);",
+											"",
 											"pm.test(\"Response code should be 201 (created)\", function () {",
 											"    pm.response.to.have.status(201);",
 											"});"
@@ -1218,7 +1220,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -1434,6 +1436,8 @@
 											"",
 											"var serverAddr = pm.variables.get(\"server_address\");",
 											"",
+											"pm.globals.set(\"waitCounter\", 0);",
+											"",
 											"pm.test(\"Response code should be 201 (created)\", function () {",
 											"    pm.response.to.have.status(201);",
 											"});"
@@ -1483,7 +1487,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -2124,6 +2128,8 @@
 													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
 													"pm.globals.set('requestId', resourceId);",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
+													"",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
 													"    pm.response.to.have.status(201);",
 													"});"
@@ -2182,7 +2188,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -2419,6 +2425,8 @@
 													"",
 													"var serverAddr = pm.variables.get(\"server_address\");",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
+													"",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
 													"    pm.response.to.have.status(201);",
 													"});"
@@ -2468,7 +2476,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -2723,6 +2731,8 @@
 													"",
 													"var serverAddr = pm.variables.get(\"server_address\");",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
+													"",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
 													"    pm.response.to.have.status(201);",
 													"});"
@@ -2772,7 +2782,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -3049,6 +3059,8 @@
 													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
 													"pm.globals.set('requestId', resourceId);",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
+													"",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
 													"    pm.response.to.have.status(201);",
 													"});"
@@ -3107,7 +3119,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -3344,6 +3356,8 @@
 													"",
 													"var serverAddr = pm.variables.get(\"server_address\");",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
+													"",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
 													"    pm.response.to.have.status(201);",
 													"});"
@@ -3393,7 +3407,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -3645,6 +3659,8 @@
 													"",
 													"var serverAddr = pm.variables.get(\"server_address\");",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
+													"",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
 													"    pm.response.to.have.status(201);",
 													"});"
@@ -3694,7 +3710,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -3968,6 +3984,7 @@
 													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
 													"pm.globals.set('requestId', resourceId);",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
 													"    pm.response.to.have.status(201);",
 													"});"
@@ -4026,7 +4043,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -4261,6 +4278,7 @@
 													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
 													"pm.globals.set('requestId', resourceId);",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
 													"var serverAddr = pm.variables.get(\"server_address\");",
 													"",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
@@ -4312,7 +4330,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -4562,6 +4580,7 @@
 													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
 													"pm.globals.set('requestId', resourceId);",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
 													"var serverAddr = pm.variables.get(\"server_address\");",
 													"",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
@@ -4613,7 +4632,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -4888,6 +4907,7 @@
 													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
 													"pm.globals.set('requestId', resourceId);",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
 													"    pm.response.to.have.status(201);",
 													"});"
@@ -4946,7 +4966,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -5181,6 +5201,7 @@
 													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
 													"pm.globals.set('requestId', resourceId);",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
 													"    pm.response.to.have.status(201);",
 													"});"
@@ -5239,7 +5260,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -5474,6 +5495,7 @@
 													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
 													"pm.globals.set('requestId', resourceId);",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
 													"var serverAddr = pm.variables.get(\"server_address\");",
 													"",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
@@ -5526,7 +5548,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -5802,6 +5824,7 @@
 													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
 													"pm.globals.set('requestId', resourceId);",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
 													"    pm.response.to.have.status(201);",
 													"});"
@@ -5860,7 +5883,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -6095,6 +6118,7 @@
 													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
 													"pm.globals.set('requestId', resourceId);",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
 													"    pm.response.to.have.status(201);",
 													"});"
@@ -6153,7 +6177,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -6388,6 +6412,7 @@
 													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
 													"pm.globals.set('requestId', resourceId);",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
 													"    pm.response.to.have.status(201);",
 													"});"
@@ -6446,7 +6471,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -6681,6 +6706,7 @@
 													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
 													"pm.globals.set('requestId', resourceId);",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
 													"var serverAddr = pm.variables.get(\"server_address\");",
 													"",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
@@ -6732,7 +6758,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -7021,6 +7047,8 @@
 													"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
 													"pm.globals.set('requestId', resourceId);",
 													"",
+													"pm.globals.set(\"waitCounter\", 0);",
+													"",
 													"pm.test(\"Response code should be 201 (created)\", function () {",
 													"    pm.response.to.have.status(201);",
 													"});"
@@ -7079,7 +7107,7 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 													"",
 													"var waitCounter = pm.globals.get(\"waitCounter\");",
 													"if(!waitCounter) {",
@@ -7345,7 +7373,7 @@
 											"var serverAddr = pm.variables.get(\"server_address\");",
 											"var server_context = pm.variables.get(\"server_context\");",
 											"",
-											"",
+											"pm.globals.set(\"waitCounter\", 0);",
 											"",
 											"pm.test(\"Response code should be 201 (created)\", function () {",
 											"    pm.response.to.have.status(201);",
@@ -7430,7 +7458,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"var timeoutSeconds = pm.variables.get('result_wait_timeout');",
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
 											"",
 											"var waitCounter = pm.globals.get(\"waitCounter\");",
 											"if(!waitCounter) {",
@@ -8757,10 +8785,6 @@
 			"value": "http://localhost:8081"
 		},
 		{
-			"key": "result_wait_timeout",
-			"value": "30"
-		},
-		{
 			"key": "server_context",
 			"value": "compilation"
 		},
@@ -8771,6 +8795,10 @@
 		{
 			"key": "password",
 			"value": "user"
+		},
+		{
+			"key": "automation_wait_time",
+			"value": "30"
 		}
 	]
 }

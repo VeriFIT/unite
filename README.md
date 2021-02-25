@@ -18,7 +18,7 @@ Defaults are "localhost" and ports "8080, 8081, 8082".
     - create *analysis/VeriFitAnalysis.properties* based on *analysis/VeriFitAnalysisExample.properties* and configure all properties (adapter host and port, sparql, ...)
     - create *compilation/VeriFitCompilation.properties* based on *compilation/VeriFitCompilationExample.properties* and configure all properties (adapter host and port, sparql, ...)
 - Fuseki SPARQL triplestore 
-	- in *sparql_triplestore/jetty-distribution/start.ini* change *jetty.http.host* and *jetty.http.port*
+	- create *sparql_triplestore/jetty-distribution/start.ini* based on *sparql_triplestore/jetty-distribution/startExample.ini* (change *jetty.http.host* and *jetty.http.port*)
     - The triplestore comes with two non-persistent datasets. If you want persistent ones, create two new datasets using Fuseki's Web UI.
         1) open a Web browser at *host*:*port*/fuseki/
         2) go to "manage datasets -> add new dataset"
@@ -31,13 +31,13 @@ Defaults are "localhost" and ports "8080, 8081, 8082".
 Make sure you run a build script (build.sh or build.bat) before attempting to run anything!
 
 #### Option 1) Run all at once
-The easiest way to run the Universal Analysis Adapter. Outputs of all three components of the Adapter will be saved in a ./log directory.
+The easiest way to run the Universal Analysis Adapter. Outputs of all three components of the Adapter will be saved in a *cloned_repo*/log directory.
 
 ##### Linux
 - Use the run_all.sh script. Then use ctrl+c to exit.
-- Or use the oslc_master script which runs the Adapter as background services. IMPORTANT - the oslc_master handles log files in an incompatible way to the run_all.sh script (so stick to using one or clear the logs before switching).
+- Or use the oslc_master script which runs the Adapter as background services. NOTE - the oslc_master handles log files in an incompatible way to the run_all.sh script
 ##### Windows
-- Use the run_all.bat script. Then press any key to exit. Do not use ctrl+c otherwise subprocesses will not be terminated (they run in their own consoles so they will be visible and can be closed manually)
+- Use the run_all.ps1 script. Then use ctrl+c to exit. Do not close the script by clicking X on the powershell window otherwise subprocesses will not be terminated (they run in their own consoles so they will be visible and can be closed manually)
 
 #### Option 2) Run manually
 This option is mainly used for debugging or simply to have more control. Launch each of the three components in separate terminals. Outputs will be visible directly through stdout and stderr with no implicit logging. The triple store needs to be up and running in order for the Analysis and Compilation adapters to launch successfully. 
@@ -45,7 +45,7 @@ This option is mainly used for debugging or simply to have more control. Launch 
 ##### Fuseki SPARQL jetty 
 ```
 $ cd *cloned_repo*/sparql_triplestore
-$ ./run.[sh/bat] 
+$ ./run.[sh/ps1] 
 server online at - http://*host*:*port*/fuseki/
 ```
 ##### Analysis adapter

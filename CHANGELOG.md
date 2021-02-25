@@ -1,3 +1,12 @@
+### v1.3.0
+configuration
+- Moved triplestore conf out of the repository
+- build script now creates conf files
+
+Powershell
+- The adapter now uses powershell.exe to execute commands on windows (instead of cmd /c)
+- created replaced .bat scripts with .ps1 scripts
+
 ### v1.2.0
 New contributions
 - executionTime - Duration of execution in milliseconds

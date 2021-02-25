@@ -14,34 +14,55 @@ USRPATH=$PWD                        # get the call directory
 ROOTDIR=$(dirname $(realpath $0))   # get the script directory
 cd $ROOTDIR                         # move to the script directory
 
+# Checks if a conf file exists. If not, then a default one is created.
+# $1 = file to check
+# $2 = default file to copy if not found
+confFileCheckOrDefault()
+{
+    echo -n "Checking $1: "
+    if [ -f "$1" ]; then
+        echo "OK"
+    else
+        echo "Not found"
+        echo "    Creating a default one"
+        cp "$2" "$1"
+    fi
+}
 
-echo "#########################################################"
-echo "#### Building and Installing shared resources"
-echo "#########################################################"
+
+echo
+echo "############################################################"
+echo "    Checking configuration files"
+echo "############################################################"
+echo
+confFileCheckOrDefault "./analysis/VeriFitAnalysis.properties" "./analysis/VeriFitAnalysisExample.properties"
+confFileCheckOrDefault "./compilation/VeriFitCompilation.properties" "./compilation/VeriFitCompilationExample.properties"
+confFileCheckOrDefault "./sparql_triplestore/jetty-distribution/start.ini" "./sparql_triplestore/jetty-distribution/startExample.ini"
+
+echo
+echo "############################################################"
+echo "    Building and Installing shared resources"
+echo "############################################################"
+echo
 cd shared
 mvn clean install
-echo "#### Done ####"
 
-echo "#########################################################"
-echo "#### Building and Installing the Compilation adapter"
-echo "#########################################################"
+echo
+echo "############################################################"
+echo "    Building and Installing the Compilation adapter"
+echo "############################################################"
+echo
 cd ../compilation
 mvn clean install
-echo "#### Done ####"
 
-
-echo "#########################################################"
-echo "#### Building and Installing the Analysis adapter"
-echo "#########################################################"
+echo
+echo "############################################################"
+echo "    Building and Installing the Analysis adapter"
+echo "############################################################"
+echo
 cd ../analysis
 mvn clean install
-echo "#### Done ####"
 
-echo -e "\n#### ALL DONE ####\n"
-
-echo "    Make sure to create configuration files for both adapters"
-echo "    by creating analysis/VeriFitAnalysis.properties and "
-echo "    by creating compilation/VeriFitCompilation.properties."
-echo "    Both directories contian a *Example.properties file that"
-echo "    can be used as a template."
+echo
+echo "##### ALL DONE #############################################"
 echo
