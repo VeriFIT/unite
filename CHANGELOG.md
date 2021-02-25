@@ -1,6 +1,8 @@
 ### v1.3.0
-Moved triplestore conf out of the repository
-build script now creates conf files
+- Moved triplestore conf out of the repository
+- build script now creates conf files
+
+- created replaced .bat scripts with .ps1 scripts
 
 ### v1.2.0
 New contributions

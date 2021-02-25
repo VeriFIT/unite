@@ -20,12 +20,12 @@ cd $ROOTDIR                         # move to the script directory
 confFileCheckOrDefault()
 {
     echo -n "Checking $1: "
-    if [ ! -f "$1" ]; then
+    if [ -f "$1" ]; then
+        echo "OK"
+    else
         echo "Not found"
         echo "    Creating a default one"
         cp "$2" "$1"
-    else
-        echo "OK"
     fi
 }
 

@@ -10,7 +10,9 @@
 # SPDX-License-Identifier: EPL-2.0
 ##########################
 
-SLEEP=1
+
+# duration for polling (via curl)
+SLEEP=3
 
 HELP="
    Launches the sparql triplestore, the analysis adapter and
@@ -19,7 +21,7 @@ HELP="
    the triplestore using curl until it responds.
 "
 USAGE="   Usage: $0 [-t|-h]
-      -t ... \"tail\" - Opens tail -f for each output log in new gnome-terminals.
+      -t ... tail - Opens tail -f for each output log in new gnome-terminals.
       -h ... help
 "
 
@@ -49,13 +51,13 @@ killall() {
 }
 
 # polls an address using curl until the request returns zero (i.e. the address responds)
-# patams: address - URL for curl to poll
+# $1 ... URL for curl to poll
 curl_poll()
 {
     curl_ret=42
     while [ $curl_ret != 0 ]
     do
-        sleep 3
+        sleep $SLEEP
         echo -n "."
         curl $1 &> /dev/null
         curl_ret=$?
@@ -133,23 +135,23 @@ main () {
 
 
     # create log files and append headings
-    mkdir $USRPATH/logs &> /dev/null
+    mkdir $ROOTDIR/logs &> /dev/null
     CURTIME=$(date +%F_%T)
-    echo -e "########################################################\n    Running version: $VERSION\n    Started at: $CURTIME\n########################################################\n" > "$USRPATH/logs/triplestore_$CURTIME.log"
-    echo -e "########################################################\n    Running version: $VERSION\n    Started at: $CURTIME\n########################################################\n" > "$USRPATH/logs/compilation_$CURTIME.log"
-    echo -e "########################################################\n    Running version: $VERSION\n    Started at: $CURTIME\n########################################################\n" > "$USRPATH/logs/analysis_$CURTIME.log"
+    echo -e "########################################################\n    Running version: $VERSION\n    Started at: $CURTIME\n########################################################\n" > "$ROOTDIR/logs/triplestore_$CURTIME.log"
+    echo -e "########################################################\n    Running version: $VERSION\n    Started at: $CURTIME\n########################################################\n" > "$ROOTDIR/logs/compilation_$CURTIME.log"
+    echo -e "########################################################\n    Running version: $VERSION\n    Started at: $CURTIME\n########################################################\n" > "$ROOTDIR/logs/analysis_$CURTIME.log"
 
     # open new terminals that tail the log files and record their PIDs to kill later
     if [ "$1" = "-t" ]; then
-        gnome-terminal --title="tail: Triplestore Log" -- /bin/bash -c "tail -f $USRPATH/logs/../logs/../logs/triplestore_$CURTIME.log" # funny path /logs/../logs/../logs/ to avoid killing unwanted tail commands 
-        gnome-terminal --title="tail: Compilation Log" -- /bin/bash -c "tail -f $USRPATH/logs/../logs/../logs/compilation_$CURTIME.log"
-        gnome-terminal --title="tail: Analysis Log" -- /bin/bash -c "tail -f $USRPATH/logs/../logs/../logs/analysis_$CURTIME.log"
+        gnome-terminal --title="tail: Triplestore Log" -- /bin/bash -c "tail -f $ROOTDIR/logs/../logs/../logs/triplestore_$CURTIME.log" # funny path /logs/../logs/../logs/ to avoid killing unwanted tail commands 
+        gnome-terminal --title="tail: Compilation Log" -- /bin/bash -c "tail -f $ROOTDIR/logs/../logs/../logs/compilation_$CURTIME.log"
+        gnome-terminal --title="tail: Analysis Log" -- /bin/bash -c "tail -f $ROOTDIR/logs/../logs/../logs/analysis_$CURTIME.log"
     fi
 
     # start the triplestore
     echo "Starting the Triplestore"
     cd sparql_triplestore
-    ./run.sh &> "$USRPATH/logs/triplestore_$CURTIME.log" &
+    ./run.sh &> "$ROOTDIR/logs/triplestore_$CURTIME.log" &
     echo "Waiting for the Triplestore to finish startup"
     curl_poll "$triplestore_url"
     echo -e "Triplestore running\n"
@@ -157,7 +159,7 @@ main () {
     # start the compilation adapter
     echo "Starting the Compilation adapter"
     cd ../compilation
-    mvn jetty:run-exploded &> "$USRPATH/logs/compilation_$CURTIME.log" &
+    mvn jetty:run-exploded &> "$ROOTDIR/logs/compilation_$CURTIME.log" &
     echo "Waiting for the Compilation adapter to finish startup"
     curl_poll "$compilation_url"
     echo -e "Compilation adapter running\n"
@@ -165,7 +167,7 @@ main () {
     # start the analysis adapter
     echo "Starting the Analysis adapter"
     cd ../analysis
-    mvn jetty:run-exploded &> "$USRPATH/logs/analysis_$CURTIME.log" &
+    mvn jetty:run-exploded &> "$ROOTDIR/logs/analysis_$CURTIME.log" &
     echo "Waiting for the Analysis adapter to finish startup"
     curl_poll "$analysis_url"
     echo -e "Analysis adapter running\n"
