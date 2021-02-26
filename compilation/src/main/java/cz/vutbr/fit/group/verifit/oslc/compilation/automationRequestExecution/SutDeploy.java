@@ -223,7 +223,7 @@ public class SutDeploy extends RequestRunner
 			} catch (IOException e) {
 				// there was an error
 				executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
-				statusMessage.setValue(statusMessage.getValue() +  "Compilation execution error");
+				statusMessage.setValue(statusMessage.getValue() +  "Compilation execution error: " + e.getMessage());
 				
 			} finally {
 				resAutoResult.addContribution(statusMessage); // TODO add infos abou stuff below too
