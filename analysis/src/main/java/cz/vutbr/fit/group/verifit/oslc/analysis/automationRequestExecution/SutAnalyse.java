@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Ondřej Vašíček <ondrej.vasicek.0@gmail.com>, <xvasic25@stud.fit.vutbr.cz>
+ * Copyright (C) 2020 OndÅ™ej VaÅ¡Ã­Ä�ek <ondrej.vasicek.0@gmail.com>, <xvasic25@stud.fit.vutbr.cz>
  *
  * This program and the accompanying materials are made available under
  * the terms of the Eclipse Public License 2.0 which is available at
@@ -149,35 +149,30 @@ public class SutAnalyse extends RequestRunner
 	    
 		// execute analysis
 	    Link executionVerdict;
-	    ExecutionResult analysisRes = null;
-		try {
-			final Path SUTdirAsPath = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
-			
-			statusMessage.setValue("Executing: " + stringToExecute + "\n  In dir: " + SUTdirAsPath + "\n");
-	    	analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), this.execAutoRequestId);
-	    	
-			if (analysisRes.timeouted)
-			{
-				executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
-				statusMessage.setValue(statusMessage.getValue() + "Analysis aborted due to a " + analysisRes.timeoutType + " timeout (" + timeout + " seconds).");
-			}
-	    	else if (analysisRes.retCode != 0)
-	    	{
-				executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
-				statusMessage.setValue(statusMessage.getValue() + "Analysis failed (returned non-zero: " + analysisRes.retCode + ").");
-			}
-	    	else
-	    	{
-	    		executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
-	    		statusMessage.setValue(statusMessage.getValue() + "Analysis completed successfully.");
-	    	}
-
-		} catch (IOException e) {
+		final Path SUTdirAsPath = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
+	    ExecutionResult analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), "_analysis_" + this.execAutoRequestId);
+		statusMessage.setValue("Executing: " + stringToExecute + "\n   as: " + analysisRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
+		if (analysisRes.exceptionThrown != null)
+		{
+			// there was an error
 			executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
-			statusMessage.setValue(statusMessage.getValue() + "Analysis execution error: " + e.getMessage());
-		} finally {
-			resAutoResult.addContribution(statusMessage); // TODO add infos abou stuff below too
+			statusMessage.setValue(statusMessage.getValue() +  "Analysis execution error: " + analysisRes.exceptionThrown.getMessage());
 		}
+		else if (analysisRes.timeouted)
+		{
+			executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
+			statusMessage.setValue(statusMessage.getValue() + "Analysis aborted due to a " + analysisRes.timeoutType + " timeout (" + timeout + " seconds)");
+		}
+    	else if (analysisRes.retCode != 0)
+    	{
+			executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
+			statusMessage.setValue(statusMessage.getValue() + "Analysis failed (returned non-zero: " + analysisRes.retCode + ")");
+		}
+    	else
+    	{
+    		executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
+    		statusMessage.setValue(statusMessage.getValue() + "Analysis completed successfully\n");
+    	}
 
 		// only do more processing if there was no exception during execution
 		if (executionVerdict != OslcValues.AUTOMATION_VERDICT_ERROR)
@@ -203,6 +198,7 @@ public class SutAnalyse extends RequestRunner
 	    	for (Contribution c : fileContributions) {
 	    		resAutoResult.addContribution(c);
 	    	}
+			statusMessage.setValue(statusMessage.getValue() + "File Contributions added\n");
 	    	
 	    	// now add them back in there (for zip later)
 			modifFiles.add(analysisRes.stdoutFile);
@@ -223,7 +219,9 @@ public class SutAnalyse extends RequestRunner
 				try {
 					Contribution zipContrib = zipAllFileContributions(modifFiles, zipName, zipDir);
 					resAutoResult.addContribution(zipContrib);
+					statusMessage.setValue(statusMessage.getValue() + "Added a ZIP contribution\n");
 				} catch (Exception e) {
+					statusMessage.setValue(statusMessage.getValue() + "Failed to create a ZIP file: " + e.getMessage() + "\n");
 					System.out.println("ERROR: failed to ZIP outputs: " + e.getMessage()); // TODO
 				}
 			}
@@ -234,9 +232,11 @@ public class SutAnalyse extends RequestRunner
 					Utils.getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue()),
 					resAutoResult.getContribution());
 			resAutoResult.setContribution(parsedContributions);
+			statusMessage.setValue(statusMessage.getValue() + "Applied output parsers/filters\n");
 		}
 		
 		// update the AutoResult state and verdict, and AutoRequest state
+		resAutoResult.addContribution(statusMessage);
 		resAutoResult.replaceState(OslcValues.AUTOMATION_STATE_COMPLETE);
 		resAutoResult.replaceVerdict(executionVerdict);
 		VeriFitAnalysisManager.updateAutomationResult(null, resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));

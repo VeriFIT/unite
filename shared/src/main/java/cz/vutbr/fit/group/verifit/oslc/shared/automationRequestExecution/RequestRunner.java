@@ -11,6 +11,7 @@
 package cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,90 +41,124 @@ public abstract class RequestRunner extends Thread {
 	}
 	
 	public class ExecutionResult {
-		public int retCode;
+		public Integer retCode;
 		public File stdoutFile;
 		public File stderrFile;
 		public Boolean timeouted;
 		public String timeoutType;
 		public Long totalTime;
+		public String executedString;
+		public Exception exceptionThrown;
 	};
 
 	/**
-	 * Executes a string in a directory while redirecting its output into files with an optional timeout.
+	 * Places the stringToExecute into a script file and then executes that script using OS specific shell in a directory while
+	 * redirecting its output into files with an optional timeout.
 	 * Stdout gets redirected to "stdoutID" and Stderr to "stderrID" where ID is the value of the "id" parameter.
 	 * 
 	 * @param folderPath      Path to the directory
 	 * @param stringToExecute 
 	 * @param timeout         Time limit for execution in seconds. Zero
 	 *                        means no time limit
-	 * @param id 			  Identifier 
-	 * @return a "ExecutionResult" object that holds the stdout, stderr, return code,
-	 *         and timeout flag
-	 * @throws IOException when the command execution fails (error)
+	 * @param id 			  Identifier that is appended to the stdout and stderr output file names (e.g. id="1" -> "stdout1", "stderr1")
+	 * @return a "ExecutionResult" object that holds the stdout, stderr, return code, timeout flag, etc (see the ExecutionResult class)
 	 */
-	protected ExecutionResult executeString(Path folderPath, String stringToExecute, int timeout, String id) throws IOException
+	protected ExecutionResult executeString(Path folderPath, String stringToExecute, int timeout, String id)
 	{
-		// identify the OS
-		String shell = (SystemUtils.IS_OS_LINUX ? "/bin/bash" : "powershell.exe");	// TODO assumes that "not linux" means "windows"
-		String shellArg = (SystemUtils.IS_OS_LINUX ? "-c" : "");
+		final String powershellExceptionExitCode = "1";
 		
-		// execute string in directory
-		Instant timeStampStart = Instant.now(); // get start time for measuring execution time
-		Process process = Runtime.getRuntime().exec(new String[] {shell, shellArg, stringToExecute}, null, folderPath.toFile());	// launch string as "bash -c" or "cmd /c"	
+		// identify the OS
+		String shell;
+		String fileEnding;
+		if (SystemUtils.IS_OS_LINUX) {
+			shell = "/bin/bash";
+			fileEnding = ".sh";
+		} else {
+			shell = "powershell.exe";
+			fileEnding = ".ps1";
+			stringToExecute = "try { \n"
+					+ stringToExecute + "\n"
+					+ "exit $LastExitCode\n"
+					+ "} catch { exit " + powershellExceptionExitCode + " }";
+		}
 
-		// redirect outputs to files
-		InputStream stdout = process.getInputStream();
-		InputStream stderr = process.getErrorStream();
-		File stdoutFile = folderPath.resolve("stdout" + id).toFile();
-		File stderrFile = folderPath.resolve("stderr" + id).toFile();
-
-		// wait for the process to exit
-		Boolean exitedInTime = true;
-		String timeoutType = "";
+		String executedString = null;
 		try {
-			// with timeout
-			if (timeout > 0) {
-				exitedInTime = process.waitFor(timeout, TimeUnit.SECONDS);
-				FileUtils.copyInputStreamToFile(stdout, stdoutFile);
-				FileUtils.copyInputStreamToFile(stderr, stderrFile);
-				
-				if (!exitedInTime) {
-					// try to kill gracefully
-					timeoutType = "graceful";
-					process.destroy();
-					Boolean killedInTime = process.waitFor(1, TimeUnit.SECONDS); // TODO one second to die
-					if (!killedInTime) {
-						// kill forcefully
-						timeoutType = "forceful";
-						process.destroyForcibly();
+			// put the string to execute into a script file
+			InputStream streamFileToExec = new ByteArrayInputStream(stringToExecute.getBytes());
+			File fileToExecute = folderPath.resolve("exec" + id + fileEnding).toFile();
+			executedString = "./" + fileToExecute.getName();
+			FileUtils.copyInputStreamToFile(streamFileToExec, fileToExecute);
+			
+			// build process to execute the string in a directory using OS specific shell with outputs redirected to files
+		    ProcessBuilder processBuilder = new ProcessBuilder(shell, executedString);
+		    processBuilder.directory(folderPath.toFile());
+			File stdoutFile = folderPath.resolve("stdout" + id).toFile();
+			File stderrFile = folderPath.resolve("stderr" + id).toFile();
+			processBuilder.redirectOutput(stdoutFile);
+			processBuilder.redirectError(stderrFile);
+			
+			// start execution and get a timestamp of the start to measure execution time
+			Instant timeStampStart = Instant.now();
+			Process process = processBuilder.start();
+			
+			// wait for the process to exit
+			Boolean exitedInTime = true;
+			String timeoutType = "";
+			try {
+				// with timeout
+				if (timeout > 0) {
+					exitedInTime = process.waitFor(timeout, TimeUnit.SECONDS);
+					if (!exitedInTime) {
+						// try to kill gracefully
+						timeoutType = "graceful";
+						process.destroy();
+						Boolean killedInTime = process.waitFor(1, TimeUnit.SECONDS); // TODO one second to die
+						if (!killedInTime) {
+							// kill forcefully
+							timeoutType = "forceful";
+							process.destroyForcibly();
+						}
 					}
 				}
+				// no timeout
+				else {
+					process.waitFor();
+				}
+	
+			} catch (InterruptedException e) {
+				// TODO Dont know what that means really
+				e.printStackTrace();
 			}
-			// no timeout
-			else {
-				process.waitFor();
-				FileUtils.copyInputStreamToFile(stdout, stdoutFile);
-				FileUtils.copyInputStreamToFile(stderr, stderrFile);
-			}
-
-		} catch (InterruptedException e) {
-			// TODO Dont know what that means really
-			e.printStackTrace();
+			
+			// compute total execution time
+			Instant timeStampEnd = Instant.now(); // get execution end time
+			long totalTime = Duration.between(timeStampStart, timeStampEnd).toMillis();
+	
+			
+			// produce result
+			ExecutionResult res = new ExecutionResult();
+			res.retCode = process.exitValue();
+			res.stdoutFile = stdoutFile;
+			res.stderrFile = stderrFile;
+			res.timeouted = !exitedInTime;
+			res.timeoutType = timeoutType;
+			res.totalTime = totalTime;
+			res.executedString = shell + " " + executedString;
+			res.exceptionThrown = null;
+			return res;
+			
+		} catch (Exception e) {
+			ExecutionResult res = new ExecutionResult();
+			res.retCode = null;
+			res.stdoutFile = null;
+			res.stderrFile = null;
+			res.timeouted = null;
+			res.timeoutType = null;
+			res.totalTime = null;
+			res.executedString = shell + " " + executedString;
+			res.exceptionThrown = e;
+			return res;
 		}
-		
-		// compute total execution time
-		Instant timeStampEnd = Instant.now(); // get execution end time
-		long totalTime = Duration.between(timeStampStart, timeStampEnd).toMillis();
-
-		
-		// produce result
-		ExecutionResult res = new ExecutionResult();
-		res.retCode = process.exitValue();
-		res.stdoutFile = stdoutFile;
-		res.stderrFile = stderrFile;
-		res.timeouted = !exitedInTime;
-		res.timeoutType = timeoutType;
-		res.totalTime = totalTime;
-		return res;
 	}
 } 
