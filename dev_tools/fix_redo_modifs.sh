@@ -51,10 +51,10 @@ sed -i 's|private static final Boolean ignoreResourceProtection = false;|private
 
 
 # my POST handler throws and exception
-sed -i 's|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource)|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource) throws OslcResourceException|' \
+sed -i 's|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource)|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, AutomationRequest aResource) throws OslcResourceException|' \
 ../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/VeriFitAnalysisManager.java
 
-sed -i 's|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource)|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource) throws OslcResourceException|' \
+sed -i 's|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource)|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, AutomationRequest aResource) throws OslcResourceException|' \
 ../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/VeriFitCompilationManager.java
 
 

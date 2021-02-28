@@ -57,8 +57,7 @@ import org.eclipse.lyo.oslc4j.core.model.ResourceShape;
 import org.eclipse.lyo.oslc4j.core.model.ResourceShapeFactory;
 
 import cz.vutbr.fit.group.verifit.oslc.domain.FitDomainConstants;
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
-import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
+
 
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
@@ -68,6 +67,7 @@ import org.eclipse.lyo.oslc.domains.DctermsVocabularyConstants;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.Person;
 // Start of user code imports
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 // End of user code
 
 // Start of user code preClassCode

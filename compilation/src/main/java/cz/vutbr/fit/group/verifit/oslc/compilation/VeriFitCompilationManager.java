@@ -36,7 +36,6 @@ import org.eclipse.lyo.oslc.domains.Person;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 import java.net.URI;
 import java.util.Properties;
-import java.util.Set;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -69,6 +68,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 // End of user code
 
 // Start of user code pre_class_code

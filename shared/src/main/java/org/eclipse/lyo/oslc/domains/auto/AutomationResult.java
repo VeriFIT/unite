@@ -74,9 +74,9 @@ import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc.domains.Person;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 // Start of user code imports
-// End of user code
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
+// End of user code
 
 // Start of user code preClassCode
 // End of user code
