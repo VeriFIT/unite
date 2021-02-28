@@ -4304,14 +4304,14 @@
 									}
 								],
 								"url": {
-									"raw": "{{compilation_provider}}/services/resources/automationRequest/{{requestId}}",
+									"raw": "{{compilation_provider}}/services/resources/automationRequests/{{requestId}}",
 									"host": [
 										"{{compilation_provider}}"
 									],
 									"path": [
 										"services",
 										"resources",
-										"automationRequest",
+										"automationRequests",
 										"{{requestId}}"
 									]
 								}
