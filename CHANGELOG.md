@@ -1,3 +1,12 @@
+### v1.3.1
+powershell modifications
+- The previous way of executing powershell commands had issues with quotes.
+- Command execution was changed from directly running a command using java .exec()
+  to writing the command into a script file and then executing that script.
+  The command to execute has to be a single line (probably), and the script then 
+  exits with the commands return code. Powershell commands can also throw exceptions
+  which the script catches and returns a non-zero exit code.
+
 ### v1.3.0
 configuration
 - Moved triplestore conf out of the repository

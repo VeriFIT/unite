@@ -207,27 +207,23 @@ public class SutDeploy extends RequestRunner
 		// compile source file if the fetching did not fail and compilation was requested
 		if (performCompilation)
 		{
-			ExecutionResult compRes = null;
-			try {
-				compRes = executeString(folderPath, paramBuildCommand, 0, this.execAutoRequestId);
-		    	
-		    	if (compRes.retCode != 0)
-		    	{	// if the compilation returned non zero, set the verdict as failed
-					executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
-					statusMessage.setValue(statusMessage.getValue() +  "Compilation failed (returned non-zero: " + compRes.retCode + ")\n");
-		    	}
-		    	else
-		    	{
-		    		statusMessage.setValue(statusMessage.getValue() +  "Compilation completed successfully\n");
-		    	}				    
-			} catch (IOException e) {
+			ExecutionResult compRes = executeString(folderPath, paramBuildCommand, 0, "_compilation_" + this.execAutoRequestId);
+			statusMessage.setValue(statusMessage.getValue() + "Executing: " + paramBuildCommand + "\n   as: " + compRes.executedString + "\n   In dir: " + folderPath + "\n");
+			if (compRes.exceptionThrown != null)
+			{
 				// there was an error
 				executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
-				statusMessage.setValue(statusMessage.getValue() +  "Compilation execution error");
-				
-			} finally {
-				resAutoResult.addContribution(statusMessage); // TODO add infos abou stuff below too
+				statusMessage.setValue(statusMessage.getValue() +  "Compilation execution error: " + compRes.exceptionThrown.getMessage());
 			}
+			else if (compRes.retCode != 0)
+	    	{	// if the compilation returned non zero, set the verdict as failed
+				executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
+				statusMessage.setValue(statusMessage.getValue() +  "Compilation failed (returned non-zero: " + compRes.retCode + ")\n");
+	    	}
+	    	else
+	    	{
+	    		statusMessage.setValue(statusMessage.getValue() +  "Compilation completed successfully\n");
+	    	}				    
 			
 			// only do more processing if there was no exception during execution
 			if (executionVerdict != OslcValues.AUTOMATION_VERDICT_ERROR)
@@ -253,8 +249,7 @@ public class SutDeploy extends RequestRunner
 		    	resAutoResult.addContribution(compStderrLog);
 			}
 		} else {
-			statusMessage.setValue(statusMessage.getValue() + "Compilation not performed" + "\n");
-			resAutoResult.addContribution(statusMessage); // TODO add infos abou stuff below too
+			statusMessage.setValue(statusMessage.getValue() + "Compilation not performed\n");
 		}
 		
 		
@@ -271,9 +266,12 @@ public class SutDeploy extends RequestRunner
 			newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(execAutoRequestId));
 			newSut = VeriFitCompilationManager.createSUT(newSut, execAutoRequestId); // TODO
 			resAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(Utils.getResourceIdFromUri(newSut.getAbout()))); // TODO
+			
+			statusMessage.setValue(statusMessage.getValue() + "SUT resource created\n");
 		}
 		
 		// update the AutoResult state and verdict, and AutoRequest state
+		resAutoResult.addContribution(statusMessage);
 		resAutoResult.replaceState(OslcValues.AUTOMATION_STATE_COMPLETE);
 		resAutoResult.replaceVerdict(executionVerdict);
 		VeriFitCompilationManager.updateAutomationResult(null, resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
