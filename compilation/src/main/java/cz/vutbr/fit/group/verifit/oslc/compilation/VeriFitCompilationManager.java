@@ -744,7 +744,7 @@ public class VeriFitCompilationManager {
 			// throws an exception if the Inputs are not OK
 			checkSutDeploySourceInputs(newResource);
 
-			// create an AutomationResult for this AutoRequest; output parameters will be set by processAutoReqInputParams()
+			// create an AutomationResult for this AutoRequest
 			AutomationResult newAutoResult = createAutomationResultForAutomationRequest(newResource, outputParams);
 			newResource.setProducedAutomationResult(new Link(newAutoResult.getAbout()));
 
