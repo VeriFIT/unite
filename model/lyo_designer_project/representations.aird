@@ -1515,7 +1515,7 @@
           <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.eclipse.lyo.tools.toolchain.design/description/ToolChainModel.odesign#//@ownedViewpoints[name='ToolchainViewpoint']/@ownedRepresentations[name='SpecificationDiagram']/@defaultLayer/@containerMappings[name='Specification.DomainSpecification']/@subContainerMappings[name='Specification.DomainSpecification.Resource']/@style"/>
         </ownedStyle>
         <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.eclipse.lyo.tools.toolchain.design/description/ToolChainModel.odesign#//@ownedViewpoints[name='ToolchainViewpoint']/@ownedRepresentations[name='SpecificationDiagram']/@defaultLayer/@containerMappings[name='Specification.DomainSpecification']/@subContainerMappings[name='Specification.DomainSpecification.Resource']"/>
-        <ownedElements xmi:type="diagram:DNodeListElement" uid="_Pg97wWpCEeuDWZwlSoXo7A" name="rdf:value: XMLLiteral">
+        <ownedElements xmi:type="diagram:DNodeListElement" uid="_Pg97wWpCEeuDWZwlSoXo7A" name="rdf:value: String">
           <target xmi:type="oslc4j_ai:ResourceProperty" href="platform:/resource/org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poB8kpUdEeq-KoPaR9_Cfg"/>
           <semanticElements xmi:type="oslc4j_ai:ResourceProperty" href="platform:/resource/org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poB8kpUdEeq-KoPaR9_Cfg"/>
           <ownedStyle xmi:type="diagram:Square" uid="_Pg_J4GpCEeuDWZwlSoXo7A" labelSize="9" showIcon="false" labelAlignment="LEFT" color="0,0,0">
@@ -2012,7 +2012,7 @@
           </ownedStyle>
           <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.eclipse.lyo.tools.toolchain.design/description/ToolChainModel.odesign#//@ownedViewpoints[name='ToolchainViewpoint']/@ownedRepresentations[name='SpecificationDiagram']/@defaultLayer/@containerMappings[name='Specification.DomainSpecification']/@subContainerMappings[name='Specification.DomainSpecification.Resource']/@subNodeMappings[name='Specification.DomainSpecification.Resource.LiteralProperty']"/>
         </ownedElements>
-        <ownedElements xmi:type="diagram:DNodeListElement" uid="_hXIvQGpGEeuDWZwlSoXo7A" name="rdf:value: XMLLiteral">
+        <ownedElements xmi:type="diagram:DNodeListElement" uid="_hXIvQGpGEeuDWZwlSoXo7A" name="rdf:value: String">
           <target xmi:type="oslc4j_ai:ResourceProperty" href="platform:/resource/org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poB8kpUdEeq-KoPaR9_Cfg"/>
           <semanticElements xmi:type="oslc4j_ai:ResourceProperty" href="platform:/resource/org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poB8kpUdEeq-KoPaR9_Cfg"/>
           <ownedStyle xmi:type="diagram:Square" uid="_hXJWUGpGEeuDWZwlSoXo7A" labelSize="9" showIcon="false" labelAlignment="LEFT" color="0,0,0">

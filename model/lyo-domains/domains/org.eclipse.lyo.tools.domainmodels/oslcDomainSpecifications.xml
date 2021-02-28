@@ -67,7 +67,7 @@
     <resourceProperties id="_pnaRgpUdEeq-KoPaR9_Cfg" name="type" description="The resource type URIs" occurs="zeroOrMany" valueType="Resource">
       <propertyDefinition href="vocabulary.xml#//@vocabularies[label='RDF']/@properties[name='type']"/>
     </resourceProperties>
-    <resourceProperties id="_poB8kpUdEeq-KoPaR9_Cfg" name="value" occurs="zeroOrOne" valueType="XMLLiteral">
+    <resourceProperties id="_poB8kpUdEeq-KoPaR9_Cfg" name="value" occurs="zeroOrOne" valueType="String">
       <propertyDefinition href="vocabulary.xml#//@vocabularies[label='RDF']/@properties[name='value']"/>
     </resourceProperties>
   </domainSpecifications>

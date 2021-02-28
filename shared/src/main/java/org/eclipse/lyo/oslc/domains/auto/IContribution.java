@@ -101,7 +101,7 @@ public interface IContribution
     @OslcName("value")
     @OslcPropertyDefinition(RdfVocabularyConstants.RDF_NAMSPACE + "value")
     @OslcOccurs(Occurs.ZeroOrOne)
-    @OslcValueType(ValueType.XMLLiteral)
+    @OslcValueType(ValueType.String)
     @OslcReadOnly(false)
     public String getValue();
 
