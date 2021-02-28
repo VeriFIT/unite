@@ -1,6 +1,10 @@
 ### v1.4.0
 All adapter outputs are now in their own directory ".adapter" to not get in the way of analysis tool outputs.
 
+Changed rdf:value type to String from XMLLiteral to avoid invalid XMLLiteral warnings for contribution values.
+
+Added a new parameter to the test script (-l to not launch the adapter)
+
 ### v1.3.1
 powershell modifications
 - The previous way of executing powershell commands had issues with quotes.
