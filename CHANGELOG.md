@@ -1,3 +1,6 @@
+### v1.4.0
+All adapter outputs are now in their own directory ".adapter" to not get in the way of analysis tool outputs.
+
 ### v1.3.1
 powershell modifications
 - The previous way of executing powershell commands had issues with quotes.

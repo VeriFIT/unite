@@ -53,7 +53,7 @@ public abstract class RequestRunner extends Thread {
 
 	/**
 	 * Places the stringToExecute into a script file and then executes that script using OS specific shell in a directory while
-	 * redirecting its output into files with an optional timeout.
+	 * redirecting its output into files with an optional timeout. Both the script and the output files are placed in a ".adapter" directory.
 	 * Stdout gets redirected to "stdoutID" and Stderr to "stderrID" where ID is the value of the "id" parameter.
 	 * 
 	 * @param folderPath      Path to the directory
@@ -84,17 +84,24 @@ public abstract class RequestRunner extends Thread {
 
 		String executedString = null;
 		try {
+			// create a directory for execution outputs 
+			Path outputsDir = folderPath.resolve(".adapter");
+		    if (!outputsDir.toFile().exists())
+		    {
+		    	outputsDir.toFile().mkdirs();
+		    }
+			
 			// put the string to execute into a script file
 			InputStream streamFileToExec = new ByteArrayInputStream(stringToExecute.getBytes());
-			File fileToExecute = folderPath.resolve("exec" + id + fileEnding).toFile();
-			executedString = "./" + fileToExecute.getName();
+			File fileToExecute = outputsDir.resolve("exec" + id + fileEnding).toFile();
+			executedString = "./.adapter/" + fileToExecute.getName();
 			FileUtils.copyInputStreamToFile(streamFileToExec, fileToExecute);
 			
 			// build process to execute the string in a directory using OS specific shell with outputs redirected to files
 		    ProcessBuilder processBuilder = new ProcessBuilder(shell, executedString);
 		    processBuilder.directory(folderPath.toFile());
-			File stdoutFile = folderPath.resolve("stdout" + id).toFile();
-			File stderrFile = folderPath.resolve("stderr" + id).toFile();
+			File stdoutFile = outputsDir.resolve("stdout" + id).toFile();
+			File stderrFile = outputsDir.resolve("stderr" + id).toFile();
 			processBuilder.redirectOutput(stdoutFile);
 			processBuilder.redirectError(stderrFile);
 			
