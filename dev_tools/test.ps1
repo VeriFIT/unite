@@ -96,7 +96,6 @@ function KillWithChildren {
 # kills all children of this process using the $PIDS_TO_KILL variable
 function killChildren {
     echo "`nShutting down..."
-    $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
     foreach ($i in $PIDS_TO_KILL) {
         KillWithChildren $i
     }
@@ -115,6 +114,7 @@ $main = {
         echo "Invalid arguments"
         echo ""
         echo "$USAGE"
+        cd $USRPATH
         exit 1
     } elseif (! $1) { # zero arguments
         # all good
@@ -122,7 +122,8 @@ $main = {
         if ("$1" -eq "-h") {
             echo "$HELP"
             echo "$USAGE"
-            exit 0
+        cd $USRPATH
+        exit 0
         } elseif ("$1" -eq "-t") {
             $testedToolsFlag = $true
         } elseif ("$1" -eq "-l") {
@@ -130,6 +131,7 @@ $main = {
         } else {
             echo "Invalid arguments`\n"
             echo "$USAGE"
+            cd $USRPATH
             exit 1
         }
     } else { # two argument
@@ -139,6 +141,7 @@ $main = {
         } else {
             echo "Invalid arguments`\n"
             echo "$USAGE"
+            cd $USRPATH
             exit 1
         }
 
@@ -199,7 +202,7 @@ $main = {
 
     # shutdown the adapter
     killChildren
-
+    
     cd $USRPATH
 
     # return non-zero if there were failed tests
