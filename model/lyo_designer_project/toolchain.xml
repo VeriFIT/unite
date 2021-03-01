@@ -129,6 +129,7 @@
         <resourceProperties href="#_tffywWpHEeuDWZwlSoXo7A"/>
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pna4kJUdEeq-KoPaR9_Cfg"/>
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_EXLfYGusEeuUjZLNvT5EgA"/>
+        <resourceProperties href="#_ZGAioHrFEeuDQtNZS3H7hw"/>
       </resources>
       <resourceProperties id="_tffywGpHEeuDWZwlSoXo7A" name="launchCommand" occurs="zeroOrOne" valueType="XMLLiteral"/>
       <resourceProperties id="_6VLhMGpGEeuDWZwlSoXo7A" name="buildCommand" occurs="zeroOrOne" valueType="XMLLiteral"/>
@@ -136,6 +137,7 @@
       <resourceProperties id="_tffywmpHEeuDWZwlSoXo7A" name="createdSUT" occurs="zeroOrOne" valueType="Resource" range="_mBmTQGpGEeuDWZwlSoXo7A" representation="either"/>
       <resourceProperties id="_tffyw2pHEeuDWZwlSoXo7A" name="commandlinePosition" occurs="zeroOrOne" valueType="Integer"/>
       <resourceProperties id="_tffyxGpHEeuDWZwlSoXo7A" name="fileURI" occurs="zeroOrOne" valueType="URI"/>
+      <resourceProperties id="_ZGAioHrFEeuDQtNZS3H7hw" name="compiled"/>
       <configuration xsi:type="oslc4j_ai:MavenSpecificationConfiguration">
         <generalConfiguration filesBasePath="." javaBasePackageName="cz.vutbr.fit.group.verifit.oslc.domain"/>
         <projectConfiguration xsi:type="oslc4j_ai:MavenProjectConfiguration" doNotGenerateProjectConfigurationFiles="true" lyoVersion="4.0.0" groupId="cz.vutbr.fit.group.verifit.oslc.domain" artifactId="UniversalAnalysis" version="0.0.1-SNAPSHOT"/>
