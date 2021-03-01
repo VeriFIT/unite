@@ -87,6 +87,7 @@ public class SutDeploy extends RequestRunner
 		String paramBuildCommand =  null;
 		String paramLaunchCommand =  null;
 		String paramUnpackZip =  null;
+		String paramCompile =  null;
 		
 		// extract values from parameters
 		for (ExecutionParameter param : this.execParameters)
@@ -98,11 +99,12 @@ public class SutDeploy extends RequestRunner
 			else if (param.getName().equals("buildCommand")) paramBuildCommand = param.getValue();
 			else if (param.getName().equals("launchCommand")) paramLaunchCommand = param.getValue();
 			else if (param.getName().equals("unpackZip")) paramUnpackZip = param.getValue();
+			else if (param.getName().equals("compile")) paramCompile = param.getValue();
+			
 		}
 		
 		// check wich one of the source parameters was used 
 		SutFetcher sutFetcher = null;
-		String ProgramDefinition = "";	//TODO use something else than a string (speed)
 		String ProgramSource = "";
 		if (paramSourceGit != null)
 		{
@@ -169,9 +171,7 @@ public class SutDeploy extends RequestRunner
 		
 		
 		// init compilation toggle flag
-		Boolean performCompilation = true;
-		if (paramBuildCommand == null || paramBuildCommand.equals("")) // Do not compile if there was no buildCommand (e.g. for static analysis)
-			performCompilation = false;
+		Boolean performCompilation = Boolean.valueOf(paramCompile);
 		Link executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
 		
 		// fetch source file
