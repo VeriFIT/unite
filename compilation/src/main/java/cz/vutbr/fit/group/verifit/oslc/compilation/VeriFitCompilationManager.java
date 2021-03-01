@@ -299,6 +299,7 @@ public class VeriFitCompilationManager {
 			newResource.setSUTdirectoryPath(aResource.getSUTdirectoryPath());
 			newResource.setCreator(aResource.getCreator());
 			newResource.setProducedByAutomationRequest(aResource.getProducedByAutomationRequest());
+			newResource.setCompiled(aResource.isCompiled());
 	    	
 			// persist in the triplestore
 	        Store store = storePool.getStore();

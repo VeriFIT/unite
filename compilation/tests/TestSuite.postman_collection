@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "829f095c-96a8-4c60-a920-9da32a7c28a4",
+		"_postman_id": "4b1b3811-d561-4a3c-9ea5-1a60c646ffbb",
 		"name": "Compilation Tests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1004,6 +1004,12 @@
 											"pm.test(\"SUT SUTdirectoryPath should have the expected value\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<fit:SUTdirectoryPath rdf:parseType=\\\"Literal\\\">\");",
 											"    pm.expect(pm.response.text()).to.include(requestId + \"</fit:SUTdirectoryPath>\");",
+											"});",
+											"pm.test(\"SUT should contain a compiled property\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<fit:compiled\");",
+											"});",
+											"pm.test(\"SUT compiled should have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\">true</fit:compiled>\");",
 											"});"
 										],
 										"type": "text/javascript"
@@ -7921,6 +7927,13 @@
 											"});",
 											"pm.test(\"SUT producedByAutomationRequest should match the AutomationRequest with ID \" + requestId, function () {",
 											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
+											"});",
+											"",
+											"pm.test(\"SUT should contain a compiled property\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<fit:compiled\");",
+											"});",
+											"pm.test(\"SUT compiled be false\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\">false</fit:compiled>\");",
 											"});"
 										],
 										"type": "text/javascript"

@@ -149,6 +149,13 @@ public interface ISUT
     @OslcReadOnly(false)
     public Link getProducedByAutomationRequest();
 
+    @OslcName("compiled")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "compiled")
+    @OslcOccurs(Occurs.ExactlyOne)
+    @OslcValueType(ValueType.Boolean)
+    @OslcReadOnly(false)
+    public Boolean isCompiled();
+
 
     public void setLaunchCommand(final String launchCommand );
     public void setBuildCommand(final String buildCommand );
@@ -160,5 +167,6 @@ public interface ISUT
     public void setSUTdirectoryPath(final String sUTdirectoryPath );
     public void setCreator(final Set<Link> creator );
     public void setProducedByAutomationRequest(final Link producedByAutomationRequest );
+    public void setCompiled(final Boolean compiled );
 }
 

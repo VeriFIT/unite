@@ -259,8 +259,9 @@ public class SutDeploy extends RequestRunner
 			SUT newSut = new SUT();
 			newSut.setTitle("SUT - " + execAutoRequest.getTitle());
 			newSut.setLaunchCommand(paramLaunchCommand);
-			if (!(paramBuildCommand == null || paramBuildCommand.equals(""))) //TODO
+			if (!(paramBuildCommand == null)) //TODO
 				newSut.setBuildCommand(paramBuildCommand);
+			newSut.setCompiled(performCompilation);
 			newSut.setSUTdirectoryPath(folderPath.toAbsolutePath().toString());
 			newSut.setCreator(execAutoRequest.getCreator());
 			newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(execAutoRequestId));

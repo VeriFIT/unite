@@ -5,6 +5,7 @@
 - renamed maven project model to lyo_designer_model
 - typos, refactor, ...
 - added a "compile" command to the compilation adapter that controls whether to perform compilation or not
+- added a boolean fit:compiled property to SUT resources
 
 ### v1.3.1
 powershell modifications
