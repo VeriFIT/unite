@@ -53,7 +53,6 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.UriBuilder;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.wink.json4j.JSONException;
 import org.apache.wink.json4j.JSONObject;
 import org.eclipse.lyo.oslc4j.provider.json4j.JsonHelper;
@@ -96,6 +95,7 @@ import io.swagger.annotations.ApiOperation;
 // Start of user code imports
 import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
 import org.eclipse.lyo.oslc4j.core.model.Error;
+import org.apache.commons.lang3.SystemUtils;
 // End of user code
 
 // Start of user code pre_class_code

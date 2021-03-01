@@ -338,6 +338,87 @@ public class VeriFitAnalysisManager {
     	}
     }
 
+	/**
+	 * Processes special input parameters that require the adapter to fetch infos from other places and then fill it in.
+	 * Commands like "launchSUT" or "SUTbuildCommand" instruct the adapter to fetch the SUT launch command or build command
+	 * and insert it to the string to be executed on the commandline.
+	 * @param executedSUT	SUT resource to fetch info out of
+	 * @param newAutoResult	AutomationResult holding input and output parameters
+	 * @param execParams	List of execution parameters for the request runner. This is an output parameter.
+	 * @throws OslcResourceException	If some of the infos to be fetched are missing
+	 */
+	private static void processSpecialInputParams(final SUT executedSUT, final AutomationResult newAutoResult, List<ExecutionParameter> execParams) throws OslcResourceException {
+		for ( ParameterInstance param : newAutoResult.getInputParameter())
+		{ 
+			if (param.getName().equals("launchSUT") || param.getName().equals("SUTbuildCommand"))
+			{
+				// add the value as an execution parameter
+				ExecutionParameter newSpecialExecParam = null;
+				
+				if (param.getName().equals("launchSUT"))
+				{
+					String launchCmd = executedSUT.getLaunchCommand();
+					if (launchCmd == null)
+						throw new OslcResourceException("paramer launchSUT - referenced SUT is missing a launchCommand");
+					if (Integer.valueOf(param.getValue()) >= 0) // only create the execution parameter if value was non-negative
+						newSpecialExecParam = new ExecutionParameter(
+							param.getName(),
+							launchCmd,
+							Integer.parseInt(param.getValue())
+						);
+				}
+				else if (param.getName().equals("SUTbuildCommand"))
+				{
+					String buildCmd = executedSUT.getBuildCommand();
+					if (buildCmd == null)
+						throw new OslcResourceException("paramer SUTbuildCommand - referenced SUT is missing a buildCommand");
+					if (Integer.valueOf(param.getValue()) >= 0) // only create the execution parameter if value was non-negative
+						newSpecialExecParam = new ExecutionParameter(
+							param.getName(),
+							buildCmd,
+							Integer.parseInt(param.getValue())
+						);
+				}
+				execParams.add(newSpecialExecParam);
+			}
+		}
+		// same thing for output parameters
+		for ( ParameterInstance param : newAutoResult.getOutputParameter())
+		{ 
+			if (param.getName().equals("launchSUT") || param.getName().equals("SUTbuildCommand"))
+			{
+				// add the value as an execution parameter
+				ExecutionParameter newSpecialExecParam = null;
+				
+				if (param.getName().equals("launchSUT"))
+				{
+					String launchCmd = executedSUT.getLaunchCommand();
+					if (launchCmd == null)
+						throw new OslcResourceException("paramer launchSUT - referenced SUT is missing a launchCommand");
+					if (Integer.valueOf(param.getValue()) >= 0) // only create the execution parameter if value was non-negative
+						newSpecialExecParam = new ExecutionParameter(
+							param.getName(),
+							launchCmd,
+							Integer.parseInt(param.getValue())
+						);
+				}
+				else if (param.getName().equals("SUTbuildCommand"))
+				{
+					String buildCmd = executedSUT.getBuildCommand();
+					if (buildCmd == null)
+						throw new OslcResourceException("paramer SUTbuildCommand - referenced SUT is missing a buildCommand");
+					if (Integer.valueOf(param.getValue()) >= 0) // only create the execution parameter if value was non-negative
+						newSpecialExecParam = new ExecutionParameter(
+							param.getName(),
+							buildCmd,
+							Integer.parseInt(param.getValue())
+						);
+				}
+				execParams.add(newSpecialExecParam);
+			}
+		}
+	}
+	
 	// End of user code
 
     public static void contextInitializeServletListener(final ServletContextEvent servletContextEvent)
@@ -608,8 +689,6 @@ public class VeriFitAnalysisManager {
         
         // Start of user code createAutomationRequest_storeInit
         
-        // TODO check triplestore online
-        // ......
         SutAnalyse runner = null;
 		try {
 			// error response on empty creation POST
@@ -676,79 +755,15 @@ public class VeriFitAnalysisManager {
 				throw new IOException("Failed to get refferenced SUT - make sure the compilation provider is running.\nClient response: " + e.getMessage());
 			}
 			
-			// create an AutomationResult for this AutoRequest; output parameters will be set by processAutoReqInputParams()
+			// create an AutomationResult for this AutoRequest
 			AutomationResult newAutoResult = createAutomationResultForAutomationRequest(newResource, outputParams);
 			newResource.setProducedAutomationResult(new Link(newAutoResult.getAbout()));
 			
 			// create Execution Parameters for the runner
 			List<ExecutionParameter> execParams = ExecutionParameter.createExecutionParameters(newAutoResult.getInputParameter(), newAutoResult.getOutputParameter(), execAutoPlan.getParameterDefinition());
 			
-
 			// process special input parameters
-			for ( ParameterInstance param : newAutoResult.getInputParameter())
-			{ 
-				if (param.getName().equals("launchSUT") || param.getName().equals("SUTbuildCommand"))
-				{
-					// add the value as an updated output parameter
-					ExecutionParameter newSpecialExecParam = null;
-					
-					if (param.getName().equals("launchSUT"))
-					{
-						String launchCmd = executedSUT.getLaunchCommand();
-						if (launchCmd == null)
-							throw new OslcResourceException("paramer launchSUT - referenced SUT is missing a launchCommand");
-						newSpecialExecParam = new ExecutionParameter(
-							param.getName(),
-							launchCmd,
-							Integer.parseInt(param.getValue())
-						);
-					}
-					else if (param.getName().equals("SUTbuildCommand"))
-					{
-						String buildCmd = executedSUT.getBuildCommand();
-						if (buildCmd == null)
-							throw new OslcResourceException("paramer SUTbuildCommand - referenced SUT is missing a buildCommand");
-						newSpecialExecParam = new ExecutionParameter(
-							param.getName(),
-							buildCmd,
-							Integer.parseInt(param.getValue())
-						);
-					}
-					execParams.add(newSpecialExecParam);
-				}
-			}
-			for ( ParameterInstance param : newAutoResult.getOutputParameter())
-			{ 
-				if (param.getName().equals("launchSUT") || param.getName().equals("SUTbuildCommand"))
-				{
-					// add the value as an updated output parameter
-					ExecutionParameter newSpecialExecParam = null;
-					
-					if (param.getName().equals("launchSUT"))
-					{
-						String launchCmd = executedSUT.getLaunchCommand();
-						if (launchCmd == null)
-							throw new OslcResourceException("paramer launchSUT - referenced SUT is missing a launchCommand");
-						newSpecialExecParam = new ExecutionParameter(
-							param.getName(),
-							launchCmd,
-							Integer.parseInt(param.getValue())
-						);
-					}
-					else if (param.getName().equals("SUTbuildCommand"))
-					{
-						String buildCmd = executedSUT.getBuildCommand();
-						if (buildCmd == null)
-							throw new OslcResourceException("paramer SUTbuildCommand - referenced SUT is missing a buildCommand");
-						newSpecialExecParam = new ExecutionParameter(
-							param.getName(),
-							buildCmd,
-							Integer.parseInt(param.getValue())
-						);
-					}
-					execParams.add(newSpecialExecParam);
-				}
-			}
+			processSpecialInputParams(executedSUT, newAutoResult, execParams);
 			
 			// create a new thread to execute the automation request - and start it OR queue it up
 			runner = new SutAnalyse(newResource, newAutoResult, executedSUT, execParams);

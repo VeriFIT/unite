@@ -14,9 +14,11 @@
 $HELP="
    Runs the run_all script and then Postman testsuites for the adapter using Newman.
 "
-$USAGE="   Usage: $PSCommandPath [-t]
+$USAGE="   Usage: $PSCommandPath [-t|-h|-l]
       -t ... tools - Runs an additional testsuite which requires some analysis
                          tools to be installed (i.e. will not work on all machines)
+      -l ... live - Only runs the test suites without launching the adapter. Expects
+                    the adapter to be running already.
       -h ... help
 "
 
@@ -94,7 +96,6 @@ function KillWithChildren {
 # kills all children of this process using the $PIDS_TO_KILL variable
 function killChildren {
     echo "`nShutting down..."
-    $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
     foreach ($i in $PIDS_TO_KILL) {
         KillWithChildren $i
     }
@@ -103,29 +104,47 @@ function killChildren {
 
 $main = {
     param (
-        $1
+        $1, $2
     )
 
-    $toolsFlag = $false
+    $testedToolsFlag = $false
+    $liveAdapterFlag = $false
     # process arguments
     if ($args.length -ne 0) {
         echo "Invalid arguments"
         echo ""
         echo "$USAGE"
+        cd $USRPATH
         exit 1
-    } elseif (! $1) {
+    } elseif (! $1) { # zero arguments
         # all good
-    } elseif ("$1" -eq "-h") {
-        echo "$HELP"
-        echo "$USAGE"
+    } elseif (! $2) { # one argument
+        if ("$1" -eq "-h") {
+            echo "$HELP"
+            echo "$USAGE"
+        cd $USRPATH
         exit 0
-    } elseif ("$1" -eq "-t") {
-        $toolsFlag = $true
-    } else {
-        echo "Invalid arguments"
-        echo ""
-        echo "$USAGE"
-        exit 1
+        } elseif ("$1" -eq "-t") {
+            $testedToolsFlag = $true
+        } elseif ("$1" -eq "-l") {
+            $liveAdapterFlag = $true
+        } else {
+            echo "Invalid arguments`\n"
+            echo "$USAGE"
+            cd $USRPATH
+            exit 1
+        }
+    } else { # two argument
+        if (("$1" -eq "-t" -And "$2" -eq "-l") -Or ("$2" -eq "-t" -And "$1" -eq "-l")) {
+            $testedToolsFlag = $true
+            $liveAdapterFlag = $true
+        } else {
+            echo "Invalid arguments`\n"
+            echo "$USAGE"
+            cd $USRPATH
+            exit 1
+        }
+
     }
 
     # make sure configuration files exist
@@ -136,11 +155,16 @@ $main = {
     $analysis_port=$(cat $ADAPTER_ROOT_DIR/analysis/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
     $analysis_url="${analysis_host}:${analysis_port}/analysis/"
 
-    echo "Booting up the Universal Analysis Adapter"
-    $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Universal Analysis Adapter'; $ADAPTER_ROOT_DIR/run_all.ps1" -passthru
-    $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
-    curl_poll $analysis_url       # poll the analysis adapter because that one starts last in the run script
-    echo "Adapter up and running`n"
+
+    if ( ! $liveAdapterFlag ) {
+        echo "Booting up the Universal Analysis Adapter"
+        $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Universal Analysis Adapter'; $ADAPTER_ROOT_DIR/run_all.ps1" -passthru
+        $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
+        curl_poll $analysis_url       # poll the analysis adapter because that one starts last in the run script
+        echo "Adapter up and running`n"
+    } else {
+        echo "Skipping Adapter boot. Adapter expected to be running already." 
+    }
 
 
     $compilationRes=$true
@@ -164,19 +188,21 @@ $main = {
     $clock.Stop()
     echo $clock.Elapsed
 
-    if ($toolsFlag) {
-        echo ""
+    echo ""
+    if ($testedToolsFlag) {
         echo "Running Analysis adapter Tested Tools test suite" 
         $clock = [Diagnostics.Stopwatch]::StartNew()
         newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_TestedTools.postman_collection
         $analysisToolsRes=$?
         $clock.Stop()
         echo $clock.Elapsed
+    } else {
+        echo "Skipping Analysis adapter Tested Tools test suite" 
     }
 
     # shutdown the adapter
     killChildren
-
+    
     cd $USRPATH
 
     # return non-zero if there were failed tests

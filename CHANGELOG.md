@@ -1,3 +1,12 @@
+### v1.4.0
+- All adapter outputs are now in their own directory ".adapter" to not get in the way of analysis tool outputs.
+- Changed rdf:value type to String from XMLLiteral to avoid invalid XMLLiteral warnings for contribution values.
+- Added a new parameter to the test script (-l to not launch the adapter)
+- renamed maven project model to lyo_designer_model
+- typos, refactor, ...
+- added a "compile" command to the compilation adapter that controls whether to perform compilation or not
+- added a boolean fit:compiled property to SUT resources
+
 ### v1.3.1
 powershell modifications
 - The previous way of executing powershell commands had issues with quotes.

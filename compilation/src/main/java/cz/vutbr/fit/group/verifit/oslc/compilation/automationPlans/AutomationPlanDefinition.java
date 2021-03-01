@@ -61,7 +61,9 @@ public class AutomationPlanDefinition {
 	private static void createSutDeployAutomationPlan() throws StoreAccessException
 	{ 
 		try {
-			// create parameter definitions
+			/*
+			 * SUT fetch methods
+			 */
 			ParameterDefinition sourceGitUrl = new ParameterDefinition();
 			sourceGitUrl.setDescription("The SUT will be retrieved from a Git repository.");
 			sourceGitUrl.setName("sourceGit");
@@ -71,10 +73,6 @@ public class AutomationPlanDefinition {
 			sourceGitUrl.addValueType(OslcValues.OSLC_VAL_TYPE_STRING); // TODO change to URI
 			//sourceGitUrl.setRepresentation(new Link(new URI(VeriFitCompilationConstants.OSLC_REPRESENTATION_EITHER)));
 			
-			
-			/*
-			 * SUT fetch methods
-			 */
 			ParameterDefinition sourceUrl = new ParameterDefinition();
 			sourceUrl.setDescription("The SUT will be downloaded from a URL. "
 					+ "Example: https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis.git");
@@ -97,13 +95,23 @@ public class AutomationPlanDefinition {
 			sourceFilePath.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			sourceFilePath.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 			
+			
+			/*
+			 * Build options
+			 */
+			ParameterDefinition compile = new ParameterDefinition();
+			compile.setDescription("Set this parameter to \"false\" to disable SUT compilation."); 
+			compile.setName("compile");
+			compile.setDefaultValue("true");
+			compile.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
+			compile.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
+			
 			ParameterDefinition unpackZip = new ParameterDefinition();
 			unpackZip.setDescription("Set this parameter to \"true\" to have the adapter unpack the SUT using ZIP after fetching it."); 
 			unpackZip.setName("unpackZip");
 			unpackZip.setDefaultValue("false");
 			unpackZip.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			unpackZip.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
-			
 			
 			/*
 			 * SUT parameters definition
@@ -138,6 +146,7 @@ public class AutomationPlanDefinition {
 			propertiesPlan.addParameterDefinition(unpackZip);
 			propertiesPlan.addParameterDefinition(buildCommand);
 			propertiesPlan.addParameterDefinition(launchCommand);
+			propertiesPlan.addParameterDefinition(compile);
 			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
 			VeriFitCompilationManager.createAutomationPlan(propertiesPlan);
 	

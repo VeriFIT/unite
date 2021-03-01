@@ -262,6 +262,21 @@
             
             </dd>
           </dl>
+          <dl class="row">
+            <% method = SUT.class.getMethod("isCompiled"); %>
+            <dt  class="col-sm-2 text-right"><a href="<%=method.getAnnotation(OslcPropertyDefinition.class).value() %>"><%=method.getAnnotation(OslcName.class).value()%></a></dt>
+            <dd class="col-sm-9">
+            <%
+            if (aSUT.isCompiled() == null) {
+                out.write("<em>null</em>");
+            }
+            else {
+                out.write(aSUT.isCompiled().toString());
+            }
+            %>
+            
+            </dd>
+          </dl>
         </div>
         <%
         Map<QName, Object> extendedProperties = aSUT.getExtendedProperties();

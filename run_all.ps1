@@ -89,7 +89,6 @@ function KillWithChildren {
 # kills all children of this process using the $PIDS_TO_KILL variable
 function killChildren {
     echo "`nShutting down..."
-    $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
     foreach ($i in $PIDS_TO_KILL) {
         KillWithChildren $i
     }
@@ -123,18 +122,21 @@ $main = {
         echo "Invalid arguments"
         echo ""
         echo "$USAGE"
+        cd $USRPATH
         exit 1
     } elseif (! $1) {
         # all good
     } elseif ("$1" -eq "-h") {
         echo "$HELP"
         echo "$USAGE"
+        cd $USRPATH
         exit 0
     } elseif ("$1" -eq "-t") {
         $tailFlag = $true
     } else {
         echo "Invalid arguments"
         echo ""
+        cd $USRPATH
         echo "$USAGE"
         exit 1
     }

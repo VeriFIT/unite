@@ -36,7 +36,6 @@ import org.eclipse.lyo.oslc.domains.Person;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 import java.net.URI;
 import java.util.Properties;
-import java.util.Set;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -69,6 +68,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 // End of user code
 
 // Start of user code pre_class_code
@@ -299,6 +299,7 @@ public class VeriFitCompilationManager {
 			newResource.setSUTdirectoryPath(aResource.getSUTdirectoryPath());
 			newResource.setCreator(aResource.getCreator());
 			newResource.setProducedByAutomationRequest(aResource.getProducedByAutomationRequest());
+			newResource.setCompiled(aResource.isCompiled());
 	    	
 			// persist in the triplestore
 	        Store store = storePool.getStore();
@@ -350,6 +351,34 @@ public class VeriFitCompilationManager {
     		throw new OslcResourceException("Source parameter missing. Expected exactly one.");
     	else // (count > 1)
     		throw new OslcResourceException("Too many source parameters. Expected exactly one.");
+    }
+    
+    /**
+	 * Check that the build command is defined if the compilation parameter is set to true
+	 * @param autoRequest			Automation Request with parameters to check
+	 * @throws OslcResourceException 	When the compilation parameter is true and the build command is null
+	 */
+    public static void checkSutDeployCompilationAndBuildParams (AutomationRequest autoRequest) throws OslcResourceException
+    {
+		// count the "source.*" input params
+		Boolean compileSet = true;
+		Boolean buildCmdFound = false;
+    	for (ParameterInstance submittedParam : autoRequest.getInputParameter())
+		{				
+			if (submittedParam.getName().equals("compile"))
+			{
+				compileSet = Boolean.valueOf(submittedParam.getValue());
+			}
+			else if (submittedParam.getName().equals("buildCommand"))
+			{
+				buildCmdFound = true;
+			}
+		}
+    	
+    	if (compileSet == true && buildCmdFound == false)
+    		throw new OslcResourceException("compilation is enabled, but the buildCommand is missing.");
+    	else
+    		return;
     }
     // End of user code
 
@@ -743,8 +772,11 @@ public class VeriFitCompilationManager {
 			// check that the request contains exactly one "source.*" parameter (can not be checked automatically based on the AutoPlan
 			// throws an exception if the Inputs are not OK
 			checkSutDeploySourceInputs(newResource);
-
-			// create an AutomationResult for this AutoRequest; output parameters will be set by processAutoReqInputParams()
+			
+			// check that buildCommand is not null, if compilation was set to true
+			checkSutDeployCompilationAndBuildParams(newResource);
+			
+			// create an AutomationResult for this AutoRequest
 			AutomationResult newAutoResult = createAutomationResultForAutomationRequest(newResource, outputParams);
 			newResource.setProducedAutomationResult(new Link(newAutoResult.getAbout()));
 

@@ -126,6 +126,7 @@ public class SutAnalyse extends RequestRunner
 		Contribution statusMessage = new Contribution();
 		statusMessage.setDescription("Status messages from the adapter about the execution.");
 		statusMessage.setTitle("statusMessage");
+		statusMessage.setValue("");
 		statusMessage.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 	    
 		Contribution returnCode = new Contribution();
@@ -143,6 +144,12 @@ public class SutAnalyse extends RequestRunner
 	    analysisStderr.setTitle("stderr");
 	    analysisStderr.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 		
+	    // warning if not compiled
+	    if (!execSut.isCompiled())
+	    {
+    		statusMessage.setValue(statusMessage.getValue() + "Warning: Analysing an SUT which was not compiled\n");
+	    }
+	    
 	    // take a snapshot of SUT files modification times before executing the analysis
 	    GetModifFilesBySnapshot snapshotter = new GetModifFilesBySnapshot(new File(execSut.getSUTdirectoryPath()));
 	    snapshotter.takeBeforeSnapshot(outputRegex);
@@ -151,7 +158,8 @@ public class SutAnalyse extends RequestRunner
 	    Link executionVerdict;
 		final Path SUTdirAsPath = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
 	    ExecutionResult analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), "_analysis_" + this.execAutoRequestId);
-		statusMessage.setValue("Executing: " + stringToExecute + "\n   as: " + analysisRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
+		statusMessage.setValue(statusMessage.getValue() +  
+				"Executing: " + stringToExecute + "\n   as: " + analysisRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
 		if (analysisRes.exceptionThrown != null)
 		{
 			// there was an error

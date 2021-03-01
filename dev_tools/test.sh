@@ -13,9 +13,11 @@
 HELP="
    Runs the run_all script and then Postman testsuites for the adapter using Newman.
 "
-USAGE="   Usage: $0 [-t]
+USAGE="   Usage: $0 [-t|-h|-l]
       -t ... tools - Runs an additional testsuite which requires some analysis
                          tools to be installed (i.e. will not work on all machines)
+      -l ... live - Only runs the test suites without launching the adapter. Expects
+                    the adapter to be running already.
       -h ... help
 "
 
@@ -80,6 +82,8 @@ checkConfFiles()
 }
 
 main() {
+    testedToolsFlag=false
+    liveAdapterFlag=false
     # process arguments
     if [ "$#" -eq 0 ]; then
         : # all good
@@ -88,7 +92,20 @@ main() {
             echo "$HELP"
             echo "$USAGE"
             exit 0
-        elif [ "$1" != "-t" ]; then
+        elif [ "$1" = "-t" ]; then
+            testedToolsFlag=true
+        elif [ "$1" = "-l" ]; then
+            liveAdapterFlag=true
+        else
+            echo -e "Invalid arguments\n"
+            echo "$USAGE"
+            exit 1
+        fi
+    elif [ "$#" -eq 2 ]; then
+        if ([ "$1" = "-t" ] && [ "$2" = "-l" ]) || ([ "$2" = "-t" ] && [ "$1" = "-l" ]) then
+            testedToolsFlag=true
+            liveAdapterFlag=true
+        else
             echo -e "Invalid arguments\n"
             echo "$USAGE"
             exit 1
@@ -98,7 +115,6 @@ main() {
         echo "$USAGE"
         exit 1
     fi
-
     # make sure configuration files exist
     checkConfFiles
 
@@ -108,11 +124,14 @@ main() {
     analysis_url="$analysis_host:$analysis_port/analysis/"
 
 
-
-    echo "Booting up the Universal Analysis Adapter"
-    $ADAPTER_ROOT_DIR/run_all.sh &>/dev/null &
-    curl_poll "$analysis_url"       # poll the analysis adapter because that one starts last in the run script
-    echo -e "Adapter up and running\n"
+    if [ ! liveAdapterFlag ]; then
+        echo "Booting up the Universal Analysis Adapter"
+        $ADAPTER_ROOT_DIR/run_all.sh &>/dev/null &
+        curl_poll "$analysis_url"       # poll the analysis adapter because that one starts last in the run script
+        echo -e "Adapter up and running\n"
+    else
+        echo "Skipping Adapter boot. Adapter expected to be running already." 
+    fi
 
 
     compilationRes=0
@@ -130,11 +149,13 @@ main() {
     time newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite.postman_collection
     analysisRes=$?
 
-    if [ "$1" = "-t" ]; then
-        echo
+    echo
+    if [ $testedToolsFlag ]; then
         echo "Running Analysis adapter Tested Tools test suite" 
         time newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_TestedTools.postman_collection
         analysisToolsRes=$?
+    else
+        echo "Skipping Analysis adapter Tested Tools test suite" 
     fi
 
     echo -e "\nShutting down the adaters" 

@@ -57,8 +57,7 @@ import org.eclipse.lyo.oslc4j.core.model.ResourceShape;
 import org.eclipse.lyo.oslc4j.core.model.ResourceShapeFactory;
 
 import cz.vutbr.fit.group.verifit.oslc.domain.FitDomainConstants;
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
-import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
+
 
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
@@ -68,6 +67,7 @@ import org.eclipse.lyo.oslc.domains.DctermsVocabularyConstants;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.Person;
 // Start of user code imports
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 // End of user code
 
 // Start of user code preClassCode
@@ -112,6 +112,9 @@ public class SUT
     // Start of user code attributeAnnotation:producedByAutomationRequest
     // End of user code
     private Link producedByAutomationRequest;
+    // Start of user code attributeAnnotation:compiled
+    // End of user code
+    private Boolean compiled;
     
     // Start of user code classAttributes
     // End of user code
@@ -325,6 +328,20 @@ public class SUT
         return producedByAutomationRequest;
     }
     
+    // Start of user code getterAnnotation:compiled
+    // End of user code
+    @OslcName("compiled")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "compiled")
+    @OslcOccurs(Occurs.ExactlyOne)
+    @OslcValueType(ValueType.Boolean)
+    @OslcReadOnly(false)
+    public Boolean isCompiled()
+    {
+        // Start of user code getterInit:compiled
+        // End of user code
+        return compiled;
+    }
+    
     
     // Start of user code setterAnnotation:launchCommand
     // End of user code
@@ -447,6 +464,18 @@ public class SUT
         this.producedByAutomationRequest = producedByAutomationRequest;
     
         // Start of user code setterFinalize:producedByAutomationRequest
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:compiled
+    // End of user code
+    public void setCompiled(final Boolean compiled )
+    {
+        // Start of user code setterInit:compiled
+        // End of user code
+        this.compiled = compiled;
+    
+        // Start of user code setterFinalize:compiled
         // End of user code
     }
     
