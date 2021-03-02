@@ -10,8 +10,13 @@
 
 package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser;
 
+import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -22,44 +27,88 @@ import java.util.Set;
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 
+import cz.vutbr.fit.group.verifit.jsem.ExtensionInfoQuery;
+import cz.vutbr.fit.group.verifit.jsem.ExtensionManager;
+import cz.vutbr.fit.group.verifit.jsem.IExtension;
+import cz.vutbr.fit.group.verifit.jsem.IExtensionWithInfo;
+import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager.AutomationPlanConf;
+import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
+
 
 public final class ParserManager {
     
-    private static ParserManager INSTANCE;
-	
-	private Map<String,IParser> toolParsers;
+	private final Path parserConfDir;
 
-    private ParserManager() {
-    	this.toolParsers = new HashMap<String,IParser>(); // TODO map implementation ?
-    	loadParsers();
+    public ParserManager(Path parserConfDir) {
+    	this.parserConfDir = parserConfDir;
     }
- 
-    public synchronized static ParserManager getInstance() {
-		if(INSTANCE == null) 
-		{
-			INSTANCE = new ParserManager();
-		}
-		return INSTANCE;
-    }
-    
-    private void loadParsers() {
-    	//this.toolParsers.put("infer", new NoFileValuesParser()); // TODO tmp instead of actual plugins
-    }
-    
+
     /**
+     * Loads plugin parsers for each tool and adds them into the automationPlan's configuration
+     * @param automationPlanConfs An In/Out parameter
+     */
+    public void loadParsers(Collection<AutomationPlanConf> automationPlanConfs) {
+    	
+    	// initialize the ExtensionManager
+    	ExtensionManager extMgr = new ExtensionManager();
+    	extMgr.registerBuiltinExtensions();
+    	extMgr.refreshExtensionInfoLoaders();
+    	extMgr.loadExtensionInfo(this.parserConfDir);
+    	
+    	// load parsers for every Automation Plan
+    	for (AutomationPlanConf conf : automationPlanConfs)
+    	{
+    		String id = conf.getIdentifier();
+    		
+    		// add the default parsers to all autoPlans
+    		addDefaultParsers(conf);
+    		
+    		// load custom plugin parsers
+			// find all parser extensions for the given Automation Plan
+			ExtensionInfoQuery query = new ExtensionInfoQuery();
+			query.contains("implements", IParser.class.getName());
+			query.contains("tool", id);
+			List< IExtension > exts = extMgr.findExtension(query);
+			
+			// select a plugin parser for the given Automation Plan
+			if (exts.size() != 0)
+			{
+				for (IExtension ext : exts)
+				{
+					IParser pluginParser = (IParser) ext;
+					String pluginName = pluginParser.getName();
+					
+					if (conf.containsParser(pluginName))
+						System.out.println("Warning: Can not load plugin parser/filter \"" + pluginParser.getClass() + "\" for Automation Plan: \"" + id + "\"\n"
+								+ "   Name \"" + pluginName + "\" is already taken.");
+					else
+						conf.putParser(pluginName, pluginParser);					
+				}
+			}
+			else
+			{
+				// TODO future features
+				System.out.println("Info: No plugin filters/parsers found for Automation Plan: \"" + id + "\" - Only the default ones will be available");
+			}
+    	}
+    }
+    
+    private void addDefaultParsers(AutomationPlanConf conf) {
+		conf.putParser(new DefaultParser().getName(), new DefaultParser());
+		conf.putParser(new RemoveAllFileValuesParser().getName(), new RemoveAllFileValuesParser());
+	}
+
+	/**
      * Uses a plugin implemented parser to process contributions created by an analysis tool. Can modify or delete contributions 
      * or even create new ones based on the original ones.
-     * @param toolIdentifier		dcterms:identifier of the tool which these contributions belong to (used to select parser)
+     * @param parser				name of the parser to use
      * @param outputContributions	contributions produced by the tool
-     * @return	parsed contributions
      */
-    public Set<Contribution> parseContributionsForTool(String toolIdentifier, Set<Contribution> outputContributions)
+    public static Set<Contribution> parseContributionsForTool(IParser parser, Set<Contribution> outputContributions)
     {
-    	// get a parser plugin implementation for the specified tool, default to the basic one (does nothing)
-    	IParser parser = toolParsers.getOrDefault(toolIdentifier, new DefaultParser());
-    	
     	// prepare the parser input
-    	List<Map<String,String>> parserInput = new LinkedList<Map<String,String>>();
+    	List<Map<String,String>> contributionsForParser = new LinkedList<Map<String,String>>();
     	for (Contribution contrib : outputContributions)
     	{
     		Map<String,String> newMap = new HashMap<String,String>();
@@ -72,20 +121,20 @@ public final class ParserManager {
     		{
         		newMap.put("valueType", valueType.getValue().toString());
     		}
-    		parserInput.add(newMap);
+    		contributionsForParser.add(newMap);
     	}
     	
     	// call the parser to process the contributions
-    	List<Map<String,String>> parserOutput = parser.parse(parserInput);
+    	parser.parse(contributionsForParser);
     	
     	// process the parser output
     	Set<Contribution> parsedContributions = new HashSet<Contribution>();
-    	for (Map<String,String> mapContrib : parserOutput)
+    	for (Map<String,String> mapContrib : contributionsForParser)
     	{
     		String name = mapContrib.get("name");
     		if (name == null)
     		{
-    			System.out.println("WARNING: Output of contribution parser for tool \"" + toolIdentifier + "\" - name missing");
+    			System.out.println("WARNING: Output of contribution parser - name missing");
     		}
     		String value = mapContrib.get("value");
 			String description = mapContrib.get("description");
@@ -96,8 +145,8 @@ public final class ParserManager {
     		{
 				try {
 					setValueType.add(new Link(new URI(valueType)));
-				} catch (URISyntaxException e1) {
-					System.out.println("WARNING: Output of contribution parser for tool \"" + toolIdentifier + "\" - invalid valueType: " + e1.getMessage());
+				} catch (URISyntaxException e) {
+					System.out.println("WARNING: Output of contribution parser - invalid valueType: " + e.getMessage());
 				}
 			}
     		

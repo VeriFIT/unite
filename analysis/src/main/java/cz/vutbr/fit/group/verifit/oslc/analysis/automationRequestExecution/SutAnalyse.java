@@ -31,6 +31,7 @@ import org.eclipse.lyo.oslc4j.core.model.Link;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisResourcesFactory;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager.AutomationPlanConf;
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.ParserManager;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
@@ -55,7 +56,7 @@ public class SutAnalyse extends RequestRunner
 	final private String execSutId;
 	private SUT execSut;
 
-	final private AutomationPlanConfManager.AutomationPlanConf autoPlanConf;
+	final private AutomationPlanConf autoPlanConf;
 	
 	/**
 	 * @param serviceProviderId	ID of the service provider
@@ -94,6 +95,7 @@ public class SutAnalyse extends RequestRunner
 		String zipOutputs = null;
 		String timeout = null;
 		String toolCommand = null;
+		String outputFilter = null;
 		
 		// extract values from parameters
 		for (ExecutionParameter param : this.execParameters)
@@ -102,6 +104,8 @@ public class SutAnalyse extends RequestRunner
 			else if (param.getName().equals("zipOutputs")) zipOutputs = param.getValue();
 			else if (param.getName().equals("timeout")) timeout = param.getValue();
 			else if (param.getName().equals("toolCommand")) toolCommand = param.getValue();
+			else if (param.getName().equals("outputFilter")) outputFilter = param.getValue();
+			
 		}
 
 		// build the string to execute later from command line input parameters (those that have a commandline position)
@@ -235,9 +239,8 @@ public class SutAnalyse extends RequestRunner
 			}
 			
 			// run the AutoResult contributions through a parser
-			ParserManager parserManagerInst = ParserManager.getInstance();
-			Set<Contribution> parsedContributions = parserManagerInst.parseContributionsForTool(
-					Utils.getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue()),
+			Set<Contribution> parsedContributions = ParserManager.parseContributionsForTool(
+					autoPlanConf.getParser(outputFilter),
 					resAutoResult.getContribution());
 			resAutoResult.setContribution(parsedContributions);
 			statusMessage.setValue(statusMessage.getValue() + "Applied output parsers/filters\n");

@@ -1,4 +1,10 @@
 ### v1.5.0
+- added a new common input parameter "outputFilter" to the analysis adapter
+	- features allowedValue properties that list all available parsers
+	- parsers can be defined as plugins with configuration located in /Analysis/PluginParserConfiguration
+	  and plugin source files placed in cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.pluginParsers
+	- each plugin parser has to implement the IParser interface and the IExtension interface
+- added jSEM as a .jar file to get plugin output parsers/filters (potentially a temporary solution)
 - the root directory is now an Eclipse project for hierarchical view
 
 ### v1.4.0

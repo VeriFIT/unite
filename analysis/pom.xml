@@ -66,6 +66,13 @@
 			<artifactId>SharedResources</artifactId>
 			<version>0.0.1-SNAPSHOT</version>  
 		</dependency>  
+		
+        <!-- jSEM for plugins -->
+		<dependency>  
+			<groupId>cz.vutbr.fit.group.verifit.jsem</groupId>  
+			<artifactId>jsem</artifactId>
+			<version>0.2.0.qualifier</version>
+		</dependency>  
         
         <!-- End of user code
         -->
