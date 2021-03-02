@@ -1,3 +1,6 @@
+### v1.5.0
+- the root directory is now an Eclipse project for hierarchical view
+
 ### v1.4.0
 - All adapter outputs are now in their own directory ".adapter" to not get in the way of analysis tool outputs.
 - Changed rdf:value type to String from XMLLiteral to avoid invalid XMLLiteral warnings for contribution values.
