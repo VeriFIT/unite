@@ -64,9 +64,12 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanCo
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanLoading;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationRequestExecution.SutAnalyse;
 import cz.vutbr.fit.group.verifit.oslc.analysis.clients.CompilationAdapterClient;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.IParser;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.ParserManager;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.io.File;
 import java.io.InputStream;
@@ -130,11 +133,12 @@ public class VeriFitAnalysisManager {
 	/**
 	 * Creates an AutomationPlan resource with the specified properties, and stores in the Adapter's catalog.
 	 * @param aResource			The new resource will copy properties from the specified aResource.
+	 * @param automationPlanConf AutomationPlan configuration loaded from .properties files and with available parsers.
 	 * @return					The newly created resource. Or null if one of the required properties was missing.
 	 * @throws StoreAccessException If the triplestore is not accessible
 	 * @throws OslcResourceException If the AutomationPlan to be created is missing some properties or is invalid
 	 */
-    public static AutomationPlan createAutomationPlan(final AutomationPlan aResource) throws StoreAccessException, OslcResourceException
+    public static AutomationPlan createAutomationPlan(final AutomationPlan aResource, AutomationPlanConf automationPlanConf) throws StoreAccessException, OslcResourceException
     {    	
     	AutomationPlan newResource = null;
     	
@@ -204,6 +208,18 @@ public class VeriFitAnalysisManager {
 			toolCommand.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
 			toolCommand.setDefaultValue("true");
 			newResource.addParameterDefinition(toolCommand);
+			
+			ParameterDefinition outputFilter = new ParameterDefinition();
+			outputFilter.setDescription("Use this parameter to select which output filter/parser should be used to process"
+					+ "Contributions of this Automation Request. AllowedValues are loaded based on defined PluginParsers.");
+			outputFilter.setName("outputFilter");
+			outputFilter.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
+			outputFilter.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+			outputFilter.setDefaultValue("default");
+			for (String parserName : automationPlanConf.getParsers().keySet()) {	// set alloweValues based on defined parsers
+				outputFilter.addAllowedValue(parserName);
+			}
+			newResource.addParameterDefinition(outputFilter);
 
 			// persist in the triplestore
 	        Store store = storePool.getStore();
@@ -488,8 +504,9 @@ public class VeriFitAnalysisManager {
 		}
         
     	// create AutomationPlans
-		try {
-			AutomationPlanLoading.loadAutomationPlans();
+		AutomationPlanConfManager autoPlanManager = AutomationPlanConfManager.getInstance();
+        try {
+        	autoPlanManager.initializeAutomationPlans();
 		} catch (Exception e) {
 			log.error("Adapter initialization: Loading AutomationPlans: " + e.getMessage());
 			System.exit(1);

@@ -24,8 +24,13 @@ public interface IParser {
 	 * 
 	 * @param inoutContributions	Each element of the list represents one output contribution (e.g. stdout or a log file).
 	 * 								Expected map entries are "name", "value", "description", "fileURI" and "valueType".
-	 * @return The same list as the one that was passed as input. Can be modified by adding new list elements or removing/modifying existing ones.
 	 */
-	public List<Map<String,String>> parse(List<Map<String,String>> inoutContributions);
+	public void parse(List<Map<String,String>> inoutContributions);
+
+	/**
+	 * Every parser needs a name that is unique per tool (only one of each name for each AutomationPlan)
+	 * @return
+	 */
+	public String getName();
 	
 }

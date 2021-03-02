@@ -19,9 +19,9 @@ import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 public class AddAllNonBinaryFileValues extends DefaultParser {
 
 	@Override
-	public List<Map<String, String>> parse(List<Map<String, String>> inputContributions) {
+	public void parse(List<Map<String, String>> inoutContributions) {
 
-		for (Map<String, String> contrib : inputContributions)
+		for (Map<String, String> contrib : inoutContributions)
 		{
 			String fileURI = contrib.get("fileURI");
 			if (fileURI != null // if is file
@@ -34,7 +34,10 @@ public class AddAllNonBinaryFileValues extends DefaultParser {
 				}
 			}	
 		}
-		
-		return inputContributions;
+	}
+
+	@Override
+	public String getName() {
+		return "addAllNonBinaryFileValues";
 	}
 }

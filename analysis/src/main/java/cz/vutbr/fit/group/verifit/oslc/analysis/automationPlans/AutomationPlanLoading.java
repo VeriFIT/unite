@@ -25,6 +25,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import static cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.PredefinedAutomationPlanDefinition.getDummyAutomationPlanConf;
@@ -32,29 +36,41 @@ import static cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.Predefine
 
 public class AutomationPlanLoading {
 
-    private static final Logger log = LoggerFactory.getLogger(VeriFitAnalysisManager.class);
+	private final Map<String,AutomationPlan> automationPlans; // AutomationPlans indexed by their IDs
+	private final File autoPlansDefPath;
+    private final Logger log = LoggerFactory.getLogger(VeriFitAnalysisManager.class);
     
-    /**
+    public AutomationPlanLoading(File autoPlansDefPath) {
+		this.autoPlansDefPath = autoPlansDefPath;
+		this.automationPlans = new HashMap<String,AutomationPlan>();
+	}
+
+	/**
+	 * Loads all AutomationPlans defined in the "autoPlansDefPath" directory.
+	 * Does not persist them in the triplestore! (persistAutomationPlans does that)
      * Each Automation Plan is defined by an .rdf file and one .properties file of the same name.
      * The .rdf file holds the base of the Automation Plan resource and the .properties file specifies other
      * configuration (e.g. path to tool executable etc.)
      * @throws StoreAccessException When there was an error accessing the triplestore
      * @throws Exception When there was a loading error 
+     * @return Collection of loaded AutomationPlan configurations
      */
-    public static void loadAutomationPlans() throws StoreAccessException, Exception
+    public Collection<AutomationPlanConf> loadAutomationPlans() throws Exception
     {
-        // create the predefined AutomationPlans from the source code
-        createPredefinedAutomationPlans();
-
+    	Collection<AutomationPlanConf> autoPlanConfs = new ArrayList<AutomationPlanConf>();
+    	
+        // load the predefined AutomationPlans from the source code
+    	AutomationPlanConf predefConf = loadPredefinedAutomationPlans();
+    	autoPlanConfs.add(predefConf);
+    	
         // load automation plans one by one from the user configuration
-        File[] autoPlansDefFiles = findAutomationPlanDefinitionFiles();
+        File[] autoPlansDefFiles = findAutomationPlanDefinitionFiles(this.autoPlansDefPath);
         if (autoPlansDefFiles == null)
         {
             log.warn("Loading AutomationPlans: Did not find any AutomationPlan definitions in "
-                + VeriFitAnalysisProperties.AUTOPLANS_DEF_PATH
+                + autoPlansDefPath.getPath()
                 + "\nAutomationPlans need to be created for your analysis tools."
                 + "Have a look at the ExampleTool.rdf and ExampleTool.properties files.");
-  
         }
         else {
             for (File autoPlanDef : autoPlansDefFiles)
@@ -62,12 +78,34 @@ public class AutomationPlanLoading {
                 if (autoPlanDef.getName().equals("ExampleTool.rdf"))
                     continue; // skip the example
                 else
-                	loadOneAutomationPlan(autoPlanDef);
+                {
+                	AutomationPlanConf c = loadOneAutomationPlan(autoPlanDef);
+                	autoPlanConfs.add(c);
+                }
             }
         }
+
+        return autoPlanConfs;
     }
-    
-    private static void loadOneAutomationPlan(File autoPlanDef) throws StoreAccessException,  Exception
+
+    /**
+     * Saves all currently loaded automation plans into the triplestore
+     * @param automationPlanConfigurations 
+     * @throws StoreAccessException
+     * @throws OslcResourceException
+     */
+    public void persistAutomationPlans(Map<String, AutomationPlanConf> automationPlanConfigurations) throws StoreAccessException, OslcResourceException
+    {        
+    	for (AutomationPlan autoPlan : this.automationPlans.values())
+	        // create the Automation Plan
+	        try {
+	        	autoPlan = VeriFitAnalysisManager.createAutomationPlan(autoPlan, automationPlanConfigurations.get(autoPlan.getIdentifier()));
+	        } catch (OslcResourceException e) {
+	        	throw new OslcResourceException("Failed to create Automation Plan: " + e.getMessage());
+        }
+	}
+
+    private AutomationPlanConf loadOneAutomationPlan(File autoPlanDef) throws Exception
     {
         // load the matching properties file
 
@@ -82,21 +120,12 @@ public class AutomationPlanLoading {
         // load the .properties file
         String autoPlanPropsName = autoPlanDef.getName().replace(".rdf", ".properties");
         File autoPlanPropsFile = autoPlanDef.toPath().getParent().resolve(autoPlanPropsName).toFile();
-        AutomationPlanConf newAutoPlanConf = loadAutomationPlanPropertiesConfiguration(autoPlanPropsFile);
-
-        // create the Automation Plan
-        try {
-            newAutoPlan = VeriFitAnalysisManager.createAutomationPlan(newAutoPlan);	//// commitment point
-        } catch (OslcResourceException e) {
-        	throw new Exception("Failed to create Automation Plan: " + e.getMessage());
-        }
+        AutomationPlanConf newAutoPlanConf = loadAutomationPlanPropertiesConfiguration(newAutoPlan.getIdentifier(), autoPlanPropsFile);
         
-        // save the properties
-        AutomationPlanConfManager autoPlanConfManager = AutomationPlanConfManager.getInstance();
-        autoPlanConfManager.addAutoPlanConf(
-                newAutoPlan.getIdentifier(),
-                newAutoPlanConf
-                );
+        // save the AutomationPlan in the local Map to persist later
+        this.automationPlans.put(newAutoPlan.getIdentifier(), newAutoPlan);
+
+        return newAutoPlanConf;
     }
     
     /**
@@ -105,7 +134,7 @@ public class AutomationPlanLoading {
      * @return Loaded AutomationPlan
      * @throws Exception If anything goes wrong (file error, parse error)
      */
-    private static AutomationPlan loadAutomationPlanRdfConfiguration(File autoPlanDefFile) throws Exception
+    private AutomationPlan loadAutomationPlanRdfConfiguration(File autoPlanDefFile) throws Exception
     {
         AutomationPlan[] parsedResources = new AutomationPlan[0];
         try {
@@ -127,11 +156,12 @@ public class AutomationPlanLoading {
     
     /**
      * Loads AutomationPlan properties out of a .properties file
+     * @param autoPlanId 
      * @param autoPlanPropsFile
      * @return AutomationPlanConf object with the loaded properties
      * @throws Exception If anything goes wrong (file error, parse error, property missing)
      */
-    private static AutomationPlanConfManager.AutomationPlanConf loadAutomationPlanPropertiesConfiguration(File autoPlanPropsFile) throws Exception
+    private AutomationPlanConf loadAutomationPlanPropertiesConfiguration(String autoPlanId, File autoPlanPropsFile) throws Exception
     {
     	// Open .the properties file
         Properties autoPlanProps = new Properties();
@@ -154,7 +184,8 @@ public class AutomationPlanLoading {
         Boolean OneInstanceOnly = Boolean.parseBoolean(autoPlanProps.getProperty("OneInstanceOnly"));
         OneInstanceOnly = (OneInstanceOnly == null ? false : OneInstanceOnly); // default value
         
-        return new AutomationPlanConfManager.AutomationPlanConf(
+        return new AutomationPlanConf(
+        		autoPlanId,
                 toolLaunchCommand,
                 toolSpecificArgs,
                 OneInstanceOnly
@@ -163,34 +194,27 @@ public class AutomationPlanLoading {
 
     /**
      * Creates all the predefined AutomationPlans making them available in the adapter catalog
+     * @return 
      * @throws StoreAccessException 
-     * @throws Exception When the predefined AutomationPlan was not defined properly (should not happen)
+     * @throws OslcResourceException When the predefined AutomationPlan was not defined properly (should not happen)
      */
-    private static void createPredefinedAutomationPlans() throws StoreAccessException, Exception
+    private AutomationPlanConf loadPredefinedAutomationPlans()
     {
-        try {
-            // create the dummy tool AutoPlan (independent of xml config)
-            VeriFitAnalysisManager.createAutomationPlan(PredefinedAutomationPlanDefinition.getDummyAutomationPlanDefinition());
+        // load the dummy tool AutoPlan (independent of xml config)
+    	AutomationPlan dummyAutoPlan = PredefinedAutomationPlanDefinition.getDummyAutomationPlanDefinition();
+    	this.automationPlans.put(dummyAutoPlan.getIdentifier(), dummyAutoPlan);
 
-            // save the properties
-            AutomationPlanConfManager.getInstance()
-                    .addAutoPlanConf(
-                        getDummyAutomationPlanDefinition().getIdentifier(),
-                        getDummyAutomationPlanConf()
-                    );
-
-        } catch (OslcResourceException e) {
-            throw new Exception("Failed to create dummy tool automation plan" + e.getMessage());
-        }
+        return getDummyAutomationPlanConf();
     }
 
     /**
      * Finds all .rdf files in the AutomationPlan definitions directory
+     * @param inFolder	Folder to search in
      * @return Collection of .rdf files
      */
-    private static File[] findAutomationPlanDefinitionFiles()
+    private File[] findAutomationPlanDefinitionFiles(File inFolder)
     {
-        File autoPlansDefFolder = new File(VeriFitAnalysisProperties.AUTOPLANS_DEF_PATH);
+        File autoPlansDefFolder = inFolder;
         File[] autoPlanDefFiles = autoPlansDefFolder.listFiles(
                 (dir, name) -> name.endsWith(".rdf")
             );

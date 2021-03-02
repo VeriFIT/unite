@@ -16,14 +16,19 @@ import java.util.Map;
 public class RemoveAllFileValuesParser implements IParser {
 
 	@Override
-	public List<Map<String, String>> parse(List<Map<String, String>> inputContributions) {
+	public void parse(List<Map<String, String>> inoutContributions) {
 
-		for (Map<String, String> contrib : inputContributions)
+		for (Map<String, String> contrib : inoutContributions)
 		{
 			if (contrib.get("fileURI") != null) // if is file
 				contrib.remove("value");
 		}
-		
-		return inputContributions;
 	}
+
+	@Override
+	public String getName() {
+		return "removeAllFileValues";
+	}
+	
+	
 }

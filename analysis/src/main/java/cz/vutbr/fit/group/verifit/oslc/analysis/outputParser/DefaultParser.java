@@ -25,11 +25,10 @@ import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 public class DefaultParser implements IParser {
 
 	@Override
-	public List<Map<String, String>> parse(List<Map<String, String>> inputContributions) {
+	public void parse(List<Map<String, String>> inoutContributions) {
 		
-		inputContributions = new AddAllNonBinaryFileValues().parse(inputContributions);
-		
-		return inputContributions;
+		new AddAllNonBinaryFileValues().parse(inoutContributions);
+
 	}
 
 
@@ -37,5 +36,11 @@ public class DefaultParser implements IParser {
 		String filePath = Utils.decodeFilePathFromId(Utils.getResourceIdFromUri(fileURI));
 		byte [] fileContents = Files.readAllBytes(FileSystems.getDefault().getPath(filePath));
 		return new String(fileContents);
+	}
+
+
+	@Override
+	public String getName() {
+		return "default";
 	}
 }

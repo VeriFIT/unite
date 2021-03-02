@@ -18,19 +18,45 @@ import cz.vutbr.fit.group.verifit.jsem.IExtension;
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.IParser;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 
+
+/**
+ * Use this class as a Template for creating your own parsers.
+ * See the IParser interface for more info.
+ */
 public class ExamplePluginParser implements IParser, IExtension {
+	
+	/**
+	 * TEMPLATE TODO
+	 * Make sure to change this value when creating your own filter/parser.
+	 * Names have to be unique per AutomationPlan (each AutomationPlan can only have uniquely named filters/parsers associated with it)
+	 */
+	final String name = "example";
 
-	public List<Map<String, String>> parse(List<Map<String, String>> inoutContributions) {
+	public void parse(List<Map<String, String>> inoutContributions) {
 
+		/**
+		 *  TEMPLATE TODO
+		 *  do anything you want with the Contributions 
+		 */
+		
+		/**
+		 * Example below
+		 */
+		
+		// delete all current contributions
 		inoutContributions.clear();
 		
+		// and create a single new one instead
 		Map<String, String> contrib = new HashMap<String, String>();
 		contrib.put("name", "test name");
 		contrib.put("value", "test value");
 		contrib.put("description", "This contribution was parserd by the TestPluginParser");
 		contrib.put("valueType", OslcValues.OSLC_VAL_TYPE_STRING.getValue().toString());
 		inoutContributions.add(contrib);
-		
-		return inoutContributions;
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 }
