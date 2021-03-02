@@ -12,6 +12,7 @@ package cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A singleton class responsible for holding AutomationPlan configuration properties that are not included in the
@@ -40,6 +41,11 @@ public class AutomationPlanConfManager {
         return this.automationPlanConfigurations.get(identifier);
     }
 
+    public Set<String> getAllAutoPlanIds()
+    {
+        return this.automationPlanConfigurations.keySet();
+    }
+    
     public void addAutoPlanConf(String identifier, AutomationPlanConf conf)
     {
         this.automationPlanConfigurations.put(identifier, conf);

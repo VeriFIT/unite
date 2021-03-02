@@ -112,6 +112,7 @@ public class VeriFitAnalysisProperties
 	 */
 	public static final String PROPERTIES_PATH = "./VeriFitAnalysis.properties";
 	public static final String AUTOPLANS_DEF_PATH = "./AnalysisToolDefinitions";
+	public static final String PLUGIN_PARSER_CONF_PATH = "./PluginParserConfiguration";
 
 	public static String ADAPTER_HOST;
 	public static String ADAPTER_PORT;

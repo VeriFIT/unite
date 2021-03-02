@@ -66,6 +66,13 @@
 			<artifactId>SharedResources</artifactId>
 			<version>0.0.1-SNAPSHOT</version>  
 		</dependency>  
+		
+        <!-- jSEM for plugins -->
+		<dependency>  
+			<groupId>cz.vutbr.fit.group.verifit.jsem</groupId>  
+			<artifactId>jsem</artifactId>
+			<version>0.2.0.qualifier</version>
+		</dependency>  
         
         <!-- End of user code
         -->
@@ -221,6 +228,27 @@
 			    </configuration>
 			</plugin>
 			
+			<!-- install jSEM .jar -->
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-install-plugin</artifactId>
+			    <version>2.5.2</version>
+			    <executions>
+			        <execution>
+			            <phase>initialize</phase>
+			            <goals>
+			                <goal>install-file</goal>
+			            </goals>
+			            <configuration>
+			                <file>../lib/cz.vutbr.fit.group.verifit.jsem_0.2.0.202103021435.jar</file>
+							<groupId>cz.vutbr.fit.group.verifit.jsem</groupId>  
+							<artifactId>jsem</artifactId>
+							<version>0.2.0.qualifier</version>
+			                <packaging>jar</packaging>
+			            </configuration>
+			        </execution>
+			    </executions>
+			</plugin>
             <!-- End of user code
             -->
             <plugin>

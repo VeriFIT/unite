@@ -1,4 +1,5 @@
 ### v1.5.0
+- added jSEM as a .jar file to get plugin output parsers/filters
 - the root directory is now an Eclipse project for hierarchical view
 
 ### v1.4.0

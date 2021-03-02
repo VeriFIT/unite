@@ -22,10 +22,10 @@ public interface IParser {
 	 * without any modifications. A proper/advanced parser can remove or modify contributions, or create new contributions
 	 * based on information obtained from the original ones. 
 	 * 
-	 * @param inputContributions	Each element of the list represents one output contribution (e.g. stdout or a log file).
+	 * @param inoutContributions	Each element of the list represents one output contribution (e.g. stdout or a log file).
 	 * 								Expected map entries are "name", "value", "description", "fileURI" and "valueType".
 	 * @return The same list as the one that was passed as input. Can be modified by adding new list elements or removing/modifying existing ones.
 	 */
-	public List<Map<String,String>> parse(List<Map<String,String>> inputContributions);
+	public List<Map<String,String>> parse(List<Map<String,String>> inoutContributions);
 	
 }
