@@ -8,10 +8,12 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser;
+package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.parsers;
 
 import java.util.List;
 import java.util.Map;
+
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.IParser;
 
 public class RemoveAllFileValuesParser implements IParser {
 

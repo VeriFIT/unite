@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser;
+package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.parsers;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.IParser;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
 /**
@@ -30,14 +31,6 @@ public class DefaultParser implements IParser {
 		new AddAllNonBinaryFileValues().parse(inoutContributions);
 
 	}
-
-
-	protected String loadFileContents(String fileURI) throws IOException {
-		String filePath = Utils.decodeFilePathFromId(Utils.getResourceIdFromUri(fileURI));
-		byte [] fileContents = Files.readAllBytes(FileSystems.getDefault().getPath(filePath));
-		return new String(fileContents);
-	}
-
 
 	@Override
 	public String getName() {

@@ -8,15 +8,16 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser;
+package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.parsers;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.ParserUtils;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 
-public class AddAllNonBinaryFileValues extends DefaultParser {
+public class AddStdoutAndStderrValues extends DefaultParser {
 
 	@Override
 	public void parse(List<Map<String, String>> inoutContributions) {
@@ -24,11 +25,11 @@ public class AddAllNonBinaryFileValues extends DefaultParser {
 		for (Map<String, String> contrib : inoutContributions)
 		{
 			String fileURI = contrib.get("fileURI");
-			if (fileURI != null // if is file
-				&& contrib.get("valueType") != OslcValues.OSLC_VAL_TYPE_BASE64BINARY.getValue().toString()) // and is not binary
+			String title = contrib.get("title");
+			if (title.equals("stdout") || title.equals("stderr"))
 			{
 				try {
-					contrib.put("value", loadFileContents(fileURI));
+					contrib.put("value", ParserUtils.loadContentsOfFileUriFile(fileURI));
 				} catch (IOException e) {
 					contrib.put("value", "Failed to load contents of this file: " + e.getMessage());
 				}
@@ -38,6 +39,6 @@ public class AddAllNonBinaryFileValues extends DefaultParser {
 
 	@Override
 	public String getName() {
-		return "addAllNonBinaryFileValues";
+		return "addStdoutAndStderrValues";
 	}
 }

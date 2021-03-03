@@ -16,8 +16,15 @@ import java.util.Map;
 
 import cz.vutbr.fit.group.verifit.jsem.IExtension;
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.IParser;
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 
+
+import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues; // use this for defined oslc value types
+
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.ParserUtils; // use this for helper utility functions
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.parsers.AddAllNonBinaryFileValues;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.parsers.AddStdoutAndStderrValues;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.parsers.DefaultParser;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.parsers.RemoveAllFileValuesParser;
 
 /**
  * Use this class as a Template for creating your own parsers.
@@ -48,7 +55,7 @@ public class ExamplePluginParser implements IParser, IExtension {
 		
 		// and create a single new one instead
 		Map<String, String> contrib = new HashMap<String, String>();
-		contrib.put("name", "test name");
+		contrib.put("title", "test name");
 		contrib.put("value", "test value");
 		contrib.put("description", "This contribution was parserd by the TestPluginParser");
 		contrib.put("valueType", OslcValues.OSLC_VAL_TYPE_STRING.getValue().toString());

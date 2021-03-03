@@ -33,6 +33,8 @@ import cz.vutbr.fit.group.verifit.jsem.IExtension;
 import cz.vutbr.fit.group.verifit.jsem.IExtensionWithInfo;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager.AutomationPlanConf;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.parsers.DefaultParser;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.parsers.RemoveAllFileValuesParser;
 import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
 
 
@@ -112,7 +114,7 @@ public final class ParserManager {
     	for (Contribution contrib : outputContributions)
     	{
     		Map<String,String> newMap = new HashMap<String,String>();
-    		newMap.put("name", contrib.getTitle());
+    		newMap.put("title", contrib.getTitle());
     		newMap.put("value", contrib.getValue());
     		if (contrib.getFileURI() != null)
     			newMap.put("fileURI", contrib.getFileURI().toString());
@@ -131,10 +133,10 @@ public final class ParserManager {
     	Set<Contribution> parsedContributions = new HashSet<Contribution>();
     	for (Map<String,String> mapContrib : contributionsForParser)
     	{
-    		String name = mapContrib.get("name");
-    		if (name == null)
+    		String title = mapContrib.get("title");
+    		if (title == null)
     		{
-    			System.out.println("WARNING: Output of contribution parser - name missing");
+    			System.out.println("WARNING: Output of contribution parser - title missing");
     		}
     		String value = mapContrib.get("value");
 			String description = mapContrib.get("description");
@@ -153,7 +155,7 @@ public final class ParserManager {
     		// create new contribution base on the Map element
 			try {
 				Contribution newContrib = new Contribution();
-				newContrib.setTitle(name);
+				newContrib.setTitle(title);
 				newContrib.setValue(value);
 				newContrib.setDescription(description);
 				newContrib.setFileURI((fileURI != null ? new URI(fileURI) : null));
