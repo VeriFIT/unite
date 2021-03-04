@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ##########################
 # Copyright (C) 2020 Ondřej Vašíček <ondrej.vasicek.0@gmail.com>, <xvasic25@stud.fit.vutbr.cz>
@@ -37,9 +37,9 @@ print_help() {
     exit 0
 }
 
-# $1 name of the invalid arg
+# $1 ... name of the invalid arg
 invalid_arg() {
-    echo -e "Invalid argument: $1\n"
+    echo -e "\n   Invalid argument: $1\n"
     echo "$USAGE"
     exit 1
 }
@@ -107,13 +107,13 @@ checkConfFiles()
 main () {
     # process arguments
     unset ARG_TAIL ARG_BUILD
-    while getopts 'tbh' arg
+    for arg in "$@"
     do
         case $arg in
-            t) ARG_TAIL=true ;;
-            b) ARG_BUILD=true ;;
-            h) print_help ;;
-            *) invalid_arg $arg;;
+            -t) ARG_TAIL=true ; shift ;;
+            -b) ARG_BUILD=true ; shift ;;
+            -h) print_help ; shift ;;
+            *) invalid_arg "$arg" ;;
         esac
     done
 
@@ -121,10 +121,10 @@ main () {
     checkConfFiles
 
     # build first if requested by args
-    if [ -n "$ARG_BUILD"]; then
-        echo -e "Running build.sh first"
+    if [ -n "$ARG_BUILD" ]; then
+        echo -e "\nRunning build.sh first"
         $ROOTDIR/build.sh
-        if [ $? -ne 0]; then
+        if [ $? -ne 0 ]; then
             echo -e "Build failed. Aborting start.\n"
             exit $?
         fi
@@ -159,9 +159,9 @@ main () {
 
     # open new terminals that tail the log files and record their PIDs to kill later
     if [ -n "$ARG_TAIL" ]; then
-        gnome-terminal --title="tail: Triplestore Log" -- /bin/bash -c "tail -f $ROOTDIR/logs/../logs/../logs/triplestore_$CURTIME.log" # funny path /logs/../logs/../logs/ to avoid killing unwanted tail commands 
-        gnome-terminal --title="tail: Compilation Log" -- /bin/bash -c "tail -f $ROOTDIR/logs/../logs/../logs/compilation_$CURTIME.log"
-        gnome-terminal --title="tail: Analysis Log" -- /bin/bash -c "tail -f $ROOTDIR/logs/../logs/../logs/analysis_$CURTIME.log"
+        gnome-terminal --title="tail: Triplestore Log (feel free to close this window)" -- /bin/bash -c "tail -f $ROOTDIR/logs/../logs/../logs/triplestore_$CURTIME.log" # funny path /logs/../logs/../logs/ to avoid killing unwanted tail commands 
+        gnome-terminal --title="tail: Compilation Log (feel free to close this window)" -- /bin/bash -c "tail -f $ROOTDIR/logs/../logs/../logs/compilation_$CURTIME.log"
+        gnome-terminal --title="tail: Analysis Log (feel free to close this window)" -- /bin/bash -c "tail -f $ROOTDIR/logs/../logs/../logs/analysis_$CURTIME.log"
     fi
 
     # start the triplestore
