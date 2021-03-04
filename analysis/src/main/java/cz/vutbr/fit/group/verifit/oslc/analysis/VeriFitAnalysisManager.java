@@ -64,8 +64,8 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanCo
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanLoading;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationRequestExecution.SutAnalyse;
 import cz.vutbr.fit.group.verifit.oslc.analysis.clients.CompilationAdapterClient;
-import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.IParser;
-import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.ParserManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.IFilter;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.FilterManager;
 
 import java.util.Date;
 import java.util.Map;
@@ -133,7 +133,7 @@ public class VeriFitAnalysisManager {
 	/**
 	 * Creates an AutomationPlan resource with the specified properties, and stores in the Adapter's catalog.
 	 * @param aResource			The new resource will copy properties from the specified aResource.
-	 * @param automationPlanConf AutomationPlan configuration loaded from .properties files and with available parsers.
+	 * @param automationPlanConf AutomationPlan configuration loaded from .properties files and with available filters.
 	 * @return					The newly created resource. Or null if one of the required properties was missing.
 	 * @throws StoreAccessException If the triplestore is not accessible
 	 * @throws OslcResourceException If the AutomationPlan to be created is missing some properties or is invalid
@@ -210,14 +210,14 @@ public class VeriFitAnalysisManager {
 			newResource.addParameterDefinition(toolCommand);
 			
 			ParameterDefinition outputFilter = new ParameterDefinition();
-			outputFilter.setDescription("Use this parameter to select which output filter/parser should be used to process"
-					+ "Contributions of this Automation Request. AllowedValues are loaded based on defined PluginParsers.");
+			outputFilter.setDescription("Use this parameter to select which output filter should be used to process"
+					+ "Contributions of this Automation Request. AllowedValues are loaded based on defined PluginFilters.");
 			outputFilter.setName("outputFilter");
 			outputFilter.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			outputFilter.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 			outputFilter.setDefaultValue("default");
-			for (String parserName : automationPlanConf.getParsers().keySet()) {	// set alloweValues based on defined parsers
-				outputFilter.addAllowedValue(parserName);
+			for (String filterName : automationPlanConf.getFilters().keySet()) {	// set alloweValues based on defined filters
+				outputFilter.addAllowedValue(filterName);
 			}
 			newResource.addParameterDefinition(outputFilter);
 

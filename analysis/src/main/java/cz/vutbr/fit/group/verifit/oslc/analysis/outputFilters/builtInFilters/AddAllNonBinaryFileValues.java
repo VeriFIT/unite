@@ -8,16 +8,16 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.parsers;
+package cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.builtInFilters;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.ParserUtils;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.FilterUtils;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 
-public class AddStdoutAndStderrValues extends DefaultParser {
+public class AddAllNonBinaryFileValues extends DefaultFilter {
 
 	@Override
 	public void parse(List<Map<String, String>> inoutContributions) {
@@ -25,11 +25,11 @@ public class AddStdoutAndStderrValues extends DefaultParser {
 		for (Map<String, String> contrib : inoutContributions)
 		{
 			String fileURI = contrib.get("fileURI");
-			String title = contrib.get("title");
-			if (title.equals("stdout") || title.equals("stderr"))
+			if (fileURI != null // if is file
+				&& contrib.get("valueType") != OslcValues.OSLC_VAL_TYPE_BASE64BINARY.getValue().toString()) // and is not binary
 			{
 				try {
-					contrib.put("value", ParserUtils.loadContentsOfFileUriFile(fileURI));
+					contrib.put("value", FilterUtils.loadContentsOfFileUriFile(fileURI));
 				} catch (IOException e) {
 					contrib.put("value", "Failed to load contents of this file: " + e.getMessage());
 				}
@@ -39,6 +39,6 @@ public class AddStdoutAndStderrValues extends DefaultParser {
 
 	@Override
 	public String getName() {
-		return "addStdoutAndStderrValues";
+		return "addAllNonBinaryFileValues";
 	}
 }

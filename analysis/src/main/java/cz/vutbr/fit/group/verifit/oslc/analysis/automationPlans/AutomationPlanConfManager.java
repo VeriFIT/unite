@@ -20,8 +20,8 @@ import java.util.Set;
 
 import org.eclipse.lyo.store.StoreAccessException;
 
-import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.IParser;
-import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.ParserManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.IFilter;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.FilterManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
 
 /**
@@ -33,13 +33,13 @@ public class AutomationPlanConfManager {
     private static AutomationPlanConfManager INSTANCE;
 
     private AutomationPlanLoading autoPlanLoader;
-    private ParserManager parserManager;
+    private FilterManager filterManager;
     private Map<String, AutomationPlanConf> automationPlanConfigurations;
     
     private AutomationPlanConfManager() {
         this.automationPlanConfigurations = new HashMap<String, AutomationPlanConf>();
         this.autoPlanLoader = new AutomationPlanLoading(new File(VeriFitAnalysisProperties.AUTOPLANS_DEF_PATH));
-        this.parserManager = new ParserManager(Paths.get(VeriFitAnalysisProperties.PLUGIN_PARSER_CONF_PATH));
+        this.filterManager = new FilterManager(Paths.get(VeriFitAnalysisProperties.PLUGIN_FILTER_CONF_PATH));
     }
 
     public synchronized static AutomationPlanConfManager getInstance() {
@@ -53,7 +53,7 @@ public class AutomationPlanConfManager {
     public void initializeAutomationPlans() throws StoreAccessException, Exception
     {
     	Collection<AutomationPlanConf> autoPlanConfs = this.autoPlanLoader.loadAutomationPlans();
-    	this.parserManager.loadParsers(autoPlanConfs);
+    	this.filterManager.loadFilters(autoPlanConfs);
     	for (AutomationPlanConf conf : autoPlanConfs) {
     		this.automationPlanConfigurations.put(conf.getIdentifier(), conf);
     	}
@@ -80,14 +80,14 @@ public class AutomationPlanConfManager {
         private String launchCommand;
         private String toolSpecificArgs;
         private Boolean oneInstanceOnly;
-        private Map<String, IParser> parsers; 
+        private Map<String, IFilter> filters; 
 
         public AutomationPlanConf(String identifier, String launchCommand, String toolSpecificArgs, Boolean oneInstanceOnly) {
         	this.identifier = identifier;
             this.launchCommand = launchCommand;
             this.toolSpecificArgs = toolSpecificArgs;
             this.oneInstanceOnly = oneInstanceOnly;
-            this.parsers = new HashMap<String, IParser>();
+            this.filters = new HashMap<String, IFilter>();
         }
 
         public String getLaunchCommand() {
@@ -106,20 +106,20 @@ public class AutomationPlanConfManager {
             return identifier;
         }
 
-		public Map<String, IParser> getParsers() {
-			return parsers;
+		public Map<String, IFilter> getFilters() {
+			return filters;
 		}
 
-		public IParser getParser(String name) {
-			return parsers.get(name);
+		public IFilter getFilter(String name) {
+			return filters.get(name);
 		}
 		
-		public Boolean containsParser(String name) {
-			return parsers.containsKey(name);
+		public Boolean containsFilter(String name) {
+			return filters.containsKey(name);
 		}
 
-		public void putParser(String parserName, IParser parser) {
-			this.parsers.put(parserName, parser);
+		public void putFilter(String filterName, IFilter filter) {
+			this.filters.put(filterName, filter);
 		}
         
     }

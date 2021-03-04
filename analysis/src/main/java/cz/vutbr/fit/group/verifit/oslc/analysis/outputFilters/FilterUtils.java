@@ -1,4 +1,4 @@
-package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser;
+package cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -7,7 +7,7 @@ import java.nio.file.Path;
 
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
-public class ParserUtils {
+public class FilterUtils {
 
 
 	/**

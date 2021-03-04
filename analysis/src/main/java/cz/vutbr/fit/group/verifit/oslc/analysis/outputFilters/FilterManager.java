@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser;
+package cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters;
 
 import java.lang.reflect.Constructor;
 import java.net.URI;
@@ -33,84 +33,84 @@ import cz.vutbr.fit.group.verifit.jsem.IExtension;
 import cz.vutbr.fit.group.verifit.jsem.IExtensionWithInfo;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager.AutomationPlanConf;
-import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.parsers.DefaultParser;
-import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.parsers.RemoveAllFileValuesParser;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.builtInFilters.DefaultFilter;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.builtInFilters.RemoveAllFileValues;
 import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
 
 
-public final class ParserManager {
+public final class FilterManager {
     
-	private final Path parserConfDir;
+	private final Path filterConfDir;
 
-    public ParserManager(Path parserConfDir) {
-    	this.parserConfDir = parserConfDir;
+    public FilterManager(Path filterConfDir) {
+    	this.filterConfDir = filterConfDir;
     }
 
     /**
-     * Loads plugin parsers for each tool and adds them into the automationPlan's configuration
+     * Loads plugin filters for each tool and adds them into the automationPlan's configuration
      * @param automationPlanConfs An In/Out parameter
      */
-    public void loadParsers(Collection<AutomationPlanConf> automationPlanConfs) {
+    public void loadFilters(Collection<AutomationPlanConf> automationPlanConfs) {
     	
     	// initialize the ExtensionManager
     	ExtensionManager extMgr = new ExtensionManager();
     	extMgr.registerBuiltinExtensions();
     	extMgr.refreshExtensionInfoLoaders();
-    	extMgr.loadExtensionInfo(this.parserConfDir);
+    	extMgr.loadExtensionInfo(this.filterConfDir);
     	
-    	// load parsers for every Automation Plan
+    	// load filters for every Automation Plan
     	for (AutomationPlanConf conf : automationPlanConfs)
     	{
     		String id = conf.getIdentifier();
     		
-    		// add the default parsers to all autoPlans
-    		addDefaultParsers(conf);
+    		// add the default filters to all autoPlans
+    		addDefaultFilters(conf);
     		
-    		// load custom plugin parsers
-			// find all parser extensions for the given Automation Plan
+    		// load custom plugin filter
+			// find all filter extensions for the given Automation Plan
 			ExtensionInfoQuery query = new ExtensionInfoQuery();
-			query.contains("implements", IParser.class.getName());
+			query.contains("implements", IFilter.class.getName());
 			query.contains("tool", id);
 			List< IExtension > exts = extMgr.findExtension(query);
 			
-			// select a plugin parser for the given Automation Plan
+			// select a plugin filter for the given Automation Plan
 			if (exts.size() != 0)
 			{
 				for (IExtension ext : exts)
 				{
-					IParser pluginParser = (IParser) ext;
-					String pluginName = pluginParser.getName();
+					IFilter pluginFilter = (IFilter) ext;
+					String pluginName = pluginFilter.getName();
 					
-					if (conf.containsParser(pluginName))
-						System.out.println("Warning: Can not load plugin parser/filter \"" + pluginParser.getClass() + "\" for Automation Plan: \"" + id + "\"\n"
+					if (conf.containsFilter(pluginName))
+						System.out.println("Warning: Can not load plugin filter \"" + pluginFilter.getClass() + "\" for Automation Plan: \"" + id + "\"\n"
 								+ "   Name \"" + pluginName + "\" is already taken.");
 					else
-						conf.putParser(pluginName, pluginParser);					
+						conf.putFilter(pluginName, pluginFilter);					
 				}
 			}
 			else
 			{
 				// TODO future features
-				System.out.println("Info: No plugin filters/parsers found for Automation Plan: \"" + id + "\" - Only the default ones will be available");
+				System.out.println("Info: No plugin filters found for Automation Plan: \"" + id + "\" - Only the default ones will be available");
 			}
     	}
     }
     
-    private void addDefaultParsers(AutomationPlanConf conf) {
-		conf.putParser(new DefaultParser().getName(), new DefaultParser());
-		conf.putParser(new RemoveAllFileValuesParser().getName(), new RemoveAllFileValuesParser());
+    private void addDefaultFilters(AutomationPlanConf conf) {
+		conf.putFilter(new DefaultFilter().getName(), new DefaultFilter());
+		conf.putFilter(new RemoveAllFileValues().getName(), new RemoveAllFileValues());
 	}
 
 	/**
-     * Uses a plugin implemented parser to process contributions created by an analysis tool. Can modify or delete contributions 
+     * Uses a plugin implemented filter to process contributions created by an analysis tool. Can modify or delete contributions 
      * or even create new ones based on the original ones.
-     * @param parser				name of the parser to use
+     * @param filter				name of the filter to use
      * @param outputContributions	contributions produced by the tool
      */
-    public static Set<Contribution> parseContributionsForTool(IParser parser, Set<Contribution> outputContributions)
+    public static Set<Contribution> parseContributionsForTool(IFilter filter, Set<Contribution> outputContributions)
     {
-    	// prepare the parser input
-    	List<Map<String,String>> contributionsForParser = new LinkedList<Map<String,String>>();
+    	// prepare the filter input
+    	List<Map<String,String>> contributionsForFilter = new LinkedList<Map<String,String>>();
     	for (Contribution contrib : outputContributions)
     	{
     		Map<String,String> newMap = new HashMap<String,String>();
@@ -123,20 +123,20 @@ public final class ParserManager {
     		{
         		newMap.put("valueType", valueType.getValue().toString());
     		}
-    		contributionsForParser.add(newMap);
+    		contributionsForFilter.add(newMap);
     	}
     	
-    	// call the parser to process the contributions
-    	parser.parse(contributionsForParser);
+    	// call the filter to process the contributions
+    	filter.parse(contributionsForFilter);
     	
-    	// process the parser output
+    	// process the filter output
     	Set<Contribution> parsedContributions = new HashSet<Contribution>();
-    	for (Map<String,String> mapContrib : contributionsForParser)
+    	for (Map<String,String> mapContrib : contributionsForFilter)
     	{
     		String title = mapContrib.get("title");
     		if (title == null)
     		{
-    			System.out.println("WARNING: Output of contribution parser - title missing");
+    			System.out.println("WARNING: Output of contribution filter - title missing");
     		}
     		String value = mapContrib.get("value");
 			String description = mapContrib.get("description");
@@ -148,7 +148,7 @@ public final class ParserManager {
 				try {
 					setValueType.add(new Link(new URI(valueType)));
 				} catch (URISyntaxException e) {
-					System.out.println("WARNING: Output of contribution parser - invalid valueType: " + e.getMessage());
+					System.out.println("WARNING: Output of contribution filter - invalid valueType: " + e.getMessage());
 				}
 			}
     		

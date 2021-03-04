@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.parsers;
+package cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.builtInFilters;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -16,14 +16,14 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
-import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.IParser;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.IFilter;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
 /**
  * Leaves all non file contributions unchanged. Loads the entire contents of the stdout file, the stderr file,
  * and of all non-binary files as their contribution values. All binary file values will be set as empty.
  */
-public class DefaultParser implements IParser {
+public class DefaultFilter implements IFilter {
 
 	@Override
 	public void parse(List<Map<String, String>> inoutContributions) {

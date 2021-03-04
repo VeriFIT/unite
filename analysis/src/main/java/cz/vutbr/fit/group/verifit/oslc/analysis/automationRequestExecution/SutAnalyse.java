@@ -32,7 +32,7 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisResourcesFactory;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager.AutomationPlanConf;
-import cz.vutbr.fit.group.verifit.oslc.analysis.outputParser.ParserManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.FilterManager;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionParameter;
@@ -238,12 +238,12 @@ public class SutAnalyse extends RequestRunner
 				}
 			}
 			
-			// run the AutoResult contributions through a parser
-			Set<Contribution> parsedContributions = ParserManager.parseContributionsForTool(
-					autoPlanConf.getParser(outputFilter),
+			// run the AutoResult contributions through a filter
+			Set<Contribution> parsedContributions = FilterManager.parseContributionsForTool(
+					autoPlanConf.getFilter(outputFilter),
 					resAutoResult.getContribution());
 			resAutoResult.setContribution(parsedContributions);
-			statusMessage.setValue(statusMessage.getValue() + "Applied output parsers/filters\n");
+			statusMessage.setValue(statusMessage.getValue() + "Applied output filters\n");
 		}
 		
 		// update the AutoResult state and verdict, and AutoRequest state
