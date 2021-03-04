@@ -8,6 +8,12 @@
 # SPDX-License-Identifier: EPL-2.0
 ##########################
 
+param (
+    [switch]$t,
+    [switch]$h,
+    [switch]$b
+)
+
 # duration for polling (via curl)
 $SLEEP=1
 
@@ -17,8 +23,9 @@ $HELP="
    startup before both adapters, which is controled by polling
    the triplestore using curl until it responds.
 "
-$USAGE="   Usage: $PSCommandPath [-t|-h]
+$USAGE="   Usage: $PSCommandPath [-t|-h|-b]
       -t ... tail - Opens tail -f for each output log in new gnome-terminals.
+      -b ... build - Runs the build script first.
       -h ... help
 "
 
@@ -27,6 +34,22 @@ $ROOTDIR=$PSScriptRoot  # get the script directory
 cd $ROOTDIR             # move to the script directory
 
 $PIDS_TO_KILL=@()
+
+function print_help() {
+    echo "$HELP"
+    echo "$USAGE"
+    exit 0
+}
+
+# $1 name of the invalid arg
+function invalid_arg() {
+    param (
+        $1
+    )
+    echo "`n   Invalid argument: ${1} `n"
+    echo "$USAGE"
+    exit 1
+}
 
 # polls an address using curl until the request returns True (i.e. the address responds)
 # $1 ... URL for curl to poll
@@ -111,119 +134,110 @@ function checkForCtrlC () {
     }
 }
 
-$main = {
-    param (
-        $1
-    )
 
-    $tailFlag = $false
-    # process arguments
-    if ($args.length -ne 0) {
-        echo "Invalid arguments"
-        echo ""
-        echo "$USAGE"
-        cd $USRPATH
-        exit 1
-    } elseif (! $1) {
-        # all good
-    } elseif ("$1" -eq "-h") {
-        echo "$HELP"
-        echo "$USAGE"
-        cd $USRPATH
-        exit 0
-    } elseif ("$1" -eq "-t") {
-        $tailFlag = $true
-    } else {
-        echo "Invalid arguments"
-        echo ""
-        cd $USRPATH
-        echo "$USAGE"
-        exit 1
-    }
 
-    # make sure configuration files exist
-    checkConfFiles
+#
+# main
+#
+if ($args.length -ne 0) {
+    invalid_arg $args[0]
+}
+if ($h) {
+    print_help
+}
 
-    # get and output version
-    $VERSION=$(cat .\VERSION.md 2> $null)
-    echo ""
-    echo "########################################################"
-    echo "    OSLC Universal Analysis, $VERSION"
-    echo "########################################################"
-    echo ""
-    
-    # lookup triplestore config
-    $triplestore_host=$(cat sparql_triplestore/jetty-distribution/start.ini | Select-String -Pattern "^ *jetty.http.host=") -replace "^ *jetty.http.host=", "" -replace "/$", "" # removes final slash in case there is one (http://host/ vs http://host)
-    $triplestore_port=$(cat sparql_triplestore/jetty-distribution/start.ini | Select-String -Pattern "^ *jetty.http.port=") -replace "^ *jetty.http.port=", ""
-    $triplestore_url="http://${triplestore_host}:${triplestore_port}/fuseki/" # TODO prefix needs to be configurable for https
-    # lookup compilation adapter config
-    $compilation_host=$(cat compilation/VeriFitCompilation.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
-    $compilation_port=$(cat compilation/VeriFitCompilation.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
-    $compilation_url="${compilation_host}:${compilation_port}/compilation/"
-    ## lookup analysis adapter config
-    $analysis_host=$(cat analysis/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
-    $analysis_port=$(cat analysis/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
-    $analysis_url="${analysis_host}:${analysis_port}/analysis/"
-    
-    ## create log files and append headings
-    mkdir -Force $ROOTDIR/logs > $null
-    $CURTIME=$(date).ToString("yyyy-MM-dd_HH.mm.ss")
-    $CURTIME_FORLOG=$(date).ToString("yyyy-MM-dd_HH:mm:ss")
-    echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR/logs/triplestore_$CURTIME.log"
-    echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR/logs/compilation_$CURTIME.log"
-    echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR/logs/analysis_$CURTIME.log"
-    
-    # treat ctrl+c as input so that we can kill subprocesses (sleep and flush to properly flush input)
-    [Console]::TreatControlCAsInput = $True
-    Start-Sleep -Seconds 1
-    $Host.UI.RawUI.FlushInputBuffer()
 
-    # open new terminals that tail the log files and record their PIDs to kill later
-    if ($tailFlag)
-    {
-        $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Triplestore Log (feel free to close this window)'; Get-Content $ROOTDIR\logs\..\logs\..\logs\triplestore_$CURTIME.log -Wait -Tail 10" -passthru
-        $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
-        $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Compilation Log (feel free to close this window)'; Get-Content $ROOTDIR\logs\..\logs\..\logs\compilation_$CURTIME.log -Wait -Tail 10" -passthru
-        $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
-        $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Analysis Log (feel free to close this window)'; Get-Content $ROOTDIR\logs\..\logs\..\logs\analysis_$CURTIME.log -Wait -Tail 10" -passthru
-        $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
-    }
-    
-    # start the triplestore
-    echo "Starting the Triplestore"
-    cd sparql_triplestore
-    $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Triplestore'; ./run.ps1 >> $ROOTDIR/logs/triplestore_$CURTIME.log 2>&1" -passthru
-    $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
-    echo "Waiting for the Triplestore to finish startup"
-    curl_poll $triplestore_url
-    echo "Triplestore running`n"
-    
-    ## start the compilation adapter
-    echo "Starting the Compilation adapter"
-    cd ../compilation
-    $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; mvn jetty:run-exploded >> $ROOTDIR/logs/compilation_$CURTIME.log 2>&1" -passthru
-    $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
-    echo "Waiting for the Compilation adapter to finish startup"
-    curl_poll $compilation_url
-    echo "Compilation adapter running`n"
-    
-    # start the analysis adapter
-    echo "Starting the Analysis adapter"
-    cd ../analysis
-    $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; mvn jetty:run-exploded >> $ROOTDIR/logs/analysis_$CURTIME.log 2>&1" -passthru
-    $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
-    echo "Waiting for the Analysis adapter to finish startup"
-    curl_poll $analysis_url
-    echo "Analysis adapter running`n"
-    cd ..
+# make sure configuration files exist
+checkConfFiles
 
-    echo "Ready to go!"
-    echo "Use ctrl+c to exit..."
-
-    # loop to catch ctrl+c
-    While ($true) {
-        checkForCtrlC
+# build first if requested by args
+if ($b)
+{
+    echo "Running build.sh first"
+    .\build.ps1
+    if ( $LastExitCode -ne 0) {
+        echo "Build failed. Aborting start.`n"
+        exit $LastExitCode
     }
 }
 
-Invoke-Command -ScriptBlock $main -ArgumentList $args
+# get and output version
+$VERSION=$(cat .\VERSION.md 2> $null)
+echo ""
+echo "########################################################"
+echo "    OSLC Universal Analysis, $VERSION"
+echo "########################################################"
+echo ""
+
+# lookup triplestore config
+$triplestore_host=$(cat sparql_triplestore/jetty-distribution/start.ini | Select-String -Pattern "^ *jetty.http.host=") -replace "^ *jetty.http.host=", "" -replace "/$", "" # removes final slash in case there is one (http://host/ vs http://host)
+$triplestore_port=$(cat sparql_triplestore/jetty-distribution/start.ini | Select-String -Pattern "^ *jetty.http.port=") -replace "^ *jetty.http.port=", ""
+$triplestore_url="http://${triplestore_host}:${triplestore_port}/fuseki/" # TODO prefix needs to be configurable for https
+# lookup compilation adapter config
+$compilation_host=$(cat compilation/VeriFitCompilation.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
+$compilation_port=$(cat compilation/VeriFitCompilation.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
+$compilation_url="${compilation_host}:${compilation_port}/compilation/"
+## lookup analysis adapter config
+$analysis_host=$(cat analysis/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
+$analysis_port=$(cat analysis/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
+$analysis_url="${analysis_host}:${analysis_port}/analysis/"
+
+## create log files and append headings
+mkdir -Force $ROOTDIR/logs > $null
+$CURTIME=$(date).ToString("yyyy-MM-dd_HH.mm.ss")
+$CURTIME_FORLOG=$(date).ToString("yyyy-MM-dd_HH:mm:ss")
+echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR/logs/triplestore_$CURTIME.log"
+echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR/logs/compilation_$CURTIME.log"
+echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR/logs/analysis_$CURTIME.log"
+
+# treat ctrl+c as input so that we can kill subprocesses (sleep and flush to properly flush input)
+[Console]::TreatControlCAsInput = $True
+Start-Sleep -Seconds 1
+$Host.UI.RawUI.FlushInputBuffer()
+
+# open new terminals that tail the log files and record their PIDs to kill later
+if ($t)
+{
+    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Triplestore Log (feel free to close this window)'; Get-Content $ROOTDIR\logs\..\logs\..\logs\triplestore_$CURTIME.log -Wait -Tail 10" -passthru
+    $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
+    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Compilation Log (feel free to close this window)'; Get-Content $ROOTDIR\logs\..\logs\..\logs\compilation_$CURTIME.log -Wait -Tail 10" -passthru
+    $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
+    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Analysis Log (feel free to close this window)'; Get-Content $ROOTDIR\logs\..\logs\..\logs\analysis_$CURTIME.log -Wait -Tail 10" -passthru
+    $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
+}
+
+# start the triplestore
+echo "Starting the Triplestore"
+cd sparql_triplestore
+$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Triplestore'; ./run.ps1 >> $ROOTDIR/logs/triplestore_$CURTIME.log 2>&1" -passthru
+$PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
+echo "Waiting for the Triplestore to finish startup"
+curl_poll $triplestore_url
+echo "Triplestore running`n"
+
+## start the compilation adapter
+echo "Starting the Compilation adapter"
+cd ../compilation
+$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; mvn jetty:run-exploded >> $ROOTDIR/logs/compilation_$CURTIME.log 2>&1" -passthru
+$PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
+echo "Waiting for the Compilation adapter to finish startup"
+curl_poll $compilation_url
+echo "Compilation adapter running`n"
+
+# start the analysis adapter
+echo "Starting the Analysis adapter"
+cd ../analysis
+$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; mvn jetty:run-exploded >> $ROOTDIR/logs/analysis_$CURTIME.log 2>&1" -passthru
+$PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
+echo "Waiting for the Analysis adapter to finish startup"
+curl_poll $analysis_url
+echo "Analysis adapter running`n"
+cd ..
+
+echo "Ready to go!"
+echo "Use ctrl+c to exit..."
+
+# loop to catch ctrl+c
+While ($true) {
+    checkForCtrlC
+}
