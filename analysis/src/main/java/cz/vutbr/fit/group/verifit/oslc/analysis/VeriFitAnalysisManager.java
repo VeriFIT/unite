@@ -310,10 +310,9 @@ public class VeriFitAnalysisManager {
 	 */
     public static File getContributionFile(String contributionId)
     {
-    	// decode slashes in the file path 
-		String filePath = Utils.decodeFilePathFromId(contributionId);
+		Contribution c = getContribution(null, contributionId);
 		
-		return new File(filePath);
+		return new File(c.getFilePath());
     }
     
     /**
@@ -325,12 +324,11 @@ public class VeriFitAnalysisManager {
      */
     public static void updateContributionFile(InputStream fileInputStream, String contributionId) throws OslcResourceException
     {  
-    	// decode slashes in the file path
-		String filePath = Utils.decodeFilePathFromId(contributionId);
+		Contribution c = getContribution(null, contributionId);
 		
         // write the file - path is getPath and content is getValue
 		try {
-			FileUtils.copyInputStreamToFile(fileInputStream, new File(filePath));
+			FileUtils.copyInputStreamToFile(fileInputStream, new File(c.getFilePath()));
 		}
 		catch (IOException e)
 		{
@@ -655,6 +653,31 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code queryAutomationRequests
+        // End of user code
+        return resources;
+    }
+    public static List<Contribution> queryContributions(HttpServletRequest httpServletRequest, String where, String prefix, int page, int limit)
+    {
+        List<Contribution> resources = null;
+        
+        // Start of user code queryContributions_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        try {
+            resources = new ArrayList<Contribution>(store.getResources(storePool.getDefaultNamedGraphUri(), Contribution.class, prefix, where, "", limit+1, page*limit));
+        } catch (StoreAccessException | ModelUnmarshallingException e) {
+            log.error("Failed to query resources, with where-string '" + where + "'", e);
+            throw new WebApplicationException("Failed to query resources, with where-string '" + where + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        // Start of user code queryContributions_storeFinalize
+        // End of user code
+        
+        // Start of user code queryContributions
+        // TODO Implement code to return a set of resources.
+        // An empty List should imply that no resources where found.
+        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code
         return resources;
     }
@@ -1103,9 +1126,6 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code getContribution
-        // TODO Implement code to return a resource
-        // return 'null' if the resource was not found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code
         return aResource;
     }

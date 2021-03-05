@@ -24,12 +24,12 @@ public class AddStdoutAndStderrValues extends DefaultFilter {
 
 		for (Map<String, String> contrib : inoutContributions)
 		{
-			String fileURI = contrib.get("fileURI");
+			String filePath = contrib.get("filePath");
 			String title = contrib.get("title");
 			if (title.equals("stdout") || title.equals("stderr"))
 			{
 				try {
-					contrib.put("value", FilterUtils.loadContentsOfFileUriFile(fileURI));
+					contrib.put("value", FilterUtils.loadContentsOfFilePathFile(filePath));
 				} catch (IOException e) {
 					contrib.put("value", "Failed to load contents of this file: " + e.getMessage());
 				}

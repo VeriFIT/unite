@@ -120,8 +120,7 @@ public final class FilterManager {
     		newMap.put("id", Utils.getResourceIdFromUri(contrib.getAbout()));
     		newMap.put("title", contrib.getTitle());
     		newMap.put("value", contrib.getValue());
-    		if (contrib.getFileURI() != null)
-    			newMap.put("fileURI", contrib.getFileURI().toString());
+			newMap.put("filePath", contrib.getFilePath());
     		newMap.put("description", contrib.getDescription());
     		for (Link valueType : contrib.getValueType())	// should contain only one --> iterate anyway just in case, last one overwrites others TODO 
     		{
@@ -144,7 +143,7 @@ public final class FilterManager {
     		}
     		String value = mapContrib.get("value");
 			String description = mapContrib.get("description");
-    		String fileURI = mapContrib.get("fileURI");
+    		String filePath = mapContrib.get("filePath");
 			String valueType = mapContrib.get("valueType");
 			Set<Link> setValueType = new HashSet<Link>();
     		if (valueType != null)
@@ -163,18 +162,13 @@ public final class FilterManager {
     		}
     		
     		// create new contribution base on the Map element
-			try {
-				Contribution newContrib = VeriFitAnalysisResourcesFactory.createContribution(prefixId + id);
-				newContrib.setTitle(title);
-				newContrib.setValue(value);
-				newContrib.setDescription(description);
-				newContrib.setFileURI((fileURI != null ? new URI(fileURI) : null));
-				newContrib.setValueType(setValueType);
-				filteredContributions.add(newContrib);
-			} catch (URISyntaxException e) {
-				// TODO should never happen
-				e.printStackTrace();
-			}
+			Contribution newContrib = VeriFitAnalysisResourcesFactory.createContribution(prefixId + id);
+			newContrib.setTitle(title);
+			newContrib.setValue(value);
+			newContrib.setDescription(description);
+			newContrib.setFilePath(filePath);
+			newContrib.setValueType(setValueType);
+			filteredContributions.add(newContrib);
     	}
     	
     	return filteredContributions;

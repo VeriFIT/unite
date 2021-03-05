@@ -23,7 +23,7 @@ public interface IFilter {
 	 * based on information obtained from the original ones. 
 	 * 
 	 * @param inoutContributions	Each element of the list represents one output contribution (e.g. stdout or a log file).
-	 * 								Expected map entries are "id", "title", "value", "valueType", "description", and "fileURI".
+	 * 								Expected map entries are "id", "title", "value", "valueType", "description", and "filePath".
 	 */
 	public void filter(List<Map<String,String>> inoutContributions);
 

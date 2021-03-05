@@ -162,7 +162,7 @@ public class SutAnalyse extends RequestRunner
 	    Link executionVerdict;
 		final Path SUTdirAsPath = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
 	    ExecutionResult analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), "_analysis_" + this.execAutoRequestId);
-		statusMessage.setValue(statusMessage.getValue() +  
+		statusMessage.setValue(statusMessage.getValue() +
 				"Executing: " + stringToExecute + "\n   as: " + analysisRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
 		if (analysisRes.exceptionThrown != null)
 		{
@@ -217,9 +217,9 @@ public class SutAnalyse extends RequestRunner
 			modifFiles.add(analysisRes.stderrFile);
 	    	
 	    	// add file URIs to standard output contributions and add them to the automation result
-	    	analysisStdout.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(analysisRes.stdoutFile.getPath()));
+	    	analysisStdout.setFilePath(analysisRes.stdoutFile.getPath());
 	    	resAutoResult.addContribution(analysisStdout);
-	    	analysisStderr.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(analysisRes.stderrFile.getPath()));
+	    	analysisStderr.setFilePath(analysisRes.stderrFile.getPath());
 			resAutoResult.addContribution(analysisStderr);
 	    	
 			// create a zip of all file contributions if needed
@@ -265,15 +265,14 @@ public class SutAnalyse extends RequestRunner
 
 
 	private Contribution zipAllFileContributions(Collection<File> modifFiles, String zipName, Path zipDir) throws IOException {
-		Contribution zipedContribs = VeriFitAnalysisResourcesFactory.createContribution(this.resAutoResultId + "-zipedOutputs");
+		Contribution zipedContribs = VeriFitAnalysisResourcesFactory.createContribution("zipedOutputs");
 		Path pathToZip = zipDir.resolve(zipName);
 
 		File newZipFile = Utils.zipFiles(modifFiles, zipDir, pathToZip);
 
-		String fileId = Utils.encodeFilePathAsId(newZipFile);
-		zipedContribs.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(fileId));
+		zipedContribs.setFilePath(newZipFile.getPath());
 		zipedContribs.setDescription("This is a ZIP of all other file contributions. "
-				+ "To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property."); // TODO
+				+ "To download the file directly send a GET accepting application/octet-stream to the URI of this resource");
 		zipedContribs.setTitle(zipName);
 		zipedContribs.addValueType(OslcValues.OSLC_VAL_TYPE_BASE64BINARY);
 		
@@ -321,12 +320,11 @@ public class SutAnalyse extends RequestRunner
 		int id_counter = 0;
 		for (File currFile : modifFiles)
 		{
-			Contribution newContrib = VeriFitAnalysisResourcesFactory.createContribution(this.resAutoResultId + "-file" + id_counter);
-			String fileId = Utils.encodeFilePathAsId(currFile);
-		    newContrib.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(fileId));
+			Contribution newContrib = VeriFitAnalysisResourcesFactory.createContribution("file" + id_counter);
+		    newContrib.setFilePath(currFile.getPath());
 		    newContrib.setDescription("File produced or modified during execution of this Automation Request. "
-		    		+ "To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property. "
-		    		+ "To modify the file send a regular OSLC update PUT request for a Contribution resource to the URI in fit:fileURI "
+		    		+ "To download the file directly send a GET accepting application/octet-stream to the URI of this resource. "
+		    		+ "To modify the file send a regular OSLC update PUT request for a Contribution resource to the URI of this resource"
 		    		+ "with content type application/octet-stream.");
 		    newContrib.setTitle(currFile.getName());
 		    

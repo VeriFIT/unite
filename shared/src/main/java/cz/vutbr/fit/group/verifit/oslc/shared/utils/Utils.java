@@ -224,18 +224,6 @@ public class Utils {
 	}
 
 	/**
-	 * Encode slashes in the file path so that they dont get mistaken with URL separators
-	 * @param f
-	 * @return
-	 */
-	public static String encodeFilePathAsId(File f)
-	{
-		return f.getPath()
-				.replaceAll("/", "%2F")
-				.replaceAll("\\\\", "%5C");
-	}
-
-	/**
 	 * Decode slashes from an URI into a file.
 	 * @param id
 	 * @return

@@ -106,9 +106,9 @@ public class Contribution
     // Start of user code attributeAnnotation:modified
     // End of user code
     private Date modified;
-    // Start of user code attributeAnnotation:fileURI
+    // Start of user code attributeAnnotation:filePath
     // End of user code
-    private URI fileURI;
+    private String filePath;
     
     // Start of user code classAttributes
     // End of user code
@@ -303,17 +303,18 @@ public class Contribution
         return modified;
     }
     
-    // Start of user code getterAnnotation:fileURI
+    // Start of user code getterAnnotation:filePath
     // End of user code
-    @OslcName("fileURI")
-    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "fileURI")
+    @OslcName("filePath")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "filePath")
     @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.String)
     @OslcReadOnly(false)
-    public URI getFileURI()
+    public String getFilePath()
     {
-        // Start of user code getterInit:fileURI
+        // Start of user code getterInit:filePath
         // End of user code
-        return fileURI;
+        return filePath;
     }
     
     
@@ -425,15 +426,15 @@ public class Contribution
         // End of user code
     }
     
-    // Start of user code setterAnnotation:fileURI
+    // Start of user code setterAnnotation:filePath
     // End of user code
-    public void setFileURI(final URI fileURI )
+    public void setFilePath(final String filePath )
     {
-        // Start of user code setterInit:fileURI
+        // Start of user code setterInit:filePath
         // End of user code
-        this.fileURI = fileURI;
+        this.filePath = filePath;
     
-        // Start of user code setterFinalize:fileURI
+        // Start of user code setterFinalize:filePath
         // End of user code
     }
     

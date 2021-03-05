@@ -237,15 +237,15 @@
             </dd>
           </dl>
           <dl class="row">
-            <% method = Contribution.class.getMethod("getFileURI"); %>
+            <% method = Contribution.class.getMethod("getFilePath"); %>
             <dt  class="col-sm-2 text-right"><a href="<%=method.getAnnotation(OslcPropertyDefinition.class).value() %>"><%=method.getAnnotation(OslcName.class).value()%></a></dt>
             <dd class="col-sm-9">
             <%
-            if (aContribution.getFileURI() == null) {
+            if (aContribution.getFilePath() == null) {
                 out.write("<em>null</em>");
             }
             else {
-                out.write(aContribution.getFileURI().toString());
+                out.write(aContribution.getFilePath().toString());
             }
             %>
             
