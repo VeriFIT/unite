@@ -31,11 +31,13 @@ import cz.vutbr.fit.group.verifit.jsem.ExtensionInfoQuery;
 import cz.vutbr.fit.group.verifit.jsem.ExtensionManager;
 import cz.vutbr.fit.group.verifit.jsem.IExtension;
 import cz.vutbr.fit.group.verifit.jsem.IExtensionWithInfo;
+import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisResourcesFactory;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager.AutomationPlanConf;
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.builtInFilters.DefaultFilter;
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.builtInFilters.RemoveAllFileValues;
 import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
+import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
 
 public final class FilterManager {
@@ -106,14 +108,16 @@ public final class FilterManager {
      * or even create new ones based on the original ones.
      * @param filter				name of the filter to use
      * @param outputContributions	contributions produced by the tool
+     * @param prefixID				String to use as the beginning of all output contribution IDs
      */
-    public static Set<Contribution> filterContributionsForTool(IFilter filter, Set<Contribution> outputContributions)
+    public static Set<Contribution> filterContributionsForTool(IFilter filter, Set<Contribution> outputContributions, String prefixId)
     {
     	// prepare the filter input
     	List<Map<String,String>> contributionsForFilter = new LinkedList<Map<String,String>>();
     	for (Contribution contrib : outputContributions)
     	{
     		Map<String,String> newMap = new HashMap<String,String>();
+    		newMap.put("id", Utils.getResourceIdFromUri(contrib.getAbout()));
     		newMap.put("title", contrib.getTitle());
     		newMap.put("value", contrib.getValue());
     		if (contrib.getFileURI() != null)
@@ -151,10 +155,16 @@ public final class FilterManager {
 					System.out.println("WARNING: Output of contribution filter - invalid valueType: " + e.getMessage());
 				}
 			}
+    		String id = mapContrib.get("id");
+    		if (id == null)
+    		{
+    			System.out.println("ERROR: Output of contribution filter - \"id\" missing. Contribution \"" + title + "\" can not be created.");
+    			continue;
+    		}
     		
     		// create new contribution base on the Map element
 			try {
-				Contribution newContrib = new Contribution();
+				Contribution newContrib = VeriFitAnalysisResourcesFactory.createContribution(prefixId + id);
 				newContrib.setTitle(title);
 				newContrib.setValue(value);
 				newContrib.setDescription(description);

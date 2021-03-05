@@ -435,6 +435,23 @@ public class VeriFitAnalysisManager {
 		}
 	}
 	
+	/**
+	 * Fetches properties for Automation Result Contributions
+	 * @param httpServletRequest
+	 * @param aResource
+	 */
+	private static void getAutomationResultLocalContributions(HttpServletRequest httpServletRequest, AutomationResult aResource)
+	{
+		Set<Contribution> contribs = aResource.getContribution();
+        aResource.clearContribution();
+        
+    	for (Contribution contrib : contribs)
+    	{
+    		Contribution fullContrib = getContribution(httpServletRequest, Utils.getResourceIdFromUri(contrib.getAbout()));
+    		aResource.addContribution(fullContrib);
+    	}
+	}
+	
 	// End of user code
 
     public static void contextInitializeServletListener(final ServletContextEvent servletContextEvent)
@@ -600,6 +617,13 @@ public class VeriFitAnalysisManager {
             storePool.releaseStore(store);
         }
         // Start of user code queryAutomationResults_storeFinalize
+        
+        for (AutomationResult autoRes : resources)
+        {
+        	// the triple store only returns the resource as a link not as an inlined one -- fetch their contents
+        	getAutomationResultLocalContributions(httpServletRequest, autoRes);
+        }
+    	
         // End of user code
         
         // Start of user code queryAutomationResults
@@ -961,6 +985,10 @@ public class VeriFitAnalysisManager {
             storePool.releaseStore(store);
         }
         // Start of user code getAutomationResult_storeFinalize
+        
+        // the triple store only returns the resource as a link not as an inlined one -- fetch their contents
+        getAutomationResultLocalContributions(httpServletRequest, aResource);
+        
         // End of user code
         
         // Start of user code getAutomationResult

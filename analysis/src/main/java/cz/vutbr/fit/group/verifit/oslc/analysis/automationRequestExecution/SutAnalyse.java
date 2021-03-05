@@ -122,28 +122,28 @@ public class SutAnalyse extends RequestRunner
 		}
 
 	    // prepare Contribution resources
-		Contribution executionTime = new Contribution();
+		Contribution executionTime = VeriFitAnalysisResourcesFactory.createContribution("executionTime");
 		executionTime.setDescription("Total execution time of the analysis in milliseconds."); // TODO CHECK really milliseconds?
 		executionTime.setTitle("executionTime");
 		executionTime.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
 	    
-		Contribution statusMessage = new Contribution();
+		Contribution statusMessage = VeriFitAnalysisResourcesFactory.createContribution("statusMessage");
 		statusMessage.setDescription("Status messages from the adapter about the execution.");
 		statusMessage.setTitle("statusMessage");
 		statusMessage.setValue("");
 		statusMessage.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 	    
-		Contribution returnCode = new Contribution();
+		Contribution returnCode = VeriFitAnalysisResourcesFactory.createContribution("returnCode");
 		returnCode.setDescription("Return code of the execution. If non-zero, then the verdict will be #failed.");
 		returnCode.setTitle("returnCode");
 		returnCode.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);	
 		
-		Contribution analysisStdout = new Contribution();
+		Contribution analysisStdout = VeriFitAnalysisResourcesFactory.createContribution("stdout");
 	    analysisStdout.setDescription("Standard output of the analysis.");
 	    analysisStdout.setTitle("stdout");
 	    analysisStdout.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 	    
-	    Contribution analysisStderr = new Contribution();
+	    Contribution analysisStderr = VeriFitAnalysisResourcesFactory.createContribution("stderr");
 	    analysisStderr.setDescription("Error output of the analysis.");
 	    analysisStderr.setTitle("stderr");
 	    analysisStderr.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
@@ -239,15 +239,17 @@ public class SutAnalyse extends RequestRunner
 			}
 			
 			// run the AutoResult contributions through a filter
+			statusMessage.setValue(statusMessage.getValue() + "Applying output filters\n");
+			resAutoResult.addContribution(statusMessage);
 			Set<Contribution> parsedContributions = FilterManager.filterContributionsForTool(
 					autoPlanConf.getFilter(outputFilter),
-					resAutoResult.getContribution());
+					resAutoResult.getContribution(),
+					this.resAutoResultId + "-"
+					);
 			resAutoResult.setContribution(parsedContributions);
-			statusMessage.setValue(statusMessage.getValue() + "Applied output filters\n");
 		}
 		
 		// update the AutoResult state and verdict, and AutoRequest state
-		resAutoResult.addContribution(statusMessage);
 		resAutoResult.replaceState(OslcValues.AUTOMATION_STATE_COMPLETE);
 		resAutoResult.replaceVerdict(executionVerdict);
 		VeriFitAnalysisManager.updateAutomationResult(null, resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
@@ -263,7 +265,7 @@ public class SutAnalyse extends RequestRunner
 
 
 	private Contribution zipAllFileContributions(Collection<File> modifFiles, String zipName, Path zipDir) throws IOException {
-		Contribution zipedContribs = new Contribution();
+		Contribution zipedContribs = VeriFitAnalysisResourcesFactory.createContribution(this.resAutoResultId + "-zipedOutputs");
 		Path pathToZip = zipDir.resolve(zipName);
 
 		File newZipFile = Utils.zipFiles(modifFiles, zipDir, pathToZip);
@@ -316,9 +318,10 @@ public class SutAnalyse extends RequestRunner
 	{
 		Collection<Contribution> contributions = new HashSet<Contribution>();
 		
+		int id_counter = 0;
 		for (File currFile : modifFiles)
 		{
-			Contribution newContrib = new Contribution();
+			Contribution newContrib = VeriFitAnalysisResourcesFactory.createContribution(this.resAutoResultId + "-file" + id_counter);
 			String fileId = Utils.encodeFilePathAsId(currFile);
 		    newContrib.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(fileId));
 		    newContrib.setDescription("File produced or modified during execution of this Automation Request. "
@@ -340,6 +343,7 @@ public class SutAnalyse extends RequestRunner
 			}
 	    	
 		    contributions.add(newContrib);
+		    id_counter++;
 		}
 		
 		return contributions;

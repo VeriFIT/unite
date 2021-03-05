@@ -58,6 +58,7 @@ public class ExamplePluginFilter implements IFilter, IExtension {
 		
 		// and create a single new one instead
 		Map<String, String> contrib = new HashMap<String, String>();
+		contrib.put("id", "testContributionId");
 		contrib.put("title", "test name");
 		contrib.put("value", "test value");
 		contrib.put("description", "This contribution was filtered by the TestPluginFilter");
