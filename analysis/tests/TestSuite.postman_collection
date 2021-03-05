@@ -5089,7 +5089,7 @@
 							"response": []
 						},
 						{
-							"name": "wait for #complete (analysis/special features/get and put file contents as contribution/create sut)",
+							"name": "wait for #complete (analysis/special features/get and put file contents as contribution/basic function/create sut)",
 							"event": [
 								{
 									"listen": "test",
@@ -5232,7 +5232,7 @@
 							"response": []
 						},
 						{
-							"name": "wait for #complete (analysis/bugs/analyse)",
+							"name": "wait for #complete  (analysis/special features/get and put file contents as contribution/basic function)",
 							"event": [
 								{
 									"listen": "test",
@@ -5541,6 +5541,104 @@
 									"raw": "{{contributionFileUri}}",
 									"host": [
 										"{{contributionFileUri}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "error GET file contents from Contribution without file path",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code should be 400 (Bad Request)\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/octet-stream",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/contributions/{{requestId}}-statusMessage",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"contributions",
+										"{{requestId}}-statusMessage"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PUT file contents as Contribution Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code should be 400 (OK)\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"",
+											"pm.test(\"Error msg should be - AutomationPlan not found\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Failed to upload Contribution file: This resource does not represent a file which could be directly uploaded\");",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/octet-stream",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "updated file contents",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/contributions/{{requestId}}-statusMessage",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"contributions",
+										"{{requestId}}-statusMessage"
 									]
 								}
 							},

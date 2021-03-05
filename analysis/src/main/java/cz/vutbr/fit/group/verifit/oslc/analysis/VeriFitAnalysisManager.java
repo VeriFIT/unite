@@ -312,7 +312,11 @@ public class VeriFitAnalysisManager {
     {
 		Contribution c = getContribution(null, contributionId);
 		
-		return new File(c.getFilePath());
+		String filePath = c.getFilePath();
+		if (filePath == null)
+			return null;
+		
+		return new File(filePath);
     }
     
     /**
@@ -320,15 +324,19 @@ public class VeriFitAnalysisManager {
      * that corresponds to the Contribution. The Contribution ID is a path to the file to be updated. 
      * @param fileInputStream
      * @param contributionId
-     * @throws OslcResourceException
+     * @throws Exception 
      */
-    public static void updateContributionFile(InputStream fileInputStream, String contributionId) throws OslcResourceException
+    public static void updateContributionFile(InputStream fileInputStream, String contributionId) throws Exception
     {  
 		Contribution c = getContribution(null, contributionId);
+
+		String filePath = c.getFilePath();
+		if (filePath == null)
+			throw new Exception("ERROR: Failed to upload Contribution file: This resource does not represent a file which could be directly uploaded");
 		
         // write the file - path is getPath and content is getValue
 		try {
-			FileUtils.copyInputStreamToFile(fileInputStream, new File(c.getFilePath()));
+			FileUtils.copyInputStreamToFile(fileInputStream, new File(filePath));
 		}
 		catch (IOException e)
 		{

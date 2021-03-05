@@ -67,6 +67,7 @@ import org.eclipse.lyo.oslc4j.core.annotation.OslcDialogs;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcQueryCapability;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcService;
 import org.eclipse.lyo.oslc4j.core.model.Compact;
+import org.eclipse.lyo.oslc4j.core.model.Error;
 import org.eclipse.lyo.oslc4j.core.model.OslcConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcMediaType;
 import org.eclipse.lyo.oslc4j.core.model.Preview;
@@ -124,9 +125,11 @@ public class Contributions
 
         try {
 			VeriFitAnalysisManager.updateContributionFile(fileInputStream, id);
-		} catch (OslcResourceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			Error errorResource = new Error();
+			errorResource.setStatusCode("400");
+			errorResource.setMessage(e.getMessage());
+			return Response.status(400).entity(errorResource).build();
 		}
         return Response.ok().header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();
     }
@@ -146,11 +149,17 @@ public class Contributions
         ) throws IOException, ServletException, URISyntaxException
     {
 
-        final File aContribution = VeriFitAnalysisManager.getContributionFile(id);
 
-        return Response.ok(aContribution, MediaType.APPLICATION_OCTET_STREAM)
-        	      .header("Content-Disposition", "attachment; filename=\"" + aContribution.getName() + "\"" )
-        	      .build();
+		File aContribution = VeriFitAnalysisManager.getContributionFile(id);
+
+		if (aContribution != null)
+		{
+	        return Response.ok(aContribution, MediaType.APPLICATION_OCTET_STREAM)
+	        	      .header("Content-Disposition", "attachment; filename=\"" + aContribution.getName() + "\"" )
+	        	      .build();
+		}
+		
+        throw new WebApplicationException(Status.BAD_REQUEST);
 
     }
     // End of user code
