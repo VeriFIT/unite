@@ -125,7 +125,7 @@ main () {
         echo -e "\nRunning build.sh first"
         $ROOTDIR/build.sh
         if [ $? -ne 0 ]; then
-            echo -e "Build failed. Aborting start.\n"
+            echo -e "\nBuild failed. Aborting start.\n"
             exit $?
         fi
     fi

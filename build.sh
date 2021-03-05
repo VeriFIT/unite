@@ -45,10 +45,10 @@ echo "    Building and Installing shared resources"
 echo "############################################################"
 echo
 
-mvn install:install-file -Dfile=$ROOTDIR/lib/cz.vutbr.fit.group.verifit.jsem_0.2.0.202103021435.jar -DgroupId=cz.vutbr.fit.group.verifit.jsem -DartifactId=jsem -Dversion=0.2.0.qualifier -Dpackaging=jar
+mvn install:install-file -Dfile=$ROOTDIR/lib/cz.vutbr.fit.group.verifit.jsem_0.2.0.202103021435.jar -DgroupId=cz.vutbr.fit.group.verifit.jsem -DartifactId=jsem -Dversion=0.2.0.qualifier -Dpackaging=jar || exit "$?"
 
 cd shared
-mvn clean install
+mvn clean install || exit "$?"
 
 echo
 echo "############################################################"
@@ -56,7 +56,7 @@ echo "    Building and Installing the Compilation adapter"
 echo "############################################################"
 echo
 cd ../compilation
-mvn clean install
+mvn clean install || exit "$?"
 
 echo
 echo "############################################################"
@@ -64,7 +64,7 @@ echo "    Building and Installing the Analysis adapter"
 echo "############################################################"
 echo
 cd ../analysis
-mvn clean install
+mvn clean install || exit "$?"
 
 echo
 echo "##### ALL DONE #############################################"

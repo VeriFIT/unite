@@ -28,6 +28,20 @@ cd ..
 ADAPTER_ROOT_DIR=$PWD               # get the adapter root directory
 cd $ROOTDIR                         # move back to the script directory
 
+print_help() {
+    echo "$HELP"
+    echo "$USAGE"
+    exit 0
+}
+
+# $1 ... name of the invalid arg
+invalid_arg() {
+    echo -e "\n   Invalid argument: $1\n"
+    echo "$USAGE"
+    exit 1
+}
+
+
 # catch ctrl+c and kill all subprocesses
 trap 'killall' INT
 killall() {
@@ -82,39 +96,18 @@ checkConfFiles()
 }
 
 main() {
-    testedToolsFlag=false
-    liveAdapterFlag=false
     # process arguments
-    if [ "$#" -eq 0 ]; then
-        : # all good
-    elif [ "$#" -eq 1 ]; then
-        if [ "$1" = "-h" ]; then
-            echo "$HELP"
-            echo "$USAGE"
-            exit 0
-        elif [ "$1" = "-t" ]; then
-            testedToolsFlag=true
-        elif [ "$1" = "-l" ]; then
-            liveAdapterFlag=true
-        else
-            echo -e "Invalid arguments\n"
-            echo "$USAGE"
-            exit 1
-        fi
-    elif [ "$#" -eq 2 ]; then
-        if ([ "$1" = "-t" ] && [ "$2" = "-l" ]) || ([ "$2" = "-t" ] && [ "$1" = "-l" ]) then
-            testedToolsFlag=true
-            liveAdapterFlag=true
-        else
-            echo -e "Invalid arguments\n"
-            echo "$USAGE"
-            exit 1
-        fi
-    else
-        echo -e "Invalid arguments\n"
-        echo "$USAGE"
-        exit 1
-    fi
+    unset testedToolsFlag liveAdapterFlag
+    for arg in "$@"
+    do
+        case $arg in
+            -t) testedToolsFlag=true ; shift ;;
+            -l) liveAdapterFlag=true ; shift ;;
+            -h) print_help ; shift ;;
+            *) invalid_arg "$arg" ;;
+        esac
+    done
+
     # make sure configuration files exist
     checkConfFiles
 
@@ -124,7 +117,7 @@ main() {
     analysis_url="$analysis_host:$analysis_port/analysis/"
 
 
-    if [ ! liveAdapterFlag ]; then
+    if [ -z $liveAdapterFlag ]; then
         echo "Booting up the Universal Analysis Adapter"
         $ADAPTER_ROOT_DIR/run_all.sh &>/dev/null &
         curl_poll "$analysis_url"       # poll the analysis adapter because that one starts last in the run script
@@ -150,7 +143,7 @@ main() {
     analysisRes=$?
 
     echo
-    if [ $testedToolsFlag ]; then
+    if [ -n $testedToolsFlag ]; then
         echo "Running Analysis adapter Tested Tools test suite" 
         time newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_TestedTools.postman_collection
         analysisToolsRes=$?
