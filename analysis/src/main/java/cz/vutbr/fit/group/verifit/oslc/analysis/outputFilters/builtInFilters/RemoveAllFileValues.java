@@ -18,7 +18,7 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.IFilter;
 public class RemoveAllFileValues implements IFilter {
 
 	@Override
-	public void parse(List<Map<String, String>> inoutContributions) {
+	public void filter(List<Map<String, String>> inoutContributions) {
 
 		for (Map<String, String> contrib : inoutContributions)
 		{

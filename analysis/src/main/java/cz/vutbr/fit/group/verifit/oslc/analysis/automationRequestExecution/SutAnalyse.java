@@ -239,7 +239,7 @@ public class SutAnalyse extends RequestRunner
 			}
 			
 			// run the AutoResult contributions through a filter
-			Set<Contribution> parsedContributions = FilterManager.parseContributionsForTool(
+			Set<Contribution> parsedContributions = FilterManager.filterContributionsForTool(
 					autoPlanConf.getFilter(outputFilter),
 					resAutoResult.getContribution());
 			resAutoResult.setContribution(parsedContributions);

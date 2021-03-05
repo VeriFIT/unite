@@ -26,9 +26,9 @@ import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 public class DefaultFilter implements IFilter {
 
 	@Override
-	public void parse(List<Map<String, String>> inoutContributions) {
+	public void filter(List<Map<String, String>> inoutContributions) {
 		
-		new AddAllNonBinaryFileValues().parse(inoutContributions);
+		new AddAllNonBinaryFileValues().filter(inoutContributions);
 
 	}
 

@@ -20,7 +20,7 @@ import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 public class AddStdoutAndStderrValues extends DefaultFilter {
 
 	@Override
-	public void parse(List<Map<String, String>> inoutContributions) {
+	public void filter(List<Map<String, String>> inoutContributions) {
 
 		for (Map<String, String> contrib : inoutContributions)
 		{

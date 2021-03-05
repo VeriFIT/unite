@@ -107,7 +107,7 @@ public final class FilterManager {
      * @param filter				name of the filter to use
      * @param outputContributions	contributions produced by the tool
      */
-    public static Set<Contribution> parseContributionsForTool(IFilter filter, Set<Contribution> outputContributions)
+    public static Set<Contribution> filterContributionsForTool(IFilter filter, Set<Contribution> outputContributions)
     {
     	// prepare the filter input
     	List<Map<String,String>> contributionsForFilter = new LinkedList<Map<String,String>>();
@@ -127,10 +127,10 @@ public final class FilterManager {
     	}
     	
     	// call the filter to process the contributions
-    	filter.parse(contributionsForFilter);
+    	filter.filter(contributionsForFilter);
     	
     	// process the filter output
-    	Set<Contribution> parsedContributions = new HashSet<Contribution>();
+    	Set<Contribution> filteredContributions = new HashSet<Contribution>();
     	for (Map<String,String> mapContrib : contributionsForFilter)
     	{
     		String title = mapContrib.get("title");
@@ -160,13 +160,13 @@ public final class FilterManager {
 				newContrib.setDescription(description);
 				newContrib.setFileURI((fileURI != null ? new URI(fileURI) : null));
 				newContrib.setValueType(setValueType);
-				parsedContributions.add(newContrib);
+				filteredContributions.add(newContrib);
 			} catch (URISyntaxException e) {
 				// TODO should never happen
 				e.printStackTrace();
 			}
     	}
     	
-    	return parsedContributions;
+    	return filteredContributions;
     }
 }

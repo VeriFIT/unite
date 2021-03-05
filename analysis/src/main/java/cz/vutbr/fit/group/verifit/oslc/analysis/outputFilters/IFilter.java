@@ -25,7 +25,7 @@ public interface IFilter {
 	 * @param inoutContributions	Each element of the list represents one output contribution (e.g. stdout or a log file).
 	 * 								Expected map entries are "title", "value", "description", "fileURI" and "valueType".
 	 */
-	public void parse(List<Map<String,String>> inoutContributions);
+	public void filter(List<Map<String,String>> inoutContributions);
 
 	/**
 	 * Every filter needs a name that is unique per tool (only one of each name for each AutomationPlan)

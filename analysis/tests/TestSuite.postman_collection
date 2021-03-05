@@ -243,6 +243,24 @@
 											"pm.test(\"AutomationPlan should contain a SUT parameter definition\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>SUT</oslc:name>\");",
 											"});",
+											"pm.test(\"AutomationPlan should contain a SUTbuildCommand parameter definition\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>SUTbuildCommand</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a timeout parameter definition\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>timeout</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a outputFileRegex parameter definition\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>outputFileRegex</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a zipOutputs parameter definition\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>zipOutputs</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a toolCommand parameter definition\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>toolCommand</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a outputFilter parameter definition\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>outputFilter</oslc:name>\");",
+											"});",
 											"pm.test(\"AutomationPlan should contain a usesExecutionEnvironment property with the expected value\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<oslc_auto:usesExecutionEnvironment rdf:resource=\\\"https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis/-/blob/master/analysis/tests/dummy_tool.sh\\\"/>\");",
 											"});"
@@ -597,7 +615,7 @@
 											"pm.test(\"AutomationRequest should contain the expected arguments input value\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<rdf:value>\" + test_arguments + \"</rdf:value>\");",
 											"});",
-											"pm.test(\"AutomationRequest should contain a launchSUT output parameter definition\", function () {",
+											"pm.test(\"AutomationRequest should contain a launchSUT output parameter\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>launchSUT</oslc:name>\");",
 											"});",
 											"pm.test(\"AutomationRequest should contain a SUT input parameter\", function () {",
@@ -605,6 +623,25 @@
 											"});",
 											"pm.test(\"AutomationRequest should contain the expected SUT input value\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"<rdf:value>\" + SUT + \"</rdf:value>\");",
+											"});",
+											"",
+											"pm.test(\"AutomationPlan should contain a SUTbuildCommand output parameter\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>SUTbuildCommand</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a timeout output parameter\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>timeout</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a outputFileRegex output parameter\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>outputFileRegex</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a zipOutputs output parameter\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>zipOutputs</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a toolCommand output parameter\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>toolCommand</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a outputFilter output parameter\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>outputFilter</oslc:name>\");",
 											"});",
 											"",
 											"pm.test(\"AutomationResult state should be #inProgress\", function () {",
@@ -919,6 +956,25 @@
 											"    pm.expect(pm.response.text()).to.include(\"<rdf:value>\" + SUT + \"</rdf:value>\");",
 											"});",
 											"",
+											"pm.test(\"AutomationPlan should contain a SUTbuildCommand output parameter\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>SUTbuildCommand</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a timeout output parameter\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>timeout</oslc:name>\");",
+											"});",
+											"",
+											"pm.test(\"AutomationPlan should contain a outputFileRegex output parameter\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>outputFileRegex</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a zipOutputs output parameter\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>zipOutputs</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a toolCommand output parameter\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>toolCommand</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a outputFilter output parameter\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>outputFilter</oslc:name>\");",
+											"});",
 											"",
 											"pm.test(\"AutomationResult state should be #complete\", function () {",
 											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
@@ -1526,6 +1582,55 @@
 								"body": {
 									"mode": "raw",
 									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/dummy\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>invalid input</oslc:name>\n\t\t\t<rdf:value>invalid value</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value>HelloWorld</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+								},
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"createAutomationRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "input parameter with illegal value",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code should be 400 (bad request)\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Error msg should be - AutomationRequest NOT created - unrecognized input parameters\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:message>AutomationRequest NOT created - value 'invalidValueForFilter' not allowed for the 'outputFilter' parameter</oslc:message>\");",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/xml"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/dummy\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>outputFilter</oslc:name>\n\t\t\t<rdf:value>invalidValueForFilter</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value>HelloWorld</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
 									"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",

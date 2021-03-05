@@ -40,7 +40,7 @@ public class ExamplePluginFilter implements IFilter, IExtension {
 	 */
 	final String name = "example";
 
-	public void parse(List<Map<String, String>> inoutContributions) {
+	public void filter(List<Map<String, String>> inoutContributions) {
 
 		/**
 		 *  TEMPLATE TODO
