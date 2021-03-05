@@ -22,7 +22,7 @@ public class RemoveAllFileValues implements IFilter {
 
 		for (Map<String, String> contrib : inoutContributions)
 		{
-			if (contrib.get("fileURI") != null) // if is file
+			if (contrib.get("filePath") != null) // if is file
 				contrib.remove("value");
 		}
 	}

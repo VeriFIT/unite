@@ -24,12 +24,12 @@ public class AddAllNonBinaryFileValues extends DefaultFilter {
 
 		for (Map<String, String> contrib : inoutContributions)
 		{
-			String fileURI = contrib.get("fileURI");
-			if (fileURI != null // if is file
+			String filePath = contrib.get("filePath");
+			if (filePath != null // if is file
 				&& contrib.get("valueType") != OslcValues.OSLC_VAL_TYPE_BASE64BINARY.getValue().toString()) // and is not binary
 			{
 				try {
-					contrib.put("value", FilterUtils.loadContentsOfFileUriFile(fileURI));
+					contrib.put("value", FilterUtils.loadContentsOfFilePathFile(filePath));
 				} catch (IOException e) {
 					contrib.put("value", "Failed to load contents of this file: " + e.getMessage());
 				}

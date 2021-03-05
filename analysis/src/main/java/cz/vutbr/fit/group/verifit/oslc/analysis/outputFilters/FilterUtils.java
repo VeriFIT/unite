@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
@@ -11,25 +12,15 @@ public class FilterUtils {
 
 
 	/**
-	 * Loads the entire contents of a file identified by its contribution fileURI property.
-	 * @param fileURI
+	 * Loads the entire contents of a file identified by its contribution filePath property.
+	 * @param filePath
 	 * @return
 	 * @throws IOException
 	 */
-	public static String loadContentsOfFileUriFile(String fileURI) throws IOException {
-		Path f = getPathFromFileUri(fileURI);
+	public static String loadContentsOfFilePathFile(String filePath) throws IOException {
+		Path f = Paths.get(filePath);
 		byte [] fileContents = Files.readAllBytes(f);
 		return new String(fileContents);
-	}
-	
-	/**
-	 * Returns a Path to a file identified by its contribution fileURI property.
-	 * @param fileURI
-	 * @return
-	 */
-	public static Path getPathFromFileUri(String fileURI)  {
-		String filePath = Utils.decodeFilePathFromId(Utils.getResourceIdFromUri(fileURI));
-		return FileSystems.getDefault().getPath(filePath);
 	}
 	
 }

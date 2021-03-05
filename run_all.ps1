@@ -155,7 +155,7 @@ if ($b)
 {
     echo "Running build.sh first"
     .\build.ps1
-    if ( $LastExitCode -ne 0) {
+    if ( ! $? ) {
         echo "Build failed. Aborting start.`n"
         exit $LastExitCode
     }

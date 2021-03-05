@@ -3520,8 +3520,9 @@
 											"    pm.expect(pm.response.text()).to.include(\"<rdf:value></rdf:value>\");",
 											"});",
 											"",
-											"pm.test(\"AutomationResult does not contain regex match file contributions\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"This is a ZIP of all other file contributions. To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property.\");",
+											"pm.test(\"AutomationResult should contain a zip contribution\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"zipedOutputs\");",
+											"    pm.expect(pm.response.text()).to.include(\"This is a ZIP of all other file contributions.\");",
 											"    pm.expect(pm.response.text()).to.include(\".zip</dcterms:title>\");",
 											"});",
 											"",
@@ -5088,7 +5089,7 @@
 							"response": []
 						},
 						{
-							"name": "wait for #complete (analysis/special features/get and put file contents as contribution/create sut)",
+							"name": "wait for #complete (analysis/special features/get and put file contents as contribution/basic function/create sut)",
 							"event": [
 								{
 									"listen": "test",
@@ -5231,7 +5232,7 @@
 							"response": []
 						},
 						{
-							"name": "wait for #complete (analysis/bugs/analyse)",
+							"name": "wait for #complete  (analysis/special features/get and put file contents as contribution/basic function)",
 							"event": [
 								{
 									"listen": "test",
@@ -5328,7 +5329,8 @@
 											"    break;",
 											"  }",
 											"}",
-											"var contributionFileUri = allContributions[contribIdx][\"oslc_auto:Contribution\"][\"fit:fileURI\"].$[\"rdf:resource\"];",
+											"",
+											"var contributionFileUri = allContributions[contribIdx][\"oslc_auto:Contribution\"].$[\"rdf:about\"];",
 											"pm.globals.set('contributionFileUri', contributionFileUri);",
 											"",
 											"",
@@ -5369,6 +5371,56 @@
 										"resources",
 										"automationResults",
 										"{{requestId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET contribution as xml",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code should be 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response should contain a contribution resource\", function () {",
+											"    pm.expect(pm.response.text()).to.contain(\"oslc_auto:Contribution\");",
+											"});",
+											"",
+											"pm.test(\"Contribution resource should contain a fit:filePath property\", function () {",
+											"    pm.expect(pm.response.text()).to.contain(\"fit:filePath\");",
+											"});",
+											"pm.test(\"Contribution resource should contain a dcterms:title property\", function () {",
+											"    pm.expect(pm.response.text()).to.contain(\"dcterms:title\");",
+											"});",
+											"pm.test(\"Contribution resource should contain a dcterms:description property\", function () {",
+											"    pm.expect(pm.response.text()).to.contain(\"dcterms:description\");",
+											"});",
+											"pm.test(\"Contribution resource should contain a oslc:valueType property\", function () {",
+											"    pm.expect(pm.response.text()).to.contain(\"oslc:valueType\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/rdf+xml",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{contributionFileUri}}",
+									"host": [
+										"{{contributionFileUri}}"
 									]
 								}
 							},
@@ -5489,6 +5541,104 @@
 									"raw": "{{contributionFileUri}}",
 									"host": [
 										"{{contributionFileUri}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "error GET file contents from Contribution without file path",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code should be 400 (Bad Request)\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/octet-stream",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/contributions/{{requestId}}-statusMessage",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"contributions",
+										"{{requestId}}-statusMessage"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PUT file contents as Contribution Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code should be 400 (OK)\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"",
+											"pm.test(\"Error msg should be - AutomationPlan not found\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"Failed to upload Contribution file: This resource does not represent a file which could be directly uploaded\");",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/octet-stream",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "updated file contents",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/contributions/{{requestId}}-statusMessage",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"contributions",
+										"{{requestId}}-statusMessage"
 									]
 								}
 							},
@@ -6587,19 +6737,18 @@
 													"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
 													"});",
 													"",
-													"pm.test(\"AutomationResult statusMessage have the expected value\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"Executing:\");",
-													"    pm.expect(pm.response.text()).to.include(\"Analysis completed successfully\");",
-													"});",
 													"pm.test(\"returnCode should be 0\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\"<rdf:value>0</rdf:value>\");",
 													"});",
 													"pm.test(\"AutomationResult should contain a \\\"test name\\\" Contribution\", function () {",
 													"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">test name</dcterms:title>\");",
 													"});",
-													"pm.test(\"AutomationResult should not contain stdout or stderr\", function () {",
+													"pm.test(\"AutomationResult should not contain stdout, stderr, statusMessage, executionTime, returnCode, ...\", function () {",
 													"    pm.expect(pm.response.text()).to.not.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">stdout</dcterms:title>\");",
 													"    pm.expect(pm.response.text()).to.not.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">stderr</dcterms:title>\");",
+													"    pm.expect(pm.response.text()).to.not.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">statusMessage</dcterms:title>\");",
+													"    pm.expect(pm.response.text()).to.not.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">executionTime</dcterms:title>\");",
+													"    pm.expect(pm.response.text()).to.not.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">returnCode</dcterms:title>\");",
 													"});",
 													"",
 													"pm.test(\"AutomationResult should contain outputFilter input parameter\", function () {",
@@ -7774,6 +7923,55 @@
 								"services",
 								"resources",
 								"queryAutomationResult"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "query Contributions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var requestId = pm.globals.get('requestId');",
+									"",
+									"pm.test(\"Response code should be 200 (OK)\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"The result should not be empty\", function () {",
+									"    pm.expect(pm.response.text()).to.not.include(\">0</oslc:totalCount>\");",
+									"});",
+									"",
+									"pm.test(\"The result should contain Contribution resources\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"oslc_auto:Contribution\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/rdf+xml"
+							}
+						],
+						"url": {
+							"raw": "{{server_address}}/{{server_context}}/services/resources/queryContribution",
+							"host": [
+								"{{server_address}}"
+							],
+							"path": [
+								"{{server_context}}",
+								"services",
+								"resources",
+								"queryContribution"
 							]
 						}
 					},

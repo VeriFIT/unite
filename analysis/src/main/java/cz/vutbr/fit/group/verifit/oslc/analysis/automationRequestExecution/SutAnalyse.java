@@ -122,28 +122,28 @@ public class SutAnalyse extends RequestRunner
 		}
 
 	    // prepare Contribution resources
-		Contribution executionTime = new Contribution();
+		Contribution executionTime = VeriFitAnalysisResourcesFactory.createContribution("executionTime");
 		executionTime.setDescription("Total execution time of the analysis in milliseconds."); // TODO CHECK really milliseconds?
 		executionTime.setTitle("executionTime");
 		executionTime.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
 	    
-		Contribution statusMessage = new Contribution();
+		Contribution statusMessage = VeriFitAnalysisResourcesFactory.createContribution("statusMessage");
 		statusMessage.setDescription("Status messages from the adapter about the execution.");
 		statusMessage.setTitle("statusMessage");
 		statusMessage.setValue("");
 		statusMessage.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 	    
-		Contribution returnCode = new Contribution();
+		Contribution returnCode = VeriFitAnalysisResourcesFactory.createContribution("returnCode");
 		returnCode.setDescription("Return code of the execution. If non-zero, then the verdict will be #failed.");
 		returnCode.setTitle("returnCode");
 		returnCode.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);	
 		
-		Contribution analysisStdout = new Contribution();
+		Contribution analysisStdout = VeriFitAnalysisResourcesFactory.createContribution("stdout");
 	    analysisStdout.setDescription("Standard output of the analysis.");
 	    analysisStdout.setTitle("stdout");
 	    analysisStdout.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 	    
-	    Contribution analysisStderr = new Contribution();
+	    Contribution analysisStderr = VeriFitAnalysisResourcesFactory.createContribution("stderr");
 	    analysisStderr.setDescription("Error output of the analysis.");
 	    analysisStderr.setTitle("stderr");
 	    analysisStderr.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
@@ -162,7 +162,7 @@ public class SutAnalyse extends RequestRunner
 	    Link executionVerdict;
 		final Path SUTdirAsPath = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
 	    ExecutionResult analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), "_analysis_" + this.execAutoRequestId);
-		statusMessage.setValue(statusMessage.getValue() +  
+		statusMessage.setValue(statusMessage.getValue() +
 				"Executing: " + stringToExecute + "\n   as: " + analysisRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
 		if (analysisRes.exceptionThrown != null)
 		{
@@ -217,9 +217,9 @@ public class SutAnalyse extends RequestRunner
 			modifFiles.add(analysisRes.stderrFile);
 	    	
 	    	// add file URIs to standard output contributions and add them to the automation result
-	    	analysisStdout.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(analysisRes.stdoutFile.getPath()));
+	    	analysisStdout.setFilePath(analysisRes.stdoutFile.getPath());
 	    	resAutoResult.addContribution(analysisStdout);
-	    	analysisStderr.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(analysisRes.stderrFile.getPath()));
+	    	analysisStderr.setFilePath(analysisRes.stderrFile.getPath());
 			resAutoResult.addContribution(analysisStderr);
 	    	
 			// create a zip of all file contributions if needed
@@ -239,15 +239,17 @@ public class SutAnalyse extends RequestRunner
 			}
 			
 			// run the AutoResult contributions through a filter
+			statusMessage.setValue(statusMessage.getValue() + "Applying output filters\n");
+			resAutoResult.addContribution(statusMessage);
 			Set<Contribution> parsedContributions = FilterManager.filterContributionsForTool(
 					autoPlanConf.getFilter(outputFilter),
-					resAutoResult.getContribution());
+					resAutoResult.getContribution(),
+					this.resAutoResultId + "-"
+					);
 			resAutoResult.setContribution(parsedContributions);
-			statusMessage.setValue(statusMessage.getValue() + "Applied output filters\n");
 		}
 		
 		// update the AutoResult state and verdict, and AutoRequest state
-		resAutoResult.addContribution(statusMessage);
 		resAutoResult.replaceState(OslcValues.AUTOMATION_STATE_COMPLETE);
 		resAutoResult.replaceVerdict(executionVerdict);
 		VeriFitAnalysisManager.updateAutomationResult(null, resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
@@ -263,15 +265,14 @@ public class SutAnalyse extends RequestRunner
 
 
 	private Contribution zipAllFileContributions(Collection<File> modifFiles, String zipName, Path zipDir) throws IOException {
-		Contribution zipedContribs = new Contribution();
+		Contribution zipedContribs = VeriFitAnalysisResourcesFactory.createContribution("zipedOutputs");
 		Path pathToZip = zipDir.resolve(zipName);
 
 		File newZipFile = Utils.zipFiles(modifFiles, zipDir, pathToZip);
 
-		String fileId = Utils.encodeFilePathAsId(newZipFile);
-		zipedContribs.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(fileId));
+		zipedContribs.setFilePath(newZipFile.getPath());
 		zipedContribs.setDescription("This is a ZIP of all other file contributions. "
-				+ "To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property."); // TODO
+				+ "To download the file directly send a GET accepting application/octet-stream to the URI of this resource");
 		zipedContribs.setTitle(zipName);
 		zipedContribs.addValueType(OslcValues.OSLC_VAL_TYPE_BASE64BINARY);
 		
@@ -316,14 +317,14 @@ public class SutAnalyse extends RequestRunner
 	{
 		Collection<Contribution> contributions = new HashSet<Contribution>();
 		
+		int id_counter = 0;
 		for (File currFile : modifFiles)
 		{
-			Contribution newContrib = new Contribution();
-			String fileId = Utils.encodeFilePathAsId(currFile);
-		    newContrib.setFileURI(VeriFitAnalysisResourcesFactory.constructURIForContribution(fileId));
+			Contribution newContrib = VeriFitAnalysisResourcesFactory.createContribution("file" + id_counter);
+		    newContrib.setFilePath(currFile.getPath());
 		    newContrib.setDescription("File produced or modified during execution of this Automation Request. "
-		    		+ "To download the file directly send a GET accepting application/octet-stream to the URI in the fit:fileURI property. "
-		    		+ "To modify the file send a regular OSLC update PUT request for a Contribution resource to the URI in fit:fileURI "
+		    		+ "To download the file directly send a GET accepting application/octet-stream to the URI of this resource. "
+		    		+ "To modify the file send a regular OSLC update PUT request for a Contribution resource to the URI of this resource"
 		    		+ "with content type application/octet-stream.");
 		    newContrib.setTitle(currFile.getName());
 		    
@@ -340,6 +341,7 @@ public class SutAnalyse extends RequestRunner
 			}
 	    	
 		    contributions.add(newContrib);
+		    id_counter++;
 		}
 		
 		return contributions;

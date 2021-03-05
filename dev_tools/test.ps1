@@ -11,6 +11,13 @@
 # Launch the triplestore
 # Then install, lanuch and test the adapter
 
+
+param (
+    [switch]$t,
+    [switch]$l,
+    [switch]$h
+)
+
 $HELP="
    Runs the run_all script and then Postman testsuites for the adapter using Newman.
 "
@@ -34,6 +41,21 @@ cd $ROOTDIR             # move back to the script directory
 
 $PIDS_TO_KILL=@()
 
+function print_help() {
+    echo "$HELP"
+    echo "$USAGE"
+    exit 0
+}
+
+# $1 name of the invalid arg
+function invalid_arg() {
+    param (
+        $1
+    )
+    echo "`n   Invalid argument: ${1} `n"
+    echo "$USAGE"
+    exit 1
+}
 
 # polls an address using curl until the request returns True (i.e. the address responds)
 # $1 ... URL for curl to poll
@@ -102,117 +124,79 @@ function killChildren {
     echo "All done."
 }
 
-$main = {
-    param (
-        $1, $2
-    )
-
-    $testedToolsFlag = $false
-    $liveAdapterFlag = $false
-    # process arguments
-    if ($args.length -ne 0) {
-        echo "Invalid arguments"
-        echo ""
-        echo "$USAGE"
-        cd $USRPATH
-        exit 1
-    } elseif (! $1) { # zero arguments
-        # all good
-    } elseif (! $2) { # one argument
-        if ("$1" -eq "-h") {
-            echo "$HELP"
-            echo "$USAGE"
-        cd $USRPATH
-        exit 0
-        } elseif ("$1" -eq "-t") {
-            $testedToolsFlag = $true
-        } elseif ("$1" -eq "-l") {
-            $liveAdapterFlag = $true
-        } else {
-            echo "Invalid arguments`\n"
-            echo "$USAGE"
-            cd $USRPATH
-            exit 1
-        }
-    } else { # two argument
-        if (("$1" -eq "-t" -And "$2" -eq "-l") -Or ("$2" -eq "-t" -And "$1" -eq "-l")) {
-            $testedToolsFlag = $true
-            $liveAdapterFlag = $true
-        } else {
-            echo "Invalid arguments`\n"
-            echo "$USAGE"
-            cd $USRPATH
-            exit 1
-        }
-
-    }
-
-    # make sure configuration files exist
-    checkConfFiles
-
-    # lookup analysis adapter config
-    $analysis_host=$(cat $ADAPTER_ROOT_DIR/analysis/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
-    $analysis_port=$(cat $ADAPTER_ROOT_DIR/analysis/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
-    $analysis_url="${analysis_host}:${analysis_port}/analysis/"
-
-
-    if ( ! $liveAdapterFlag ) {
-        echo "Booting up the Universal Analysis Adapter"
-        $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Universal Analysis Adapter'; $ADAPTER_ROOT_DIR/run_all.ps1" -passthru
-        $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
-        curl_poll $analysis_url       # poll the analysis adapter because that one starts last in the run script
-        echo "Adapter up and running`n"
-    } else {
-        echo "Skipping Adapter boot. Adapter expected to be running already." 
-    }
-
-
-    $compilationRes=$true
-    $analysisRes=$true
-    $analysisToolsRes=$true
-    
-    
-    echo ""
-    echo "Running Compilation adapter test suite" 
-    $clock = [Diagnostics.Stopwatch]::StartNew()
-    newman run $ADAPTER_ROOT_DIR/compilation/tests/TestSuite.postman_collection
-    $compilationRes=$?
-    $clock.Stop()
-    echo $clock.Elapsed
-
-    echo ""
-    echo "Running Analysis adapter test suite" 
-    $clock = [Diagnostics.Stopwatch]::StartNew()
-    newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite.postman_collection
-    $analysisRes=$?
-    $clock.Stop()
-    echo $clock.Elapsed
-
-    echo ""
-    if ($testedToolsFlag) {
-        echo "Running Analysis adapter Tested Tools test suite" 
-        $clock = [Diagnostics.Stopwatch]::StartNew()
-        newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_TestedTools.postman_collection
-        $analysisToolsRes=$?
-        $clock.Stop()
-        echo $clock.Elapsed
-    } else {
-        echo "Skipping Analysis adapter Tested Tools test suite" 
-    }
-
-    # shutdown the adapter
-    killChildren
-    
-    cd $USRPATH
-
-    # return non-zero if there were failed tests
-    if ( $compilationRes -ne $true -Or $analysisRes -ne $true -Or $analysisToolsRes -ne $true) {
-        echo "`n`n  TESTS FAILED`n"
-        exit 1
-    } else {
-        echo "`n`n  TESTS PASSED`n"
-        exit 0
-    }
+#
+# main
+#
+if ($args.length -ne 0) {
+    invalid_arg $args[0]
+}
+if ($h) {
+    print_help
 }
 
-Invoke-Command -ScriptBlock $main -ArgumentList $args
+# make sure configuration files exist
+checkConfFiles
+
+# lookup analysis adapter config
+$analysis_host=$(cat $ADAPTER_ROOT_DIR/analysis/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
+$analysis_port=$(cat $ADAPTER_ROOT_DIR/analysis/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
+$analysis_url="${analysis_host}:${analysis_port}/analysis/"
+
+
+if ( ! $l ) {
+    echo "Booting up the Universal Analysis Adapter"
+    $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Universal Analysis Adapter'; $ADAPTER_ROOT_DIR/run_all.ps1" -passthru
+    $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
+    curl_poll $analysis_url       # poll the analysis adapter because that one starts last in the run script
+    echo "Adapter up and running`n"
+} else {
+    echo "Skipping Adapter boot. Adapter expected to be running already." 
+}
+
+
+$compilationRes=$true
+$analysisRes=$true
+$analysisToolsRes=$true
+
+
+echo ""
+echo "Running Compilation adapter test suite" 
+$clock = [Diagnostics.Stopwatch]::StartNew()
+newman run $ADAPTER_ROOT_DIR/compilation/tests/TestSuite.postman_collection
+$compilationRes=$?
+$clock.Stop()
+echo $clock.Elapsed
+
+echo ""
+echo "Running Analysis adapter test suite" 
+$clock = [Diagnostics.Stopwatch]::StartNew()
+newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite.postman_collection
+$analysisRes=$?
+$clock.Stop()
+echo $clock.Elapsed
+
+echo ""
+if ($t) {
+    echo "Running Analysis adapter Tested Tools test suite" 
+    $clock = [Diagnostics.Stopwatch]::StartNew()
+    newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_TestedTools.postman_collection
+    $analysisToolsRes=$?
+    $clock.Stop()
+    echo $clock.Elapsed
+} else {
+    echo "Skipping Analysis adapter Tested Tools test suite" 
+}
+
+# shutdown the adapter
+killChildren
+
+cd $USRPATH
+
+# return non-zero if there were failed tests
+if ( $compilationRes -ne $true -Or $analysisRes -ne $true -Or $analysisToolsRes -ne $true) {
+    echo "`n`n  TESTS FAILED`n"
+    exit 1
+} else {
+    echo "`n`n  TESTS PASSED`n"
+    exit 0
+}

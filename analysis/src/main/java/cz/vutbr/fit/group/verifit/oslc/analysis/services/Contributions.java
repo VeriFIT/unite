@@ -67,6 +67,7 @@ import org.eclipse.lyo.oslc4j.core.annotation.OslcDialogs;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcQueryCapability;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcService;
 import org.eclipse.lyo.oslc4j.core.model.Compact;
+import org.eclipse.lyo.oslc4j.core.model.Error;
 import org.eclipse.lyo.oslc4j.core.model.OslcConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcMediaType;
 import org.eclipse.lyo.oslc4j.core.model.Preview;
@@ -109,11 +110,12 @@ public class Contributions
     @Path("contributions/{id}")
     @Consumes({MediaType.APPLICATION_OCTET_STREAM, MediaType.TEXT_PLAIN})
     @ApiOperation(
-            value = "UPDATE the contents of a contribution file by using its fit:fileURI as the ID of a contribution.",
-            notes = "UPDATE the contents of a contribution file by using its fit:fileURI as the ID of a contribution. Allows clients to directly upload a contribution file "
-            		+ "as an octet stream to modify its value. TODO This is a temporary solution.",
-            produces = MediaType.APPLICATION_OCTET_STREAM + ", " + MediaType.TEXT_PLAIN
-        )
+        value = "PUT for resources of type {'" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "'}",
+        notes = "PUT for resources of type {'" + "<a href=\"" + Oslc_autoDomainConstants.CONTRIBUTION_TYPE + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "'}" +
+            ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.CONTRIBUTION_PATH + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "'}",
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML,
+        consumes = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML + ", " + MediaType.APPLICATION_OCTET_STREAM + ", " + MediaType.TEXT_PLAIN
+	)
     public Response updateContributionFile(
             @Context HttpServletRequest request,
             @PathParam("id") final String id,
@@ -123,9 +125,11 @@ public class Contributions
 
         try {
 			VeriFitAnalysisManager.updateContributionFile(fileInputStream, id);
-		} catch (OslcResourceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			Error errorResource = new Error();
+			errorResource.setStatusCode("400");
+			errorResource.setMessage(e.getMessage());
+			return Response.status(400).entity(errorResource).build();
 		}
         return Response.ok().header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();
     }
@@ -135,21 +139,27 @@ public class Contributions
     @Path("contributions/{id}")
     @Produces({MediaType.APPLICATION_OCTET_STREAM, MediaType.TEXT_PLAIN})
     @ApiOperation(
-        value = "GET the contents of a contribution file by using its fit:fileURI as the ID of a contribution.",
-        notes = "GET the contents of a contribution file by using its fit:fileURI as the ID of a contribution. Allows clients to directly download a contribution file "
-        		+ "as an octet stream. TODO This is a temporary solution.",
-        produces = MediaType.APPLICATION_OCTET_STREAM + ", " + MediaType.TEXT_PLAIN
+        value = "GET for resources of type {'" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "'}",
+        notes = "GET for resources of type {'" + "<a href=\"" + Oslc_autoDomainConstants.CONTRIBUTION_TYPE + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "'}" +
+            ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.CONTRIBUTION_PATH + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "'}",
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML + ", " + MediaType.APPLICATION_OCTET_STREAM + ", " + MediaType.TEXT_PLAIN
     )
     public Response getContributionFile(
                 @PathParam("id") final String id
         ) throws IOException, ServletException, URISyntaxException
     {
 
-        final File aContribution = VeriFitAnalysisManager.getContributionFile(id);
 
-        return Response.ok(aContribution, MediaType.APPLICATION_OCTET_STREAM)
-        	      .header("Content-Disposition", "attachment; filename=\"" + aContribution.getName() + "\"" )
-        	      .build();
+		File aContribution = VeriFitAnalysisManager.getContributionFile(id);
+
+		if (aContribution != null)
+		{
+	        return Response.ok(aContribution, MediaType.APPLICATION_OCTET_STREAM)
+	        	      .header("Content-Disposition", "attachment; filename=\"" + aContribution.getName() + "\"" )
+	        	      .build();
+		}
+		
+        throw new WebApplicationException(Status.BAD_REQUEST);
 
     }
     // End of user code
@@ -175,7 +185,7 @@ public class Contributions
         value = "GET for resources of type {'" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "'}",
         notes = "GET for resources of type {'" + "<a href=\"" + Oslc_autoDomainConstants.CONTRIBUTION_TYPE + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "'}" +
             ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.CONTRIBUTION_PATH + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "'}",
-        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML + ", " + MediaType.APPLICATION_OCTET_STREAM + ", " + MediaType.TEXT_PLAIN
     )
     public Contribution getContribution(
                 @PathParam("id") final String id
@@ -204,7 +214,7 @@ public class Contributions
         value = "GET for resources of type {'" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "'}",
         notes = "GET for resources of type {'" + "<a href=\"" + Oslc_autoDomainConstants.CONTRIBUTION_TYPE + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "'}" +
             ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.CONTRIBUTION_PATH + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "'}",
-        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML + ", " + MediaType.APPLICATION_OCTET_STREAM + ", " + MediaType.TEXT_PLAIN
     )
     public void getContributionAsHtml(
         @PathParam("id") final String id
@@ -235,7 +245,7 @@ public class Contributions
         value = "GET for resources of type {'" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "'}",
         notes = "GET for resources of type {'" + "<a href=\"" + Oslc_autoDomainConstants.CONTRIBUTION_TYPE + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "'}" +
             ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.CONTRIBUTION_PATH + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "'}",
-        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML + ", " + MediaType.APPLICATION_OCTET_STREAM + ", " + MediaType.TEXT_PLAIN
     )
     public Compact getContributionCompact(
         @PathParam("id") final String id
@@ -341,8 +351,9 @@ public class Contributions
         value = "PUT for resources of type {'" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "'}",
         notes = "PUT for resources of type {'" + "<a href=\"" + Oslc_autoDomainConstants.CONTRIBUTION_TYPE + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "'}" +
             ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.CONTRIBUTION_PATH + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "'}",
-        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML
-    )
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML,
+        consumes = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML + ", " + MediaType.APPLICATION_OCTET_STREAM + ", " + MediaType.TEXT_PLAIN
+	)
     public Response updateContribution(
             @HeaderParam("If-Match") final String eTagHeader,
             @PathParam("id") final String id ,
