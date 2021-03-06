@@ -69,3 +69,5 @@ mvn clean install || exit "$?"
 echo
 echo "##### ALL DONE #############################################"
 echo
+
+exit 0

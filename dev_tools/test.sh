@@ -13,11 +13,13 @@
 HELP="
    Runs the run_all script and then Postman testsuites for the adapter using Newman.
 "
-USAGE="   Usage: $0 [-t|-h|-l]
+USAGE="   Usage: $0 [-t|-h|-l|-ci]
       -t ... tools - Runs an additional testsuite which requires some analysis
                          tools to be installed (i.e. will not work on all machines)
       -l ... live - Only runs the test suites without launching the adapter. Expects
                     the adapter to be running already.
+      -ci ... gitlab CI - Used when running this script in gitlab CI. Will not kill
+              subprocesses at the end.
       -h ... help
 "
 
@@ -97,12 +99,13 @@ checkConfFiles()
 
 main() {
     # process arguments
-    unset testedToolsFlag liveAdapterFlag
+    unset testedToolsFlag liveAdapterFlag gitlabCI
     for arg in "$@"
     do
         case $arg in
             -t) testedToolsFlag=true ; shift ;;
             -l) liveAdapterFlag=true ; shift ;;
+            -ci) gitlabCI=true ; shift ;;
             -h) print_help ; shift ;;
             *) invalid_arg "$arg" ;;
         esac
@@ -143,7 +146,7 @@ main() {
     analysisRes=$?
 
     echo
-    if [ -n $testedToolsFlag ]; then
+    if [ -n "$testedToolsFlag" ]; then
         echo "Running Analysis adapter Tested Tools test suite" 
         time newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_TestedTools.postman_collection
         analysisToolsRes=$?
@@ -151,11 +154,13 @@ main() {
         echo "Skipping Analysis adapter Tested Tools test suite" 
     fi
 
-    echo -e "\nShutting down the adaters" 
-    trap '' INT TERM     # ignore INT and TERM while shutting down
-    kill -TERM 0
-    wait
-    echo "All done."
+    if [ -z $gitlabCI ]; then
+        echo -e "\nShutting down the adaters" 
+        trap '' INT TERM     # ignore INT and TERM while shutting down
+        kill -TERM 0
+        wait
+        echo "All done."
+    fi
 
     # return non-zero if there were failed tests
     if [ "$compilationRes" -ne 0 ] || [ "$analysisRes" -ne 0 ] || [ "$analysisToolsRes" -ne 0 ]; then
