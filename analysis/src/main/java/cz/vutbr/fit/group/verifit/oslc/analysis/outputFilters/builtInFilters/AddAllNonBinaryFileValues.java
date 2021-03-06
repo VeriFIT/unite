@@ -8,33 +8,37 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser;
+package cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.builtInFilters;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.FilterUtils;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 
-public class AddAllNonBinaryFileValues extends DefaultParser {
+public class AddAllNonBinaryFileValues extends DefaultFilter {
 
 	@Override
-	public List<Map<String, String>> parse(List<Map<String, String>> inputContributions) {
+	public void filter(List<Map<String, String>> inoutContributions) {
 
-		for (Map<String, String> contrib : inputContributions)
+		for (Map<String, String> contrib : inoutContributions)
 		{
-			String fileURI = contrib.get("fileURI");
-			if (fileURI != null // if is file
+			String filePath = contrib.get("filePath");
+			if (filePath != null // if is file
 				&& contrib.get("valueType") != OslcValues.OSLC_VAL_TYPE_BASE64BINARY.getValue().toString()) // and is not binary
 			{
 				try {
-					contrib.put("value", loadFileContents(fileURI));
+					contrib.put("value", FilterUtils.loadContentsOfFilePathFile(filePath));
 				} catch (IOException e) {
 					contrib.put("value", "Failed to load contents of this file: " + e.getMessage());
 				}
 			}	
 		}
-		
-		return inputContributions;
+	}
+
+	@Override
+	public String getName() {
+		return "addAllNonBinaryFileValues";
 	}
 }

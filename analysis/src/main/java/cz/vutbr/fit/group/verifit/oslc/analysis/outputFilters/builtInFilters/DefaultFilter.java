@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package cz.vutbr.fit.group.verifit.oslc.analysis.outputParser;
+package cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.builtInFilters;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -16,26 +16,24 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.IFilter;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
 /**
  * Leaves all non file contributions unchanged. Loads the entire contents of the stdout file, the stderr file,
  * and of all non-binary files as their contribution values. All binary file values will be set as empty.
  */
-public class DefaultParser implements IParser {
+public class DefaultFilter implements IFilter {
 
 	@Override
-	public List<Map<String, String>> parse(List<Map<String, String>> inputContributions) {
+	public void filter(List<Map<String, String>> inoutContributions) {
 		
-		inputContributions = new AddAllNonBinaryFileValues().parse(inputContributions);
-		
-		return inputContributions;
+		new AddAllNonBinaryFileValues().filter(inoutContributions);
+
 	}
 
-
-	protected String loadFileContents(String fileURI) throws IOException {
-		String filePath = Utils.decodeFilePathFromId(Utils.getResourceIdFromUri(fileURI));
-		byte [] fileContents = Files.readAllBytes(FileSystems.getDefault().getPath(filePath));
-		return new String(fileContents);
+	@Override
+	public String getName() {
+		return "default";
 	}
 }

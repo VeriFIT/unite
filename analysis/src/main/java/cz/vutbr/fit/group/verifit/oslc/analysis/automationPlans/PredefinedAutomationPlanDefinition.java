@@ -17,6 +17,7 @@ import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 
+import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager.AutomationPlanConf;
 import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 
@@ -81,7 +82,8 @@ public class PredefinedAutomationPlanDefinition {
 	 */
 	public static AutomationPlanConfManager.AutomationPlanConf getDummyAutomationPlanConf()
 	{
-		return new AutomationPlanConfManager.AutomationPlanConf(
+		return new AutomationPlanConf(
+						"dummy",
 						VeriFitAnalysisProperties.DUMMYTOOL_PATH,
 						"",
 						false);

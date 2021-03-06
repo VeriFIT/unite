@@ -164,6 +164,11 @@ public class AutomationResult
 		addVerdict(verdict);
     }
  
+    public void clearContribution()
+    {
+    	contribution = new HashSet<Contribution>();
+    }
+    
     // End of user code
     public AutomationResult()
     {

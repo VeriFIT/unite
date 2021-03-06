@@ -17,6 +17,9 @@
           <queryCapabilities title="QueryAutomationRequest" label="QueryAutomationRequest" queryBaseURI="queryAutomationRequest">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poAHYZUdEeq-KoPaR9_Cfg"/>
           </queryCapabilities>
+          <queryCapabilities title="QueryContribution" label="QueryContribution" queryBaseURI="queryContribution">
+            <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_mBlsMGpGEeuDWZwlSoXo7A"/>
+          </queryCapabilities>
           <selectionDialogs title="SelectorAutomationPlan" label="SelectorAutomationPlan" dialogURI="selectorAutomationPlan" hintWidth="250" hintHeight="250">
             <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pn-SMJUdEeq-KoPaR9_Cfg"/>
           </selectionDialogs>
@@ -136,7 +139,7 @@
       <resourceProperties id="_tffywWpHEeuDWZwlSoXo7A" name="SUTdirectoryPath" valueType="XMLLiteral"/>
       <resourceProperties id="_tffywmpHEeuDWZwlSoXo7A" name="createdSUT" occurs="zeroOrOne" valueType="Resource" range="_mBmTQGpGEeuDWZwlSoXo7A" representation="either"/>
       <resourceProperties id="_tffyw2pHEeuDWZwlSoXo7A" name="commandlinePosition" occurs="zeroOrOne" valueType="Integer"/>
-      <resourceProperties id="_tffyxGpHEeuDWZwlSoXo7A" name="fileURI" occurs="zeroOrOne" valueType="URI"/>
+      <resourceProperties id="_tffyxGpHEeuDWZwlSoXo7A" name="filePath" occurs="zeroOrOne" valueType="String"/>
       <resourceProperties id="_ZGAioHrFEeuDQtNZS3H7hw" name="compiled"/>
       <configuration xsi:type="oslc4j_ai:MavenSpecificationConfiguration">
         <generalConfiguration filesBasePath="." javaBasePackageName="cz.vutbr.fit.group.verifit.oslc.domain"/>

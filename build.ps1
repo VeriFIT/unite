@@ -46,6 +46,12 @@ function main ()
     echo "    Building and Installing shared resources"
     echo "############################################################"
     echo ""
+
+    mvn install:install-file -Dfile='.\lib\cz.vutbr.fit.group.verifit.jsem_0.2.0.202103021435.jar' -DgroupId='cz.vutbr.fit.group.verifit.jsem' -DartifactId='jsem' -Dversion='0.2.0.qualifier' -Dpackaging='jar'
+    if ( ! $? ) {
+        exit $LastExitCode
+    }
+
     cd shared
     mvn clean install
     
@@ -56,6 +62,10 @@ function main ()
     echo ""
     cd ../compilation
     mvn clean install
+    if ( ! $? ) {
+        cd $USRPATH
+        exit $LastExitCode
+    }
     
     echo ""
     echo "############################################################"
@@ -64,6 +74,10 @@ function main ()
     echo ""
     cd ../analysis
     mvn clean install
+    if ( ! $? ) {
+        cd $USRPATH
+        exit $LastExitCode
+    }
     
     echo ""
     echo "##### ALL DONE #############################################"

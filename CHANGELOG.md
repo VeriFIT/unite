@@ -1,3 +1,17 @@
+### v2.0.0
+- added a new common input parameter "outputFilter" to the analysis adapter
+	- features allowedValue properties that list all available parsers
+	- parsers can be defined as plugins with configuration located in analysis/PluginParserConfiguration
+	  and plugin source files placed in src/main/java/pluginParsers
+	- each plugin parser has to implement the IParser interface and the IExtension interface
+  - there is a few predefined parsers including an example template parser
+- added jSEM as a .jar file to get plugin output parsers/filters (potentially a temporary solution)
+- added URIs to Contribution resources
+  - **fit:fileURI** renamed to **fit:filePath** and no longer serves as a copy paste method of downloading files.
+    Instead, octet-stream GETs or PUTs should be directed at the URI of the contribution itself
+  - added a query capability for Contribution resources
+- the root directory is now an Eclipse project for hierarchical view
+
 ### v1.4.0
 - All adapter outputs are now in their own directory ".adapter" to not get in the way of analysis tool outputs.
 - Changed rdf:value type to String from XMLLiteral to avoid invalid XMLLiteral warnings for contribution values.

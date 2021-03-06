@@ -79,6 +79,7 @@ import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
+import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import cz.vutbr.fit.group.verifit.oslc.analysis.servlet.ServiceProviderCatalogSingleton;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
@@ -101,7 +102,7 @@ import org.eclipse.lyo.oslc4j.core.model.Error;
 // End of user code
 @OslcService(Oslc_autoDomainConstants.AUTOMATION_DOMAIN)
 @Path("resources")
-@Api(value = "OSLC Service for {" + Oslc_autoDomainConstants.AUTOMATIONPLAN_LOCALNAME + ", " + Oslc_autoDomainConstants.AUTOMATIONREQUEST_LOCALNAME + ", " + Oslc_autoDomainConstants.AUTOMATIONRESULT_LOCALNAME + "}")
+@Api(value = "OSLC Service for {" + Oslc_autoDomainConstants.AUTOMATIONPLAN_LOCALNAME + ", " + Oslc_autoDomainConstants.AUTOMATIONREQUEST_LOCALNAME + ", " + Oslc_autoDomainConstants.AUTOMATIONRESULT_LOCALNAME + ", " + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "}")
 public class ServiceProviderService1
 {
     @Context private HttpServletRequest httpServletRequest;
@@ -429,6 +430,104 @@ public class ServiceProviderService1
                         uriInfo.getAbsolutePath().toString() + "?oslc.paging=true&oslc.pageSize=" + pageSize + "&page=" + (page + 1));
             }
             RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/cz/vutbr/fit/group/verifit/oslc/analysis/automationrequestscollection.jsp");
+            rd.forward(httpServletRequest,httpServletResponse);
+            return;
+        }
+
+        throw new WebApplicationException(Status.NOT_FOUND);
+    }
+
+    @OslcQueryCapability
+    (
+        title = "QueryContribution",
+        label = "QueryContribution",
+        resourceShape = OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.CONTRIBUTION_PATH,
+        resourceTypes = {Oslc_autoDomainConstants.CONTRIBUTION_TYPE},
+        usages = {}
+    )
+    @GET
+    @Path("queryContribution")
+    @Produces({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_JSON_LD, OslcMediaType.TEXT_TURTLE, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON})
+    @ApiOperation(
+        value = "Query capability for resources of type {" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "}",
+        notes = "Query capability for resources of type {" + "<a href=\"" + Oslc_autoDomainConstants.CONTRIBUTION_TYPE + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "}" +
+            ", with respective resource shapes {" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.CONTRIBUTION_PATH + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "}",
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML
+    )
+    public Contribution[] queryContributions(
+                                                    
+                                                     @QueryParam("oslc.where") final String where,
+                                                     @QueryParam("oslc.prefix") final String prefix,
+                                                     @QueryParam("page") final String pageString,
+                                                    @QueryParam("oslc.pageSize") final String pageSizeString) throws IOException, ServletException
+    {
+        int page=0;
+        int pageSize=20;
+        if (null != pageString) {
+            page = Integer.parseInt(pageString);
+        }
+        if (null != pageSizeString) {
+            pageSize = Integer.parseInt(pageSizeString);
+        }
+
+        // Start of user code queryContributions
+        // Here additional logic can be implemented that complements main action taken in VeriFitAnalysisManager
+        // End of user code
+
+        final List<Contribution> resources = VeriFitAnalysisManager.queryContributions(httpServletRequest, where, prefix, page, pageSize);
+        httpServletRequest.setAttribute("queryUri",
+                uriInfo.getAbsolutePath().toString() + "?oslc.paging=true");
+        if (resources.size() > pageSize) {
+            resources.remove(resources.size() - 1);
+            httpServletRequest.setAttribute(OSLC4JConstants.OSLC4J_NEXT_PAGE,
+                    uriInfo.getAbsolutePath().toString() + "?oslc.paging=true&oslc.pageSize=" + pageSize + "&page=" + (page + 1));
+        }
+        return resources.toArray(new Contribution [resources.size()]);
+    }
+
+    @GET
+    @Path("queryContribution")
+    @Produces({ MediaType.TEXT_HTML })
+    @ApiOperation(
+        value = "Query capability for resources of type {" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "}",
+        notes = "Query capability for resources of type {" + "<a href=\"" + Oslc_autoDomainConstants.CONTRIBUTION_TYPE + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "}" +
+            ", with respective resource shapes {" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.CONTRIBUTION_PATH + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "}",
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML
+    )
+    public void queryContributionsAsHtml(
+                                    
+                                       @QueryParam("oslc.where") final String where,
+                                       @QueryParam("oslc.prefix") final String prefix,
+                                       @QueryParam("page") final String pageString,
+                                    @QueryParam("oslc.pageSize") final String pageSizeString) throws ServletException, IOException
+    {
+        int page=0;
+        int pageSize=20;
+        if (null != pageString) {
+            page = Integer.parseInt(pageString);
+        }
+        if (null != pageSizeString) {
+            pageSize = Integer.parseInt(pageSizeString);
+        }
+
+        // Start of user code queryContributionsAsHtml
+        // End of user code
+
+        final List<Contribution> resources = VeriFitAnalysisManager.queryContributions(httpServletRequest, where, prefix, page, pageSize);
+
+        if (resources!= null) {
+            httpServletRequest.setAttribute("resources", resources);
+            // Start of user code queryContributionsAsHtml_setAttributes
+            // End of user code
+
+            httpServletRequest.setAttribute("queryUri",
+                    uriInfo.getAbsolutePath().toString() + "?oslc.paging=true");
+            if (resources.size() > pageSize) {
+                resources.remove(resources.size() - 1);
+                httpServletRequest.setAttribute(OSLC4JConstants.OSLC4J_NEXT_PAGE,
+                        uriInfo.getAbsolutePath().toString() + "?oslc.paging=true&oslc.pageSize=" + pageSize + "&page=" + (page + 1));
+            }
+            RequestDispatcher rd = httpServletRequest.getRequestDispatcher("/cz/vutbr/fit/group/verifit/oslc/analysis/contributionscollection.jsp");
             rd.forward(httpServletRequest,httpServletResponse);
             return;
         }

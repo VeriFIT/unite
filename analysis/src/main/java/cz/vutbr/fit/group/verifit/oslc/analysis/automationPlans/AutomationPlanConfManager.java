@@ -10,8 +10,19 @@
 
 package cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans;
 
+import java.io.File;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
+import org.eclipse.lyo.store.StoreAccessException;
+
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.IFilter;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.FilterManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
 
 /**
  * A singleton class responsible for holding AutomationPlan configuration properties that are not included in the
@@ -21,10 +32,14 @@ public class AutomationPlanConfManager {
 
     private static AutomationPlanConfManager INSTANCE;
 
+    private AutomationPlanLoading autoPlanLoader;
+    private FilterManager filterManager;
     private Map<String, AutomationPlanConf> automationPlanConfigurations;
-
+    
     private AutomationPlanConfManager() {
         this.automationPlanConfigurations = new HashMap<String, AutomationPlanConf>();
+        this.autoPlanLoader = new AutomationPlanLoading(new File(VeriFitAnalysisProperties.AUTOPLANS_DEF_PATH));
+        this.filterManager = new FilterManager(Paths.get(VeriFitAnalysisProperties.PLUGIN_FILTER_CONF_PATH));
     }
 
     public synchronized static AutomationPlanConfManager getInstance() {
@@ -35,26 +50,44 @@ public class AutomationPlanConfManager {
         return INSTANCE;
     }
 
+    public void initializeAutomationPlans() throws StoreAccessException, Exception
+    {
+    	Collection<AutomationPlanConf> autoPlanConfs = this.autoPlanLoader.loadAutomationPlans();
+    	this.filterManager.loadFilters(autoPlanConfs);
+    	for (AutomationPlanConf conf : autoPlanConfs) {
+    		this.automationPlanConfigurations.put(conf.getIdentifier(), conf);
+    	}
+    	this.autoPlanLoader.persistAutomationPlans(this.automationPlanConfigurations);
+    }
+    
     public AutomationPlanConf getAutoPlanConf(String identifier)
     {
         return this.automationPlanConfigurations.get(identifier);
     }
 
+    public Set<String> getAllAutoPlanIds()
+    {
+        return this.automationPlanConfigurations.keySet();
+    }
+    
     public void addAutoPlanConf(String identifier, AutomationPlanConf conf)
     {
         this.automationPlanConfigurations.put(identifier, conf);
     }
 
-
     public static class AutomationPlanConf {
+    	private String identifier;
         private String launchCommand;
         private String toolSpecificArgs;
         private Boolean oneInstanceOnly;
+        private Map<String, IFilter> filters; 
 
-        public AutomationPlanConf(String launchCommand, String toolSpecificArgs, Boolean oneInstanceOnly) {
+        public AutomationPlanConf(String identifier, String launchCommand, String toolSpecificArgs, Boolean oneInstanceOnly) {
+        	this.identifier = identifier;
             this.launchCommand = launchCommand;
             this.toolSpecificArgs = toolSpecificArgs;
             this.oneInstanceOnly = oneInstanceOnly;
+            this.filters = new HashMap<String, IFilter>();
         }
 
         public String getLaunchCommand() {
@@ -68,5 +101,26 @@ public class AutomationPlanConfManager {
         public Boolean getOneInstanceOnly() {
             return oneInstanceOnly;
         }
+        
+        public String getIdentifier() {
+            return identifier;
+        }
+
+		public Map<String, IFilter> getFilters() {
+			return filters;
+		}
+
+		public IFilter getFilter(String name) {
+			return filters.get(name);
+		}
+		
+		public Boolean containsFilter(String name) {
+			return filters.containsKey(name);
+		}
+
+		public void putFilter(String filterName, IFilter filter) {
+			this.filters.put(filterName, filter);
+		}
+        
     }
 }

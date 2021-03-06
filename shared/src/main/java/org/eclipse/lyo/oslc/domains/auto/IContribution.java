@@ -138,11 +138,12 @@ public interface IContribution
     @OslcReadOnly(false)
     public Date getModified();
 
-    @OslcName("fileURI")
-    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "fileURI")
+    @OslcName("filePath")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "filePath")
     @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.String)
     @OslcReadOnly(false)
-    public URI getFileURI();
+    public String getFilePath();
 
 
     public void setTitle(final String title );
@@ -153,6 +154,6 @@ public interface IContribution
     public void setValueType(final Set<Link> valueType );
     public void setCreator(final Set<Link> creator );
     public void setModified(final Date modified );
-    public void setFileURI(final URI fileURI );
+    public void setFilePath(final String filePath );
 }
 

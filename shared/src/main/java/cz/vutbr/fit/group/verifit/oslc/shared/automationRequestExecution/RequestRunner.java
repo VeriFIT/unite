@@ -73,6 +73,8 @@ public abstract class RequestRunner extends Thread {
 		if (SystemUtils.IS_OS_LINUX) {
 			shell = "/bin/bash";
 			fileEnding = ".sh";
+			stringToExecute = stringToExecute + "\n"
+					+ "exit $?";
 		} else {
 			shell = "powershell.exe";
 			fileEnding = ".ps1";

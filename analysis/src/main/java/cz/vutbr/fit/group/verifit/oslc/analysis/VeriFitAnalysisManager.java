@@ -64,9 +64,12 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanCo
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanLoading;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationRequestExecution.SutAnalyse;
 import cz.vutbr.fit.group.verifit.oslc.analysis.clients.CompilationAdapterClient;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.IFilter;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.FilterManager;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.io.File;
 import java.io.InputStream;
@@ -130,11 +133,12 @@ public class VeriFitAnalysisManager {
 	/**
 	 * Creates an AutomationPlan resource with the specified properties, and stores in the Adapter's catalog.
 	 * @param aResource			The new resource will copy properties from the specified aResource.
+	 * @param automationPlanConf AutomationPlan configuration loaded from .properties files and with available filters.
 	 * @return					The newly created resource. Or null if one of the required properties was missing.
 	 * @throws StoreAccessException If the triplestore is not accessible
 	 * @throws OslcResourceException If the AutomationPlan to be created is missing some properties or is invalid
 	 */
-    public static AutomationPlan createAutomationPlan(final AutomationPlan aResource) throws StoreAccessException, OslcResourceException
+    public static AutomationPlan createAutomationPlan(final AutomationPlan aResource, AutomationPlanConf automationPlanConf) throws StoreAccessException, OslcResourceException
     {    	
     	AutomationPlan newResource = null;
     	
@@ -204,6 +208,18 @@ public class VeriFitAnalysisManager {
 			toolCommand.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
 			toolCommand.setDefaultValue("true");
 			newResource.addParameterDefinition(toolCommand);
+			
+			ParameterDefinition outputFilter = new ParameterDefinition();
+			outputFilter.setDescription("Use this parameter to select which output filter should be used to process"
+					+ "Contributions of this Automation Request. AllowedValues are loaded based on defined PluginFilters.");
+			outputFilter.setName("outputFilter");
+			outputFilter.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
+			outputFilter.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+			outputFilter.setDefaultValue("default");
+			for (String filterName : automationPlanConf.getFilters().keySet()) {	// set alloweValues based on defined filters
+				outputFilter.addAllowedValue(filterName);
+			}
+			newResource.addParameterDefinition(outputFilter);
 
 			// persist in the triplestore
 	        Store store = storePool.getStore();
@@ -294,8 +310,11 @@ public class VeriFitAnalysisManager {
 	 */
     public static File getContributionFile(String contributionId)
     {
-    	// decode slashes in the file path 
-		String filePath = Utils.decodeFilePathFromId(contributionId);
+		Contribution c = getContribution(null, contributionId);
+		
+		String filePath = c.getFilePath();
+		if (filePath == null)
+			return null;
 		
 		return new File(filePath);
     }
@@ -305,12 +324,15 @@ public class VeriFitAnalysisManager {
      * that corresponds to the Contribution. The Contribution ID is a path to the file to be updated. 
      * @param fileInputStream
      * @param contributionId
-     * @throws OslcResourceException
+     * @throws Exception 
      */
-    public static void updateContributionFile(InputStream fileInputStream, String contributionId) throws OslcResourceException
+    public static void updateContributionFile(InputStream fileInputStream, String contributionId) throws Exception
     {  
-    	// decode slashes in the file path
-		String filePath = Utils.decodeFilePathFromId(contributionId);
+		Contribution c = getContribution(null, contributionId);
+
+		String filePath = c.getFilePath();
+		if (filePath == null)
+			throw new Exception("ERROR: Failed to upload Contribution file: This resource does not represent a file which could be directly uploaded");
 		
         // write the file - path is getPath and content is getValue
 		try {
@@ -419,6 +441,23 @@ public class VeriFitAnalysisManager {
 		}
 	}
 	
+	/**
+	 * Fetches properties for Automation Result Contributions
+	 * @param httpServletRequest
+	 * @param aResource
+	 */
+	private static void getAutomationResultLocalContributions(HttpServletRequest httpServletRequest, AutomationResult aResource)
+	{
+		Set<Contribution> contribs = aResource.getContribution();
+        aResource.clearContribution();
+        
+    	for (Contribution contrib : contribs)
+    	{
+    		Contribution fullContrib = getContribution(httpServletRequest, Utils.getResourceIdFromUri(contrib.getAbout()));
+    		aResource.addContribution(fullContrib);
+    	}
+	}
+	
 	// End of user code
 
     public static void contextInitializeServletListener(final ServletContextEvent servletContextEvent)
@@ -488,8 +527,9 @@ public class VeriFitAnalysisManager {
 		}
         
     	// create AutomationPlans
-		try {
-			AutomationPlanLoading.loadAutomationPlans();
+		AutomationPlanConfManager autoPlanManager = AutomationPlanConfManager.getInstance();
+        try {
+        	autoPlanManager.initializeAutomationPlans();
 		} catch (Exception e) {
 			log.error("Adapter initialization: Loading AutomationPlans: " + e.getMessage());
 			System.exit(1);
@@ -583,6 +623,13 @@ public class VeriFitAnalysisManager {
             storePool.releaseStore(store);
         }
         // Start of user code queryAutomationResults_storeFinalize
+        
+        for (AutomationResult autoRes : resources)
+        {
+        	// the triple store only returns the resource as a link not as an inlined one -- fetch their contents
+        	getAutomationResultLocalContributions(httpServletRequest, autoRes);
+        }
+    	
         // End of user code
         
         // Start of user code queryAutomationResults
@@ -614,6 +661,31 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code queryAutomationRequests
+        // End of user code
+        return resources;
+    }
+    public static List<Contribution> queryContributions(HttpServletRequest httpServletRequest, String where, String prefix, int page, int limit)
+    {
+        List<Contribution> resources = null;
+        
+        // Start of user code queryContributions_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        try {
+            resources = new ArrayList<Contribution>(store.getResources(storePool.getDefaultNamedGraphUri(), Contribution.class, prefix, where, "", limit+1, page*limit));
+        } catch (StoreAccessException | ModelUnmarshallingException e) {
+            log.error("Failed to query resources, with where-string '" + where + "'", e);
+            throw new WebApplicationException("Failed to query resources, with where-string '" + where + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        // Start of user code queryContributions_storeFinalize
+        // End of user code
+        
+        // Start of user code queryContributions
+        // TODO Implement code to return a set of resources.
+        // An empty List should imply that no resources where found.
+        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code
         return resources;
     }
@@ -944,6 +1016,10 @@ public class VeriFitAnalysisManager {
             storePool.releaseStore(store);
         }
         // Start of user code getAutomationResult_storeFinalize
+        
+        // the triple store only returns the resource as a link not as an inlined one -- fetch their contents
+        getAutomationResultLocalContributions(httpServletRequest, aResource);
+        
         // End of user code
         
         // Start of user code getAutomationResult
@@ -1058,9 +1134,6 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code getContribution
-        // TODO Implement code to return a resource
-        // return 'null' if the resource was not found.
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code
         return aResource;
     }

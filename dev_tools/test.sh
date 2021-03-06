@@ -13,11 +13,13 @@
 HELP="
    Runs the run_all script and then Postman testsuites for the adapter using Newman.
 "
-USAGE="   Usage: $0 [-t|-h|-l]
+USAGE="   Usage: $0 [-t|-h|-l|-ci]
       -t ... tools - Runs an additional testsuite which requires some analysis
                          tools to be installed (i.e. will not work on all machines)
       -l ... live - Only runs the test suites without launching the adapter. Expects
                     the adapter to be running already.
+      -ci ... gitlab CI - Used when running this script in gitlab CI. Will not kill
+              subprocesses at the end.
       -h ... help
 "
 
@@ -27,6 +29,20 @@ cd $ROOTDIR                         # move to the script directory
 cd ..
 ADAPTER_ROOT_DIR=$PWD               # get the adapter root directory
 cd $ROOTDIR                         # move back to the script directory
+
+print_help() {
+    echo "$HELP"
+    echo "$USAGE"
+    exit 0
+}
+
+# $1 ... name of the invalid arg
+invalid_arg() {
+    echo -e "\n   Invalid argument: $1\n"
+    echo "$USAGE"
+    exit 1
+}
+
 
 # catch ctrl+c and kill all subprocesses
 trap 'killall' INT
@@ -82,39 +98,19 @@ checkConfFiles()
 }
 
 main() {
-    testedToolsFlag=false
-    liveAdapterFlag=false
     # process arguments
-    if [ "$#" -eq 0 ]; then
-        : # all good
-    elif [ "$#" -eq 1 ]; then
-        if [ "$1" = "-h" ]; then
-            echo "$HELP"
-            echo "$USAGE"
-            exit 0
-        elif [ "$1" = "-t" ]; then
-            testedToolsFlag=true
-        elif [ "$1" = "-l" ]; then
-            liveAdapterFlag=true
-        else
-            echo -e "Invalid arguments\n"
-            echo "$USAGE"
-            exit 1
-        fi
-    elif [ "$#" -eq 2 ]; then
-        if ([ "$1" = "-t" ] && [ "$2" = "-l" ]) || ([ "$2" = "-t" ] && [ "$1" = "-l" ]) then
-            testedToolsFlag=true
-            liveAdapterFlag=true
-        else
-            echo -e "Invalid arguments\n"
-            echo "$USAGE"
-            exit 1
-        fi
-    else
-        echo -e "Invalid arguments\n"
-        echo "$USAGE"
-        exit 1
-    fi
+    unset testedToolsFlag liveAdapterFlag gitlabCI
+    for arg in "$@"
+    do
+        case $arg in
+            -t) testedToolsFlag=true ; shift ;;
+            -l) liveAdapterFlag=true ; shift ;;
+            -ci) gitlabCI=true ; shift ;;
+            -h) print_help ; shift ;;
+            *) invalid_arg "$arg" ;;
+        esac
+    done
+
     # make sure configuration files exist
     checkConfFiles
 
@@ -124,7 +120,7 @@ main() {
     analysis_url="$analysis_host:$analysis_port/analysis/"
 
 
-    if [ ! liveAdapterFlag ]; then
+    if [ -z $liveAdapterFlag ]; then
         echo "Booting up the Universal Analysis Adapter"
         $ADAPTER_ROOT_DIR/run_all.sh &>/dev/null &
         curl_poll "$analysis_url"       # poll the analysis adapter because that one starts last in the run script
@@ -150,7 +146,7 @@ main() {
     analysisRes=$?
 
     echo
-    if [ $testedToolsFlag ]; then
+    if [ -n "$testedToolsFlag" ]; then
         echo "Running Analysis adapter Tested Tools test suite" 
         time newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_TestedTools.postman_collection
         analysisToolsRes=$?
@@ -158,11 +154,13 @@ main() {
         echo "Skipping Analysis adapter Tested Tools test suite" 
     fi
 
-    echo -e "\nShutting down the adaters" 
-    trap '' INT TERM     # ignore INT and TERM while shutting down
-    kill -TERM 0
-    wait
-    echo "All done."
+    if [ -z $gitlabCI ]; then
+        echo -e "\nShutting down the adaters" 
+        trap '' INT TERM     # ignore INT and TERM while shutting down
+        kill -TERM 0
+        wait
+        echo "All done."
+    fi
 
     # return non-zero if there were failed tests
     if [ "$compilationRes" -ne 0 ] || [ "$analysisRes" -ne 0 ] || [ "$analysisToolsRes" -ne 0 ]; then

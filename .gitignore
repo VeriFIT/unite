@@ -9,4 +9,3 @@ compilation/tmp
 RemoteSystemsTempFiles/
 *.idea*
 *.iml
-*.settings*

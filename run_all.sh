@@ -20,8 +20,9 @@ HELP="
    startup before both adapters, which is controled by polling
    the triplestore using curl until it responds.
 "
-USAGE="   Usage: $0 [-t|-h]
+USAGE="   Usage: $0 [-t|-h|-b]
       -t ... tail - Opens tail -f for each output log in new gnome-terminals.
+      -b ... build - Runs the build script first.
       -h ... help
 "
 
@@ -29,6 +30,19 @@ USRPATH=$PWD                        # get the call directory
 ROOTDIR=$(dirname $(realpath $0))   # get the script directory
 cd $ROOTDIR                         # move to the script directory
 
+
+print_help() {
+    echo "$HELP"
+    echo "$USAGE"
+    exit 0
+}
+
+# $1 ... name of the invalid arg
+invalid_arg() {
+    echo -e "\n   Invalid argument: $1\n"
+    echo "$USAGE"
+    exit 1
+}
 
 
 killTailTerminals(){
@@ -92,33 +106,35 @@ checkConfFiles()
 
 main () {
     # process arguments
-    if [ "$#" -eq 0 ]; then
-        : # all good
-    elif [ "$#" -eq 1 ]; then
-        if [ "$1" = "-h" ]; then
-            echo "$HELP"
-            echo "$USAGE"
-            exit 0
-        elif [ "$1" != "-t" ]; then
-            echo -e "Invalid arguments\n"
-            echo "$USAGE"
-            exit 1
-        fi
-    else
-        echo -e "Invalid arguments\n"
-        echo "$USAGE"
-        exit 1
-    fi
+    unset ARG_TAIL ARG_BUILD
+    for arg in "$@"
+    do
+        case $arg in
+            -t) ARG_TAIL=true ; shift ;;
+            -b) ARG_BUILD=true ; shift ;;
+            -h) print_help ; shift ;;
+            *) invalid_arg "$arg" ;;
+        esac
+    done
 
     # make sure configuration files exist
     checkConfFiles
+
+    # build first if requested by args
+    if [ -n "$ARG_BUILD" ]; then
+        echo -e "\nRunning build.sh first"
+        $ROOTDIR/build.sh
+        if [ $? -ne 0 ]; then
+            echo -e "\nBuild failed. Aborting start.\n"
+            exit $?
+        fi
+    fi
 
     # get and output version
     VERSION=$(cat ./VERSION.md 2>/dev/null)
     echo -e "\n########################################################"
     echo -e "    OSLC Universal Analysis, $VERSION"
     echo -e "########################################################\n"
-
 
     # lookup triplestore config
     triplestore_host=$(cat sparql_triplestore/jetty-distribution/start.ini | grep "^ *jetty.http.host=" | sed "s/^ *jetty.http.host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
@@ -142,10 +158,10 @@ main () {
     echo -e "########################################################\n    Running version: $VERSION\n    Started at: $CURTIME\n########################################################\n" > "$ROOTDIR/logs/analysis_$CURTIME.log"
 
     # open new terminals that tail the log files and record their PIDs to kill later
-    if [ "$1" = "-t" ]; then
-        gnome-terminal --title="tail: Triplestore Log" -- /bin/bash -c "tail -f $ROOTDIR/logs/../logs/../logs/triplestore_$CURTIME.log" # funny path /logs/../logs/../logs/ to avoid killing unwanted tail commands 
-        gnome-terminal --title="tail: Compilation Log" -- /bin/bash -c "tail -f $ROOTDIR/logs/../logs/../logs/compilation_$CURTIME.log"
-        gnome-terminal --title="tail: Analysis Log" -- /bin/bash -c "tail -f $ROOTDIR/logs/../logs/../logs/analysis_$CURTIME.log"
+    if [ -n "$ARG_TAIL" ]; then
+        gnome-terminal --title="tail: Triplestore Log (feel free to close this window)" -- /bin/bash -c "tail -f $ROOTDIR/logs/../logs/../logs/triplestore_$CURTIME.log" # funny path /logs/../logs/../logs/ to avoid killing unwanted tail commands 
+        gnome-terminal --title="tail: Compilation Log (feel free to close this window)" -- /bin/bash -c "tail -f $ROOTDIR/logs/../logs/../logs/compilation_$CURTIME.log"
+        gnome-terminal --title="tail: Analysis Log (feel free to close this window)" -- /bin/bash -c "tail -f $ROOTDIR/logs/../logs/../logs/analysis_$CURTIME.log"
     fi
 
     # start the triplestore
