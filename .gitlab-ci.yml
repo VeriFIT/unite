@@ -1,0 +1,47 @@
+# how to in local docker:
+#   run the image:
+#     $ docker run -it --entrypoint /bin/bash maven:3.6.3-jdk-8
+#
+#   install newman:
+#     $ apt-get update && apt-get install -y nodejs npm && npm install -g newman
+#
+#   clone repository
+#     $ git clone https://pajda.fit.vutbr.cz/verifit/oslc-generic-analysis.git
+#   
+#   ...
+
+image: maven:3.6.3-jdk-8
+
+# Cache downloaded dependencies and plugins between builds.
+cache:
+  paths:
+    - .m2/repository
+
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  script: /bin/bash ./build.sh
+#  artifacts: # TODO artifacts were too big...
+#    paths:
+#    - analysis/target
+#    - compilation/target
+#    - shared/target
+#    - analysis/VeriFitAnalysis.properties
+#    - compilation/VeriFitCompilation.properties
+#    - sparql_triplestore/jetty-distribution/start.ini
+#    expire_in: 20 minutes
+
+test-start:
+  stage: test
+  script: /bin/bash ./dev_tools/ci_test_start.sh
+
+test-newman:
+  stage: test
+  before_script: # apt-get update && apt-get install -y nodejs npm && npm install -g newman
+    - apt-get update
+    - apt-get install -y nodejs npm
+    - npm install -g newman
+  script: /bin/bash ./dev_tools/ci_test_suite.sh
