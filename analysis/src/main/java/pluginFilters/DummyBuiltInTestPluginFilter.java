@@ -31,14 +31,14 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.builtInFilters.Rem
  * Use this class as a Template for creating your own filtersv.
  * See the IFilter interface for more info.
  */
-public class ExamplePluginFilter implements IFilter, IExtension {
+public class DummyBuiltInTestPluginFilter implements IFilter, IExtension {
 	
 	/**
 	 * TEMPLATE TODO
 	 * Make sure to change this value when creating your own filter.
 	 * Names have to be unique per AutomationPlan (each AutomationPlan can only have uniquely named filters associated with it)
 	 */
-	final String name = "example";
+	final String name = "dummy";
 
 	public void filter(List<Map<String, String>> inoutContributions) {
 
