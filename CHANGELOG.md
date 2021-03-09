@@ -8,7 +8,7 @@
 - moved the jetty distribution into the ./lib directory and then use jetty base in ./sparql_triplestore
 - changed built in tool loading to be loaded the same way as custom tools
 - changed powershell exec in the analysis adapter to print exceptions properly
-- ... 
+- changed linux exec so that the script contains a /bin/bash -c "$1" and the string to execute gets passed as the $1 to the script
 
 ### v2.0.0
 - added a new common input parameter "outputFilter" to the analysis adapter

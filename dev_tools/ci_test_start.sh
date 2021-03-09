@@ -29,9 +29,9 @@ main () {
     $ADAPTER_ROOT_DIR/build.sh &>/dev/null
 
     # lookup config URLs
-    triplestore_url=$(lookupTriplestoreURL "$ROOTDIR")
-    compilation_url=$(lookupCompilationURL "$ROOTDIR")
-    analysis_url=$(lookupAnalysisURL "$ROOTDIR")
+    triplestore_url=$(lookupTriplestoreURL "$ADAPTER_ROOT_DIR")
+    compilation_url=$(lookupCompilationURL "$ADAPTER_ROOT_DIR")
+    analysis_url=$(lookupAnalysisURL "$ADAPTER_ROOT_DIR")
 
     echo -e "Booting\n"
     $ADAPTER_ROOT_DIR/run_all.sh &>/dev/null &
