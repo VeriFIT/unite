@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package pluginFilters;
+package pluginFilters.customPluginFilters;
 
 import java.util.HashMap;
 import java.util.List;

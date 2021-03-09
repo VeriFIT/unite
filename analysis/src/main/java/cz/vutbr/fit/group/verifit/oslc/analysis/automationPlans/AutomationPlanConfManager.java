@@ -38,8 +38,8 @@ public class AutomationPlanConfManager {
     
     private AutomationPlanConfManager() {
         this.automationPlanConfigurations = new HashMap<String, AutomationPlanConf>();
-        this.autoPlanLoader = new AutomationPlanLoading(new File(VeriFitAnalysisProperties.AUTOPLANS_DEF_PATH));
-        this.filterManager = new FilterManager(Paths.get(VeriFitAnalysisProperties.PLUGIN_FILTER_CONF_PATH));
+        this.autoPlanLoader = new AutomationPlanLoading();
+        this.filterManager = new FilterManager();
     }
 
     public synchronized static AutomationPlanConfManager getInstance() {
@@ -52,11 +52,18 @@ public class AutomationPlanConfManager {
 
     public void initializeAutomationPlans() throws StoreAccessException, Exception
     {
-    	Collection<AutomationPlanConf> autoPlanConfs = this.autoPlanLoader.loadAutomationPlans();
-    	this.filterManager.loadFilters(autoPlanConfs);
+    	this.autoPlanLoader.loadAutomationPlans(new File(VeriFitAnalysisProperties.AUTOPLANS_DEF_PATH_BUILTIN));
+    	this.autoPlanLoader.loadAutomationPlans(new File(VeriFitAnalysisProperties.AUTOPLANS_DEF_PATH_CUSTOM));
+    	
+    	Collection<AutomationPlanConf> autoPlanConfs = this.autoPlanLoader.getAutoPlanConfs();
+    	this.filterManager.loadDefaultFilters(autoPlanConfs);
+    	this.filterManager.loadFilters(autoPlanConfs, Paths.get(VeriFitAnalysisProperties.PLUGIN_FILTER_CONF_PATH_BUILTIN));
+    	//this.filterManager.loadFilters(autoPlanConfs, Paths.get(VeriFitAnalysisProperties.PLUGIN_FILTER_CONF_PATH_CUSTOM)); // TODO is subdirectory so no need to load again
+    	
     	for (AutomationPlanConf conf : autoPlanConfs) {
     		this.automationPlanConfigurations.put(conf.getIdentifier(), conf);
     	}
+    	
     	this.autoPlanLoader.persistAutomationPlans(this.automationPlanConfigurations);
     }
     
@@ -90,6 +97,10 @@ public class AutomationPlanConfManager {
             this.filters = new HashMap<String, IFilter>();
         }
 
+        public void setLaunchCommand(String s) {
+        	this.launchCommand = s;
+        }
+        
         public String getLaunchCommand() {
             return launchCommand;
         }

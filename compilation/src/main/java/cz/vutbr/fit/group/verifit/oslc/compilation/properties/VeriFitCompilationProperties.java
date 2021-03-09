@@ -13,6 +13,7 @@ package cz.vutbr.fit.group.verifit.oslc.compilation.properties;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 // End of user code
 import java.util.Properties;
 
@@ -38,7 +39,7 @@ public class VeriFitCompilationProperties
 	private static void loadPropertiesFromFile() throws FileNotFoundException, IOException
 	{
 		Properties VeriFitCompilationProperties = new Properties();
-		VeriFitCompilationProperties.load(new FileInputStream(PROPERTIES_PATH));
+		VeriFitCompilationProperties.load(new FileInputStream(Paths.get(PROPERTIES_PATH).toFile()));
 		
 		ADAPTER_HOST = VeriFitCompilationProperties.getProperty("adapter_host");	
 		if (ADAPTER_HOST == null)
@@ -96,7 +97,7 @@ public class VeriFitCompilationProperties
 	/*
 	 *  Java properties
 	 */
-	public static final String PROPERTIES_PATH = "./VeriFitCompilation.properties";
+	public static final String PROPERTIES_PATH = "./conf/VeriFitCompilation.properties";
 
 	public static String ADAPTER_HOST;
 	public static String ADAPTER_PORT;

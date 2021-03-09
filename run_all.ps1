@@ -31,7 +31,6 @@ $USAGE="   Usage: $PSCommandPath [-t|-h|-b]
 
 $USRPATH=$(pwd)         # get the call directory
 $ROOTDIR=$PSScriptRoot  # get the script directory
-cd $ROOTDIR             # move to the script directory
 
 $PIDS_TO_KILL=@()
 
@@ -79,22 +78,22 @@ function curl_poll
 # a conf file is missing.
 function checkConfFiles()
 {
-    if (!(Test-Path "./analysis/VeriFitAnalysis.properties" -PathType Leaf)) {
-        echo 'ERROR: Configuration file "'$ROOTDIR'"/analysis/VeriFitAnalysis.properties" not found.'
+    if (!(Test-Path "$ROOTDIR/analysis/conf/VeriFitAnalysis.properties" -PathType Leaf)) {
+        echo 'ERROR: Configuration file "'$ROOTDIR'"/analysis/conf/VeriFitAnalysis.properties" not found.'
         echo "  The adapter needs to be configured to be able to run!"
-        echo '  See the "VeriFitAnalysisExample.properties" file for instructions and use it as a template.'
+        echo '  Run the build script first or use the -b option.'
         exit 1
     }
-    if (!(Test-Path "./compilation/VeriFitCompilation.properties" -PathType Leaf)) {
-        echo 'ERROR: Configuration file "'$ROOTDIR'"/compilation/VeriFitCompilation.properties" not found.'
+    if (!(Test-Path "$ROOTDIR/compilation/conf/VeriFitCompilation.properties" -PathType Leaf)) {
+        echo 'ERROR: Configuration file "'$ROOTDIR'"/compilation/conf/VeriFitCompilation.properties" not found.'
         echo "  The adapter needs to be configured to be able to run!"
-        echo '  See the "VeriFitCompilationExample.properties" file for instructions and use it as a template.'
+        echo '  Run the build script first or use the -b option.'
         exit 1
     }
-    if (!(Test-Path "./sparql_triplestore/jetty-distribution/start.ini" -PathType Leaf)) {
-        echo 'ERROR: Configuration file "'$ROOTDIR'"/sparql_triplestore/jetty-distribution/start.ini" not found.'
+    if (!(Test-Path "$ROOTDIR/sparql_triplestore/start.ini" -PathType Leaf)) {
+        echo 'ERROR: Configuration file "'$ROOTDIR'"/sparql_triplestore/start.ini" not found.'
         echo "  The adapter needs to be configured to be able to run!"
-        echo '  See the "startExample.ini" file for instructions and use it as a template.'
+        echo '  Run the build script first or use the -b option.'
         exit 1
     }
 }
@@ -126,7 +125,6 @@ function checkForCtrlC () {
         If ([Int]$Key.Character -eq 3) {
             killChildren
             [Console]::TreatControlCAsInput = $False
-            cd $USRPATH
             exit 0
         }
         # Flush the key buffer again for the next loop.
@@ -154,7 +152,7 @@ checkConfFiles
 if ($b)
 {
     echo "Running build.sh first"
-    .\build.ps1
+    & "${ROOTDIR}\build.ps1"
     if ( ! $? ) {
         echo "Build failed. Aborting start.`n"
         exit $LastExitCode
@@ -162,7 +160,7 @@ if ($b)
 }
 
 # get and output version
-$VERSION=$(cat .\VERSION.md 2> $null)
+$VERSION=$(cat $ROOTDIR\VERSION.md 2> $null)
 echo ""
 echo "########################################################"
 echo "    OSLC Universal Analysis, $VERSION"
@@ -170,16 +168,16 @@ echo "########################################################"
 echo ""
 
 # lookup triplestore config
-$triplestore_host=$(cat sparql_triplestore/jetty-distribution/start.ini | Select-String -Pattern "^ *jetty.http.host=") -replace "^ *jetty.http.host=", "" -replace "/$", "" # removes final slash in case there is one (http://host/ vs http://host)
-$triplestore_port=$(cat sparql_triplestore/jetty-distribution/start.ini | Select-String -Pattern "^ *jetty.http.port=") -replace "^ *jetty.http.port=", ""
+$triplestore_host=$(cat $ROOTDIR/sparql_triplestore/start.ini | Select-String -Pattern "^ *jetty.http.host=") -replace "^ *jetty.http.host=", "" -replace "/$", "" # removes final slash in case there is one (http://host/ vs http://host)
+$triplestore_port=$(cat $ROOTDIR/sparql_triplestore/start.ini | Select-String -Pattern "^ *jetty.http.port=") -replace "^ *jetty.http.port=", ""
 $triplestore_url="http://${triplestore_host}:${triplestore_port}/fuseki/" # TODO prefix needs to be configurable for https
 # lookup compilation adapter config
-$compilation_host=$(cat compilation/VeriFitCompilation.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
-$compilation_port=$(cat compilation/VeriFitCompilation.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
+$compilation_host=$(cat $ROOTDIR/compilation/conf/VeriFitCompilation.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
+$compilation_port=$(cat $ROOTDIR/compilation/conf/VeriFitCompilation.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
 $compilation_url="${compilation_host}:${compilation_port}/compilation/"
 ## lookup analysis adapter config
-$analysis_host=$(cat analysis/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
-$analysis_port=$(cat analysis/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
+$analysis_host=$(cat $ROOTDIR/analysis/conf/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
+$analysis_port=$(cat $ROOTDIR/analysis/conf/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
 $analysis_url="${analysis_host}:${analysis_port}/analysis/"
 
 ## create log files and append headings
@@ -207,9 +205,7 @@ if ($t)
 }
 
 # start the triplestore
-echo "Starting the Triplestore"
-cd sparql_triplestore
-$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Triplestore'; ./run.ps1 >> $ROOTDIR/logs/triplestore_$CURTIME.log 2>&1" -passthru
+$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Triplestore'; $ROOTDIR/sparql_triplestore/run.ps1 >> $ROOTDIR/logs/triplestore_$CURTIME.log 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Triplestore to finish startup"
 curl_poll $triplestore_url
@@ -217,8 +213,7 @@ echo "Triplestore running`n"
 
 ## start the compilation adapter
 echo "Starting the Compilation adapter"
-cd ../compilation
-$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; mvn jetty:run-exploded >> $ROOTDIR/logs/compilation_$CURTIME.log 2>&1" -passthru
+$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; cd compilation ; mvn jetty:run-exploded >> $ROOTDIR/logs/compilation_$CURTIME.log 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Compilation adapter to finish startup"
 curl_poll $compilation_url
@@ -226,13 +221,11 @@ echo "Compilation adapter running`n"
 
 # start the analysis adapter
 echo "Starting the Analysis adapter"
-cd ../analysis
-$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; mvn jetty:run-exploded >> $ROOTDIR/logs/analysis_$CURTIME.log 2>&1" -passthru
+$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; cd analysis ; mvn jetty:run-exploded >> $ROOTDIR/logs/analysis_$CURTIME.log 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Analysis adapter to finish startup"
 curl_poll $analysis_url
 echo "Analysis adapter running`n"
-cd ..
 
 echo "Ready to go!"
 echo "Use ctrl+c to exit..."
