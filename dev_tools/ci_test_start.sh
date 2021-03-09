@@ -55,16 +55,16 @@ main () {
     $ADAPTER_ROOT_DIR/build.sh &>/dev/null
 
     # lookup triplestore config
-    triplestore_host=$(cat $ADAPTER_ROOT_DIR/sparql_triplestore/jetty-distribution/start.ini | grep "^ *jetty.http.host=" | sed "s/^ *jetty.http.host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
-    triplestore_port=$(cat $ADAPTER_ROOT_DIR/sparql_triplestore/jetty-distribution/start.ini | grep "^ *jetty.http.port=" | sed "s/^ *jetty.http.port=//")
+    triplestore_host=$(cat $ADAPTER_ROOT_DIR/sparql_triplestore/start.ini | grep "^ *jetty.http.host=" | sed "s/^ *jetty.http.host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
+    triplestore_port=$(cat $ADAPTER_ROOT_DIR/sparql_triplestore/start.ini | grep "^ *jetty.http.port=" | sed "s/^ *jetty.http.port=//")
     triplestore_url="$triplestore_host:$triplestore_port/fuseki/"
     # lookup compilation adapter config
-    compilation_host=$(cat $ADAPTER_ROOT_DIR/compilation/VeriFitCompilation.properties | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
-    compilation_port=$(cat $ADAPTER_ROOT_DIR/compilation/VeriFitCompilation.properties | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")
+    compilation_host=$(cat $ADAPTER_ROOT_DIR/compilation/conf/VeriFitCompilation.properties | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
+    compilation_port=$(cat $ADAPTER_ROOT_DIR/compilation/conf/VeriFitCompilation.properties | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")
     compilation_url="$compilation_host:$compilation_port/compilation/"
     # lookup analysis adapter config
-    analysis_host=$(cat $ADAPTER_ROOT_DIR/analysis/VeriFitAnalysis.properties | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
-    analysis_port=$(cat $ADAPTER_ROOT_DIR/analysis/VeriFitAnalysis.properties | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")
+    analysis_host=$(cat $ADAPTER_ROOT_DIR/analysis/conf/VeriFitAnalysis.properties | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
+    analysis_port=$(cat $ADAPTER_ROOT_DIR/analysis/conf/VeriFitAnalysis.properties | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")
     analysis_url="$analysis_host:$analysis_port/analysis/"
 
 

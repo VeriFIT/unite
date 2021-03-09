@@ -10,9 +10,30 @@
 # SPDX-License-Identifier: EPL-2.0
 ##########################
 
+$HELP="
+   Loads configuration files and then builds and installs the adapter
+   and its dependencies.
+"
+$USAGE="   Usage: $0 [-h]
+      -h ... help
+"
+
 USRPATH=$PWD                        # get the call directory
 ROOTDIR=$(dirname $(realpath $0))   # get the script directory
-cd $ROOTDIR                         # move to the script directory
+
+
+print_help() {
+    echo "$HELP"
+    echo "$USAGE"
+    exit 0
+}
+
+# $1 ... name of the invalid arg
+invalid_arg() {
+    echo -e "\n   Invalid argument: $1\n"
+    echo "$USAGE"
+    exit 1
+}
 
 # Checks if a conf file exists. If not, then a default one is created.
 # $1 = file to check
@@ -30,44 +51,55 @@ confFileCheckOrDefault()
 }
 
 
-echo
-echo "############################################################"
-echo "    Checking configuration files"
-echo "############################################################"
-echo
-confFileCheckOrDefault "./analysis/VeriFitAnalysis.properties" "./analysis/VeriFitAnalysisExample.properties"
-confFileCheckOrDefault "./compilation/VeriFitCompilation.properties" "./compilation/VeriFitCompilationExample.properties"
-confFileCheckOrDefault "./sparql_triplestore/jetty-distribution/start.ini" "./sparql_triplestore/jetty-distribution/startExample.ini"
 
-echo
-echo "############################################################"
-echo "    Building and Installing shared resources"
-echo "############################################################"
-echo
+main () {
+    # process arguments
+    for arg in "$@"
+    do
+        case $arg in
+            -h) print_help ; shift ;;
+            *) invalid_arg "$arg" ;;
+        esac
+    done
 
-mvn install:install-file -Dfile=$ROOTDIR/lib/cz.vutbr.fit.group.verifit.jsem_0.2.0.202103021435.jar -DgroupId=cz.vutbr.fit.group.verifit.jsem -DartifactId=jsem -Dversion=0.2.0.qualifier -Dpackaging=jar || exit "$?"
+    echo
+    echo "############################################################"
+    echo "    Checking configuration files"
+    echo "############################################################"
+    echo
+    confFileCheckOrDefault "$ROOTDIR/analysis/conf/VeriFitAnalysis.properties" "$ROOTDIR/analysis/conf/VeriFitAnalysisDefault.properties"
+    confFileCheckOrDefault "$ROOTDIR/compilation/conf/VeriFitCompilation.properties" "$ROOTDIR/compilation/conf/VeriFitCompilationDefault.properties"
+    confFileCheckOrDefault "$ROOTDIR/sparql_triplestore/start.ini" "$ROOTDIR/sparql_triplestore/startDefault.ini"
 
-cd shared
-mvn clean install || exit "$?"
+    echo
+    echo "############################################################"
+    echo "    Building and Installing shared resources"
+    echo "############################################################"
+    echo
 
-echo
-echo "############################################################"
-echo "    Building and Installing the Compilation adapter"
-echo "############################################################"
-echo
-cd ../compilation
-mvn clean install || exit "$?"
+    mvn install:install-file -Dfile=$ROOTDIR/lib/cz.vutbr.fit.group.verifit.jsem_0.2.0.202103021435.jar -DgroupId=cz.vutbr.fit.group.verifit.jsem -DartifactId=jsem -Dversion=0.2.0.qualifier -Dpackaging=jar || exit "$?"
 
-echo
-echo "############################################################"
-echo "    Building and Installing the Analysis adapter"
-echo "############################################################"
-echo
-cd ../analysis
-mvn clean install || exit "$?"
+    mvn -f $ROOTDIR/shared/pom.xml clean install || exit "$?"
 
-echo
-echo "##### ALL DONE #############################################"
-echo
+    echo
+    echo "############################################################"
+    echo "    Building and Installing the Compilation adapter"
+    echo "############################################################"
+    echo
+    mvn -f $ROOTDIR/compilation/pom.xml clean install || exit "$?"
 
-exit 0
+    echo
+    echo "############################################################"
+    echo "    Building and Installing the Analysis adapter"
+    echo "############################################################"
+    echo
+    mvn -f $ROOTDIR/analysis/pom.xml clean install || exit "$?"
+
+    echo
+    echo "##### ALL DONE #############################################"
+    echo
+
+    exit 0
+}
+
+main "$@"
