@@ -1,9 +1,9 @@
 target
 
-analysis/src/main/java/pluginFilters
-!analysis/src/main/java/pluginFilters/DummyBuiltInTestPluginFilter.java
+src/main/java/pluginFilters
+!src/main/java/pluginFilters/DummyBuiltInTestPluginFilter.java
 
 conf
-!analysis/conf/BuiltInAnalysisTools
-!analysis/conf/BuiltInPluginFiltersConfiguration
-!analysis/conf/VeriFitAnalysisDefault.properties
+!conf/BuiltInAnalysisTools
+!conf/BuiltInPluginFiltersConfiguration
+!conf/VeriFitAnalysisDefault.properties

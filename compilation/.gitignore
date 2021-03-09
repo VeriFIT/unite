@@ -2,4 +2,4 @@ target
 SUT
 
 conf
-!analysis/conf/VeriFitCompilationDefault.properties
+!conf/VeriFitCompilationDefault.properties

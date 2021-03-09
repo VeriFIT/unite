@@ -182,7 +182,6 @@ function curl_poll
             return 1
         }
     }
-    echo ""
     return 0
 }
 

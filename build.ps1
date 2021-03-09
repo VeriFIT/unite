@@ -56,6 +56,9 @@ if ( ! $? ) {
 }
 
 mvn -f $ROOTDIR/shared/pom.xml clean install
+if ( ! $? ) {
+    exit $LastExitCode
+}
 
 echo ""
 echo "############################################################"

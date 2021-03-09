@@ -59,9 +59,9 @@ public class ExamplePluginFilter implements IFilter, IExtension {
 		// and create a single new one instead
 		Map<String, String> contrib = new HashMap<String, String>();
 		contrib.put("id", "testContributionId");
-		contrib.put("title", "test name");
-		contrib.put("value", "test value");
-		contrib.put("description", "This contribution was filtered by the TestPluginFilter");
+		contrib.put("title", "Example name");
+		contrib.put("value", "Example value");
+		contrib.put("description", "This contribution was filtered by the ExamplePluginFilter");
 		contrib.put("valueType", OslcValues.OSLC_VAL_TYPE_STRING.getValue().toString());
 		inoutContributions.add(contrib);
 	}
