@@ -11,5 +11,7 @@
 # SPDX-License-Identifier: EPL-2.0
 ##########################
 
-cd $(dirname $0)/jetty-distribution
-exec java -DFUSEKI_BASE="../triplestore" -jar start.jar
+$USRPATH=$(pwd)         # get the call directory
+$ROOTDIR=$(dirname $0)  # get the script directory
+
+exec java -DFUSEKI_BASE="$ROOTDIR/triplestore" -jar  $ROOTDIR/../lib/jetty-distribution/start.jar jetty.base="$ROOTDIR"

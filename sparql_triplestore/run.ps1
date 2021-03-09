@@ -10,7 +10,5 @@
 
 $USRPATH=$(pwd)         # get the call directory
 $ROOTDIR=$PSScriptRoot  # get the script directory
-cd $ROOTDIR             # move to the script directory
 
-cd jetty-distribution
-java -DFUSEKI_BASE="../triplestore" -jar start.jar
+java -DFUSEKI_BASE="$ROOTDIR/triplestore" -jar  $ROOTDIR/../lib/jetty-distribution/start.jar jetty.base="$ROOTDIR"

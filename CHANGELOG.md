@@ -1,3 +1,6 @@
+### v2.1.0
+- TODO
+
 ### v2.0.0
 - added a new common input parameter "outputFilter" to the analysis adapter
 	- features allowedValue properties that list all available parsers
