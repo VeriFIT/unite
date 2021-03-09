@@ -64,7 +64,7 @@ public class AutomationPlanConfManager {
     		this.automationPlanConfigurations.put(conf.getIdentifier(), conf);
     	}
     	
-    	this.autoPlanLoader.persistAutomationPlans(this.automationPlanConfigurations);
+    	this.autoPlanLoader.persistAutomationPlans();
     }
     
     public AutomationPlanConf getAutoPlanConf(String identifier)

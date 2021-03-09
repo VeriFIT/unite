@@ -213,7 +213,7 @@ echo "Triplestore running`n"
 
 ## start the compilation adapter
 echo "Starting the Compilation adapter"
-$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; cd compilation ; mvn jetty:run-exploded >> $ROOTDIR/logs/compilation_$CURTIME.log 2>&1" -passthru
+$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; cd $ROOTDIR/compilation ; mvn jetty:run-exploded >> $ROOTDIR/logs/compilation_$CURTIME.log 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Compilation adapter to finish startup"
 curl_poll $compilation_url
@@ -221,7 +221,7 @@ echo "Compilation adapter running`n"
 
 # start the analysis adapter
 echo "Starting the Analysis adapter"
-$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; cd analysis ; mvn jetty:run-exploded >> $ROOTDIR/logs/analysis_$CURTIME.log 2>&1" -passthru
+$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; cd $ROOTDIR/analysis ; mvn jetty:run-exploded >> $ROOTDIR/logs/analysis_$CURTIME.log 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Analysis adapter to finish startup"
 curl_poll $analysis_url

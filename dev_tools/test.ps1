@@ -85,22 +85,16 @@ function curl_poll
 # a conf file is missing.
 function checkConfFiles()
 {
-    if (!(Test-Path "$ADAPTER_ROOT_DIR/analysis/VeriFitAnalysis.properties" -PathType Leaf)) {
-        echo 'ERROR: Configuration file "'$ADAPTER_ROOT_DIR'"/analysis/VeriFitAnalysis.properties" not found.'
-        echo "  The adapter needs to be configured to be able to run!"
-        echo '  See the "VeriFitAnalysisExample.properties" file for instructions and use it as a template.'
+    if (!(Test-Path "$ADAPTER_ROOT_DIR/analysis/conf/VeriFitAnalysis.properties" -PathType Leaf)) {
+        echo 'ERROR: Configuration file "'$ADAPTER_ROOT_DIR'"/analysis/conf/VeriFitAnalysis.properties" not found.'
         exit 1
     }
-    if (!(Test-Path "$ADAPTER_ROOT_DIR/compilation/VeriFitCompilation.properties" -PathType Leaf)) {
-        echo 'ERROR: Configuration file "'$ADAPTER_ROOT_DIR'"/compilation/VeriFitCompilation.properties" not found.'
-        echo "  The adapter needs to be configured to be able to run!"
-        echo '  See the "VeriFitCompilationExample.properties" file for instructions and use it as a template.'
+    if (!(Test-Path "$ADAPTER_ROOT_DIR/compilation/conf/VeriFitCompilation.properties" -PathType Leaf)) {
+        echo 'ERROR: Configuration file "'$ADAPTER_ROOT_DIR'"/compilation/conf/VeriFitCompilation.properties" not found.'
         exit 1
     }
-    if (!(Test-Path "$ADAPTER_ROOT_DIR/sparql_triplestore/jetty-distribution/start.ini" -PathType Leaf)) {
-        echo 'ERROR: Configuration file "'$ADAPTER_ROOT_DIR'"/sparql_triplestore/jetty-distribution/start.ini" not found.'
-        echo "  The adapter needs to be configured to be able to run!"
-        echo '  See the "startExample.ini" file for instructions and use it as a template.'
+    if (!(Test-Path "$ADAPTER_ROOT_DIR/sparql_triplestore/start.ini" -PathType Leaf)) {
+        echo 'ERROR: Configuration file "'$ADAPTER_ROOT_DIR'"/sparql_triplestore/start.ini" not found.'
         exit 1
     }
 }
@@ -138,8 +132,8 @@ if ($h) {
 checkConfFiles
 
 # lookup analysis adapter config
-$analysis_host=$(cat $ADAPTER_ROOT_DIR/analysis/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
-$analysis_port=$(cat $ADAPTER_ROOT_DIR/analysis/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
+$analysis_host=$(cat $ADAPTER_ROOT_DIR/analysis/conf/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
+$analysis_port=$(cat $ADAPTER_ROOT_DIR/analysis/conf/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
 $analysis_url="${analysis_host}:${analysis_port}/analysis/"
 
 

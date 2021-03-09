@@ -84,14 +84,28 @@ public class AutomationPlanLoading {
      * @throws StoreAccessException
      * @throws OslcResourceException
      */
-    public void persistAutomationPlans(Map<String, AutomationPlanConf> automationPlanConfigurations) throws StoreAccessException, OslcResourceException
+    public void persistAutomationPlans() throws StoreAccessException, OslcResourceException
     {        
     	for (AutomationPlan autoPlan : this.automationPlans.values())
-	        // create the Automation Plan
+    	{
+    		
+	        // find conf for the auto plan
+    		AutomationPlanConf conf = null;
+    		for (AutomationPlanConf c : this.autoPlanConfs)
+    		{
+    			if (c.getIdentifier().equals(autoPlan.getIdentifier()))
+    				conf = c;
+    		}
+    		
+    		if (conf == null)
+    			throw new OslcResourceException("this should never happen -- auto plan loading: couldnt find conf for auto plan");
+    		
+    		// create the Automation Plan
 	        try {
-	        	autoPlan = VeriFitAnalysisManager.createAutomationPlan(autoPlan, automationPlanConfigurations.get(autoPlan.getIdentifier()));
+	        	autoPlan = VeriFitAnalysisManager.createAutomationPlan(autoPlan, conf);
 	        } catch (OslcResourceException e) {
 	        	throw new OslcResourceException("Failed to create Automation Plan: " + e.getMessage());
+	        }
         }
 	}
 
