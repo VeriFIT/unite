@@ -27,9 +27,9 @@ All configuration files should be placed into the *cloned_repo*/conf directory. 
         3) create a two new datasets (one for each adapter) type "Persistent" and name them based on your configuration in the .properties files.
         4) in *conf/VeriFitCompilation.properties* set *persist_sut_dirs=true*
 - Analysis tool definition
-    - in *conf/analysis_advanced/AnalysisTools* define an AutomationPlan in a .rdf file and a .properties file for every tool that you want to run using the adapter. Use the "ExampleTool" definition in *conf_example/analysis_advanced/AnalysisTools* as a guide on how to define your own. For more details refer to the [wiki](https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis/-/wikis/Usage-Guide/2.-Analysis-Tool-Definition).
+    - in *conf/analysis_advanced/AnalysisTools* define an AutomationPlan in a .rdf file and a .properties file for every tool that you want to run using the adapter. Use the "ExampleTool" definition in *conf_example/analysis_advanced/AnalysisTools* as a guide on how to define your own. For more details refer to the [wiki](https://pajda.fit.vutbr.cz/verifit/oslc-generic-analysis/-/wikis/Usage-Guide/2.-Analysis-Tool-Definition).
 - Output filter definition
-    - in *conf/analysis_advanced/PluginFilters* define an output filters using a .java file and a .properties file for every filter. Use the "ExamplePluginFilter" definition in *conf_example/analysis_advanced/PluginFilters* as a guide on how to define your own. For more details refer to the [wiki](https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis/-/wikis/Usage-Guide/3.-Plugin-Output-Filters).
+    - in *conf/analysis_advanced/PluginFilters* define an output filters using a .java file and a .properties file for every filter. Use the "ExamplePluginFilter" definition in *conf_example/analysis_advanced/PluginFilters* as a guide on how to define your own. For more details refer to the [wiki](https://pajda.fit.vutbr.cz/verifit/oslc-generic-analysis/-/wikis/Usage-Guide/3.-Plugin-Output-Filters).
 
 ## How To Run
 Make sure you run a build script (build.sh or build.bat) before attempting to run anything, or use the -b parameter when running the run_all script!
