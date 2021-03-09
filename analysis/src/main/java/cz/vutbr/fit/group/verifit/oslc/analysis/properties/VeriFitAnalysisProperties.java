@@ -41,12 +41,12 @@ public class VeriFitAnalysisProperties
 		// dummy
 		if (SystemUtils.IS_OS_LINUX)
 		{
-			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.sh").toFile().getAbsolutePath();
+			DUMMYTOOL_PATH = Paths.get("tests/resources/dummy_tool.sh").toFile().getAbsolutePath();
 			
 		}
 		else if (SystemUtils.IS_OS_WINDOWS)
 		{
-			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.ps1").toFile().getAbsolutePath();
+			DUMMYTOOL_PATH = Paths.get("tests/resources/dummy_tool.ps1").toFile().getAbsolutePath();
 		}
 	}
 	

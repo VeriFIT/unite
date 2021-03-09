@@ -98,10 +98,6 @@ public final class FilterManager {
 						conf.putFilter(pluginName, pluginFilter);					
 				}
 			}
-			else
-			{
-				System.out.println("Info: No plugin filters found for Automation Plan: \"" + id + "\" - Only the default ones will be available");
-			}
     	}
     }
     

@@ -84,14 +84,14 @@ public class AutomationPlanLoading {
      * @throws StoreAccessException
      * @throws OslcResourceException
      */
-    public void persistAutomationPlans() throws StoreAccessException, OslcResourceException
+    public void persistAutomationPlans(Collection<AutomationPlanConf> automationPlanConfigurations) throws StoreAccessException, OslcResourceException
     {        
     	for (AutomationPlan autoPlan : this.automationPlans.values())
     	{
     		
 	        // find conf for the auto plan
     		AutomationPlanConf conf = null;
-    		for (AutomationPlanConf c : this.autoPlanConfs)
+    		for (AutomationPlanConf c : automationPlanConfigurations)
     		{
     			if (c.getIdentifier().equals(autoPlan.getIdentifier()))
     				conf = c;

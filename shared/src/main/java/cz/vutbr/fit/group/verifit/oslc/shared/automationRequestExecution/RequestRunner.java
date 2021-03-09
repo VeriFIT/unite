@@ -81,7 +81,10 @@ public abstract class RequestRunner extends Thread {
 			stringToExecute = "try { \n"
 					+ stringToExecute + "\n"
 					+ "exit $LastExitCode\n"
-					+ "} catch { exit " + powershellExceptionExitCode + " }";
+					+ "} catch {\n"
+					+ "  Write-Error $_\n"
+					+ "  exit " + powershellExceptionExitCode + "\n"
+					+ "}";
 		}
 
 		String executedString = null;

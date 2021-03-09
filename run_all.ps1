@@ -14,14 +14,13 @@ param (
     [switch]$b
 )
 
-# duration for polling (via curl)
-$SLEEP=1
-
 $HELP="
    Launches the sparql triplestore, the analysis adapter and
    the compilation adapter. The triplestore needs to finish
    startup before both adapters, which is controled by polling
    the triplestore using curl until it responds.
+
+   Also reloads all configuration files.
 "
 $USAGE="   Usage: $PSCommandPath [-t|-h|-b]
       -t ... tail - Opens tail -f for each output log in new gnome-terminals.
@@ -31,122 +30,38 @@ $USAGE="   Usage: $PSCommandPath [-t|-h|-b]
 
 $USRPATH=$(pwd)         # get the call directory
 $ROOTDIR=$PSScriptRoot  # get the script directory
-
 $PIDS_TO_KILL=@()
 
-function print_help() {
-    echo "$HELP"
-    echo "$USAGE"
-    exit 0
-}
+# duration for polling (via curl)
+$SLEEP=3
 
-# $1 name of the invalid arg
-function invalid_arg() {
-    param (
-        $1
-    )
-    echo "`n   Invalid argument: ${1} `n"
-    echo "$USAGE"
-    exit 1
-}
+# source shared utils
+. $ROOTDIR/dev_tools/shared.ps1
 
-# polls an address using curl until the request returns True (i.e. the address responds)
-# $1 ... URL for curl to poll
-function curl_poll
+# Waits for an Url to go online. Will kill all child processes if curl gets interrupted
+# $1 ... url to poll
+function waitForUrlOnline ()
 {
-    param (
-        $1
-    )
-    $curl_ret=42
-    while ( $curl_ret -ne $true )
-    {
-        Start-Sleep -Seconds $SLEEP
-        $curl_ret = $false
-        Write-Host -NoNewline  "."
-        try{
-            Invoke-WebRequest -UseBasicParsing -Uri $1 -ErrorAction Ignore 2> $null > $null
-        } catch {
-        }
-        $curl_ret=$?
-        checkForCtrlC # check if the script should be killed
-    }
-    echo ""
-}
-
-# Check that all required configuration files exist.
-# Outputs an error message and exits the script if 
-# a conf file is missing.
-function checkConfFiles()
-{
-    if (!(Test-Path "$ROOTDIR/analysis/conf/VeriFitAnalysis.properties" -PathType Leaf)) {
-        echo 'ERROR: Configuration file "'$ROOTDIR'"/analysis/conf/VeriFitAnalysis.properties" not found.'
-        echo "  The adapter needs to be configured to be able to run!"
-        echo '  Run the build script first or use the -b option.'
-        exit 1
-    }
-    if (!(Test-Path "$ROOTDIR/compilation/conf/VeriFitCompilation.properties" -PathType Leaf)) {
-        echo 'ERROR: Configuration file "'$ROOTDIR'"/compilation/conf/VeriFitCompilation.properties" not found.'
-        echo "  The adapter needs to be configured to be able to run!"
-        echo '  Run the build script first or use the -b option.'
-        exit 1
-    }
-    if (!(Test-Path "$ROOTDIR/sparql_triplestore/start.ini" -PathType Leaf)) {
-        echo 'ERROR: Configuration file "'$ROOTDIR'"/sparql_triplestore/start.ini" not found.'
-        echo "  The adapter needs to be configured to be able to run!"
-        echo '  Run the build script first or use the -b option.'
-        exit 1
-    }
-}
-
-# Kills a process and its children recursively
-# $1 ... pid of the process
-function KillWithChildren {
     Param(
         $1
     )
-    Get-WmiObject win32_process | where {$_.ParentProcessId -eq $1} | ForEach { KillWithChildren $_.ProcessId }
-    Stop-Process $1 2> $null
-}
-
-# kills all children of this process using the $PIDS_TO_KILL variable
-function killChildren {
-    echo "`nShutting down..."
-    foreach ($i in $PIDS_TO_KILL) {
-        KillWithChildren $i
-    }
-    echo "All done."
-}
-
-# If a key was pressed during the loop execution, check to see if it was CTRL-C (aka "3"), and if so exit the script after clearing
-# out any running jobs and setting CTRL-C back to normal.
-# Based on: https://docs.microsoft.com/en-us/archive/blogs/dsheehan/powershell-taking-control-over-ctrl-c
-function checkForCtrlC () {
-    If ($Host.UI.RawUI.KeyAvailable -and ($Key = $Host.UI.RawUI.ReadKey("AllowCtrlC,NoEcho,IncludeKeyUp"))) {
-        If ([Int]$Key.Character -eq 3) {
-            killChildren
-            [Console]::TreatControlCAsInput = $False
-            exit 0
-        }
-        # Flush the key buffer again for the next loop.
-        $Host.UI.RawUI.FlushInputBuffer()
+    $ret = curl_poll $1 $SLEEP
+    if ($ret -eq 1) {
+        killAllWithChildren $PIDS_TO_KILL
+        [Console]::TreatControlCAsInput = $False
+        exit 0
     }
 }
-
-
 
 #
 # main
 #
 if ($args.length -ne 0) {
-    invalid_arg $args[0]
+    invalid_arg $args[0] "$USAGE"
 }
 if ($h) {
-    print_help
+    print_help "$HELP" "$USAGE"
 }
-
-
-# make sure configuration files exist
-checkConfFiles
 
 # build first if requested by args
 if ($b)
@@ -158,6 +73,10 @@ if ($b)
         exit $LastExitCode
     }
 }
+# just update conf
+else {
+    processConfFiles "$ROOTDIR"
+}
 
 # get and output version
 $VERSION=$(cat $ROOTDIR\VERSION.md 2> $null)
@@ -167,18 +86,10 @@ echo "    OSLC Universal Analysis, $VERSION"
 echo "########################################################"
 echo ""
 
-# lookup triplestore config
-$triplestore_host=$(cat $ROOTDIR/sparql_triplestore/start.ini | Select-String -Pattern "^ *jetty.http.host=") -replace "^ *jetty.http.host=", "" -replace "/$", "" # removes final slash in case there is one (http://host/ vs http://host)
-$triplestore_port=$(cat $ROOTDIR/sparql_triplestore/start.ini | Select-String -Pattern "^ *jetty.http.port=") -replace "^ *jetty.http.port=", ""
-$triplestore_url="http://${triplestore_host}:${triplestore_port}/fuseki/" # TODO prefix needs to be configurable for https
-# lookup compilation adapter config
-$compilation_host=$(cat $ROOTDIR/compilation/conf/VeriFitCompilation.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
-$compilation_port=$(cat $ROOTDIR/compilation/conf/VeriFitCompilation.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
-$compilation_url="${compilation_host}:${compilation_port}/compilation/"
-## lookup analysis adapter config
-$analysis_host=$(cat $ROOTDIR/analysis/conf/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
-$analysis_port=$(cat $ROOTDIR/analysis/conf/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
-$analysis_url="${analysis_host}:${analysis_port}/analysis/"
+# lookup config URLs
+$triplestore_url = lookupTriplestoreURL "$ROOTDIR"
+$compilation_url = lookupCompilationURL "$ROOTDIR"
+$analysis_url = lookupAnalysisURL "$ROOTDIR"
 
 ## create log files and append headings
 mkdir -Force $ROOTDIR/logs > $null
@@ -208,7 +119,7 @@ if ($t)
 $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Triplestore'; $ROOTDIR/sparql_triplestore/run.ps1 >> $ROOTDIR/logs/triplestore_$CURTIME.log 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Triplestore to finish startup"
-curl_poll $triplestore_url
+waitForUrlOnline $triplestore_url
 echo "Triplestore running`n"
 
 ## start the compilation adapter
@@ -216,7 +127,7 @@ echo "Starting the Compilation adapter"
 $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; cd $ROOTDIR/compilation ; mvn jetty:run-exploded >> $ROOTDIR/logs/compilation_$CURTIME.log 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Compilation adapter to finish startup"
-curl_poll $compilation_url
+waitForUrlOnline $compilation_url
 echo "Compilation adapter running`n"
 
 # start the analysis adapter
@@ -224,7 +135,7 @@ echo "Starting the Analysis adapter"
 $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; cd $ROOTDIR/analysis ; mvn jetty:run-exploded >> $ROOTDIR/logs/analysis_$CURTIME.log 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Analysis adapter to finish startup"
-curl_poll $analysis_url
+waitForUrlOnline $analysis_url
 echo "Analysis adapter running`n"
 
 echo "Ready to go!"
@@ -232,5 +143,10 @@ echo "Use ctrl+c to exit..."
 
 # loop to catch ctrl+c
 While ($true) {
-    checkForCtrlC
+    $ret = checkForCtrlC
+    if ($ret -eq 1) {
+        killAllWithChildren $PIDS_TO_KILL
+        [Console]::TreatControlCAsInput = $False
+        exit 0
+    }
 }

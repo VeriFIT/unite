@@ -58,13 +58,13 @@ public class AutomationPlanConfManager {
     	Collection<AutomationPlanConf> autoPlanConfs = this.autoPlanLoader.getAutoPlanConfs();
     	this.filterManager.loadDefaultFilters(autoPlanConfs);
     	this.filterManager.loadFilters(autoPlanConfs, Paths.get(VeriFitAnalysisProperties.PLUGIN_FILTER_CONF_PATH_BUILTIN));
-    	//this.filterManager.loadFilters(autoPlanConfs, Paths.get(VeriFitAnalysisProperties.PLUGIN_FILTER_CONF_PATH_CUSTOM)); // TODO is subdirectory so no need to load again
+    	this.filterManager.loadFilters(autoPlanConfs, Paths.get(VeriFitAnalysisProperties.PLUGIN_FILTER_CONF_PATH_CUSTOM));
     	
     	for (AutomationPlanConf conf : autoPlanConfs) {
     		this.automationPlanConfigurations.put(conf.getIdentifier(), conf);
     	}
     	
-    	this.autoPlanLoader.persistAutomationPlans();
+    	this.autoPlanLoader.persistAutomationPlans(autoPlanConfs);
     }
     
     public AutomationPlanConf getAutoPlanConf(String identifier)
