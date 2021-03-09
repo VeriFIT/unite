@@ -5,8 +5,6 @@
 *.log
 logs/
 sparql_triplestore/triplestore/
-compilation/tmp
 RemoteSystemsTempFiles/
 *.idea*
 *.iml
-conf/*
