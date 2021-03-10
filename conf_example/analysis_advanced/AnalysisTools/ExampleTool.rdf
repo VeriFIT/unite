@@ -15,10 +15,10 @@
     <oslc_auto:AutomationPlan>
         <dcterms:identifier>example</dcterms:identifier> <!-- What the last part of this AutoPlan's URI will contain -->
 
-        <oslc_auto:usesExecutionEnvironment rdf:resource="https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis/-/blob/master/analysis/tests/example.sh"/> <!-- Non-functional. Link to your tool, e.g. git repository or your website. -->
+        <oslc_auto:usesExecutionEnvironment rdf:resource="https://url.to.your.tool.com"/> <!-- Non-functional. Link to your tool, e.g. git repository or your website. -->
         <dcterms:title rdf:parseType="Literal">Example Tool</dcterms:title>   <!-- Non-functional. Title of the Automation Plan -->
         <dcterms:description rdf:parseType="Literal">Used as an example.</dcterms:description> <!-- Non-functional. Description of the Automation Plan -->
-        <dcterms:creator rdf:resource="https://pajda.fit.vutbr.cz/xvasic"/> <!-- Non-functional. Creator of the Automation Plan -->
+        <dcterms:creator rdf:resource="https://url.to.the.creator.com"/> <!-- Non-functional. Creator of the Automation Plan -->
         
         <!--
             Parameter definitions start here. Each parameter definition defines a possible input parameter for executing an AutoPlan.
