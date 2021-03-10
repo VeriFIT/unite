@@ -4,12 +4,17 @@ author: Ondrej Vasicek, xvasic25@stud.fit.vutbr.cz
 This is a development repository of the Universal OSLC Analysis Adapter which aims to provide an easy way of adding an OSLC Automation interface to as many analysis tools as possible by leveraging their command-line similarities. The adapter consists of two main components - Analysis Adapter and Compilation Adapter. The Compilation Adapter manages SUT resources, and the Analysis Adapter executes analysis on SUT resources using any configured analysis tool. The repository also includes a distribution of Jetty with an Apache Fuseki WAR for user's convenience (to make the setup process easier) which allows the adapter to be connected to a SPARQL triplestore for resource persistence and query capabilities.
 
 ## Directory structure
-- model - Lyo Designer modeling project used to generate base code
-- analysis - OSLC analysis adapter as a maven webapp project
-- compilation - OSLC compilation adapter as a maven webapp project
-- shared - Shared resources for both adapters as a maven project
-- sparql_triplestore - [Jetty](https://www.eclipse.org/jetty/) distribution with an [Apache Jena Fuseki](https://jena.apache.org/documentation/fuseki2/) SPARQL server WAR 
-- dev_tools - scripts used during the development
+- analysis - OSLC analysis adapter as a maven webapp project.
+- compilation - OSLC compilation adapter as a maven webapp project.
+- conf - Place your configuration files in this directory.
+- conf_example - Example configuration.
+- dev_tools - scripts used during the development, etc.
+- lib - External dependencies that were NOT created as a part of this project ([Jetty](https://www.eclipse.org/jetty/) and [jSEM](https://pajda.fit.vutbr.cz/ifiedor/jsem)
+- license - Licence files for the adapter and Eclipse Lyo generated code.
+- logs - Directory for logs produced by running the adapter.
+- model - Lyo Designer modeling project used to generate base code, and models cloned from Lyo Domain.
+- shared - Shared resources for both adapters as a maven project.
+- sparql_triplestore - Jetty base directory with an [Apache Jena Fuseki](https://jena.apache.org/documentation/fuseki2/) SPARQL server WAR deployed in it.
 
 ## How To Configure
 Main things that need to be configured - analysis host&port, compilation host&port, triplestore host&port - defaults are "localhost" and ports "8080, 8081, 8082".
