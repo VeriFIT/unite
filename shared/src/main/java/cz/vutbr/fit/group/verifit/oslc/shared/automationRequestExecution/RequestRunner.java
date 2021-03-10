@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (C) 2020 Ondřej Vašíček <ondrej.vasicek.0@gmail.com>, <xvasic25@stud.fit.vutbr.cz>
  *
  * This program and the accompanying materials are made available under
