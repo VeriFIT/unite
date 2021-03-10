@@ -41,12 +41,12 @@ public class VeriFitAnalysisProperties
 		// dummy
 		if (SystemUtils.IS_OS_LINUX)
 		{
-			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.sh").toFile().getAbsolutePath();
+			DUMMYTOOL_PATH = Paths.get("tests/resources/dummy_tool.sh").toFile().getAbsolutePath();
 			
 		}
 		else if (SystemUtils.IS_OS_WINDOWS)
 		{
-			DUMMYTOOL_PATH = Paths.get("tests/dummy_tool.ps1").toFile().getAbsolutePath();
+			DUMMYTOOL_PATH = Paths.get("tests/resources/dummy_tool.ps1").toFile().getAbsolutePath();
 		}
 	}
 	
@@ -58,7 +58,7 @@ public class VeriFitAnalysisProperties
 	private static void loadPropertiesFromFile() throws FileNotFoundException, IOException
 	{
 		Properties VeriFitAnalysisProperties = new Properties();
-		VeriFitAnalysisProperties.load(new FileInputStream(PROPERTIES_PATH));
+		VeriFitAnalysisProperties.load(new FileInputStream(Paths.get(PROPERTIES_PATH).toFile()));
 		
 		ADAPTER_HOST = VeriFitAnalysisProperties.getProperty("adapter_host");	
 		if (ADAPTER_HOST == null)
@@ -110,9 +110,11 @@ public class VeriFitAnalysisProperties
 	/*
 	 *  Java properties
 	 */
-	public static final String PROPERTIES_PATH = "./VeriFitAnalysis.properties";
-	public static final String AUTOPLANS_DEF_PATH = "./AnalysisToolDefinitions";
-	public static final String PLUGIN_FILTER_CONF_PATH = "./PluginFiltersConfiguration";
+	public static final String PROPERTIES_PATH = "./conf/VeriFitAnalysis.properties";
+	public static final String AUTOPLANS_DEF_PATH_BUILTIN = "./conf/BuiltInAnalysisTools";
+	public static final String PLUGIN_FILTER_CONF_PATH_BUILTIN = "./conf/BuiltInPluginFiltersConfiguration";
+	public static final String AUTOPLANS_DEF_PATH_CUSTOM = "./conf/CustomAnalysisTools";
+	public static final String PLUGIN_FILTER_CONF_PATH_CUSTOM = "./conf/CustomPluginFiltersConfiguration";
 
 	public static String ADAPTER_HOST;
 	public static String ADAPTER_PORT;

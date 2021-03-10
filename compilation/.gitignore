@@ -1,3 +1,5 @@
 target
 SUT
-VeriFitCompilation.properties
+
+conf
+!conf/VeriFitCompilationDefault.properties
