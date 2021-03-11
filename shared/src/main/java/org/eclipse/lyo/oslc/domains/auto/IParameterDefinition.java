@@ -1,5 +1,5 @@
 // Start of user code Copyright
-/* ## License for manual implementation (enclosed in "// Start of user code ..." and "// End of user code ...") ##
+/* ## License for manual implementation (enclosed in "Start/End user code ..." tags) ##
  *
  * Copyright (C) 2020 Ondřej Vašíček <ondrej.vasicek.0@gmail.com>, <xvasic25@stud.fit.vutbr.cz>
  *
