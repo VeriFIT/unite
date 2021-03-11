@@ -153,6 +153,13 @@ public interface ISUT
     @OslcReadOnly(false)
     public Set<Link> getCreator();
 
+    @OslcName("compiled")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "compiled")
+    @OslcOccurs(Occurs.ExactlyOne)
+    @OslcValueType(ValueType.Boolean)
+    @OslcReadOnly(false)
+    public Boolean isCompiled();
+
     @OslcName("producedByAutomationRequest")
     @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "producedByAutomationRequest")
     @OslcOccurs(Occurs.ZeroOrOne)
@@ -160,13 +167,6 @@ public interface ISUT
     @OslcRange({Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE})
     @OslcReadOnly(false)
     public Link getProducedByAutomationRequest();
-
-    @OslcName("compiled")
-    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "compiled")
-    @OslcOccurs(Occurs.ExactlyOne)
-    @OslcValueType(ValueType.Boolean)
-    @OslcReadOnly(false)
-    public Boolean isCompiled();
 
 
     public void setLaunchCommand(final String launchCommand );
@@ -178,7 +178,7 @@ public interface ISUT
     public void setIdentifier(final String identifier );
     public void setSUTdirectoryPath(final String sUTdirectoryPath );
     public void setCreator(final Set<Link> creator );
-    public void setProducedByAutomationRequest(final Link producedByAutomationRequest );
     public void setCompiled(final Boolean compiled );
+    public void setProducedByAutomationRequest(final Link producedByAutomationRequest );
 }
 
