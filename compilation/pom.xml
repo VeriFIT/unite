@@ -175,7 +175,7 @@
 						</goals>
 						<configuration>
 						<files>
-							<file>${project.basedir}/VeriFitCompilation.properties</file>
+							<file>${project.basedir}/conf/VeriFitCompilation.properties</file>
 						</files>
 						</configuration>
 					</execution>

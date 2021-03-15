@@ -1,4 +1,16 @@
 // Start of user code Copyright
+/* ## License for manual implementation (enclosed in "Start/End user code ..." tags) ##
+ *
+ * Copyright (C) 2020 Ondřej Vašíček <ondrej.vasicek.0@gmail.com>, <xvasic25@stud.fit.vutbr.cz>
+ *
+ * This program and the accompanying materials are made available under
+ * the terms of the Eclipse Public License 2.0 which is available at
+ * https://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+/* ## License for generated code: ## */
 /*
  * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
@@ -141,6 +153,13 @@ public interface ISUT
     @OslcReadOnly(false)
     public Set<Link> getCreator();
 
+    @OslcName("compiled")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "compiled")
+    @OslcOccurs(Occurs.ExactlyOne)
+    @OslcValueType(ValueType.Boolean)
+    @OslcReadOnly(false)
+    public Boolean isCompiled();
+
     @OslcName("producedByAutomationRequest")
     @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "producedByAutomationRequest")
     @OslcOccurs(Occurs.ZeroOrOne)
@@ -148,13 +167,6 @@ public interface ISUT
     @OslcRange({Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE})
     @OslcReadOnly(false)
     public Link getProducedByAutomationRequest();
-
-    @OslcName("compiled")
-    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "compiled")
-    @OslcOccurs(Occurs.ExactlyOne)
-    @OslcValueType(ValueType.Boolean)
-    @OslcReadOnly(false)
-    public Boolean isCompiled();
 
 
     public void setLaunchCommand(final String launchCommand );
@@ -166,7 +178,7 @@ public interface ISUT
     public void setIdentifier(final String identifier );
     public void setSUTdirectoryPath(final String sUTdirectoryPath );
     public void setCreator(final Set<Link> creator );
-    public void setProducedByAutomationRequest(final Link producedByAutomationRequest );
     public void setCompiled(final Boolean compiled );
+    public void setProducedByAutomationRequest(final Link producedByAutomationRequest );
 }
 

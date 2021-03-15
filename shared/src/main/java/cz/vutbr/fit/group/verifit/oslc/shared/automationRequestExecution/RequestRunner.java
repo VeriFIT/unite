@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (C) 2020 Ondřej Vašíček <ondrej.vasicek.0@gmail.com>, <xvasic25@stud.fit.vutbr.cz>
  *
  * This program and the accompanying materials are made available under
@@ -70,18 +70,24 @@ public abstract class RequestRunner extends Thread {
 		// identify the OS
 		String shell;
 		String fileEnding;
+		String scriptContents;
+		String arg = "";
 		if (SystemUtils.IS_OS_LINUX) {
 			shell = "/bin/bash";
 			fileEnding = ".sh";
-			stringToExecute = stringToExecute + "\n"
+			arg = stringToExecute;
+			scriptContents = shell + " -c \"$1\"" + "\n"
 					+ "exit $?";
 		} else {
 			shell = "powershell.exe";
 			fileEnding = ".ps1";
-			stringToExecute = "try { \n"
+			scriptContents = "try { \n"
 					+ stringToExecute + "\n"
 					+ "exit $LastExitCode\n"
-					+ "} catch { exit " + powershellExceptionExitCode + " }";
+					+ "} catch {\n"
+					+ "  Write-Error $_\n"
+					+ "  exit " + powershellExceptionExitCode + "\n"
+					+ "}";
 		}
 
 		String executedString = null;
@@ -94,13 +100,14 @@ public abstract class RequestRunner extends Thread {
 		    }
 			
 			// put the string to execute into a script file
-			InputStream streamFileToExec = new ByteArrayInputStream(stringToExecute.getBytes());
+			InputStream streamFileToExec = new ByteArrayInputStream(scriptContents.getBytes());
 			File fileToExecute = outputsDir.resolve("exec" + id + fileEnding).toFile();
-			executedString = "./.adapter/" + fileToExecute.getName();
+			String scriptToExecute = "./.adapter/" + fileToExecute.getName();
+			executedString = shell + " " + scriptToExecute + " \"" + arg + "\"";
 			FileUtils.copyInputStreamToFile(streamFileToExec, fileToExecute);
 			
 			// build process to execute the string in a directory using OS specific shell with outputs redirected to files
-		    ProcessBuilder processBuilder = new ProcessBuilder(shell, executedString);
+		    ProcessBuilder processBuilder = new ProcessBuilder(shell, scriptToExecute, arg);
 		    processBuilder.directory(folderPath.toFile());
 			File stdoutFile = outputsDir.resolve("stdout" + id).toFile();
 			File stderrFile = outputsDir.resolve("stderr" + id).toFile();
@@ -153,7 +160,7 @@ public abstract class RequestRunner extends Thread {
 			res.timeouted = !exitedInTime;
 			res.timeoutType = timeoutType;
 			res.totalTime = totalTime;
-			res.executedString = shell + " " + executedString;
+			res.executedString = executedString;
 			res.exceptionThrown = null;
 			return res;
 			
@@ -165,7 +172,7 @@ public abstract class RequestRunner extends Thread {
 			res.timeouted = null;
 			res.timeoutType = null;
 			res.totalTime = null;
-			res.executedString = shell + " " + executedString;
+			res.executedString = executedString;
 			res.exceptionThrown = e;
 			return res;
 		}

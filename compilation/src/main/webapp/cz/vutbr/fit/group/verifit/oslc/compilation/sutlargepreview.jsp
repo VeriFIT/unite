@@ -211,6 +211,21 @@
         </dd>
     </dl>
     <dl class="dl-horizontal">
+        <% method = SUT.class.getMethod("isCompiled"); %>
+        <dt><a href="<%=method.getAnnotation(OslcPropertyDefinition.class).value() %>"><%=method.getAnnotation(OslcName.class).value()%></a></dt>
+        <dd>
+        <%
+        if (aSUT.isCompiled() == null) {
+            out.write("<em>null</em>");
+        }
+        else {
+            out.write(aSUT.isCompiled().toString());
+        }
+        %>
+        
+        </dd>
+    </dl>
+    <dl class="dl-horizontal">
         <% method = SUT.class.getMethod("getProducedByAutomationRequest"); %>
         <dt><a href="<%=method.getAnnotation(OslcPropertyDefinition.class).value() %>"><%=method.getAnnotation(OslcName.class).value()%></a></dt>
         <dd>
@@ -224,21 +239,6 @@
                 <jsp:param name="resourceUri" value="<%=aSUT.getProducedByAutomationRequest().getValue()%>"/> 
                 </jsp:include>
             <%
-        }
-        %>
-        
-        </dd>
-    </dl>
-    <dl class="dl-horizontal">
-        <% method = SUT.class.getMethod("isCompiled"); %>
-        <dt><a href="<%=method.getAnnotation(OslcPropertyDefinition.class).value() %>"><%=method.getAnnotation(OslcName.class).value()%></a></dt>
-        <dd>
-        <%
-        if (aSUT.isCompiled() == null) {
-            out.write("<em>null</em>");
-        }
-        else {
-            out.write(aSUT.isCompiled().toString());
         }
         %>
         

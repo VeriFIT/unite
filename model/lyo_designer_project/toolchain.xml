@@ -131,8 +131,8 @@
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pnX1QJUdEeq-KoPaR9_Cfg"/>
         <resourceProperties href="#_tffywWpHEeuDWZwlSoXo7A"/>
         <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pna4kJUdEeq-KoPaR9_Cfg"/>
-        <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_EXLfYGusEeuUjZLNvT5EgA"/>
         <resourceProperties href="#_ZGAioHrFEeuDQtNZS3H7hw"/>
+        <resourceProperties href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_EXLfYGusEeuUjZLNvT5EgA"/>
       </resources>
       <resourceProperties id="_tffywGpHEeuDWZwlSoXo7A" name="launchCommand" occurs="zeroOrOne" valueType="XMLLiteral"/>
       <resourceProperties id="_6VLhMGpGEeuDWZwlSoXo7A" name="buildCommand" occurs="zeroOrOne" valueType="XMLLiteral"/>

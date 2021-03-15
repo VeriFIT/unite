@@ -178,7 +178,7 @@ public class SutAnalyse extends RequestRunner
     	else if (analysisRes.retCode != 0)
     	{
 			executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
-			statusMessage.setValue(statusMessage.getValue() + "Analysis failed (returned non-zero: " + analysisRes.retCode + ")");
+			statusMessage.setValue(statusMessage.getValue() + "Analysis failed (returned non-zero: " + analysisRes.retCode + ")\n");
 		}
     	else
     	{

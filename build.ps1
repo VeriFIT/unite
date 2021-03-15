@@ -8,83 +8,80 @@
 # SPDX-License-Identifier: EPL-2.0
 ##########################
 
+param (
+    [switch]$h
+)
+
+$HELP="
+   Loads configuration files and then builds and installs the adapter
+   and its dependencies.
+"
+$USAGE="   Usage: $PSCommandPath [-h]
+      -h ... help
+"
+
 $USRPATH=$(pwd)         # get the call directory
 $ROOTDIR=$PSScriptRoot  # get the script directory
-cd $ROOTDIR             # move to the script directory
 
-# Checks if a conf file exists. If not, then a default one is created.
-# $1 = file to check
-# $2 = default file to copy if not found
-function confFileCheckOrDefault ()
-{
-    param (
-        $1, $2
-    )
-    Write-Host -NoNewline "Checking ${1}: "
-    if ( Test-Path $1 -PathType Leaf) {
-        echo "OK"
-    } else {
-        echo "Not found"
-        echo "    Creating a default one"
-        cp "$2" "$1"
-    }
+# source shared utils
+. $ROOTDIR/dev_tools/shared.ps1
+
+
+#
+# main
+#
+if ($args.length -ne 0) {
+    invalid_arg $args[0] $USAGE
+}
+if ($h) {
+    print_help $HELP $USAGE
 }
 
-function main ()
-{
-    echo ""
-    echo "############################################################"
-    echo "    Checking configuration files"
-    echo "############################################################"
-    echo ""
-    confFileCheckOrDefault "./analysis/VeriFitAnalysis.properties" "./analysis/VeriFitAnalysisExample.properties"
-    confFileCheckOrDefault "./compilation/VeriFitCompilation.properties" "./compilation/VeriFitCompilationExample.properties"
-    confFileCheckOrDefault "./sparql_triplestore/jetty-distribution/start.ini" "./sparql_triplestore/jetty-distribution/startExample.ini"
-    
-    echo ""
-    echo "############################################################"
-    echo "    Building and Installing shared resources"
-    echo "############################################################"
-    echo ""
+echo ""
+echo "############################################################"
+echo "    Processing configuration files"
+echo "############################################################"
+echo ""
+processConfFiles "$ROOTDIR"
 
-    mvn install:install-file -Dfile='.\lib\cz.vutbr.fit.group.verifit.jsem_0.2.0.202103021435.jar' -DgroupId='cz.vutbr.fit.group.verifit.jsem' -DartifactId='jsem' -Dversion='0.2.0.qualifier' -Dpackaging='jar'
-    if ( ! $? ) {
-        exit $LastExitCode
-    }
+echo ""
+echo "############################################################"
+echo "    Building and Installing shared resources"
+echo "############################################################"
+echo ""
 
-    cd shared
-    mvn clean install
-    
-    echo ""
-    echo "############################################################"
-    echo "    Building and Installing the Compilation adapter"
-    echo "############################################################"
-    echo ""
-    cd ../compilation
-    mvn clean install
-    if ( ! $? ) {
-        cd $USRPATH
-        exit $LastExitCode
-    }
-    
-    echo ""
-    echo "############################################################"
-    echo "    Building and Installing the Analysis adapter"
-    echo "############################################################"
-    echo ""
-    cd ../analysis
-    mvn clean install
-    if ( ! $? ) {
-        cd $USRPATH
-        exit $LastExitCode
-    }
-    
-    echo ""
-    echo "##### ALL DONE #############################################"
-    echo ""
-
-    cd $USRPATH
-    exit 0
+mvn install:install-file -Dfile="$ROOTDIR\lib\cz.vutbr.fit.group.verifit.jsem_0.2.0.202103021435.jar" -DgroupId='cz.vutbr.fit.group.verifit.jsem' -DartifactId='jsem' -Dversion='0.2.0.qualifier' -Dpackaging='jar'
+if ( ! $? ) {
+    exit $LastExitCode
 }
 
-main
+mvn -f $ROOTDIR/shared/pom.xml clean install
+if ( ! $? ) {
+    exit $LastExitCode
+}
+
+echo ""
+echo "############################################################"
+echo "    Building and Installing the Compilation adapter"
+echo "############################################################"
+echo ""
+mvn -f $ROOTDIR/compilation/pom.xml clean install
+if ( ! $? ) {
+    exit $LastExitCode
+}
+
+echo ""
+echo "############################################################"
+echo "    Building and Installing the Analysis adapter"
+echo "############################################################"
+echo ""
+mvn -f $ROOTDIR/analysis/pom.xml clean install
+if ( ! $? ) {
+    exit $LastExitCode
+}
+
+echo ""
+echo "##### ALL DONE #############################################"
+echo ""
+
+exit 0

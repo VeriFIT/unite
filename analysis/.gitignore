@@ -1,3 +1,9 @@
 target
-VeriFitAnalysis.properties
-PluginParserConfiguration
+
+src/main/java/pluginFilters
+!src/main/java/pluginFilters/DummyBuiltInTestPluginFilter.java
+
+conf
+!conf/BuiltInAnalysisTools
+!conf/BuiltInPluginFiltersConfiguration
+!conf/VeriFitAnalysisDefault.properties

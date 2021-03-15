@@ -18,15 +18,6 @@ ADAPTER_ROOT_DIR=$PWD               # get the adapter root directory
 cd $ROOTDIR                         # move back to the script directory
 
 
-
-# $1 ... exit code
-failed() {
-    echo "Failed!\n"
-    exit $1
-}
-
-
-
 main () {
     # build 
     echo -e "Building\n"

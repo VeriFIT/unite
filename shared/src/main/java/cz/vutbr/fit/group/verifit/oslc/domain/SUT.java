@@ -1,4 +1,16 @@
 // Start of user code Copyright
+/* ## License for manual implementation (enclosed in "Start/End user code ..." tags) ##
+ *
+ * Copyright (C) 2020 Ondřej Vašíček <ondrej.vasicek.0@gmail.com>, <xvasic25@stud.fit.vutbr.cz>
+ *
+ * This program and the accompanying materials are made available under
+ * the terms of the Eclipse Public License 2.0 which is available at
+ * https://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+/* ## License for generated code: ## */
 /*
  * Copyright (c) 2020 Contributors to the Eclipse Foundation
  *
@@ -109,12 +121,12 @@ public class SUT
     // Start of user code attributeAnnotation:creator
     // End of user code
     private Set<Link> creator = new HashSet<Link>();
-    // Start of user code attributeAnnotation:producedByAutomationRequest
-    // End of user code
-    private Link producedByAutomationRequest;
     // Start of user code attributeAnnotation:compiled
     // End of user code
     private Boolean compiled;
+    // Start of user code attributeAnnotation:producedByAutomationRequest
+    // End of user code
+    private Link producedByAutomationRequest;
     
     // Start of user code classAttributes
     // End of user code
@@ -313,6 +325,20 @@ public class SUT
         return creator;
     }
     
+    // Start of user code getterAnnotation:compiled
+    // End of user code
+    @OslcName("compiled")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "compiled")
+    @OslcOccurs(Occurs.ExactlyOne)
+    @OslcValueType(ValueType.Boolean)
+    @OslcReadOnly(false)
+    public Boolean isCompiled()
+    {
+        // Start of user code getterInit:compiled
+        // End of user code
+        return compiled;
+    }
+    
     // Start of user code getterAnnotation:producedByAutomationRequest
     // End of user code
     @OslcName("producedByAutomationRequest")
@@ -326,20 +352,6 @@ public class SUT
         // Start of user code getterInit:producedByAutomationRequest
         // End of user code
         return producedByAutomationRequest;
-    }
-    
-    // Start of user code getterAnnotation:compiled
-    // End of user code
-    @OslcName("compiled")
-    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "compiled")
-    @OslcOccurs(Occurs.ExactlyOne)
-    @OslcValueType(ValueType.Boolean)
-    @OslcReadOnly(false)
-    public Boolean isCompiled()
-    {
-        // Start of user code getterInit:compiled
-        // End of user code
-        return compiled;
     }
     
     
@@ -455,18 +467,6 @@ public class SUT
         // End of user code
     }
     
-    // Start of user code setterAnnotation:producedByAutomationRequest
-    // End of user code
-    public void setProducedByAutomationRequest(final Link producedByAutomationRequest )
-    {
-        // Start of user code setterInit:producedByAutomationRequest
-        // End of user code
-        this.producedByAutomationRequest = producedByAutomationRequest;
-    
-        // Start of user code setterFinalize:producedByAutomationRequest
-        // End of user code
-    }
-    
     // Start of user code setterAnnotation:compiled
     // End of user code
     public void setCompiled(final Boolean compiled )
@@ -476,6 +476,18 @@ public class SUT
         this.compiled = compiled;
     
         // Start of user code setterFinalize:compiled
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:producedByAutomationRequest
+    // End of user code
+    public void setProducedByAutomationRequest(final Link producedByAutomationRequest )
+    {
+        // Start of user code setterInit:producedByAutomationRequest
+        // End of user code
+        this.producedByAutomationRequest = producedByAutomationRequest;
+    
+        // Start of user code setterFinalize:producedByAutomationRequest
         // End of user code
     }
     

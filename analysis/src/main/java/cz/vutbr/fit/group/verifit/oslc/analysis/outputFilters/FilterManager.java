@@ -42,31 +42,39 @@ import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
 public final class FilterManager {
     
-	private final Path filterConfDir;
 
-    public FilterManager(Path filterConfDir) {
-    	this.filterConfDir = filterConfDir;
+    public FilterManager() {
     }
 
+    /**
+     * @param automationPlanConfs An In/Out parameter
+     */
+    public void loadDefaultFilters(Collection<AutomationPlanConf> automationPlanConfs)
+    {
+    	// load filters for every Automation Plan
+    	for (AutomationPlanConf conf : automationPlanConfs)
+    	{
+	    	// add the default filters to all autoPlans
+			addDefaultFilters(conf);
+    	}
+    }
+    
     /**
      * Loads plugin filters for each tool and adds them into the automationPlan's configuration
      * @param automationPlanConfs An In/Out parameter
      */
-    public void loadFilters(Collection<AutomationPlanConf> automationPlanConfs) {
+    public void loadFilters(Collection<AutomationPlanConf> automationPlanConfs, Path filterConfDir) {
     	
     	// initialize the ExtensionManager
     	ExtensionManager extMgr = new ExtensionManager();
     	extMgr.registerBuiltinExtensions();
     	extMgr.refreshExtensionInfoLoaders();
-    	extMgr.loadExtensionInfo(this.filterConfDir);
+    	extMgr.loadExtensionInfo(filterConfDir);
     	
     	// load filters for every Automation Plan
     	for (AutomationPlanConf conf : automationPlanConfs)
     	{
     		String id = conf.getIdentifier();
-    		
-    		// add the default filters to all autoPlans
-    		addDefaultFilters(conf);
     		
     		// load custom plugin filter
 			// find all filter extensions for the given Automation Plan
@@ -84,16 +92,11 @@ public final class FilterManager {
 					String pluginName = pluginFilter.getName();
 					
 					if (conf.containsFilter(pluginName))
-						System.out.println("Warning: Can not load plugin filter \"" + pluginFilter.getClass() + "\" for Automation Plan: \"" + id + "\"\n"
+						System.out.println("ERROR: Can not load plugin filter \"" + pluginFilter.getClass() + "\" for Automation Plan: \"" + id + "\"\n"
 								+ "   Name \"" + pluginName + "\" is already taken.");
 					else
 						conf.putFilter(pluginName, pluginFilter);					
 				}
-			}
-			else
-			{
-				// TODO future features
-				System.out.println("Info: No plugin filters found for Automation Plan: \"" + id + "\" - Only the default ones will be available");
 			}
     	}
     }
