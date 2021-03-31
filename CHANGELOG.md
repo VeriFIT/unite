@@ -1,3 +1,10 @@
+### v2.2.0
+- implemented resource delete
+  - delete capabilities for A.Requests, A.Results, Contributions (analysis only), SUT (compilation only)
+  - Requests, Results, and SUTs recognize a "cascade" header which when set to "true" makes it so that 
+    deleting any one of the three will result in all three getting deleted
+  - deleting a resource that is connected to a directory or a file will also delete the file/directory (SUT, contribution, A.Result)
+
 ### v2.1.1
 - fixed high cpu usage on Windows
   - run_all.ps1 had a active wait loop that was causing Powershell to use a lot of CPU

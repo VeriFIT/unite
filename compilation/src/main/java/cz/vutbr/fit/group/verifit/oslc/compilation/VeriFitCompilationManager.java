@@ -51,6 +51,7 @@ import java.util.Properties;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystems;
 import java.util.NoSuchElementException;
 import org.eclipse.lyo.store.ModelUnmarshallingException;
 import org.eclipse.lyo.store.Store;
@@ -135,9 +136,9 @@ public class VeriFitCompilationManager {
 	/**
 	 * Creates the SUT directory for saving programs to analyze
 	 */
-	private static void createTmpDir()
+	private static void createSutDir()
 	{
-		File programDir = new File("SUT/");
+		File programDir = FileSystems.getDefault().getPath(VeriFitCompilationProperties.SUT_FOLDER).toFile();
 	    if (!programDir.exists())
 	    {
 	    	programDir.mkdirs();
@@ -150,7 +151,7 @@ public class VeriFitCompilationManager {
 	 */
 	private static void deleteTmpDir() throws IOException
 	{
-		File programDir = new File("SUT");
+		File programDir = new File(VeriFitCompilationProperties.SUT_FOLDER);
 		FileDeleteStrategy.FORCE.delete(programDir);
 	}
 	
@@ -422,7 +423,7 @@ public class VeriFitCompilationManager {
 				// ignore
 			}
     	}
-    	createTmpDir();
+    	createSutDir();
 
         // End of user code
         // Start of user code StoreInitialise
@@ -907,7 +908,18 @@ public class VeriFitCompilationManager {
         // End of user code
         
         // Start of user code deleteAutomationRequest
-        // TODO add cascade option to delete result aswell
+        if (httpServletRequest != null) {
+	        String cascade = httpServletRequest.getHeader("cascade");
+	        if (cascade != null && cascade.equalsIgnoreCase("true"))
+	        {
+	        	try {
+	        		deleteAutomationResult(null, id);	// TODO relies on result and request IDs being the same
+	        		deleteSUT(null, id);				// same ^^^
+	        	} catch (Exception e) {
+	        		log.warn("AutomationResult delete id \"" + id + "\": Failed to cascade - " + e.getMessage());
+	        	}
+	        }
+        }
         // End of user code
         return deleted;
     }
@@ -1016,7 +1028,18 @@ public class VeriFitCompilationManager {
         // End of user code
         
         // Start of user code deleteAutomationResult
-        // TODO add cascade option to delete request aswell
+        if (httpServletRequest != null) {
+	        String cascade = httpServletRequest.getHeader("cascade");
+	        if (cascade != null && cascade.equalsIgnoreCase("true"))
+	        {
+	        	try {
+	        		deleteAutomationRequest(null, id);	// TODO relies on result and request IDs being the same
+	        		deleteSUT(null, id);				// same ^^^
+	        	} catch (Exception e) {
+	        		log.warn("AutomationResult delete id \"" + id + "\": Failed to cascade - " + e.getMessage());
+	        	}
+	        }
+        }
         // End of user code
         return deleted;
     }
@@ -1097,7 +1120,24 @@ public class VeriFitCompilationManager {
         // End of user code
         
         // Start of user code deleteSUT
-        // TODO add cascade option to request and result
+        if (httpServletRequest != null) {
+	        String cascade = httpServletRequest.getHeader("cascade");
+	        if (cascade != null && cascade.equalsIgnoreCase("true"))
+	        {
+	        	try {
+	        		deleteAutomationResult(null, id);	// TODO relies on result and request IDs being the same
+	        		deleteAutomationRequest(null, id);	// same ^^^
+	        	} catch (Exception e) {
+	        		log.warn("AutomationResult delete id \"" + id + "\": Failed to cascade - " + e.getMessage());
+	        	}
+	        }
+        }
+        try {
+    		File sutDir = FileSystems.getDefault().getPath(VeriFitCompilationProperties.SUT_FOLDER).resolve(id).toFile();	// TODO relies on the SUT dir being named as the sut ID
+    		FileDeleteStrategy.FORCE.delete(sutDir);
+		} catch (IOException e) {
+			log.error("SUT delete: Failed to delete SUT directory: " + e.getMessage());
+		}
         // End of user code
         return deleted;
     }

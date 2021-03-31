@@ -51,6 +51,7 @@ import java.util.Properties;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystems;
 import java.util.NoSuchElementException;
 import org.eclipse.lyo.store.ModelUnmarshallingException;
 import org.eclipse.lyo.store.Store;
@@ -86,7 +87,10 @@ import java.util.Set;
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
+
+import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 // End of user code
@@ -465,8 +469,12 @@ public class VeriFitAnalysisManager {
         
     	for (Contribution contrib : contribs)
     	{
-    		Contribution fullContrib = getContribution(httpServletRequest, Utils.getResourceIdFromUri(contrib.getAbout()));
-    		aResource.addContribution(fullContrib);
+    		try {
+	    		Contribution fullContrib = getContribution(httpServletRequest, Utils.getResourceIdFromUri(contrib.getAbout()));
+	    		aResource.addContribution(fullContrib);
+    		} catch (Exception e) {
+    			log.warn("AutomationResult GET: Error while flattening Contributions as local - Contribution was probably deleted: " + e.getMessage());
+    		}
     	}
 	}
 	
@@ -970,8 +978,17 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code deleteAutomationRequest
-        // TODO Implement code to delete a resource
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        if (httpServletRequest != null) {
+	        String cascade = httpServletRequest.getHeader("cascade");
+	        if (cascade != null && cascade.equalsIgnoreCase("true"))
+	        {
+	        	try {
+	        		deleteAutomationResult(null, id);	// TODO relies on result and request IDs being the same
+	        	} catch (Exception e) {
+	        		log.warn("AutomationRequest delete id \"" + id + "\": Failed to cascade - " + e.getMessage());
+	        	}
+	        }
+        }
         // End of user code
         return deleted;
     }
@@ -1003,8 +1020,7 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code updateAutomationRequest
-        // TODO Implement code to update and return a resource
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        // TODO check for desired state change and propagate to result
         // End of user code
         return updatedResource;
     }
@@ -1043,6 +1059,13 @@ public class VeriFitAnalysisManager {
     {
         Boolean deleted = false;
         // Start of user code deleteAutomationResult_storeInit
+        AutomationResult resultToDelete = null;
+        try {
+        	resultToDelete = getAutomationResult(null, id);
+        } catch (Exception e) {
+        	// means not found; let it fail on the generated "resourceExists()" below
+        }
+        
         // End of user code
         Store store = storePool.getStore();
         URI uri = VeriFitAnalysisResourcesFactory.constructURIForAutomationResult(id);
@@ -1057,8 +1080,42 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code deleteAutomationResult
-        // TODO Implement code to delete a resource
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        if (httpServletRequest != null) {
+	        String cascade = httpServletRequest.getHeader("cascade");
+	        if (cascade != null && cascade.equalsIgnoreCase("true"))
+	        {
+	        	try {
+	        		deleteAutomationRequest(null, id);	// TODO relies on result and request IDs being the same
+	        	} catch (Exception e) {
+	        		log.warn("AutomationResult delete id \"" + id + "\": Failed to cascade - " + e.getMessage());
+	        	}
+	        }
+        }
+        
+        // cascade delete all contributions
+        if (resultToDelete != null) {
+        	String sutPath = null;
+	        for (Contribution contrib : resultToDelete.getContribution())
+	        {
+	        	deleteContribution(null, Utils.getResourceIdFromUri(contrib.getAbout()));
+	        	
+	        	// get the sut directory to be able to delete *sut*/.adapter/exec_analysis_N.sh or .ps
+	        	if (contrib.getFilePath() != null && contrib.getFilePath().contains(".adapter"))
+	        		sutPath = contrib.getFilePath();
+	        }
+	        
+	        // delete *sut*/.adapter/exec_analysis_N.sh or .ps
+	        if (sutPath != null)
+	        {
+		        try {
+		        	String fileEnding = SystemUtils.IS_OS_LINUX ? ".sh" : ".ps";
+		    		File execFile = FileSystems.getDefault().getPath(sutPath).getParent().resolve("exec_analysis_" + id + fileEnding).toFile();
+		    		FileDeleteStrategy.FORCE.delete(execFile);
+				} catch (IOException e) {
+					log.error("Contribution delete: Failed to delete associated file: " + e.getMessage());
+				}
+	        }
+        }
         // End of user code
         return deleted;
     }
@@ -1090,8 +1147,7 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code updateAutomationResult
-        // TODO Implement code to update and return a resource
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        // TODO check for desired state change and propagate to request
         // End of user code
         return updatedResource;
     }
@@ -1154,6 +1210,13 @@ public class VeriFitAnalysisManager {
     {
         Boolean deleted = false;
         // Start of user code deleteContribution_storeInit
+        Contribution contribToDelete = null;
+        try {
+        	contribToDelete = getContribution(null, id);
+        } catch (Exception e) {
+        	// means not found; let it fail on the generated "resourceExists()" below
+        }
+        
         // End of user code
         Store store = storePool.getStore();
         URI uri = VeriFitAnalysisResourcesFactory.constructURIForContribution(id);
@@ -1168,8 +1231,26 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code deleteContribution
-        // TODO Implement code to delete a resource
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+
+        // delete the associated file, if there is one
+        if (contribToDelete != null) {
+        	String filePath = contribToDelete.getFilePath();
+        	if (filePath != null)
+        	{
+        		// TODO security issue - what if someone updates the contribution filePath to e.g. "/" --> rm -rf "/"
+        		if (! (filePath.contains("compilation/SUT/") || filePath.contains("compilation\\SUT\\")) )
+        		{
+        			log.error("Contribution delete: Failed to delete associated file: SECURITY MEASURE - the path to the file seems to be outside of the expected SUT directory");
+        		}
+        		
+		        try {
+		    		File contribFile = FileSystems.getDefault().getPath(filePath).toFile();
+		    		FileDeleteStrategy.FORCE.delete(contribFile);
+				} catch (IOException e) {
+					log.error("Contribution delete: Failed to delete associated file: " + e.getMessage());
+				}
+        	}
+        }
         // End of user code
         return deleted;
     }
@@ -1198,8 +1279,6 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code updateContribution
-        // TODO Implement code to update and return a resource
-        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
         // End of user code
         return updatedResource;
     }

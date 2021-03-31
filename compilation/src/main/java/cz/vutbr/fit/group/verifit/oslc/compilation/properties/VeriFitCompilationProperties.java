@@ -121,4 +121,6 @@ public class VeriFitCompilationProperties
 	public static final String ADAPTER_CONTEXT = "compilation/";
     public static String PATH_AUTOMATION_SERVICE_PROVIDERS = SERVER_URL + ADAPTER_CONTEXT + "services/serviceProviders/";
     public static String PATH_RESOURCE_SHAPES = SERVER_URL + ADAPTER_CONTEXT + "services/resourceShapes/";
+    
+    public static String SUT_FOLDER = "SUT";	// TODO if this changes, there might be changes required in AnalysisManager->deleteContribution()
 }

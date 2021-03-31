@@ -39,6 +39,7 @@ import cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution.su
 import cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution.sutFetcher.SutFetchGit;
 import cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution.sutFetcher.SutFetchUrl;
 import cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution.sutFetcher.SutFetcher;
+import cz.vutbr.fit.group.verifit.oslc.compilation.properties.VeriFitCompilationProperties;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionParameter;
@@ -290,7 +291,7 @@ public class SutDeploy extends RequestRunner
 	 */
 	protected Path createSutDir(String subfolder) throws IOException
 	{
-		Path subfolderPath = FileSystems.getDefault().getPath("SUT").resolve(subfolder);
+		Path subfolderPath = FileSystems.getDefault().getPath(VeriFitCompilationProperties.SUT_FOLDER).resolve(subfolder);
 	    
 	    if (!Files.exists(subfolderPath))
 	    {   

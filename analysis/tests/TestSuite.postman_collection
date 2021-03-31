@@ -7978,6 +7978,2240 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Resource delete",
+			"item": [
+				{
+					"name": "pre init",
+					"item": [
+						{
+							"name": "create SUT using the compilation provider",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// save the request ID as a global variable for later tests to use -- used as SUT ID",
+											"const response = xml2Json(pm.response.text());",
+											"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+											"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+											"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
+											"pm.globals.set('requestId', requestId);",
+											"",
+											"",
+											"pm.test(\"Response code should be 201 (created)\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"var compilation_provider = pm.variables.get(\"compilation_provider\");",
+											"var sutId = requestId;",
+											"pm.globals.set(\"SUT\", compilation_provider + \"/services/resources/sUTs/\" + sutId);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/xml"
+									},
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>analysis test</dcterms:title>\n\t<dcterms:description>analysis test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{compilation_provider}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n        <oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+								},
+								"url": {
+									"raw": "{{compilation_provider}}/services/resources/createAutomationRequest",
+									"host": [
+										"{{compilation_provider}}"
+									],
+									"path": [
+										"services",
+										"resources",
+										"createAutomationRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "wait for #complete (analysis/resource delete/pre init)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
+											"",
+											"var waitCounter = pm.globals.get(\"waitCounter\");",
+											"if(!waitCounter) {",
+											"    waitCounter = 0;",
+											"}",
+											"",
+											"if (pm.response.code != 200) { // wait for the resource to be created",
+											"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+											"        setTimeout(function(){}, [1000]); // 1 second",
+											"        waitCounter++;",
+											"        postman.setNextRequest(pm.info.requestName);",
+											"    } else { // timeout, reset counter",
+											"        waitCounter = 0;",
+											"    }",
+											"} else { // wait for the automation to complete",
+											"    const response = xml2Json(pm.response.text());",
+											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+											"            setTimeout(function(){}, [1000]); // 1 second",
+											"            waitCounter++;",
+											"            postman.setNextRequest(pm.info.requestName);",
+											"        } else { // timeout, reset counter",
+											"            waitCounter = 0;",
+											"        }",
+											"    } else { // wait doen, reset counter",
+											"            waitCounter = 0;",
+											"    }",
+											"}",
+											"",
+											"pm.globals.set(\"waitCounter\", waitCounter);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{compilation_provider}}/services/resources/automationRequests/{{requestId}}",
+									"host": [
+										"{{compilation_provider}}"
+									],
+									"path": [
+										"services",
+										"resources",
+										"automationRequests",
+										"{{requestId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "automation requests",
+					"item": [
+						{
+							"name": "non cascade delete",
+							"item": [
+								{
+									"name": "create a request to delete later",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"pm.test(\"Response code should be 201 (created)\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"",
+													"",
+													"// save the request ID as a global variable for later tests to use",
+													"const response = xml2Json(pm.response.text());",
+													"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+													"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+													"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
+													"pm.globals.set('requestId', requestId);",
+													"",
+													"",
+													"pm.globals.set(\"waitCounter\", 0);",
+													"pm.test(\"Response code should be 201 (created)\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/dummy\" />\n\t<dcterms:title>test</dcterms:title>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value>asdfasdf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>",
+											"options": {
+												"raw": {
+													"language": "xml"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"createAutomationRequest"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "wait for #complete (analysis/resource delete/automation requests/non cascade delete)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
+													"",
+													"var waitCounter = pm.globals.get(\"waitCounter\");",
+													"if(!waitCounter) {",
+													"    waitCounter = 0;",
+													"}",
+													"",
+													"if (pm.response.code != 200) { // wait for the resource to be created",
+													"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+													"        setTimeout(function(){}, [1000]); // 1 second",
+													"        waitCounter++;",
+													"        postman.setNextRequest(pm.info.requestName);",
+													"    } else { // timeout, reset counter",
+													"        waitCounter = 0;",
+													"    }",
+													"} else { // wait for the automation to complete",
+													"    const response = xml2Json(pm.response.text());",
+													"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+													"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+													"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+													"            setTimeout(function(){}, [1000]); // 1 second",
+													"            waitCounter++;",
+													"            postman.setNextRequest(pm.info.requestName);",
+													"        } else { // timeout, reset counter",
+													"            waitCounter = 0;",
+													"        }",
+													"    } else { // wait doen, reset counter",
+													"            waitCounter = 0;",
+													"    }",
+													"}",
+													"",
+													"pm.globals.set(\"waitCounter\", waitCounter);"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that request exists",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that result exists",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "delete request",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that request does NOT exist",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 404 (not found)\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that result still exists",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "cascade delete",
+							"item": [
+								{
+									"name": "create a request to delete later",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"pm.test(\"Response code should be 201 (created)\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"",
+													"",
+													"// save the request ID as a global variable for later tests to use",
+													"const response = xml2Json(pm.response.text());",
+													"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+													"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+													"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
+													"pm.globals.set('requestId', requestId);",
+													"",
+													"",
+													"pm.globals.set(\"waitCounter\", 0);",
+													"pm.test(\"Response code should be 201 (created)\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/dummy\" />\n\t<dcterms:title>test</dcterms:title>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value>asdfasdf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>",
+											"options": {
+												"raw": {
+													"language": "xml"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"createAutomationRequest"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "wait for #complete (analysis/resource delete/automation requests/cascade delete)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
+													"",
+													"var waitCounter = pm.globals.get(\"waitCounter\");",
+													"if(!waitCounter) {",
+													"    waitCounter = 0;",
+													"}",
+													"",
+													"if (pm.response.code != 200) { // wait for the resource to be created",
+													"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+													"        setTimeout(function(){}, [1000]); // 1 second",
+													"        waitCounter++;",
+													"        postman.setNextRequest(pm.info.requestName);",
+													"    } else { // timeout, reset counter",
+													"        waitCounter = 0;",
+													"    }",
+													"} else { // wait for the automation to complete",
+													"    const response = xml2Json(pm.response.text());",
+													"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+													"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+													"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+													"            setTimeout(function(){}, [1000]); // 1 second",
+													"            waitCounter++;",
+													"            postman.setNextRequest(pm.info.requestName);",
+													"        } else { // timeout, reset counter",
+													"            waitCounter = 0;",
+													"        }",
+													"    } else { // wait doen, reset counter",
+													"            waitCounter = 0;",
+													"    }",
+													"}",
+													"",
+													"pm.globals.set(\"waitCounter\", waitCounter);"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that request exists",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that result exists",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "delete request",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											},
+											{
+												"key": "cascade",
+												"value": "true",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that request does NOT exist",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 404 (not found)\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that result does NOT exist",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 404 (not found)\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "automation result",
+					"item": [
+						{
+							"name": "non cascade delete",
+							"item": [
+								{
+									"name": "create a request to delete later",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"pm.test(\"Response code should be 201 (created)\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"",
+													"",
+													"// save the request ID as a global variable for later tests to use",
+													"const response = xml2Json(pm.response.text());",
+													"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+													"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+													"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
+													"pm.globals.set('requestId', requestId);",
+													"",
+													"",
+													"pm.globals.set(\"waitCounter\", 0);",
+													"pm.test(\"Response code should be 201 (created)\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/dummy\" />\n\t<dcterms:title>test</dcterms:title>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value>asdfasdf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>",
+											"options": {
+												"raw": {
+													"language": "xml"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"createAutomationRequest"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "wait for #complete (analysis/resource delete/automation results/non cascade delete)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
+													"",
+													"var waitCounter = pm.globals.get(\"waitCounter\");",
+													"if(!waitCounter) {",
+													"    waitCounter = 0;",
+													"}",
+													"",
+													"if (pm.response.code != 200) { // wait for the resource to be created",
+													"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+													"        setTimeout(function(){}, [1000]); // 1 second",
+													"        waitCounter++;",
+													"        postman.setNextRequest(pm.info.requestName);",
+													"    } else { // timeout, reset counter",
+													"        waitCounter = 0;",
+													"    }",
+													"} else { // wait for the automation to complete",
+													"    const response = xml2Json(pm.response.text());",
+													"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+													"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+													"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+													"            setTimeout(function(){}, [1000]); // 1 second",
+													"            waitCounter++;",
+													"            postman.setNextRequest(pm.info.requestName);",
+													"        } else { // timeout, reset counter",
+													"            waitCounter = 0;",
+													"        }",
+													"    } else { // wait doen, reset counter",
+													"            waitCounter = 0;",
+													"    }",
+													"}",
+													"",
+													"pm.globals.set(\"waitCounter\", waitCounter);"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that request exists",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that result exists",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "delete result",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that result does NOT exist",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 404 (not found)\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that request still exists",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "cascade delete",
+							"item": [
+								{
+									"name": "create a request to delete later",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"pm.test(\"Response code should be 201 (created)\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"",
+													"",
+													"// save the request ID as a global variable for later tests to use",
+													"const response = xml2Json(pm.response.text());",
+													"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+													"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+													"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
+													"pm.globals.set('requestId', requestId);",
+													"",
+													"",
+													"pm.globals.set(\"waitCounter\", 0);",
+													"pm.test(\"Response code should be 201 (created)\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/dummy\" />\n\t<dcterms:title>test</dcterms:title>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value>asdfasdf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>",
+											"options": {
+												"raw": {
+													"language": "xml"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"createAutomationRequest"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "wait for #complete (analysis/resource delete/automation results/non cascade delete)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
+													"",
+													"var waitCounter = pm.globals.get(\"waitCounter\");",
+													"if(!waitCounter) {",
+													"    waitCounter = 0;",
+													"}",
+													"",
+													"if (pm.response.code != 200) { // wait for the resource to be created",
+													"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+													"        setTimeout(function(){}, [1000]); // 1 second",
+													"        waitCounter++;",
+													"        postman.setNextRequest(pm.info.requestName);",
+													"    } else { // timeout, reset counter",
+													"        waitCounter = 0;",
+													"    }",
+													"} else { // wait for the automation to complete",
+													"    const response = xml2Json(pm.response.text());",
+													"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+													"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+													"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+													"            setTimeout(function(){}, [1000]); // 1 second",
+													"            waitCounter++;",
+													"            postman.setNextRequest(pm.info.requestName);",
+													"        } else { // timeout, reset counter",
+													"            waitCounter = 0;",
+													"        }",
+													"    } else { // wait doen, reset counter",
+													"            waitCounter = 0;",
+													"    }",
+													"}",
+													"",
+													"pm.globals.set(\"waitCounter\", waitCounter);"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that request exists",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that result exists",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "delete result",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											},
+											{
+												"key": "cascade",
+												"type": "text",
+												"value": "true"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that result does NOT exist",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 404 (not found)\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that request does NOT exist",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 404 (not found)\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "contribution",
+					"item": [
+						{
+							"name": "non cascade delete",
+							"item": [
+								{
+									"name": "create a request to delete later",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"pm.test(\"Response code should be 201 (created)\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});",
+													"",
+													"",
+													"// save the request ID as a global variable for later tests to use",
+													"const response = xml2Json(pm.response.text());",
+													"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+													"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+													"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
+													"pm.globals.set('requestId', requestId);",
+													"",
+													"",
+													"pm.globals.set(\"waitCounter\", 0);",
+													"pm.test(\"Response code should be 201 (created)\", function () {",
+													"    pm.response.to.have.status(201);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/dummy\" />\n\t<dcterms:title>test</dcterms:title>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value>asdfasdf</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>",
+											"options": {
+												"raw": {
+													"language": "xml"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"createAutomationRequest"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "wait for #complete (analysis/resource delete/contributions/non cascade delete)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
+													"",
+													"var waitCounter = pm.globals.get(\"waitCounter\");",
+													"if(!waitCounter) {",
+													"    waitCounter = 0;",
+													"}",
+													"",
+													"if (pm.response.code != 200) { // wait for the resource to be created",
+													"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+													"        setTimeout(function(){}, [1000]); // 1 second",
+													"        waitCounter++;",
+													"        postman.setNextRequest(pm.info.requestName);",
+													"    } else { // timeout, reset counter",
+													"        waitCounter = 0;",
+													"    }",
+													"} else { // wait for the automation to complete",
+													"    const response = xml2Json(pm.response.text());",
+													"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+													"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+													"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+													"            setTimeout(function(){}, [1000]); // 1 second",
+													"            waitCounter++;",
+													"            postman.setNextRequest(pm.info.requestName);",
+													"        } else { // timeout, reset counter",
+													"            waitCounter = 0;",
+													"        }",
+													"    } else { // wait doen, reset counter",
+													"            waitCounter = 0;",
+													"    }",
+													"}",
+													"",
+													"pm.globals.set(\"waitCounter\", waitCounter);"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that request exists",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that result exists",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that contribution exists",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/contributions/{{requestId}}-stdout",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"contributions",
+												"{{requestId}}-stdout"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "delete contribution",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/contributions/{{requestId}}-stdout",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"contributions",
+												"{{requestId}}-stdout"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that contribution does NOT exist",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 404 (not found)\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/contributions/{{requestId}}-stdout",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"contributions",
+												"{{requestId}}-stdout"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that request still exists",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationRequests",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "check that result still exists",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
 		}
 	],
 	"auth": {
