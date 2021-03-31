@@ -1150,6 +1150,29 @@ public class VeriFitAnalysisManager {
         return aResource;
     }
 
+    public static Boolean deleteContribution(HttpServletRequest httpServletRequest, final String id)
+    {
+        Boolean deleted = false;
+        // Start of user code deleteContribution_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        URI uri = VeriFitAnalysisResourcesFactory.constructURIForContribution(id);
+        if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
+            log.error("Cannot delete a resource that does not already exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot delete a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+        }
+        store.deleteResources(storePool.getDefaultNamedGraphUri(), uri);
+        storePool.releaseStore(store);
+        deleted = true;
+        // Start of user code deleteContribution_storeFinalize
+        // End of user code
+        
+        // Start of user code deleteContribution
+        // TODO Implement code to delete a resource
+        // If you encounter problems, consider throwing the runtime exception WebApplicationException(message, cause, final httpStatus)
+        // End of user code
+        return deleted;
+    }
 
     public static Contribution updateContribution(HttpServletRequest httpServletRequest, final Contribution aResource, final String id) {
         Contribution updatedResource = null;

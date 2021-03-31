@@ -48,9 +48,9 @@
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_pn-SMJUdEeq-KoPaR9_Cfg"/>
       <persistence store="//@adaptorInterfaces.0/@stores.0"/>
     </webServices>
-    <webServices name="Contributions" serviceUrlPattern="resources" resourceUrlPattern="contributions/{id}" update="true">
+    <webServices name="Contributions" serviceUrlPattern="resources" resourceUrlPattern="contributions/{id}" delete="true" update="true">
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_mBlsMGpGEeuDWZwlSoXo7A"/>
-      <persistence store="//@adaptorInterfaces.0/@stores.0" update="true"/>
+      <persistence store="//@adaptorInterfaces.0/@stores.0" delete="true" update="true"/>
     </webServices>
     <specification/>
     <requiredAdaptors xsi:type="oslc4j_ai:GenericRequiredAdaptor" serviceProviderCatalogURI="http://localhost:8081/compilation/services/catalog/singleton" name="Compilation Adapter" servicedResources="_mBmTQGpGEeuDWZwlSoXo7A"/>
@@ -108,8 +108,8 @@
       <resourceTypes href="../org.eclipse.lyo.tools.domainmodels/oslcDomainSpecifications.xml#_poCjoJUdEeq-KoPaR9_Cfg"/>
       <persistence store="//@adaptorInterfaces.1/@stores.0" delete="true" update="true"/>
     </webServices>
-    <webServices name="SUTs" serviceUrlPattern="resources" resourceUrlPattern="sUTs/{id}" resourceTypes="_mBmTQGpGEeuDWZwlSoXo7A">
-      <persistence store="//@adaptorInterfaces.1/@stores.0"/>
+    <webServices name="SUTs" serviceUrlPattern="resources" resourceUrlPattern="sUTs/{id}" resourceTypes="_mBmTQGpGEeuDWZwlSoXo7A" delete="true" update="true">
+      <persistence store="//@adaptorInterfaces.1/@stores.0" delete="true" update="true"/>
     </webServices>
     <specification/>
     <configuration xsi:type="oslc4j_ai:MavenServerConfiguration" rootServerBaseUrl="http://localhost:8081/" applicationContextPath="/compilation" servletUrlPattern="/services/*" jettyPort="8081">

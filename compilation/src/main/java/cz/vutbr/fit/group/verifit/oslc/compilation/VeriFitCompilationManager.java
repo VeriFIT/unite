@@ -907,6 +907,7 @@ public class VeriFitCompilationManager {
         // End of user code
         
         // Start of user code deleteAutomationRequest
+        // TODO add cascade option to delete result aswell
         // End of user code
         return deleted;
     }
@@ -938,6 +939,7 @@ public class VeriFitCompilationManager {
         // End of user code
         
         // Start of user code updateAutomationRequest
+        // TODO check if desired state updated and cancel execution if needed; also update state in the result aswell
         // End of user code
         return updatedResource;
     }
@@ -1014,6 +1016,7 @@ public class VeriFitCompilationManager {
         // End of user code
         
         // Start of user code deleteAutomationResult
+        // TODO add cascade option to delete request aswell
         // End of user code
         return deleted;
     }
@@ -1045,6 +1048,7 @@ public class VeriFitCompilationManager {
         // End of user code
         
         // Start of user code updateAutomationResult
+        // TODO check if desired state got updated and then update the request too
         // End of user code
         return updatedResource;
     }
@@ -1075,7 +1079,57 @@ public class VeriFitCompilationManager {
         return aResource;
     }
 
+    public static Boolean deleteSUT(HttpServletRequest httpServletRequest, final String id)
+    {
+        Boolean deleted = false;
+        // Start of user code deleteSUT_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForSUT(id);
+        if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
+            log.error("Cannot delete a resource that does not already exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot delete a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+        }
+        store.deleteResources(storePool.getDefaultNamedGraphUri(), uri);
+        storePool.releaseStore(store);
+        deleted = true;
+        // Start of user code deleteSUT_storeFinalize
+        // End of user code
+        
+        // Start of user code deleteSUT
+        // TODO add cascade option to request and result
+        // End of user code
+        return deleted;
+    }
 
+    public static SUT updateSUT(HttpServletRequest httpServletRequest, final SUT aResource, final String id) {
+        SUT updatedResource = null;
+        // Start of user code updateSUT_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForSUT(id);
+        if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
+            log.error("Cannot update a resource that does not already exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot update a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+        }
+        aResource.setAbout(uri);
+        try {
+            store.updateResources(storePool.getDefaultNamedGraphUri(), aResource);
+        } catch (StoreAccessException e) {
+            log.error("Failed to update resource: '" + uri + "'", e);
+            throw new WebApplicationException("Failed to update resource: '" + uri + "'", e);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        updatedResource = aResource;
+        // Start of user code updateSUT_storeFinalize
+        // End of user code
+        
+        // Start of user code updateSUT
+
+        // End of user code
+        return updatedResource;
+    }
 
     public static String getETagFromAutomationPlan(final AutomationPlan aResource)
     {

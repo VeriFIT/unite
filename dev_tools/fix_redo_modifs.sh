@@ -19,6 +19,7 @@ cd $ROOTDIR                         # move to the script directory
 rm -rf ../analysis/src/main/resources/
 rm -rf ../compilation/src/main/resources/
 
+# both Managers have a Store declared in a different way then we want
 sed -i 's|Properties lyoStoreProperties = new Properties();|/* Unwanted generated code\n\t\tProperties lyoStoreProperties = new Properties();|' \
 ../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/VeriFitAnalysisManager.java
 sed -i 's|int initialPoolSize = Integer.parseInt(lyoStoreProperties.getProperty("initialPoolSize"));|*/\n\t\tint initialPoolSize = 100; // TODO|' \
@@ -57,9 +58,7 @@ sed -i 's|public static AutomationRequest createAutomationRequest(HttpServletReq
 sed -i 's|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource)|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, AutomationRequest aResource) throws OslcResourceException|' \
 ../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/VeriFitCompilationManager.java
 
-
 # catch the added exception and send an error response
-
 sed -i 's|AutomationRequest newResource = VeriFitAnalysisManager.createAutomationRequest(httpServletRequest, aResource);|try {\n\t\tAutomationRequest newResource = VeriFitAnalysisManager.createAutomationRequest(httpServletRequest, aResource);|' \
 ../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/services/ServiceProviderService1.java
 sed -i 's|return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();|return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();\n\t\t} catch (OslcResourceException e) {\n\t\tError errorResource = new Error();\n\t\t\terrorResource.setStatusCode(\"400\");\n\t\t\terrorResource.setMessage(e.getMessage());\n\t\t\treturn Response.status(400).entity(errorResource).build();\n\t\t}|' \
@@ -69,3 +68,9 @@ sed -i 's|AutomationRequest newResource = VeriFitCompilationManager.createAutoma
 ../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/services/ServiceProviderService1.java
 sed -i 's|return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();|return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();\n\t\t} catch (OslcResourceException e) {\n\t\tError errorResource = new Error();\n\t\t\terrorResource.setStatusCode(\"400\");\n\t\t\terrorResource.setMessage(e.getMessage());\n\t\t\treturn Response.status(400).entity(errorResource).build();\n\t\t}|' \
 ../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/services/ServiceProviderService1.java
+
+
+# change swager annotations for my custom octet-stream endpoints # DONT KNOW HOW TO MATCH THE RIGHT ONES
+#sed -i 's|produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML\n    )\n    public Contribution getContribution|produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML + ", " + MediaType.APPLICATION_OCTET_STREAM + ", " + MediaType.TEXT_PLAIN\n    )\n    public Contribution getContribution|' \
+#../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/services/Contributions.java
+          
