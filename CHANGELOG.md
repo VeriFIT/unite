@@ -1,3 +1,8 @@
+### v2.1.1
+- fixed high cpu usage on Windows
+  - run_all.ps1 had a active wait loop that was causing Powershell to use a lot of CPU
+  - fixed by adding sleep into the loop
+
 ### v2.1.0
 - added a ./conf directory and a ./conf_example directory
   - the ./conf directory is where users place all their custom configuration files

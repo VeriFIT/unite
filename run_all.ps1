@@ -143,6 +143,7 @@ echo "Use ctrl+c to exit..."
 
 # loop to catch ctrl+c
 While ($true) {
+    Start-Sleep -s 1 # sleep for 1 second
     $ret = checkForCtrlC
     if ($ret -eq 1) {
         killAllWithChildren $PIDS_TO_KILL
