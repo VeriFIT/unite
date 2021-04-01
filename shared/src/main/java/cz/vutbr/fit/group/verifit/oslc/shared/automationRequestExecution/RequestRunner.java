@@ -114,8 +114,9 @@ public abstract class RequestRunner extends Thread {
 	 *                        means no time limit
 	 * @param id 			  Identifier that is appended to the stdout and stderr output file names (e.g. id="1" -> "stdout1", "stderr1")
 	 * @return a "ExecutionResult" object that holds the stdout, stderr, return code, timeout flag, etc (see the ExecutionResult class)
+	 * @throws InterruptedException 
 	 */
-	protected ExecutionResult executeString(Path folderPath, String stringToExecute, int timeout, String id)
+	protected ExecutionResult executeString(Path folderPath, String stringToExecute, int timeout, String id) throws InterruptedException
 	{
 		final String powershellExceptionExitCode = "1";
 		
@@ -173,32 +174,26 @@ public abstract class RequestRunner extends Thread {
 			// wait for the process to exit
 			Boolean exitedInTime = true;
 			String timeoutType = "";
-			try {
-				// with timeout
-				if (timeout > 0) {
-					exitedInTime = process.waitFor(timeout, TimeUnit.SECONDS);
-					if (!exitedInTime) {
-						// try to kill gracefully
-						timeoutType = "graceful";
-						process.destroy();
-						Boolean killedInTime = process.waitFor(1, TimeUnit.SECONDS); // TODO one second to die
-						if (!killedInTime) {
-							// kill forcefully
-							timeoutType = "forceful";
-							process.destroyForcibly();
-						}
+			// with timeout
+			if (timeout > 0) {
+				exitedInTime = process.waitFor(timeout, TimeUnit.SECONDS);
+				if (!exitedInTime) {
+					// try to kill gracefully
+					timeoutType = "graceful";
+					process.destroy();
+					Boolean killedInTime = process.waitFor(1, TimeUnit.SECONDS); // TODO one second to die
+					if (!killedInTime) {
+						// kill forcefully
+						timeoutType = "forceful";
+						process.destroyForcibly();
 					}
 				}
-				// no timeout
-				else {
-					process.waitFor();
-				}
-	
-			} catch (InterruptedException e) {
-				// TODO Dont know what that means really
-				e.printStackTrace();
 			}
-			
+			// no timeout
+			else {
+				process.waitFor();
+			}
+	
 			// compute total execution time
 			Instant timeStampEnd = Instant.now(); // get execution end time
 			long totalTime = Duration.between(timeStampStart, timeStampEnd).toMillis();
@@ -215,7 +210,9 @@ public abstract class RequestRunner extends Thread {
 			res.executedString = executedString;
 			res.exceptionThrown = null;
 			return res;
-			
+		} catch (InterruptedException e) {
+			// this automation request execution was canceled, re-throw higher 
+			throw e;
 		} catch (Exception e) {
 			ExecutionResult res = new ExecutionResult();
 			res.retCode = null;

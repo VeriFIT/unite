@@ -125,9 +125,9 @@ public class SutAnalyse extends RequestRunner
 					.equals(OslcValues.AUTOMATION_STATE_INPROGRESS.getValue())))
 			{
 				resAutoResult.replaceState(OslcValues.AUTOMATION_STATE_INPROGRESS);
-				VeriFitAnalysisManager.updateAutomationResult(null, resAutoResult, resAutoResultId);
+				VeriFitAnalysisManager.internalUpdateAutomationResult(resAutoResult, resAutoResultId);
 				execAutoRequest.replaceState(OslcValues.AUTOMATION_STATE_INPROGRESS);
-				VeriFitAnalysisManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
+				VeriFitAnalysisManager.internalUpdateAutomationRequest(execAutoRequest, execAutoRequestId);
 			}
 	
 		    // prepare Contribution resources
@@ -261,11 +261,13 @@ public class SutAnalyse extends RequestRunner
 			// update the AutoResult state and verdict, and AutoRequest state
 			resAutoResult.replaceState(OslcValues.AUTOMATION_STATE_COMPLETE);
 			resAutoResult.replaceVerdict(executionVerdict);
-			VeriFitAnalysisManager.updateAutomationResult(null, resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
-			execAutoRequest.setState(new HashSet<Link>());
-			execAutoRequest.addState(OslcValues.AUTOMATION_STATE_COMPLETE);
-			VeriFitAnalysisManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
+			VeriFitAnalysisManager.internalUpdateAutomationResult(resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
+			execAutoRequest.replaceState(OslcValues.AUTOMATION_STATE_COMPLETE);
+			VeriFitAnalysisManager.internalUpdateAutomationRequest(execAutoRequest, execAutoRequestId);
 
+		} catch (InterruptedException e) {
+			// this automation request execution was canceled
+			
 		} catch (Exception e) {
 			log.error("Unexpected error during request execution!", e);
 		} finally {

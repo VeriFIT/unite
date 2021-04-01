@@ -51,7 +51,7 @@ sed -i 's|private static final Boolean ignoreResourceProtection = false;|private
 ../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/servlet/CredentialsFilter.java
 
 
-# my POST handler throws and exception
+# my POST handler throws and exception, and modifies aResource
 sed -i 's|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource)|public static AutomationRequest createAutomationRequest(HttpServletRequest httpServletRequest, AutomationRequest aResource) throws OslcResourceException|' \
 ../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/VeriFitAnalysisManager.java
 
@@ -68,6 +68,18 @@ sed -i 's|AutomationRequest newResource = VeriFitCompilationManager.createAutoma
 ../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/services/ServiceProviderService1.java
 sed -i 's|return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();|return Response.created(newResource.getAbout()).entity(newResource).header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();\n\t\t} catch (OslcResourceException e) {\n\t\tError errorResource = new Error();\n\t\t\terrorResource.setStatusCode(\"400\");\n\t\t\terrorResource.setMessage(e.getMessage());\n\t\t\treturn Response.status(400).entity(errorResource).build();\n\t\t}|' \
 ../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/services/ServiceProviderService1.java
+
+
+# my update handlers modify aResource
+sed -i 's|public static AutomationRequest updateAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource, final String id) {|public static AutomationRequest updateAutomationRequest(HttpServletRequest httpServletRequest, AutomationRequest aResource, final String id) {|' \
+../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/VeriFitAnalysisManager.java
+sed -i 's|public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, final AutomationResult aResource, final String id) {|public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, AutomationResult aResource, final String id) {|' \
+../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/VeriFitAnalysisManager.java
+
+sed -i 's|public static AutomationRequest updateAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource, final String id) {|public static AutomationRequest updateAutomationRequest(HttpServletRequest httpServletRequest, AutomationRequest aResource, final String id) {|' \
+../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/VeriFitCompilationManager.java
+sed -i 's|public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, final AutomationResult aResource, final String id) {|public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, AutomationResult aResource, final String id) {|' \
+../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/VeriFitCompilationManager.java
 
 
 # change swager annotations for my custom octet-stream endpoints # DONT KNOW HOW TO MATCH THE RIGHT ONES

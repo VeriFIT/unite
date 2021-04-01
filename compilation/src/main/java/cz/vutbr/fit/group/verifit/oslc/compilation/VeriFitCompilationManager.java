@@ -397,6 +397,68 @@ public class VeriFitCompilationManager {
     	else
     		return;
     }
+
+	/**
+	 * Version of the updateAutomationRequest API function that is called by the adapter itself.
+	 * Differs in having no restrictions on modifications.
+	 * @param aResource
+	 * @param id
+	 * @return
+	 */
+    public static AutomationRequest internalUpdateAutomationRequest(final AutomationRequest aResource, final String id) {
+        AutomationRequest updatedResource = null;
+        
+        aResource.setModified(new Date());
+  
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationRequest(id);
+        if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
+            log.error("Cannot update a resource that does not already exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot update a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+        }
+        aResource.setAbout(uri);
+        try {
+            store.updateResources(storePool.getDefaultNamedGraphUri(), aResource);
+        } catch (StoreAccessException e) {
+            log.error("Failed to update resource: '" + uri + "'", e);
+            throw new WebApplicationException("Failed to update resource: '" + uri + "'", e);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        updatedResource = aResource;
+        return updatedResource;
+    }
+
+	/**
+	 * Version of the updateAutomationResult API function that is called by the adapter itself.
+	 * Differs in having no restrictions on modifications.
+	 * @param aResource
+	 * @param id
+	 * @return
+	 */
+    public static AutomationResult internalUpdateAutomationResult(final AutomationResult aResource, final String id) {
+        AutomationResult updatedResource = null;
+        aResource.setModified(new Date());
+  
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationResult(id);
+        if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
+            log.error("Cannot update a resource that does not already exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot update a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+        }
+        aResource.setAbout(uri);
+        try {
+            store.updateResources(storePool.getDefaultNamedGraphUri(), aResource);
+        } catch (StoreAccessException e) {
+            log.error("Failed to update resource: '" + uri + "'", e);
+            throw new WebApplicationException("Failed to update resource: '" + uri + "'", e);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        updatedResource = aResource;
+        return updatedResource;
+    }
+    
     // End of user code
 
     public static void contextInitializeServletListener(final ServletContextEvent servletContextEvent)
@@ -933,12 +995,72 @@ public class VeriFitCompilationManager {
         return deleted;
     }
 
-    public static AutomationRequest updateAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource, final String id) {
+    public static AutomationRequest updateAutomationRequest(HttpServletRequest httpServletRequest, AutomationRequest aResource, final String id) {
         AutomationRequest updatedResource = null;
         // Start of user code updateAutomationRequest_storeInit
 
-        aResource.setModified(new Date());
+        if (aResource == null)
+        {
+            log.error("Automation Request UPDATE: received an empty request");
+            throw new WebApplicationException("Automation Request UPDATE: received an empty request", Status.BAD_REQUEST);
+        }
+		if (aResource.getTitle() == null || aResource.getTitle().isEmpty())
+			throw new WebApplicationException("Automation Request UPDATE: title property missing", Status.BAD_REQUEST);
         
+        // get the current version of the Automation Request 
+        updatedResource = getAutomationRequest(null, id);
+        
+        // check if cancellation was requested
+        if (	aResource.getDesiredState() != null && aResource.getDesiredState().equals(OslcValues.AUTOMATION_STATE_CANCELED)	// incoming update says cancel
+        		&& !updatedResource.getDesiredState().equals(OslcValues.AUTOMATION_STATE_CANCELED))								// current desired state was not cancel
+		{
+        	// check that the request has not finished yet, otherwise error
+        	if (updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_COMPLETE)) {
+        		log.error("Automation Request UPDATE: Failed to cancel execution becuase it has already finished.");
+	            throw new WebApplicationException("Automation Request UPDATE: Failed to cancel execution becuase it has already finished.", 500);
+        	} else {
+	    		try {
+					// cancel the request
+	    			AutoRequestExecManager.cancelRequest(id);
+	    			
+	    			// update this requests state and desired state
+	    			updatedResource.replaceState(OslcValues.AUTOMATION_STATE_CANCELED);
+	    			updatedResource.setDesiredState(OslcValues.AUTOMATION_STATE_CANCELED);
+					
+					// update the associated automation result
+	    			String resultId = Utils.getResourceIdFromUri(updatedResource.getProducedAutomationResult().getValue());
+	    			AutomationResult associatedResult = getAutomationResult(null, resultId);
+	    			associatedResult.replaceState(OslcValues.AUTOMATION_STATE_CANCELED);
+	    			associatedResult.replaceVerdict(OslcValues.AUTOMATION_VERDICT_UNAVAILABLE);
+	    			associatedResult.setDesiredState(OslcValues.AUTOMATION_STATE_CANCELED);
+					internalUpdateAutomationResult(associatedResult, resultId);
+					
+				} catch (Exception e) {
+					// the Automation Request is not running so it can not be canceled
+	        		log.error("Automation Request UPDATE: This should never happen! ExecutionManager does not have a request even though it should still be running");
+		            throw new WebApplicationException("Automation Request UPDATE: This should never happen! ExecutionManager does not have a request even though it should still be running", 500);
+				}
+        	}
+        }
+
+        // only allow other updates once the request has finished execution (otherwise the updates would be overwritten after)
+        // TODO maybe changed with future functionality
+        if (updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_CANCELED)
+        	|| updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_COMPLETE)) {
+	        
+	        // only update the properties that we allow to update
+	        updatedResource.setModified(new Date());
+	        updatedResource.setTitle(aResource.getTitle());
+	        updatedResource.setDescription(aResource.getDescription());
+	        updatedResource.setCreator(aResource.getCreator());
+	        updatedResource.setContributor(aResource.getContributor());
+	        updatedResource.setExtendedProperties(aResource.getExtendedProperties());
+        
+	        // for the generated code below
+	        aResource = updatedResource;
+	    
+	    // the code below is still part of the if !! - hack aroud code generation <<<<<<<<<<<<<<<<
+	        
         // End of user code
         Store store = storePool.getStore();
         URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationRequest(id);
@@ -957,10 +1079,18 @@ public class VeriFitCompilationManager {
         }
         updatedResource = aResource;
         // Start of user code updateAutomationRequest_storeFinalize
+        
+        }	// the hack if ends here <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        else
+        {
+    		log.error("Automation Request UPDATE: updating Automation Requests that have not yet finished execution is currently not allowed, "
+					+ "except when canceling the execution using the desiredState property.");
+            throw new WebApplicationException("Automation Request UPDATE: updating Automation Requests that have not yet finished execution is currently not allowed, "
+					+ "except when canceling the execution using the desiredState property.", 500);
+        }
         // End of user code
         
         // Start of user code updateAutomationRequest
-        // TODO check if desired state updated and cancel execution if needed; also update state in the result aswell
         // End of user code
         return updatedResource;
     }
@@ -1053,12 +1183,43 @@ public class VeriFitCompilationManager {
         return deleted;
     }
 
-    public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, final AutomationResult aResource, final String id) {
+    public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, AutomationResult aResource, final String id) {
         AutomationResult updatedResource = null;
         // Start of user code updateAutomationResult_storeInit
 
-        aResource.setModified(new Date());
-    	
+        if (aResource == null)
+        {
+            log.error("Automation Result UPDATE: received an empty request");
+            throw new WebApplicationException("Automation Result UPDATE: received an empty request", Status.BAD_REQUEST);
+        }
+		if (aResource.getTitle() == null || aResource.getTitle().isEmpty())
+			throw new WebApplicationException("Automation Result UPDATE: title property missing", Status.BAD_REQUEST);
+        
+        // get the current version of the Automation Request 
+        updatedResource = getAutomationResult(null, id);
+        
+        // TODO allow async updates of the Automation Result if other agents participate in the execution in the future
+        //updatedResource.setOutputParameter(...);
+        //updatedResource.setContribution(...);
+        
+        // only allow other updates once the result has finished execution (otherwise the updates would be overwritten after)
+        // TODO maybe changed with future functionality
+        if (updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_CANCELED)
+        	|| updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_COMPLETE)) {
+	        
+	        // only update the properties that we allow to update
+	        updatedResource.setModified(new Date());
+	        updatedResource.setTitle(aResource.getTitle());
+	        updatedResource.setCreator(aResource.getCreator());
+	        updatedResource.setContributor(aResource.getContributor());
+	        updatedResource.setExtendedProperties(aResource.getExtendedProperties());
+	        
+	        // for the generated code below
+	        aResource = updatedResource;
+	    
+	    // the code below is still part of the if !! - hack aroud code generation <<<<<<<<<<<<<<<<
+	        
+  
         // End of user code
         Store store = storePool.getStore();
         URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationResult(id);
@@ -1077,10 +1238,26 @@ public class VeriFitCompilationManager {
         }
         updatedResource = aResource;
         // Start of user code updateAutomationResult_storeFinalize
+        }	// the hack if ends here <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        else
+        {
+        	// check if the client tried to cancel this Automation Result, and give him advice on how to do it instead
+	        if (	aResource.getDesiredState() != null && aResource.getDesiredState().equals(OslcValues.AUTOMATION_STATE_CANCELED)	// incoming update says cancel
+	        		&& !updatedResource.getDesiredState().equals(OslcValues.AUTOMATION_STATE_CANCELED))								// current desired state was not cancel
+			{
+				// execution can only be cancelled by updating the automation request
+				log.error("Automation Result UPDATE: Canceling execution is only allowed by updating the Automation Request, not the result.\n"
+						+ "Update this A. Request instead: " + updatedResource.getProducedByAutomationRequest().getValue().toString());
+				throw new WebApplicationException("Automation Result UPDATE: Canceling execution is only allowed by updating the Automation Request, not the result.\n"
+						+ "Update this A. Request instead: " + updatedResource.getProducedByAutomationRequest().getValue().toString(), 500);
+	        }
+            
+			log.error("Automation Result UPDATE: updating Automation Results that have not yet finished execution is currently not allowed");
+			throw new WebApplicationException("Automation Result UPDATE: updating Automation Results that have not yet finished execution is currently not allowed", 500);
+        }
         // End of user code
         
         // Start of user code updateAutomationResult
-        // TODO check if desired state got updated and then update the request too
         // End of user code
         return updatedResource;
     }
@@ -1154,6 +1331,31 @@ public class VeriFitCompilationManager {
     public static SUT updateSUT(HttpServletRequest httpServletRequest, final SUT aResource, final String id) {
         SUT updatedResource = null;
         // Start of user code updateSUT_storeInit
+
+        if (aResource == null)
+        {
+            log.error("SUT UPDATE: received an empty request");
+            throw new WebApplicationException("SUT UPDATE: received an empty request", Status.BAD_REQUEST);
+        }
+		if (aResource.getTitle() == null || aResource.getTitle().isEmpty())
+			throw new WebApplicationException("SUT UPDATE: title property missing", Status.BAD_REQUEST);
+        
+        // get the current version of the Automation Request 
+        updatedResource = getSUT(null, id);
+        
+        // only update the properties that we allow to update
+        updatedResource.setExtendedProperties(aResource.getExtendedProperties());
+        updatedResource.setCreator(aResource.getCreator());
+        updatedResource.setDescription(aResource.getDescription());
+        updatedResource.setLaunchCommand(aResource.getLaunchCommand());
+        updatedResource.setTitle(aResource.getTitle());
+        
+        // TODO future functionality to rebuild SUT after build command change
+        updatedResource.setBuildCommand(aResource.getBuildCommand());
+        
+        // TODO future functionality to build an SUT which was initially set not to build
+        //updatedResource.setCompiled(aResource.isCompiled());
+        
         // End of user code
         Store store = storePool.getStore();
         URI uri = VeriFitCompilationResourcesFactory.constructURIForSUT(id);
@@ -1175,7 +1377,6 @@ public class VeriFitCompilationManager {
         // End of user code
         
         // Start of user code updateSUT
-
         // End of user code
         return updatedResource;
     }

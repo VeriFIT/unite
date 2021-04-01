@@ -59,8 +59,7 @@ public class ExecutionManager implements IExecutionManager {
 			throw new Exception("unknown request: " + requestId);
 		
 		// cancel the execution
-		// TODO
-		
+		runner.interrupt();
 	}
 	
 	public synchronized void executionFinishedCallback(RequestRunner request)
