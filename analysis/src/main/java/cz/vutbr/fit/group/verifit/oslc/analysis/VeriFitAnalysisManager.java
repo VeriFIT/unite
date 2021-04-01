@@ -67,6 +67,7 @@ import javax.ws.rs.core.Response.Status;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils.ResourceIdGen;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionManager;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionParameter;
 import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
 import cz.vutbr.fit.group.verifit.oslc.shared.queuing.RequestRunnerQueues;
@@ -109,7 +110,7 @@ public class VeriFitAnalysisManager {
 	static ResourceIdGen AutoPlanIdGen;
 	static ResourceIdGen AutoRequestIdGen;
 	
-	static RequestRunnerQueues AutoRequestQueues = new RequestRunnerQueues();
+	static ExecutionManager AutoRequestExecManager;
 
     // End of user code
     
@@ -359,22 +360,6 @@ public class VeriFitAnalysisManager {
 			throw new OslcResourceException("WARNING: Failed to write a Contribution file: " + e.getMessage());
 		}
     }
-    
-    /**
-     * Call this function at the end of an Automation Requests execution. If the request is part of a queue, then it will be removed from it and the next requets will start its execution.
-     * @param req
-     */
-    public static void finishedAutomationRequestExecution(AutomationRequest req)
-    {
-    	String autoPlanId = Utils.getResourceIdFromUri(req.getExecutesAutomationPlan().getValue());
-    	
-    	// if there is a request queue for this requests Automation Plan, then it means this request execution is currently
-    	// at the front of the queue and needs to be removed
-    	if (AutoRequestQueues.queueExists(autoPlanId))
-    	{
-    		AutoRequestQueues.popFirst(autoPlanId);
-    	}
-    }
 
 	/**
 	 * Processes special input parameters that require the adapter to fetch infos from other places and then fill it in.
@@ -564,7 +549,10 @@ public class VeriFitAnalysisManager {
 			System.exit(1);
 		}
 		AutoRequestIdGen = new ResourceIdGen(initReqId);
-        
+
+		// initialize execution manager
+		AutoRequestExecManager = new ExecutionManager();
+		
         // End of user code
         
     }
@@ -782,7 +770,7 @@ public class VeriFitAnalysisManager {
         // Start of user code createAutomationRequest_storeInit
         
         SutAnalyse runner = null;
-		try {
+        try {
 			// error response on empty creation POST
 	        if (aResource == null)
 				throw new OslcResourceException("empty creation POST");
@@ -805,6 +793,7 @@ public class VeriFitAnalysisManager {
 			newResource.setCreator(aResource.getCreator());
 			newResource.setContributor(aResource.getContributor());
 			newResource.setExtendedProperties(aResource.getExtendedProperties());
+			//newResource.replaceDesiredState(aResource.getDesiredState());	// TODO use this to implement deferred execution later
 			
 			
 			// get the executed autoPlan and load its configuration
@@ -896,17 +885,9 @@ public class VeriFitAnalysisManager {
         }
         newResource = aResource;
         // Start of user code createAutomationRequest_storeFinalize
-        Link requestState = newResource.getState().iterator().next(); // TODO will always contain one state
-        if (requestState.equals(OslcValues.AUTOMATION_STATE_INPROGRESS))
-        {
-			runner.start();
-		}
-        else
-		{
-			AutoRequestQueues.queueUp(
-					Utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue()),
-					runner);
-		}
+        
+        // start the execution (or queue up, based on desired state)
+        AutoRequestExecManager.addRequest(runner);
         
         // End of user code
         

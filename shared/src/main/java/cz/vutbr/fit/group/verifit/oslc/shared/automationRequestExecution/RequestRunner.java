@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.eclipse.lyo.oslc4j.core.model.Link;
 
 /**
  * A thread designed to execute an AutomationRequest.
@@ -36,8 +37,59 @@ import org.apache.commons.lang3.SystemUtils;
  *
  */
 public abstract class RequestRunner extends Thread {
-	public RequestRunner() {
+	public RequestRunner(String executedAutomationRequestId, String executedAutomationPlanId, Link startingState, Link desiredState) {
 		super();
+		
+		this.executedAutomationRequestId = executedAutomationRequestId;
+		this.desiredState = desiredState;
+		this.startingState = startingState;
+	}
+	
+	/**
+	 * Used to identify this runner
+	 */
+	private String executedAutomationRequestId;
+	
+	/**
+	 * Used for queuing purposes
+	 */
+	private String executedAutomationPlanId;
+	
+	/**
+	 * Used to determine whether to start execution
+	 */
+	private Link desiredState;
+	
+	/**
+	 * Used for queuing purposes
+	 */
+	private Link startingState;
+
+	public String getExecutedAutomationPlanId() {
+		return executedAutomationPlanId;
+	}
+
+	private IExecutionManager execManager; 
+	
+	public String getExecutedAutomationRequestId() {
+		return executedAutomationRequestId;
+	}
+
+	public Link getDesiredState() {
+		return desiredState;
+	}
+
+	public Link getStartingState() {
+		return startingState;
+	}
+	
+	public void setExecManager(IExecutionManager execManager) {
+		this.execManager = execManager;
+	}
+	
+	protected void executionFinishedNotifyManager()
+	{
+		execManager.executionFinishedCallback(this);
 	}
 	
 	public class ExecutionResult {

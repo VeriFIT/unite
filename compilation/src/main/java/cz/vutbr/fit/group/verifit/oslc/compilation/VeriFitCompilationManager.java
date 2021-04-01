@@ -70,6 +70,7 @@ import cz.vutbr.fit.group.verifit.oslc.compilation.properties.VeriFitCompilation
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils.ResourceIdGen;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionManager;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionParameter;
 import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
 
@@ -96,7 +97,8 @@ public class VeriFitCompilationManager {
     // Start of user code class_attributes
 	static ResourceIdGen AutoPlanIdGen;
 	static ResourceIdGen AutoRequestIdGen;
-	
+
+	static ExecutionManager AutoRequestExecManager;
     // End of user code
     
     
@@ -221,6 +223,8 @@ public class VeriFitCompilationManager {
 		newAutoResult.setOutputParameter(outputParams);
 		newAutoResult.setContributor(autoRequest.getContributor());
 		newAutoResult.setCreator(autoRequest.getCreator());
+		newAutoResult.setState(autoRequest.getState());
+		newAutoResult.setDesiredState(autoRequest.getDesiredState());
 		
     	// check that required properties are specified in the input parameter
     	if (newAutoResult == null || newAutoResult.getTitle() == null || newAutoResult.getTitle().isEmpty() ||
@@ -493,6 +497,9 @@ public class VeriFitCompilationManager {
 		}
 		AutoRequestIdGen = new ResourceIdGen(initReqId);
         
+		// initialize execution manager
+		AutoRequestExecManager = new ExecutionManager();
+		
         // End of user code
         
     }
@@ -769,6 +776,8 @@ public class VeriFitCompilationManager {
 			newResource.setCreator(aResource.getCreator());
 			newResource.setContributor(aResource.getContributor());
 			newResource.setExtendedProperties(aResource.getExtendedProperties());
+			newResource.replaceState(OslcValues.AUTOMATION_STATE_INPROGRESS);	// set to inProgress becuase there is no queuing currently (all requests start immediately)
+			//newResource.replaceDesiredState(aResource.getDesiredState());	// TODO use this to implement deferred execution later
 
 			// get the executed autoPlan
 			String execAutoPlanId = Utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue());
@@ -834,13 +843,13 @@ public class VeriFitCompilationManager {
         }
         newResource = aResource;
         // Start of user code createAutomationRequest_storeFinalize
-		
-        runner.start();
+
+        // start the execution 
+        AutoRequestExecManager.addRequest(runner);
         
         // End of user code
         
         // Start of user code createAutomationRequest
-        
         // End of user code
         return newResource;
     }
