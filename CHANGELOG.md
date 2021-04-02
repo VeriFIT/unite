@@ -4,6 +4,14 @@
   - Requests, Results, and SUTs recognize a "cascade" header which when set to "true" makes it so that 
     deleting any one of the three will result in all three getting deleted
   - deleting a resource that is connected to a directory or a file will also delete the file/directory (SUT, contribution, A.Result)
+- implemented resource update
+  - update capabilities for A.Requests, A.Results, Contributions (analysis only), SUT (compilation only)
+  - not all properties can be updated
+  - properties can not be changed before execution finishes, except for the desiredState property of AutomationRequests
+- implemented execution cancel
+  - cancel Automation Request execution by updating the A.Request's desiredState property to "canceled"
+  - canceling only works on requests that are still state "inProgress"
+
 
 ### v2.1.1
 - fixed high cpu usage on Windows

@@ -1407,6 +1407,7 @@ public class VeriFitAnalysisManager {
     public static Contribution updateContribution(HttpServletRequest httpServletRequest, final Contribution aResource, final String id) {
         Contribution updatedResource = null;
         // Start of user code updateContribution_storeInit
+        // TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
         // End of user code
         Store store = storePool.getStore();
         URI uri = VeriFitAnalysisResourcesFactory.constructURIForContribution(id);
