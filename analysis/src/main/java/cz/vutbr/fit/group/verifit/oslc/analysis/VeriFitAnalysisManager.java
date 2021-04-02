@@ -1087,21 +1087,26 @@ public class VeriFitAnalysisManager {
 
         // only allow other updates once the request has finished execution (otherwise the updates would be overwritten after)
         // TODO maybe changed with future functionality
-        if (updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_CANCELED)
-        	|| updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_COMPLETE)) {
-	        
-	        // only update the properties that we allow to update
-	        updatedResource.setModified(new Date());
-	        updatedResource.setTitle(aResource.getTitle());
-	        updatedResource.setDescription(aResource.getDescription());
-	        updatedResource.setCreator(aResource.getCreator());
-	        updatedResource.setContributor(aResource.getContributor());
-	        updatedResource.setExtendedProperties(aResource.getExtendedProperties());
+        if (! (updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_CANCELED)
+        	|| updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_COMPLETE))) {
+
+    		log.error("Automation Request UPDATE: updating Automation Requests that have not yet finished execution is currently not allowed, "
+					+ "except when canceling the execution using the desiredState property.");
+            throw new WebApplicationException("Automation Request UPDATE: updating Automation Requests that have not yet finished execution is currently not allowed, "
+					+ "except when canceling the execution using the desiredState property.", 500);
+        }
         
-	        // for the generated code below
-	        aResource = updatedResource;
+        // only update the properties that we allow to update
+        updatedResource.setModified(new Date());
+        updatedResource.setTitle(aResource.getTitle());
+        updatedResource.setDescription(aResource.getDescription());
+        updatedResource.setCreator(aResource.getCreator());
+        updatedResource.setContributor(aResource.getContributor());
+        updatedResource.setExtendedProperties(aResource.getExtendedProperties());
+    
+        // for the generated code below
+        aResource = updatedResource;
 	    
-	    // the code below is still part of the if !! - hack aroud code generation <<<<<<<<<<<<<<<<
 	        
         // End of user code
         Store store = storePool.getStore();
@@ -1121,15 +1126,6 @@ public class VeriFitAnalysisManager {
         }
         updatedResource = aResource;
         // Start of user code updateAutomationRequest_storeFinalize
-        
-        }	// the hack if ends here <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        else
-        {
-    		log.error("Automation Request UPDATE: updating Automation Requests that have not yet finished execution is currently not allowed, "
-					+ "except when canceling the execution using the desiredState property.");
-            throw new WebApplicationException("Automation Request UPDATE: updating Automation Requests that have not yet finished execution is currently not allowed, "
-					+ "except when canceling the execution using the desiredState property.", 500);
-        }
         // End of user code
         
         // Start of user code updateAutomationRequest
@@ -1253,22 +1249,34 @@ public class VeriFitAnalysisManager {
         
         // only allow other updates once the result has finished execution (otherwise the updates would be overwritten after)
         // TODO maybe changed with future functionality
-        if (updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_CANCELED)
-        	|| updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_COMPLETE)) {
+        if (! (updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_CANCELED)
+        	|| updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_COMPLETE))) {
+
+        	// check if the client tried to cancel this Automation Result, and give him advice on how to do it instead
+	        if (	aResource.getDesiredState() != null && aResource.getDesiredState().equals(OslcValues.AUTOMATION_STATE_CANCELED)	// incoming update says cancel
+	        		&& !updatedResource.getDesiredState().equals(OslcValues.AUTOMATION_STATE_CANCELED))								// current desired state was not cancel
+			{
+				// execution can only be cancelled by updating the automation request
+				log.error("Automation Result UPDATE: Canceling execution is only allowed by updating the Automation Request, not the result.\n"
+						+ "Update this A. Request instead: " + updatedResource.getProducedByAutomationRequest().getValue().toString());
+				throw new WebApplicationException("Automation Result UPDATE: Canceling execution is only allowed by updating the Automation Request, not the result.\n"
+						+ "Update this A. Request instead: " + updatedResource.getProducedByAutomationRequest().getValue().toString(), 500);
+	        }
+            
+			log.error("Automation Result UPDATE: updating Automation Results that have not yet finished execution is currently not allowed");
+			throw new WebApplicationException("Automation Result UPDATE: updating Automation Results that have not yet finished execution is currently not allowed", 500);
+        }
 	        
-	        // only update the properties that we allow to update
-	        updatedResource.setModified(new Date());
-	        updatedResource.setTitle(aResource.getTitle());
-	        updatedResource.setCreator(aResource.getCreator());
-	        updatedResource.setContributor(aResource.getContributor());
-	        updatedResource.setExtendedProperties(aResource.getExtendedProperties());
-	        
-	        // for the generated code below
-	        aResource = updatedResource;
+        // only update the properties that we allow to update
+        updatedResource.setModified(new Date());
+        updatedResource.setTitle(aResource.getTitle());
+        updatedResource.setCreator(aResource.getCreator());
+        updatedResource.setContributor(aResource.getContributor());
+        updatedResource.setExtendedProperties(aResource.getExtendedProperties());
+        
+        // for the generated code below
+        aResource = updatedResource;
 	    
-	    // the code below is still part of the if !! - hack aroud code generation <<<<<<<<<<<<<<<<
-	        
-  
         // End of user code
         Store store = storePool.getStore();
         URI uri = VeriFitAnalysisResourcesFactory.constructURIForAutomationResult(id);
@@ -1286,24 +1294,6 @@ public class VeriFitAnalysisManager {
             storePool.releaseStore(store);
         }
         updatedResource = aResource;
-        // Start of user code updateAutomationResult_storeFinalize
-        }	// the hack if ends here <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        else
-        {
-        	// check if the client tried to cancel this Automation Result, and give him advice on how to do it instead
-	        if (	aResource.getDesiredState() != null && aResource.getDesiredState().equals(OslcValues.AUTOMATION_STATE_CANCELED)	// incoming update says cancel
-	        		&& !updatedResource.getDesiredState().equals(OslcValues.AUTOMATION_STATE_CANCELED))								// current desired state was not cancel
-			{
-				// execution can only be cancelled by updating the automation request
-				log.error("Automation Result UPDATE: Canceling execution is only allowed by updating the Automation Request, not the result.\n"
-						+ "Update this A. Request instead: " + updatedResource.getProducedByAutomationRequest().getValue().toString());
-				throw new WebApplicationException("Automation Result UPDATE: Canceling execution is only allowed by updating the Automation Request, not the result.\n"
-						+ "Update this A. Request instead: " + updatedResource.getProducedByAutomationRequest().getValue().toString(), 500);
-	        }
-            
-			log.error("Automation Result UPDATE: updating Automation Results that have not yet finished execution is currently not allowed");
-			throw new WebApplicationException("Automation Result UPDATE: updating Automation Results that have not yet finished execution is currently not allowed", 500);
-        }
         // End of user code
         
         // Start of user code updateAutomationResult

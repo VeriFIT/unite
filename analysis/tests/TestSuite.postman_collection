@@ -11812,6 +11812,85 @@
 									"response": []
 								},
 								{
+									"name": "check the result before",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// get global variable to use in this test",
+													"var requestId = pm.globals.get('requestId');",
+													"var serverAddr = pm.variables.get(\"server_address\");",
+													"var server_context = pm.variables.get(\"server_context\");",
+													"var AutomationPlanId = pm.variables.get(\"AutomationPlanId\");",
+													"var test_arguments = pm.variables.get(\"arguments\");",
+													"var SUT = pm.variables.get(\"SUT\");",
+													"",
+													"",
+													"pm.test(\"Response code should be 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"// pass the response body to the update request after this one",
+													"pm.globals.set('responseBody', pm.response.text());",
+													"",
+													"pm.test(\"state should be #inProgress \", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
+													"    pm.expect(pm.response.text()).to.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
+													"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+													"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#canceled\\\"/>\");",
+													"});",
+													"pm.test(\"desired state should be #complete \", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:desiredState rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
+													"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:desiredState rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
+													"    pm.expect(pm.response.text()).to.include(\"oslc_auto:desiredState rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+													"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:desiredState rdf:resource=\\\"http://open-services.net/ns/auto#canceled\\\"/>\");",
+													"});",
+													"pm.test(\"verdict should be #unavailable\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#unavailable\\\"/>\");",
+													"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
+													"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"type": "text",
+												"value": "application/rdf+xml"
+											}
+										],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"resources",
+												"automationResults",
+												"{{requestId}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
 									"name": "try updating before it finishes",
 									"event": [
 										{
