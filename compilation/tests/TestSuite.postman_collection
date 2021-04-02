@@ -1065,6 +1065,70 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "check the bookmarkResource identifier",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// get global variable to use in this test",
+											"var requestId = pm.globals.get('requestId');",
+											"var serverAddr = pm.variables.get(\"server_address\");",
+											"var server_context = pm.variables.get(\"server_context\");",
+											"",
+											"",
+											"pm.test(\"Response code should be 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"Response body should contain an AutomationRequest\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:AutomationRequest rdf:about=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\");",
+											"});",
+											"pm.test(\"should have the expected ID: bookmarkID\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:AutomationRequest rdf:about=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/bookmarkID\");",
+											"});",
+											"pm.test(\"identifier should have the same value as the ID of the last created request\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<dcterms:identifier>\" + requestId + \"</dcterms:identifier>\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/bookmarkID",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"automationRequests",
+										"bookmarkID"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},
@@ -1719,6 +1783,173 @@
 										"resources",
 										"sUTs",
 										"{{requestId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "bookmark resource protection",
+					"item": [
+						{
+							"name": "try updating",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code should be 403 (forbidden)\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\r\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\r\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\r\n\r\n  <oslc_auto:AutomationRequest rdf:about=\"http://localhost:8081/compilation/services/resources/automationRequests/bookmarkID\">\r\n\t<dcterms:title>not important</dcterms:title>\r\n\t<dcterms:description>not important</dcterms:description>\r\n  </oslc_auto:AutomationRequest>\r\n\r\n</rdf:RDF>",
+									"options": {
+										"raw": {
+											"language": "xml"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/bookmarkID",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"automationRequests",
+										"bookmarkID"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "try deleting",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code should be 403 (forbidden)\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/bookmarkID",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"automationRequests",
+										"bookmarkID"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "check that it does not appear in queries",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var requestId = pm.globals.get('requestId');",
+											"",
+											"pm.test(\"Response code should be 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"The result should be empty\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\">0</oslc:totalCount>\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/rdf+xml",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/queryAutomationRequest?oslc.where=dcterms:description=\"This resource is used by the adapter to rememeber what is the current maximum AutomationRequest ID. Determines where new ID's start after adapter restart with a persistent triplestore.\"&oslc.prefix=dcterms=<http://purl.org/dc/terms/>",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"queryAutomationRequest"
+									],
+									"query": [
+										{
+											"key": "oslc.where",
+											"value": "dcterms:description=\"This resource is used by the adapter to rememeber what is the current maximum AutomationRequest ID. Determines where new ID's start after adapter restart with a persistent triplestore.\""
+										},
+										{
+											"key": "oslc.prefix",
+											"value": "dcterms=<http://purl.org/dc/terms/>"
+										}
 									]
 								}
 							},
@@ -9647,15 +9878,10 @@
 												"key": "Accept",
 												"type": "text",
 												"value": "application/rdf+xml"
-											},
-											{
-												"key": "cascade",
-												"value": "true",
-												"type": "text"
 											}
 										],
 										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}?cascade=true",
 											"host": [
 												"{{server_address}}"
 											],
@@ -9665,6 +9891,12 @@
 												"resources",
 												"automationRequests",
 												"{{requestId}}"
+											],
+											"query": [
+												{
+													"key": "cascade",
+													"value": "true"
+												}
 											]
 										}
 									},
@@ -10022,15 +10254,10 @@
 												"key": "Accept",
 												"type": "text",
 												"value": "application/rdf+xml"
-											},
-											{
-												"key": "cascade",
-												"value": "true",
-												"type": "text"
 											}
 										],
 										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}?cascade=true",
 											"host": [
 												"{{server_address}}"
 											],
@@ -10040,6 +10267,12 @@
 												"resources",
 												"automationRequests",
 												"{{requestId}}"
+											],
+											"query": [
+												{
+													"key": "cascade",
+													"value": "true"
+												}
 											]
 										}
 									},
@@ -11018,15 +11251,10 @@
 												"key": "Accept",
 												"type": "text",
 												"value": "application/rdf+xml"
-											},
-											{
-												"key": "cascade",
-												"type": "text",
-												"value": "true"
 											}
 										],
 										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}?cascade=true",
 											"host": [
 												"{{server_address}}"
 											],
@@ -11036,6 +11264,12 @@
 												"resources",
 												"automationResults",
 												"{{requestId}}"
+											],
+											"query": [
+												{
+													"key": "cascade",
+													"value": "true"
+												}
 											]
 										}
 									},
@@ -11393,15 +11627,10 @@
 												"key": "Accept",
 												"type": "text",
 												"value": "application/rdf+xml"
-											},
-											{
-												"key": "cascade",
-												"type": "text",
-												"value": "true"
 											}
 										],
 										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+											"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}?cascade=true",
 											"host": [
 												"{{server_address}}"
 											],
@@ -11411,6 +11640,12 @@
 												"resources",
 												"automationResults",
 												"{{requestId}}"
+											],
+											"query": [
+												{
+													"key": "cascade",
+													"value": "true"
+												}
 											]
 										}
 									},
@@ -12468,15 +12703,10 @@
 												"key": "Accept",
 												"type": "text",
 												"value": "application/rdf+xml"
-											},
-											{
-												"key": "cascade",
-												"type": "text",
-												"value": "true"
 											}
 										],
 										"url": {
-											"raw": "{{server_address}}/{{server_context}}/services/resources/sUTs/{{requestId}}",
+											"raw": "{{server_address}}/{{server_context}}/services/resources/sUTs/{{requestId}}?cascade=true",
 											"host": [
 												"{{server_address}}"
 											],
@@ -12486,6 +12716,12 @@
 												"resources",
 												"sUTs",
 												"{{requestId}}"
+											],
+											"query": [
+												{
+													"key": "cascade",
+													"value": "true"
+												}
 											]
 										}
 									},

@@ -104,10 +104,25 @@ public class VeriFitCompilationManager {
     
     
     // Start of user code class_methods
-	
-	private static int getCurrentHighestAutomationRequestId() throws Exception
+
+	private static long getCurrentHighestAutomationRequestId() throws Exception
 	{
-    	int currMaxReqId = 0;
+		// first try to get the next ID from the bookmark resource
+		try {
+			AutomationRequest bookmarkReq = getAutomationRequest(null, "bookmarkID");
+			if (bookmarkReq != null)
+			{
+				String bookmarkIdentifier = bookmarkReq.getIdentifier();
+				if (bookmarkIdentifier != null)
+					return Long.parseLong(bookmarkIdentifier);
+			}
+		} catch (Exception e) {
+			
+		}
+		
+		// if the first method failed, fallback to the old slow method
+		log.warn("Initializing ID generators: bookmarkID resource not found. Falling back querying the whole database.");
+    	long currMaxReqId = 0;
     	try {
     		// loop over all the Automation Requests in the triplestore (TODO potential performance issue for initialization with a large persistent database)
     		for (int page = 0;; page++)
@@ -121,7 +136,7 @@ public class VeriFitCompilationManager {
 				{	
 					for (AutomationRequest autoReq : listAutoRequests)
 					{
-						int reqId = Integer.parseInt(Utils.getResourceIdFromUri(autoReq.getAbout()));
+						long reqId = Long.parseLong(Utils.getResourceIdFromUri(autoReq.getAbout()));
 						if (reqId > currMaxReqId)
 						{
 							currMaxReqId = reqId;
@@ -135,6 +150,23 @@ public class VeriFitCompilationManager {
 		return currMaxReqId;
 	}
 	
+	private static void updateAutomationRequestIDbookmarkResource(String id)
+	{
+		AutomationRequest bookmarkReq = VeriFitCompilationResourcesFactory.createAutomationRequest("bookmarkID");
+		bookmarkReq.setIdentifier(id);
+		bookmarkReq.setDescription("This resource is used by the adapter to rememeber what is the current maximum AutomationRequest ID. "
+				+ "Determines where new ID's start after adapter restart with a persistent triplestore.");
+		
+        Store store = storePool.getStore();
+        try {
+            store.updateResources(storePool.getDefaultNamedGraphUri(), bookmarkReq);
+        } catch (StoreAccessException e) {
+            log.error("Failed to create resource: '" + bookmarkReq.getAbout() + "'", e);            
+            throw new WebApplicationException("Failed to create resource: '" + bookmarkReq.getAbout() + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+	}
 	
 	/**
 	 * Creates the SUT directory for saving programs to analyze
@@ -551,7 +583,7 @@ public class VeriFitCompilationManager {
 		}
 
 		// check what the last AutomationRequest ID is (requests have a numerical ID) and initialize the ID generator to one higher
-    	int initReqId = 0;
+    	long initReqId = 0;
 		try {
 			initReqId = getCurrentHighestAutomationRequestId() + 1;
 		} catch (Exception e) {
@@ -709,6 +741,17 @@ public class VeriFitCompilationManager {
         // End of user code
         
         // Start of user code queryAutomationRequests
+        
+        for (AutomationRequest req : resources)
+        {
+            // dont show the bookmark resource in query responses
+            if (Utils.getResourceIdFromUri(req.getAbout()).equals("bookmarkID"))
+            {
+            	resources.remove(req);
+            	break;
+            }
+        }
+        
         // End of user code
         return resources;
     }
@@ -828,9 +871,13 @@ public class VeriFitCompilationManager {
 			if (aResource.getTitle() == null || aResource.getTitle().isEmpty())
 				throw new OslcResourceException("title property missing");
 
+			
+			// generate a new ID and update the ID bookmark resource 
+			String newID = AutoRequestIdGen.getId();
+			updateAutomationRequestIDbookmarkResource(newID);
+			
 			// create a basic Automation Request (with core properties like creation time, identifier, ...)
 			// and set relevant properties from the Automation Request received from the client
-			String newID = AutoRequestIdGen.getId();
 			newResource = VeriFitCompilationResourcesFactory.createAutomationRequest(newID);
 			newResource.setInputParameter(aResource.getInputParameter());
 			newResource.setTitle(aResource.getTitle());
@@ -967,6 +1014,13 @@ public class VeriFitCompilationManager {
         Boolean deleted = false;
         // Start of user code deleteAutomationRequest_storeInit
 
+        // dont allow clients to delete the bookmark resource
+        if (id.equals("bookmarkID"))
+        {
+            log.error("Automation Request DELETE: bookmarkID resource is not allowed to be updated");
+            throw new WebApplicationException("Automation Request DELETE: bookmarkID resource is not allowed to be deleted", Status.FORBIDDEN);
+        }
+
         AutomationRequest requestToDelete = null;
         try {
         	requestToDelete = getAutomationRequest(null, id);
@@ -1000,7 +1054,7 @@ public class VeriFitCompilationManager {
         
         // Start of user code deleteAutomationRequest
         if (httpServletRequest != null) {
-	        String cascade = httpServletRequest.getHeader("cascade");
+	        String cascade = httpServletRequest.getParameter("cascade");
 	        if (cascade != null && cascade.equalsIgnoreCase("true"))
 	        {
 	        	try {
@@ -1022,7 +1076,15 @@ public class VeriFitCompilationManager {
     public static AutomationRequest updateAutomationRequest(HttpServletRequest httpServletRequest, AutomationRequest aResource, final String id) {
         AutomationRequest updatedResource = null;
         // Start of user code updateAutomationRequest_storeInit
-
+        
+        // dont allow clients to update the bookmark resource
+        if (id.equals("bookmarkID"))
+        {
+            log.error("Automation Request UPDATE: bookmarkID resource is not allowed to be updated");
+            throw new WebApplicationException("Automation Request UPDATE: bookmarkID resource is not allowed to be updated", Status.FORBIDDEN);
+        }
+        
+        // check that the request has all the required properties
         if (aResource == null)
         {
             log.error("Automation Request UPDATE: received an empty request");
@@ -1205,7 +1267,7 @@ public class VeriFitCompilationManager {
         
         // Start of user code deleteAutomationResult
         if (httpServletRequest != null) {
-	        String cascade = httpServletRequest.getHeader("cascade");
+	        String cascade = httpServletRequest.getParameter("cascade");
 	        if (cascade != null && cascade.equalsIgnoreCase("true"))
 	        {
 	        	try {
@@ -1383,7 +1445,7 @@ public class VeriFitCompilationManager {
         
         // Start of user code deleteSUT
         if (httpServletRequest != null) {
-	        String cascade = httpServletRequest.getHeader("cascade");
+	        String cascade = httpServletRequest.getParameter("cascade");
 	        if (cascade != null && cascade.equalsIgnoreCase("true"))
 	        {
 	        	try {
