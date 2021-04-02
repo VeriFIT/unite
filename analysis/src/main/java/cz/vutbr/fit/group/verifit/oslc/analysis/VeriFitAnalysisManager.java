@@ -479,8 +479,8 @@ public class VeriFitAnalysisManager {
         Store store = storePool.getStore();
         URI uri = VeriFitAnalysisResourcesFactory.constructURIForAutomationRequest(id);
         if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
-            log.error("Cannot update a resource that does not already exists: '" + uri + "'");
-            throw new WebApplicationException("Cannot update a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+            log.error("Cannot update a resource that already does not exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot update a resource that already does not exists: '" + uri + "'", Status.NOT_FOUND);
         }
         aResource.setAbout(uri);
         try {
@@ -509,8 +509,8 @@ public class VeriFitAnalysisManager {
         Store store = storePool.getStore();
         URI uri = VeriFitAnalysisResourcesFactory.constructURIForAutomationResult(id);
         if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
-            log.error("Cannot update a resource that does not already exists: '" + uri + "'");
-            throw new WebApplicationException("Cannot update a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+            log.error("Cannot update a resource that already does not exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot update a resource that already does not exists: '" + uri + "'", Status.NOT_FOUND);
         }
         aResource.setAbout(uri);
         try {
@@ -1008,12 +1008,31 @@ public class VeriFitAnalysisManager {
     {
         Boolean deleted = false;
         // Start of user code deleteAutomationRequest_storeInit
+
+        AutomationRequest requestToDelete = null;
+        try {
+        	requestToDelete = getAutomationRequest(null, id);
+            
+        	// if the request is still running, cancel execution first
+            if (! (requestToDelete.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_CANCELED)
+            	|| requestToDelete.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_COMPLETE))) {
+
+            	// set desired state to cancel and update the request --> will cancel it
+            	requestToDelete.setDesiredState(OslcValues.AUTOMATION_STATE_CANCELED);
+            	updateAutomationRequest(null, requestToDelete, id);
+            }
+        
+        } catch (Exception e) {
+        	// means not found; let it fail on the generated "resourceExists()" below
+        	// or failed to cancel, so it finished already
+        }
+        
         // End of user code
         Store store = storePool.getStore();
         URI uri = VeriFitAnalysisResourcesFactory.constructURIForAutomationRequest(id);
         if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
-            log.error("Cannot delete a resource that does not already exists: '" + uri + "'");
-            throw new WebApplicationException("Cannot delete a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+            log.error("AutomationRequest DELETE: Cannot delete a resource that already does not exists: '" + uri + "'");
+            throw new WebApplicationException("AutomationRequest DELETE: Cannot delete a resource that already does not exists: '" + uri + "'", Status.NOT_FOUND);
         }
         store.deleteResources(storePool.getDefaultNamedGraphUri(), uri);
         storePool.releaseStore(store);
@@ -1112,8 +1131,8 @@ public class VeriFitAnalysisManager {
         Store store = storePool.getStore();
         URI uri = VeriFitAnalysisResourcesFactory.constructURIForAutomationRequest(id);
         if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
-            log.error("Cannot update a resource that does not already exists: '" + uri + "'");
-            throw new WebApplicationException("Cannot update a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+            log.error("Cannot update a resource that already does not exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot update a resource that already does not exists: '" + uri + "'", Status.NOT_FOUND);
         }
         aResource.setAbout(uri);
         try {
@@ -1169,17 +1188,27 @@ public class VeriFitAnalysisManager {
         // Start of user code deleteAutomationResult_storeInit
         AutomationResult resultToDelete = null;
         try {
-        	resultToDelete = getAutomationResult(null, id);
+        	resultToDelete = getAutomationResult(null, id);      
         } catch (Exception e) {
         	// means not found; let it fail on the generated "resourceExists()" below
+        }
+        if (resultToDelete != null)
+        {
+        	// deleting results is not allowed before they finish
+            if (! (resultToDelete.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_CANCELED)
+            	|| resultToDelete.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_COMPLETE))) {
+
+        		log.error("Automation Result DELETE: deleting Automation Results that have not yet finished execution is not allowed");
+                throw new WebApplicationException("Automation Result DELETE: deleting Automation Results that have not yet finished execution is not allowed", 500);
+            }
         }
         
         // End of user code
         Store store = storePool.getStore();
         URI uri = VeriFitAnalysisResourcesFactory.constructURIForAutomationResult(id);
         if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
-            log.error("Cannot delete a resource that does not already exists: '" + uri + "'");
-            throw new WebApplicationException("Cannot delete a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+            log.error("AutomationResult DELETE: Cannot delete a resource that already does not exists: '" + uri + "'");
+            throw new WebApplicationException("AutomationResult DELETE: Cannot delete a resource that already does not exists: '" + uri + "'", Status.NOT_FOUND);
         }
         store.deleteResources(storePool.getDefaultNamedGraphUri(), uri);
         storePool.releaseStore(store);
@@ -1216,7 +1245,7 @@ public class VeriFitAnalysisManager {
 	        if (sutPath != null)
 	        {
 		        try {
-		        	String fileEnding = SystemUtils.IS_OS_LINUX ? ".sh" : ".ps";
+		        	String fileEnding = SystemUtils.IS_OS_LINUX ? ".sh" : ".ps1";
 		    		File execFile = FileSystems.getDefault().getPath(sutPath).getParent().resolve("exec_analysis_" + id + fileEnding).toFile();
 		    		FileDeleteStrategy.FORCE.delete(execFile);
 				} catch (IOException e) {
@@ -1240,7 +1269,7 @@ public class VeriFitAnalysisManager {
 		if (aResource.getTitle() == null || aResource.getTitle().isEmpty())
 			throw new WebApplicationException("Automation Result UPDATE: title property missing", Status.BAD_REQUEST);
         
-        // get the current version of the Automation Request 
+        // get the current version of the Automation Result 
         updatedResource = getAutomationResult(null, id);
         
         // TODO allow async updates of the Automation Result if other agents participate in the execution in the future
@@ -1281,8 +1310,8 @@ public class VeriFitAnalysisManager {
         Store store = storePool.getStore();
         URI uri = VeriFitAnalysisResourcesFactory.constructURIForAutomationResult(id);
         if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
-            log.error("Cannot update a resource that does not already exists: '" + uri + "'");
-            throw new WebApplicationException("Cannot update a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+            log.error("Cannot update a resource that already does not exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot update a resource that already does not exists: '" + uri + "'", Status.NOT_FOUND);
         }
         aResource.setAbout(uri);
         try {
@@ -1370,8 +1399,8 @@ public class VeriFitAnalysisManager {
         Store store = storePool.getStore();
         URI uri = VeriFitAnalysisResourcesFactory.constructURIForContribution(id);
         if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
-            log.error("Cannot delete a resource that does not already exists: '" + uri + "'");
-            throw new WebApplicationException("Cannot delete a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+            log.error("Contribution DELETE: Cannot delete a resource that already does not exists: '" + uri + "'");
+            throw new WebApplicationException("Contribution DELETE: Cannot delete a resource that already does not exists: '" + uri + "'", Status.NOT_FOUND);
         }
         store.deleteResources(storePool.getDefaultNamedGraphUri(), uri);
         storePool.releaseStore(store);
@@ -1404,16 +1433,52 @@ public class VeriFitAnalysisManager {
         return deleted;
     }
 
-    public static Contribution updateContribution(HttpServletRequest httpServletRequest, final Contribution aResource, final String id) {
+    public static Contribution updateContribution(HttpServletRequest httpServletRequest, Contribution aResource, final String id) {
         Contribution updatedResource = null;
         // Start of user code updateContribution_storeInit
-        // TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
+        if (aResource == null)
+        {
+            log.error("Contribution UPDATE: received an empty request");
+            throw new WebApplicationException("Contribution UPDATE: received an empty request", Status.BAD_REQUEST);
+        }
+		if (aResource.getTitle() == null || aResource.getTitle().isEmpty())
+			throw new WebApplicationException("Contribution UPDATE: title property missing", Status.BAD_REQUEST);
+        
+
+        // get the current version of the Contribution 
+        updatedResource = getContribution(null, id);
+		
+		// only update the properties we allow to update
+        updatedResource.setModified(new Date());
+        updatedResource.setTitle(aResource.getTitle());
+        updatedResource.setDescription(aResource.getDescription());
+        updatedResource.setCreator(aResource.getCreator());
+        updatedResource.setExtendedProperties(aResource.getExtendedProperties());
+        
+        updatedResource.setValue(aResource.getValue());
+        updatedResource.setValueType(aResource.getValueType());
+        
+        updatedResource.setFilePath(aResource.getFilePath());
+        String filePath = aResource.getFilePath();
+    	if (filePath != null)
+    	{
+			// TODO security issue - do not allow the filePath to be updated to outside the SUT directory, e.g. "/" --> danger of 'rm -rf "/"' on delete
+			if (! (filePath.contains("compilation/SUT/") || filePath.contains("compilation\\SUT\\")) )
+			{
+				log.error("Contribution UPDATE: Failed to update filePath: SECURITY MEASURE - the path to the file seems to be outside of the expected SUT directory");
+	            throw new WebApplicationException("Contribution UPDATE: Failed to update filePath: SECURITY MEASURE - the path to the file seems to be outside of the expected SUT directory", Status.INTERNAL_SERVER_ERROR);
+			}
+    	}
+        
+        // for the generated code below
+        aResource = updatedResource;
+        
         // End of user code
         Store store = storePool.getStore();
         URI uri = VeriFitAnalysisResourcesFactory.constructURIForContribution(id);
         if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
-            log.error("Cannot update a resource that does not already exists: '" + uri + "'");
-            throw new WebApplicationException("Cannot update a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+            log.error("Cannot update a resource that already does not exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot update a resource that already does not exists: '" + uri + "'", Status.NOT_FOUND);
         }
         aResource.setAbout(uri);
         try {

@@ -17,6 +17,8 @@ import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -25,6 +27,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
@@ -63,6 +66,8 @@ public class SutDeploy extends RequestRunner
 	private AutomationResult resAutoResult;
 	final private List<ExecutionParameter> execParameters;
 	
+	private Collection<File> filesToDeleteIfInterrupted = new ArrayList<File>();
+	
 	/**
 	 * @param execAutoRequest	Executed AutomationRequest resource object
 	 * @param execAutoResult	Result AutomationResult resource object
@@ -81,9 +86,10 @@ public class SutDeploy extends RequestRunner
 		this.execAutoRequest = execAutoRequest;
 		this.resAutoResultId = Utils.getResourceIdFromUri(resAutoResult.getAbout());
 		this.resAutoResult = resAutoResult;
+		
 	}
 
-	/**
+	/** 
 	 * Thread main
 	 */
 	public void run()
@@ -192,6 +198,7 @@ public class SutDeploy extends RequestRunner
 			try {
 				// create the program path and name
 				folderPath = createSutDir(execAutoRequestId);
+				this.filesToDeleteIfInterrupted.add(folderPath.toAbsolutePath().toFile());
 				String filenameSUT = "";	// used for optional unpacking later
 				
 			    // get the source file
@@ -253,12 +260,14 @@ public class SutDeploy extends RequestRunner
 					} catch (IOException e) {
 						compStdoutLog.setValue("Failed to load contents of this file: " + e.getMessage());
 					}
+					compStdoutLog.setFilePath(compRes.stdoutFile.getAbsolutePath());
 			    	resAutoResult.addContribution(compStdoutLog);
 			    	try {
 						compStderrLog.setValue(new String(Files.readAllBytes(compRes.stderrFile.toPath())));
 					} catch (IOException e) {
 						compStderrLog.setValue("Failed to load contents of this file: " + e.getMessage());
 					}
+			    	compStderrLog.setFilePath(compRes.stderrFile.getAbsolutePath());
 			    	resAutoResult.addContribution(compStderrLog);
 				}
 			} else {
@@ -294,6 +303,19 @@ public class SutDeploy extends RequestRunner
 
 		} catch (InterruptedException e) {
 			// this automation request execution was canceled
+			try {
+				Thread.sleep(500);	// TODO this sleep is needed otherwise the delete below fails (not sure why)
+			} catch (InterruptedException e2) {
+				// should not happen
+			}
+			
+			for (File f : this.filesToDeleteIfInterrupted) {
+				try {
+					FileDeleteStrategy.FORCE.delete(f);
+				} catch (IOException e1) {
+					log.error("Failed to delete a file during cleanup after a runner was interrupted", e1);
+				}
+			}
 			
 		} catch (Exception e) {
 			log.error("Unexpected error during request execution!", e);

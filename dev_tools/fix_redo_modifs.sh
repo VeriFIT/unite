@@ -75,6 +75,9 @@ sed -i 's|public static AutomationRequest updateAutomationRequest(HttpServletReq
 ../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/VeriFitAnalysisManager.java
 sed -i 's|public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, final AutomationResult aResource, final String id) {|public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, AutomationResult aResource, final String id) {|' \
 ../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/VeriFitAnalysisManager.java
+sed -i 's|public static Contribution updateContribution(HttpServletRequest httpServletRequest, final Contribution aResource, final String id) {|public static Contribution updateContribution(HttpServletRequest httpServletRequest, Contribution aResource, final String id) {|' \
+../analysis/src/main/java/cz/vutbr/fit/group/verifit/oslc/analysis/VeriFitAnalysisManager.java
+
 
 sed -i 's|public static AutomationRequest updateAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource, final String id) {|public static AutomationRequest updateAutomationRequest(HttpServletRequest httpServletRequest, AutomationRequest aResource, final String id) {|' \
 ../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/VeriFitCompilationManager.java

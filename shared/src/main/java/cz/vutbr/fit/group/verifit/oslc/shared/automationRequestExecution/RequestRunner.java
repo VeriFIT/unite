@@ -144,6 +144,7 @@ public abstract class RequestRunner extends Thread {
 		}
 
 		String executedString = null;
+		Process process = null;
 		try {
 			// create a directory for execution outputs 
 			Path outputsDir = folderPath.resolve(".adapter");
@@ -169,7 +170,7 @@ public abstract class RequestRunner extends Thread {
 			
 			// start execution and get a timestamp of the start to measure execution time
 			Instant timeStampStart = Instant.now();
-			Process process = processBuilder.start();
+			process = processBuilder.start();
 			
 			// wait for the process to exit
 			Boolean exitedInTime = true;
@@ -211,7 +212,17 @@ public abstract class RequestRunner extends Thread {
 			res.exceptionThrown = null;
 			return res;
 		} catch (InterruptedException e) {
-			// this automation request execution was canceled, re-throw higher 
+			// this automation request execution was canceled, kill the running process and re-throw higher 
+			if (process != null)
+			{
+				// try to kill gracefully
+				process.destroy();
+				Boolean killedInTime = process.waitFor(1, TimeUnit.SECONDS); // TODO one second to die
+				if (!killedInTime) {
+					// kill forcefully
+					process.destroyForcibly();
+				}
+			}
 			throw e;
 		} catch (Exception e) {
 			ExecutionResult res = new ExecutionResult();

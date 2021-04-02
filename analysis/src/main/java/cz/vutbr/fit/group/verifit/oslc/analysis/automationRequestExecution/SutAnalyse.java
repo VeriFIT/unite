@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
@@ -61,6 +62,8 @@ public class SutAnalyse extends RequestRunner
 	private SUT execSut;
 
 	final private AutomationPlanConf autoPlanConf;
+	
+	private Collection<File> filesToDeleteIfInterrupted = new ArrayList<File>();
 	
 	/**
 	 * @param serviceProviderId	ID of the service provider
@@ -167,9 +170,15 @@ public class SutAnalyse extends RequestRunner
 		    GetModifFilesBySnapshot snapshotter = new GetModifFilesBySnapshot(new File(execSut.getSUTdirectoryPath()));
 		    snapshotter.takeBeforeSnapshot(outputRegex);
 		    
+		    // get the SUT path and set files to be deleted in case of interrupt (this is a bit of a hack because the ./.adapter/... is set inside the executeString() below)
+			final Path SUTdirAsPath = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
+			this.filesToDeleteIfInterrupted.add(SUTdirAsPath.resolve("./.adapter/exec_analysis_" + this.execAutoRequestId + ".ps1").toAbsolutePath().toFile());
+			this.filesToDeleteIfInterrupted.add(SUTdirAsPath.resolve("./.adapter/exec_analysis_" + this.execAutoRequestId + ".sh").toAbsolutePath().toFile());
+			this.filesToDeleteIfInterrupted.add(SUTdirAsPath.resolve("./.adapter/stderr_analysis_" + this.execAutoRequestId).toAbsolutePath().toFile());
+			this.filesToDeleteIfInterrupted.add(SUTdirAsPath.resolve("./.adapter/stdout_analysis_" + this.execAutoRequestId).toAbsolutePath().toFile());
+		    
 			// execute analysis
 		    Link executionVerdict;
-			final Path SUTdirAsPath = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
 		    ExecutionResult analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), "_analysis_" + this.execAutoRequestId);
 			statusMessage.setValue(statusMessage.getValue() +
 					"Executing: " + stringToExecute + "\n   as: " + analysisRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
@@ -226,9 +235,9 @@ public class SutAnalyse extends RequestRunner
 				modifFiles.add(analysisRes.stderrFile);
 		    	
 		    	// add file URIs to standard output contributions and add them to the automation result
-		    	analysisStdout.setFilePath(analysisRes.stdoutFile.getPath());
+		    	analysisStdout.setFilePath(analysisRes.stdoutFile.getAbsolutePath());
 		    	resAutoResult.addContribution(analysisStdout);
-		    	analysisStderr.setFilePath(analysisRes.stderrFile.getPath());
+		    	analysisStderr.setFilePath(analysisRes.stderrFile.getAbsolutePath());
 				resAutoResult.addContribution(analysisStderr);
 		    	
 				// create a zip of all file contributions if needed
@@ -267,6 +276,21 @@ public class SutAnalyse extends RequestRunner
 
 		} catch (InterruptedException e) {
 			// this automation request execution was canceled
+			try {
+				Thread.sleep(500);	// TODO this sleep is needed otherwise the delete below fails (not sure why)
+			} catch (InterruptedException e2) {
+				// should not happen
+			}
+			
+			for (File f : this.filesToDeleteIfInterrupted) {
+				try {
+					FileDeleteStrategy.FORCE.delete(f);
+				} catch (IOException e1) {
+					log.error("Failed to delete a file during cleanup after a runner was interrupted", e1);
+				}
+			}
+			
+			// TODO currently does not delete any files outside of the .adapter directory! Those will just stay there lying around
 			
 		} catch (Exception e) {
 			log.error("Unexpected error during request execution!", e);
