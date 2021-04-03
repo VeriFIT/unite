@@ -2338,64 +2338,6 @@
 					"name": "bookmark resource protection",
 					"item": [
 						{
-							"name": "try updating",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Response code should be 403 (forbidden)\", function () {",
-											"    pm.response.to.have.status(403);",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Accept",
-										"type": "text",
-										"value": "application/rdf+xml"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\r\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\r\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\r\n\r\n  <oslc_auto:AutomationRequest rdf:about=\"http://localhost:8081/compilation/services/resources/automationRequests/bookmarkID\">\r\n\t<dcterms:title>not important</dcterms:title>\r\n\t<dcterms:description>not important</dcterms:description>\r\n  </oslc_auto:AutomationRequest>\r\n\r\n</rdf:RDF>",
-									"options": {
-										"raw": {
-											"language": "xml"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/bookmarkID",
-									"host": [
-										"{{server_address}}"
-									],
-									"path": [
-										"{{server_context}}",
-										"services",
-										"resources",
-										"automationRequests",
-										"bookmarkID"
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "try deleting",
 							"event": [
 								{
@@ -2494,6 +2436,64 @@
 											"key": "oslc.prefix",
 											"value": "dcterms=<http://purl.org/dc/terms/>"
 										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "try updating",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code should be 403 (forbidden)\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\r\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\r\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\r\n\r\n  <oslc_auto:AutomationRequest rdf:about=\"http://localhost:8081/compilation/services/resources/automationRequests/bookmarkID\">\r\n\t<dcterms:title>not important</dcterms:title>\r\n\t<dcterms:description>not important</dcterms:description>\r\n  </oslc_auto:AutomationRequest>\r\n\r\n</rdf:RDF>",
+									"options": {
+										"raw": {
+											"language": "xml"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/bookmarkID",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"automationRequests",
+										"bookmarkID"
 									]
 								}
 							},
@@ -13825,7 +13825,7 @@
 													"var requestId = pm.globals.get('requestId');\r",
 													"\r",
 													"// modify some properties\r",
-													"requestBody = requestBody.replace(\"SUT\", \"insecure_file_path\");\r",
+													"requestBody = requestBody.replace(new RegExp(\"SUT\", 'g'), \"insecure_file_path\");\r",
 													"\r",
 													"pm.globals.set('requestBody', requestBody);"
 												],
