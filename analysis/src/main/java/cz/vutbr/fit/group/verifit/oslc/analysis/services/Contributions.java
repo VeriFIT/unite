@@ -79,7 +79,6 @@ import org.eclipse.lyo.oslc4j.core.annotation.OslcDialogs;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcQueryCapability;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcService;
 import org.eclipse.lyo.oslc4j.core.model.Compact;
-import org.eclipse.lyo.oslc4j.core.model.Error;
 import org.eclipse.lyo.oslc4j.core.model.OslcConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcMediaType;
 import org.eclipse.lyo.oslc4j.core.model.Preview;
@@ -99,6 +98,7 @@ import io.swagger.annotations.ApiOperation;
 import java.io.InputStream;
 import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
 import java.io.File;
+import org.eclipse.lyo.oslc4j.core.model.Error;
 // End of user code
 
 // Start of user code pre_class_code
@@ -356,6 +356,34 @@ public class Contributions
 
         throw new WebApplicationException(Status.NOT_FOUND);
     }
+    @DELETE
+    @Path("contributions/{id}")
+    @ApiOperation(
+        value = "DELETE for resources of type {'" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "'}",
+        notes = "DELETE for resources of type {'" + "<a href=\"" + Oslc_autoDomainConstants.CONTRIBUTION_TYPE + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "'}" +
+            ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + Oslc_autoDomainConstants.CONTRIBUTION_PATH + "\">" + Oslc_autoDomainConstants.CONTRIBUTION_LOCALNAME + "</a>" + "'}",
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML
+    )
+    public Response deleteContribution(
+                @PathParam("id") final String id
+        ) throws IOException, ServletException, URISyntaxException
+    {
+        // Start of user code deleteContribution_init
+        // End of user code
+        final Contribution aResource = VeriFitAnalysisManager.getContribution(httpServletRequest, id);
+
+        if (aResource != null) {
+            // Start of user code deleteContribution
+            // End of user code
+            boolean deleted = VeriFitAnalysisManager.deleteContribution(httpServletRequest, id);
+            if (deleted)
+                return Response.ok().header(VeriFitAnalysisConstants.HDR_OSLC_VERSION, VeriFitAnalysisConstants.OSLC_VERSION_V2).build();
+            else
+                throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+        }
+        throw new WebApplicationException(Status.NOT_FOUND);
+    }
+
     @PUT
     @Path("contributions/{id}")
     @Consumes({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_JSON_LD, OslcMediaType.TEXT_TURTLE, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON })

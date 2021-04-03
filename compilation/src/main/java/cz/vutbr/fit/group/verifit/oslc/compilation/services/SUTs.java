@@ -295,4 +295,70 @@ public class SUTs
 
         throw new WebApplicationException(Status.NOT_FOUND);
     }
+    @DELETE
+    @Path("sUTs/{id}")
+    @ApiOperation(
+        value = "DELETE for resources of type {'" + FitDomainConstants.SUT_LOCALNAME + "'}",
+        notes = "DELETE for resources of type {'" + "<a href=\"" + FitDomainConstants.SUT_TYPE + "\">" + FitDomainConstants.SUT_LOCALNAME + "</a>" + "'}" +
+            ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + FitDomainConstants.SUT_PATH + "\">" + FitDomainConstants.SUT_LOCALNAME + "</a>" + "'}",
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML
+    )
+    public Response deleteSUT(
+                @PathParam("id") final String id
+        ) throws IOException, ServletException, URISyntaxException
+    {
+        // Start of user code deleteSUT_init
+        // End of user code
+        final SUT aResource = VeriFitCompilationManager.getSUT(httpServletRequest, id);
+
+        if (aResource != null) {
+            // Start of user code deleteSUT
+            // End of user code
+            boolean deleted = VeriFitCompilationManager.deleteSUT(httpServletRequest, id);
+            if (deleted)
+                return Response.ok().header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();
+            else
+                throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+        }
+        throw new WebApplicationException(Status.NOT_FOUND);
+    }
+
+    @PUT
+    @Path("sUTs/{id}")
+    @Consumes({OslcMediaType.APPLICATION_RDF_XML, OslcMediaType.APPLICATION_JSON_LD, OslcMediaType.TEXT_TURTLE, OslcMediaType.APPLICATION_XML, OslcMediaType.APPLICATION_JSON })
+    @ApiOperation(
+        value = "PUT for resources of type {'" + FitDomainConstants.SUT_LOCALNAME + "'}",
+        notes = "PUT for resources of type {'" + "<a href=\"" + FitDomainConstants.SUT_TYPE + "\">" + FitDomainConstants.SUT_LOCALNAME + "</a>" + "'}" +
+            ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + FitDomainConstants.SUT_PATH + "\">" + FitDomainConstants.SUT_LOCALNAME + "</a>" + "'}",
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML
+    )
+    public Response updateSUT(
+            @HeaderParam("If-Match") final String eTagHeader,
+            @PathParam("id") final String id ,
+            final SUT aResource
+        ) throws IOException, ServletException
+    {
+        // Start of user code updateSUT_init
+        // End of user code
+        final SUT originalResource = VeriFitCompilationManager.getSUT(httpServletRequest, id);
+
+        if (originalResource != null) {
+            final String originalETag = VeriFitCompilationManager.getETagFromSUT(originalResource);
+
+            if ((eTagHeader == null) || (originalETag.equals(eTagHeader))) {
+                // Start of user code updateSUT
+                // End of user code
+                final SUT updatedResource = VeriFitCompilationManager.updateSUT(httpServletRequest, aResource, id);
+                httpServletResponse.setHeader("ETag", VeriFitCompilationManager.getETagFromSUT(updatedResource));
+                return Response.ok().header(VeriFitCompilationConstants.HDR_OSLC_VERSION, VeriFitCompilationConstants.OSLC_VERSION_V2).build();
+            }
+            else {
+                throw new WebApplicationException(Status.PRECONDITION_FAILED);
+            }
+        }
+        else {
+            throw new WebApplicationException(Status.NOT_FOUND);
+        }
+    }
+
 }

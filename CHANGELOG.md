@@ -1,3 +1,22 @@
+### v2.2.0
+- implemented resource delete
+  - delete capabilities for A.Requests, A.Results, Contributions (analysis only), SUT (compilation only)
+  - Requests, Results, and SUTs recognize a "cascade" parameter which when set to "true" makes it so that 
+    deleting any one of the three will result in all three getting deleted
+  - deleting a resource that is connected to a directory or a file will also delete the file/directory (SUT, contribution, A.Result)
+  - deleting an Automation Request that is not yet finished results in the request getting canceled first (using desiredState update),
+    unfinished Automation Results can not be deleted
+- implemented resource update
+  - update capabilities for A.Requests, A.Results, Contributions (analysis only), SUT (compilation only)
+  - not all properties can be updated
+  - properties can not be changed before execution finishes, except for the desiredState property of AutomationRequests
+- implemented execution cancel
+  - cancel Automation Request execution by updating the A.Request's desiredState property to "canceled"
+  - canceling only works on requests that are still state "inProgress"
+- reworked resource ID generators
+  - now use long instead of int
+  - initialization is based on a special bookmarkID resource instead of walking the whole triplestore
+
 ### v2.1.1
 - fixed high cpu usage on Windows
   - run_all.ps1 had a active wait loop that was causing Powershell to use a lot of CPU

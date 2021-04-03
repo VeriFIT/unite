@@ -51,6 +51,7 @@ import java.util.Properties;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystems;
 import java.util.NoSuchElementException;
 import org.eclipse.lyo.store.ModelUnmarshallingException;
 import org.eclipse.lyo.store.Store;
@@ -69,11 +70,13 @@ import cz.vutbr.fit.group.verifit.oslc.compilation.properties.VeriFitCompilation
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils.ResourceIdGen;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionManager;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionParameter;
 import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
 
 import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
@@ -95,15 +98,31 @@ public class VeriFitCompilationManager {
     // Start of user code class_attributes
 	static ResourceIdGen AutoPlanIdGen;
 	static ResourceIdGen AutoRequestIdGen;
-	
+
+	static ExecutionManager AutoRequestExecManager;
     // End of user code
     
     
     // Start of user code class_methods
-	
-	private static int getCurrentHighestAutomationRequestId() throws Exception
+
+	private static long getCurrentHighestAutomationRequestId() throws Exception
 	{
-    	int currMaxReqId = 0;
+		// first try to get the next ID from the bookmark resource
+		try {
+			AutomationRequest bookmarkReq = getAutomationRequest(null, "bookmarkID");
+			if (bookmarkReq != null)
+			{
+				String bookmarkIdentifier = bookmarkReq.getIdentifier();
+				if (bookmarkIdentifier != null)
+					return Long.parseLong(bookmarkIdentifier);
+			}
+		} catch (Exception e) {
+			
+		}
+		
+		// if the first method failed, fallback to the old slow method
+		log.warn("Initializing ID generators: bookmarkID resource not found. Falling back querying the whole database.");
+    	long currMaxReqId = 0;
     	try {
     		// loop over all the Automation Requests in the triplestore (TODO potential performance issue for initialization with a large persistent database)
     		for (int page = 0;; page++)
@@ -117,7 +136,7 @@ public class VeriFitCompilationManager {
 				{	
 					for (AutomationRequest autoReq : listAutoRequests)
 					{
-						int reqId = Integer.parseInt(Utils.getResourceIdFromUri(autoReq.getAbout()));
+						long reqId = Long.parseLong(Utils.getResourceIdFromUri(autoReq.getAbout()));
 						if (reqId > currMaxReqId)
 						{
 							currMaxReqId = reqId;
@@ -131,13 +150,30 @@ public class VeriFitCompilationManager {
 		return currMaxReqId;
 	}
 	
+	private static void updateAutomationRequestIDbookmarkResource(String id)
+	{
+		AutomationRequest bookmarkReq = VeriFitCompilationResourcesFactory.createAutomationRequest("bookmarkID");
+		bookmarkReq.setIdentifier(id);
+		bookmarkReq.setDescription("This resource is used by the adapter to rememeber what is the current maximum AutomationRequest ID. "
+				+ "Determines where new ID's start after adapter restart with a persistent triplestore.");
+		
+        Store store = storePool.getStore();
+        try {
+            store.updateResources(storePool.getDefaultNamedGraphUri(), bookmarkReq);
+        } catch (StoreAccessException e) {
+            log.error("Failed to create resource: '" + bookmarkReq.getAbout() + "'", e);            
+            throw new WebApplicationException("Failed to create resource: '" + bookmarkReq.getAbout() + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+	}
 	
 	/**
 	 * Creates the SUT directory for saving programs to analyze
 	 */
-	private static void createTmpDir()
+	private static void createSutDir()
 	{
-		File programDir = new File("SUT/");
+		File programDir = FileSystems.getDefault().getPath(VeriFitCompilationProperties.SUT_FOLDER).toFile();
 	    if (!programDir.exists())
 	    {
 	    	programDir.mkdirs();
@@ -150,7 +186,7 @@ public class VeriFitCompilationManager {
 	 */
 	private static void deleteTmpDir() throws IOException
 	{
-		File programDir = new File("SUT");
+		File programDir = new File(VeriFitCompilationProperties.SUT_FOLDER);
 		FileDeleteStrategy.FORCE.delete(programDir);
 	}
 	
@@ -220,6 +256,8 @@ public class VeriFitCompilationManager {
 		newAutoResult.setOutputParameter(outputParams);
 		newAutoResult.setContributor(autoRequest.getContributor());
 		newAutoResult.setCreator(autoRequest.getCreator());
+		newAutoResult.setState(autoRequest.getState());
+		newAutoResult.setDesiredState(autoRequest.getDesiredState());
 		
     	// check that required properties are specified in the input parameter
     	if (newAutoResult == null || newAutoResult.getTitle() == null || newAutoResult.getTitle().isEmpty() ||
@@ -392,6 +430,68 @@ public class VeriFitCompilationManager {
     	else
     		return;
     }
+
+	/**
+	 * Version of the updateAutomationRequest API function that is called by the adapter itself.
+	 * Differs in having no restrictions on modifications.
+	 * @param aResource
+	 * @param id
+	 * @return
+	 */
+    public static AutomationRequest internalUpdateAutomationRequest(final AutomationRequest aResource, final String id) {
+        AutomationRequest updatedResource = null;
+        
+        aResource.setModified(new Date());
+  
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationRequest(id);
+        if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
+            log.error("Cannot update a resource that already does not exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot update a resource that already does not exists: '" + uri + "'", Status.NOT_FOUND);
+        }
+        aResource.setAbout(uri);
+        try {
+            store.updateResources(storePool.getDefaultNamedGraphUri(), aResource);
+        } catch (StoreAccessException e) {
+            log.error("Failed to update resource: '" + uri + "'", e);
+            throw new WebApplicationException("Failed to update resource: '" + uri + "'", e);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        updatedResource = aResource;
+        return updatedResource;
+    }
+
+	/**
+	 * Version of the updateAutomationResult API function that is called by the adapter itself.
+	 * Differs in having no restrictions on modifications.
+	 * @param aResource
+	 * @param id
+	 * @return
+	 */
+    public static AutomationResult internalUpdateAutomationResult(final AutomationResult aResource, final String id) {
+        AutomationResult updatedResource = null;
+        aResource.setModified(new Date());
+  
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationResult(id);
+        if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
+            log.error("Cannot update a resource that already does not exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot update a resource that already does not exists: '" + uri + "'", Status.NOT_FOUND);
+        }
+        aResource.setAbout(uri);
+        try {
+            store.updateResources(storePool.getDefaultNamedGraphUri(), aResource);
+        } catch (StoreAccessException e) {
+            log.error("Failed to update resource: '" + uri + "'", e);
+            throw new WebApplicationException("Failed to update resource: '" + uri + "'", e);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        updatedResource = aResource;
+        return updatedResource;
+    }
+    
     // End of user code
 
     public static void contextInitializeServletListener(final ServletContextEvent servletContextEvent)
@@ -422,7 +522,7 @@ public class VeriFitCompilationManager {
 				// ignore
 			}
     	}
-    	createTmpDir();
+    	createSutDir();
 
         // End of user code
         // Start of user code StoreInitialise
@@ -483,7 +583,7 @@ public class VeriFitCompilationManager {
 		}
 
 		// check what the last AutomationRequest ID is (requests have a numerical ID) and initialize the ID generator to one higher
-    	int initReqId = 0;
+    	long initReqId = 0;
 		try {
 			initReqId = getCurrentHighestAutomationRequestId() + 1;
 		} catch (Exception e) {
@@ -492,6 +592,9 @@ public class VeriFitCompilationManager {
 		}
 		AutoRequestIdGen = new ResourceIdGen(initReqId);
         
+		// initialize execution manager
+		AutoRequestExecManager = new ExecutionManager();
+		
         // End of user code
         
     }
@@ -638,6 +741,17 @@ public class VeriFitCompilationManager {
         // End of user code
         
         // Start of user code queryAutomationRequests
+        
+        for (AutomationRequest req : resources)
+        {
+            // dont show the bookmark resource in query responses
+            if (Utils.getResourceIdFromUri(req.getAbout()).equals("bookmarkID"))
+            {
+            	resources.remove(req);
+            	break;
+            }
+        }
+        
         // End of user code
         return resources;
     }
@@ -757,9 +871,13 @@ public class VeriFitCompilationManager {
 			if (aResource.getTitle() == null || aResource.getTitle().isEmpty())
 				throw new OslcResourceException("title property missing");
 
+			
+			// generate a new ID and update the ID bookmark resource 
+			String newID = AutoRequestIdGen.getId();
+			updateAutomationRequestIDbookmarkResource(newID);
+			
 			// create a basic Automation Request (with core properties like creation time, identifier, ...)
 			// and set relevant properties from the Automation Request received from the client
-			String newID = AutoRequestIdGen.getId();
 			newResource = VeriFitCompilationResourcesFactory.createAutomationRequest(newID);
 			newResource.setInputParameter(aResource.getInputParameter());
 			newResource.setTitle(aResource.getTitle());
@@ -768,6 +886,8 @@ public class VeriFitCompilationManager {
 			newResource.setCreator(aResource.getCreator());
 			newResource.setContributor(aResource.getContributor());
 			newResource.setExtendedProperties(aResource.getExtendedProperties());
+			newResource.replaceState(OslcValues.AUTOMATION_STATE_INPROGRESS);	// set to inProgress becuase there is no queuing currently (all requests start immediately)
+			//newResource.replaceDesiredState(aResource.getDesiredState());	// TODO use this to implement deferred execution later
 
 			// get the executed autoPlan
 			String execAutoPlanId = Utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue());
@@ -833,13 +953,13 @@ public class VeriFitCompilationManager {
         }
         newResource = aResource;
         // Start of user code createAutomationRequest_storeFinalize
-		
-        runner.start();
+
+        // start the execution 
+        AutoRequestExecManager.addRequest(runner);
         
         // End of user code
         
         // Start of user code createAutomationRequest
-        
         // End of user code
         return newResource;
     }
@@ -893,12 +1013,38 @@ public class VeriFitCompilationManager {
     {
         Boolean deleted = false;
         // Start of user code deleteAutomationRequest_storeInit
+
+        // dont allow clients to delete the bookmark resource
+        if (id.equals("bookmarkID"))
+        {
+            log.error("Automation Request DELETE: bookmarkID resource is not allowed to be updated");
+            throw new WebApplicationException("Automation Request DELETE: bookmarkID resource is not allowed to be deleted", Status.FORBIDDEN);
+        }
+
+        AutomationRequest requestToDelete = null;
+        try {
+        	requestToDelete = getAutomationRequest(null, id);
+            
+        	// if the request is still running, cancel execution first
+            if (! (requestToDelete.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_CANCELED)
+            	|| requestToDelete.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_COMPLETE))) {
+
+            	// set desired state to cancel and update the request --> will cancel it
+            	requestToDelete.setDesiredState(OslcValues.AUTOMATION_STATE_CANCELED);
+            	updateAutomationRequest(null, requestToDelete, id);
+            }
+        
+        } catch (Exception e) {
+        	// means not found; let it fail on the generated "resourceExists()" below
+        	// or failed to cancel, so it finished already
+        }
+        
         // End of user code
         Store store = storePool.getStore();
         URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationRequest(id);
         if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
-            log.error("Cannot delete a resource that does not already exists: '" + uri + "'");
-            throw new WebApplicationException("Cannot delete a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+            log.error("AutomationRequest delete: Cannot delete a resource that already does not exists: '" + uri + "'");
+            throw new WebApplicationException("AutomationRequest delete: Cannot delete a resource that already does not exists: '" + uri + "'", Status.NOT_FOUND);
         }
         store.deleteResources(storePool.getDefaultNamedGraphUri(), uri);
         storePool.releaseStore(store);
@@ -907,22 +1053,111 @@ public class VeriFitCompilationManager {
         // End of user code
         
         // Start of user code deleteAutomationRequest
+        if (httpServletRequest != null) {
+	        String cascade = httpServletRequest.getParameter("cascade");
+	        if (cascade != null && cascade.equalsIgnoreCase("true"))
+	        {
+	        	try {
+	        		deleteAutomationResult(null, id);	// TODO relies on result and request IDs being the same
+	        		
+	        		// only delete the SUT if the request finished (otherwise it does not exist yet)
+	        		if (requestToDelete.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_COMPLETE) || requestToDelete.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_CANCELED)) {
+	        			deleteSUT(null, id);
+		        	}
+	        	} catch (Exception e) {
+	        		log.warn("AutomationRequest delete id \"" + id + "\": Failed to cascade - " + e.getMessage());
+	        	}
+	        }
+        }
         // End of user code
         return deleted;
     }
 
-    public static AutomationRequest updateAutomationRequest(HttpServletRequest httpServletRequest, final AutomationRequest aResource, final String id) {
+    public static AutomationRequest updateAutomationRequest(HttpServletRequest httpServletRequest, AutomationRequest aResource, final String id) {
         AutomationRequest updatedResource = null;
         // Start of user code updateAutomationRequest_storeInit
-
-        aResource.setModified(new Date());
         
+        // dont allow clients to update the bookmark resource
+        if (id.equals("bookmarkID"))
+        {
+            log.error("Automation Request UPDATE: bookmarkID resource is not allowed to be updated");
+            throw new WebApplicationException("Automation Request UPDATE: bookmarkID resource is not allowed to be updated", Status.FORBIDDEN);
+        }
+        
+        // check that the request has all the required properties
+        if (aResource == null)
+        {
+            log.error("Automation Request UPDATE: received an empty request");
+            throw new WebApplicationException("Automation Request UPDATE: received an empty request", Status.BAD_REQUEST);
+        }
+		if (aResource.getTitle() == null || aResource.getTitle().isEmpty())
+			throw new WebApplicationException("Automation Request UPDATE: title property missing", Status.BAD_REQUEST);
+        
+        // get the current version of the Automation Request 
+        updatedResource = getAutomationRequest(null, id);
+        
+        // check if cancellation was requested
+        if (	aResource.getDesiredState() != null && aResource.getDesiredState().equals(OslcValues.AUTOMATION_STATE_CANCELED)	// incoming update says cancel
+        		&& !updatedResource.getDesiredState().equals(OslcValues.AUTOMATION_STATE_CANCELED))								// current desired state was not cancel
+		{
+        	// check that the request has not finished yet, otherwise error
+        	if (updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_COMPLETE)) {
+        		log.error("Automation Request UPDATE: Failed to cancel execution becuase it has already finished.");
+	            throw new WebApplicationException("Automation Request UPDATE: Failed to cancel execution becuase it has already finished.", 500);
+        	} else {
+	    		try {
+					// cancel the request
+	    			AutoRequestExecManager.cancelRequest(id);
+	    			
+	    			// update this requests state and desired state
+	    			updatedResource.replaceState(OslcValues.AUTOMATION_STATE_CANCELED);
+	    			updatedResource.setDesiredState(OslcValues.AUTOMATION_STATE_CANCELED);
+					
+					// update the associated automation result
+	    			String resultId = Utils.getResourceIdFromUri(updatedResource.getProducedAutomationResult().getValue());
+	    			AutomationResult associatedResult = getAutomationResult(null, resultId);
+	    			associatedResult.replaceState(OslcValues.AUTOMATION_STATE_CANCELED);
+	    			associatedResult.replaceVerdict(OslcValues.AUTOMATION_VERDICT_UNAVAILABLE);
+	    			associatedResult.setDesiredState(OslcValues.AUTOMATION_STATE_CANCELED);
+					internalUpdateAutomationResult(associatedResult, resultId);
+					
+				} catch (Exception e) {
+					// the Automation Request is not running so it can not be canceled
+	        		log.error("Automation Request UPDATE: This should never happen! ExecutionManager does not have a request even though it should still be running");
+		            throw new WebApplicationException("Automation Request UPDATE: This should never happen! ExecutionManager does not have a request even though it should still be running", 500);
+				}
+        	}
+        }
+
+        // only allow other updates once the request has finished execution (otherwise the updates would be overwritten after)
+        // TODO maybe changed with future functionality
+        if (! (updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_CANCELED)
+        	|| updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_COMPLETE))) {
+	     
+    		log.error("Automation Request UPDATE: updating Automation Requests that have not yet finished execution is currently not allowed, "
+					+ "except when canceling the execution using the desiredState property.");
+            throw new WebApplicationException("Automation Request UPDATE: updating Automation Requests that have not yet finished execution is currently not allowed, "
+					+ "except when canceling the execution using the desiredState property.", 500);
+
+        }
+        
+        // only update the properties that we allow to update
+        updatedResource.setModified(new Date());
+        updatedResource.setTitle(aResource.getTitle());
+        updatedResource.setDescription(aResource.getDescription());
+        updatedResource.setCreator(aResource.getCreator());
+        updatedResource.setContributor(aResource.getContributor());
+        updatedResource.setExtendedProperties(aResource.getExtendedProperties());
+    
+        // for the generated code below
+        aResource = updatedResource;
+	    
         // End of user code
         Store store = storePool.getStore();
         URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationRequest(id);
         if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
-            log.error("Cannot update a resource that does not already exists: '" + uri + "'");
-            throw new WebApplicationException("Cannot update a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+            log.error("Cannot update a resource that already does not exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot update a resource that already does not exists: '" + uri + "'", Status.NOT_FOUND);
         }
         aResource.setAbout(uri);
         try {
@@ -1000,12 +1235,29 @@ public class VeriFitCompilationManager {
     {
         Boolean deleted = false;
         // Start of user code deleteAutomationResult_storeInit
+        AutomationResult resultToDelete = null;
+        try {
+        	resultToDelete = getAutomationResult(null, id);      
+        } catch (Exception e) {
+        	// means not found; let it fail on the generated "resourceExists()" below
+        }
+        if (resultToDelete != null)
+        {
+        	// deleting results is not allowed before they finish
+            if (! (resultToDelete.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_CANCELED)
+            	|| resultToDelete.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_COMPLETE))) {
+
+        		log.error("Automation Result DELETE: deleting Automation Results that have not yet finished execution is not allowed");
+                throw new WebApplicationException("Automation Result DELETE: deleting Automation Results that have not yet finished execution is not allowed", 500);
+            }
+        }
+        
         // End of user code
         Store store = storePool.getStore();
         URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationResult(id);
         if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
-            log.error("Cannot delete a resource that does not already exists: '" + uri + "'");
-            throw new WebApplicationException("Cannot delete a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+            log.error("Automation Result DELETE: Cannot delete a resource that already does not exists: '" + uri + "'");
+            throw new WebApplicationException("Automation Result DELETE: Cannot delete a resource that already does not exists: '" + uri + "'", Status.NOT_FOUND);
         }
         store.deleteResources(storePool.getDefaultNamedGraphUri(), uri);
         storePool.releaseStore(store);
@@ -1014,22 +1266,121 @@ public class VeriFitCompilationManager {
         // End of user code
         
         // Start of user code deleteAutomationResult
+        if (httpServletRequest != null) {
+	        String cascade = httpServletRequest.getParameter("cascade");
+	        if (cascade != null && cascade.equalsIgnoreCase("true"))
+	        {
+	        	try {
+	        		deleteAutomationRequest(null, id);	// TODO relies on result and request IDs being the same
+	        		
+	        		// delete the SUT only if the was already created
+	        		if (resultToDelete.getCreatedSUT() != null)
+	        			deleteSUT(null, id);				// same ^^^
+	        	} catch (Exception e) {
+	        		log.warn("AutomationResult delete id \"" + id + "\": Failed to cascade - " + e.getMessage());
+	        	}
+	        }
+        }
+        
+        // delete contribution files
+        if (resultToDelete != null) {
+        	String sutPath = null;
+	        for (Contribution contrib : resultToDelete.getContribution())
+	        {
+	        	// delete the actual file
+            	String filePath = contrib.getFilePath();
+            	if (filePath != null)
+            	{
+            		// TODO security issue - what if someone updates the contribution filePath to e.g. "/" --> rm -rf "/"
+            		if (! (filePath.contains("compilation/SUT/") || filePath.contains("compilation\\SUT\\")) )
+            		{
+            			log.error("Contribution delete: Failed to delete associated file: SECURITY MEASURE - the path to the file seems to be outside of the expected SUT directory");
+            		}
+            		
+    		        try {
+    		    		File contribFile = FileSystems.getDefault().getPath(filePath).toFile();
+    		    		FileDeleteStrategy.FORCE.delete(contribFile);
+    				} catch (IOException e) {
+    					log.error("Contribution delete: Failed to delete associated file: " + e.getMessage());
+    				}
+	            }
+            	
+	        	// get the sut directory to be able to delete *sut*/.adapter/exec_compilation_N.sh or .ps
+	        	if (contrib.getFilePath() != null && contrib.getFilePath().contains(".adapter"))
+	        		sutPath = contrib.getFilePath();
+	        }
+	        
+	        // delete *sut*/.adapter/exec_analysis_N.sh or .ps
+	        if (sutPath != null)
+	        {
+		        try {
+		        	String fileEnding = SystemUtils.IS_OS_LINUX ? ".sh" : ".ps1";
+		    		File execFile = FileSystems.getDefault().getPath(sutPath).getParent().resolve("exec_compilation_" + id + fileEnding).toFile();
+		    		FileDeleteStrategy.FORCE.delete(execFile);
+				} catch (IOException e) {
+					log.error("Contribution delete: Failed to delete associated file: " + e.getMessage());
+				}
+	        }
+        }
         // End of user code
         return deleted;
     }
 
-    public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, final AutomationResult aResource, final String id) {
+    public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, AutomationResult aResource, final String id) {
         AutomationResult updatedResource = null;
         // Start of user code updateAutomationResult_storeInit
 
-        aResource.setModified(new Date());
-    	
+        if (aResource == null)
+        {
+            log.error("Automation Result UPDATE: received an empty request");
+            throw new WebApplicationException("Automation Result UPDATE: received an empty request", Status.BAD_REQUEST);
+        }
+		if (aResource.getTitle() == null || aResource.getTitle().isEmpty())
+			throw new WebApplicationException("Automation Result UPDATE: title property missing", Status.BAD_REQUEST);
+        
+        // get the current version of the Automation Request 
+        updatedResource = getAutomationResult(null, id);
+        
+        // TODO allow async updates of the Automation Result if other agents participate in the execution in the future
+        //updatedResource.setOutputParameter(...);
+        //updatedResource.setContribution(...);
+        
+        // only allow other updates once the result has finished execution (otherwise the updates would be overwritten after)
+        // TODO maybe changed with future functionality
+        if (! (updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_CANCELED)
+        	|| updatedResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_COMPLETE))) {
+ 
+        	// check if the client tried to cancel this Automation Result, and give him advice on how to do it instead
+	        if (	aResource.getDesiredState() != null && aResource.getDesiredState().equals(OslcValues.AUTOMATION_STATE_CANCELED)	// incoming update says cancel
+	        		&& !updatedResource.getDesiredState().equals(OslcValues.AUTOMATION_STATE_CANCELED))								// current desired state was not cancel
+			{
+				// execution can only be cancelled by updating the automation request
+				log.error("Automation Result UPDATE: Canceling execution is only allowed by updating the Automation Request, not the result.\n"
+						+ "Update this A. Request instead: " + updatedResource.getProducedByAutomationRequest().getValue().toString());
+				throw new WebApplicationException("Automation Result UPDATE: Canceling execution is only allowed by updating the Automation Request, not the result.\n"
+						+ "Update this A. Request instead: " + updatedResource.getProducedByAutomationRequest().getValue().toString(), 500);
+	        }
+            
+			log.error("Automation Result UPDATE: updating Automation Results that have not yet finished execution is currently not allowed");
+			throw new WebApplicationException("Automation Result UPDATE: updating Automation Results that have not yet finished execution is currently not allowed", 500);
+        }
+	        
+        // only update the properties that we allow to update
+        updatedResource.setModified(new Date());
+        updatedResource.setTitle(aResource.getTitle());
+        updatedResource.setCreator(aResource.getCreator());
+        updatedResource.setContributor(aResource.getContributor());
+        updatedResource.setExtendedProperties(aResource.getExtendedProperties());
+        
+        // for the generated code below
+        aResource = updatedResource;
+  
         // End of user code
         Store store = storePool.getStore();
         URI uri = VeriFitCompilationResourcesFactory.constructURIForAutomationResult(id);
         if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
-            log.error("Cannot update a resource that does not already exists: '" + uri + "'");
-            throw new WebApplicationException("Cannot update a resource that does not already exists: '" + uri + "'", Status.NOT_FOUND);
+            log.error("Cannot update a resource that already does not exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot update a resource that already does not exists: '" + uri + "'", Status.NOT_FOUND);
         }
         aResource.setAbout(uri);
         try {
@@ -1075,7 +1426,101 @@ public class VeriFitCompilationManager {
         return aResource;
     }
 
+    public static Boolean deleteSUT(HttpServletRequest httpServletRequest, final String id)
+    {
+        Boolean deleted = false;
+        // Start of user code deleteSUT_storeInit
+        // End of user code
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForSUT(id);
+        if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
+            log.error("SUT DELETE: Cannot delete a resource that already does not exists: '" + uri + "'");
+            throw new WebApplicationException("SUT DELETE: Cannot delete a resource that already does not exists: '" + uri + "'", Status.NOT_FOUND);
+        }
+        store.deleteResources(storePool.getDefaultNamedGraphUri(), uri);
+        storePool.releaseStore(store);
+        deleted = true;
+        // Start of user code deleteSUT_storeFinalize
+        // End of user code
+        
+        // Start of user code deleteSUT
+        if (httpServletRequest != null) {
+	        String cascade = httpServletRequest.getParameter("cascade");
+	        if (cascade != null && cascade.equalsIgnoreCase("true"))
+	        {
+	        	try {
+	        		deleteAutomationResult(null, id);	// TODO relies on result and request IDs being the same
+	        		deleteAutomationRequest(null, id);	// same ^^^
+	        	} catch (Exception e) {
+	        		log.warn("AutomationResult delete id \"" + id + "\": Failed to cascade - " + e.getMessage());
+	        	}
+	        }
+        }
+        try {
+    		File sutDir = FileSystems.getDefault().getPath(VeriFitCompilationProperties.SUT_FOLDER).resolve(id).toFile();	// TODO relies on the SUT dir being named as the sut ID
+    		FileDeleteStrategy.FORCE.delete(sutDir);
+		} catch (IOException e) {
+			log.error("SUT delete: Failed to delete SUT directory: " + e.getMessage());
+		}
+        // End of user code
+        return deleted;
+    }
 
+    public static SUT updateSUT(HttpServletRequest httpServletRequest, SUT aResource, final String id) {
+        SUT updatedResource = null;
+        // Start of user code updateSUT_storeInit
+
+        if (aResource == null)
+        {
+            log.error("SUT UPDATE: received an empty request");
+            throw new WebApplicationException("SUT UPDATE: received an empty request", Status.BAD_REQUEST);
+        }
+		if (aResource.getTitle() == null || aResource.getTitle().isEmpty())
+			throw new WebApplicationException("SUT UPDATE: title property missing", Status.BAD_REQUEST);
+        
+        // get the current version of the Automation Request 
+        updatedResource = getSUT(null, id);
+        
+        // only update the properties that we allow to update
+        updatedResource.setExtendedProperties(aResource.getExtendedProperties());
+        updatedResource.setCreator(aResource.getCreator());
+        updatedResource.setDescription(aResource.getDescription());
+        updatedResource.setLaunchCommand(aResource.getLaunchCommand());
+        updatedResource.setTitle(aResource.getTitle());
+        
+        // TODO future functionality to rebuild SUT after build command change
+        updatedResource.setBuildCommand(aResource.getBuildCommand());
+        
+        // TODO future functionality to build an SUT which was initially set not to build
+        //updatedResource.setCompiled(aResource.isCompiled());
+
+        // for the generated code below
+        aResource = updatedResource;
+        
+        // End of user code
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForSUT(id);
+        if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
+            log.error("Cannot update a resource that already does not exists: '" + uri + "'");
+            throw new WebApplicationException("Cannot update a resource that already does not exists: '" + uri + "'", Status.NOT_FOUND);
+        }
+        aResource.setAbout(uri);
+        try {
+            store.updateResources(storePool.getDefaultNamedGraphUri(), aResource);
+        } catch (StoreAccessException e) {
+            log.error("Failed to update resource: '" + uri + "'", e);
+            throw new WebApplicationException("Failed to update resource: '" + uri + "'", e);
+        } finally {
+            storePool.releaseStore(store);
+        }
+        updatedResource = aResource;
+        // Start of user code updateSUT_storeFinalize
+        // End of user code
+        
+        // Start of user code updateSUT
+        // End of user code
+        return updatedResource;
+    }
 
     public static String getETagFromAutomationPlan(final AutomationPlan aResource)
     {
