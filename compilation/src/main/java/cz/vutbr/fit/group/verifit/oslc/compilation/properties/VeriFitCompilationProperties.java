@@ -65,7 +65,11 @@ public class VeriFitCompilationProperties
 		str_PERSIST_SUT_DIRS = VeriFitCompilationProperties.getProperty("persist_sut_dirs");	
 		if (str_PERSIST_SUT_DIRS == null)
 			throw new IOException("persist_sut_dirs missing");
-		PERSIST_SUT_DIRS = Boolean.parseBoolean(str_PERSIST_SUT_DIRS);
+		try {
+			PERSIST_SUT_DIRS = Boolean.parseBoolean(str_PERSIST_SUT_DIRS);
+		} catch (Exception e) {
+			throw new IOException("failed to parse enable_authentication value - boolean expected");
+		}
 
 		String str_AUTHENTICAION_ENABLED;
 		str_AUTHENTICAION_ENABLED = VeriFitCompilationProperties.getProperty("enable_authentication");	
@@ -80,6 +84,31 @@ public class VeriFitCompilationProperties
 		AUTHENTICATION_PASSWORD = VeriFitCompilationProperties.getProperty("password");	
 		if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
 			throw new IOException("password missing");
+
+		
+		String str_KEEP_LAST_N_ENABLED;
+		str_KEEP_LAST_N_ENABLED = VeriFitCompilationProperties.getProperty("keep_last_n_enabled");	
+		if (str_KEEP_LAST_N_ENABLED == null)
+			throw new IOException("keep_last_n_enabled missing");
+		try {
+			KEEP_LAST_N_ENABLED = Boolean.parseBoolean(str_KEEP_LAST_N_ENABLED);
+		} catch (Exception e) {
+			throw new IOException("failed to parse keep_last_n_enabled value - boolean expected");
+			
+		}
+		
+		String str_KEEP_LAST_N;
+		str_KEEP_LAST_N = VeriFitCompilationProperties.getProperty("keep_last_n");	
+		if (str_KEEP_LAST_N == null)
+			throw new IOException("keep_last_n missing");
+		try {
+			KEEP_LAST_N = Long.parseLong(str_KEEP_LAST_N);
+			if (KEEP_LAST_N < 1)
+				throw new Exception();
+		} catch (Exception e) {
+			throw new IOException("failed to parse keep_last_n value - positive non-zero integer expected");
+			
+		}
 	}
 
 	
@@ -110,6 +139,9 @@ public class VeriFitCompilationProperties
     public static Boolean AUTHENTICATION_ENABLED;
     public static String AUTHENTICATION_USERNAME;
     public static String AUTHENTICATION_PASSWORD;
+    
+    public static Boolean KEEP_LAST_N_ENABLED;
+    public static long KEEP_LAST_N;
     
     
     

@@ -579,7 +579,20 @@ public class VeriFitAnalysisManager {
 			log.error("Adapter configuration: Failed to load Java properties: " + e.getMessage());
 			System.exit(1);
 		}
-
+    	log.info("Loaded configuration:\n"
+    			+ "  ADAPTER_HOST: " + VeriFitAnalysisProperties.ADAPTER_HOST + "\n"
+    			+ "  ADAPTER_PORT: " + VeriFitAnalysisProperties.ADAPTER_PORT + "\n"
+    			+ "  SERVER_URL: " + VeriFitAnalysisProperties.SERVER_URL + "\n"
+    			+ "  SPARQL_SERVER_NAMED_GRAPH_RESOURCES: " + VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES + "\n"
+    			+ "  SPARQL_SERVER_QUERY_ENDPOINT: " + VeriFitAnalysisProperties.SPARQL_SERVER_QUERY_ENDPOINT + "\n"
+    			+ "  SPARQL_SERVER_UPDATE_ENDPOINT: " + VeriFitAnalysisProperties.SPARQL_SERVER_UPDATE_ENDPOINT + "\n"
+    			+ "  AUTHENTICATION_ENABLED: " + VeriFitAnalysisProperties.AUTHENTICATION_ENABLED + "\n"
+    			+ "  AUTHENTICATION_USERNAME: " + VeriFitAnalysisProperties.AUTHENTICATION_USERNAME + "\n"
+    			+ "  AUTHENTICATION_PASSWORD: " + "********" + "\n"
+    			+ "  KEEP_LAST_N_ENABLED: " + VeriFitAnalysisProperties.KEEP_LAST_N_ENABLED + "\n"
+    			+ "  KEEP_LAST_N: " + VeriFitAnalysisProperties.KEEP_LAST_N + "\n"
+    			+ "  DUMMYTOOL_PATH: " + VeriFitAnalysisProperties.DUMMYTOOL_PATH);
+    	
         // End of user code
         // Start of user code StoreInitialise
     	// connect to the triplestore
@@ -645,6 +658,7 @@ public class VeriFitAnalysisManager {
 			System.exit(1);
 		}
 		AutoRequestIdGen = new ResourceIdGen(initReqId);
+		log.info("Initialization: resource ID gen starting at " + initReqId);
 
 		// initialize execution manager
 		AutoRequestExecManager = new ExecutionManager();
@@ -657,6 +671,7 @@ public class VeriFitAnalysisManager {
     {
         
         // Start of user code contextDestroyed
+		log.info("Shutting down");
         // End of user code
     }
 
@@ -1002,6 +1017,27 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code createAutomationRequest
+        
+        if (VeriFitAnalysisProperties.KEEP_LAST_N_ENABLED)
+        {
+        	try {
+	        	// only keep last N automation requests
+	        	// delete the one that is last N+1 when creating a new one 
+	        	long currentID = Integer.parseInt(Utils.getResourceIdFromUri(newResource.getAbout()));
+	        	if (currentID > VeriFitAnalysisProperties.KEEP_LAST_N)
+	        	{
+		        	String toDeleteID = Long.toString(currentID - VeriFitAnalysisProperties.KEEP_LAST_N);
+	            	log.info("KEEP_LAST_N is enabled with value of " + VeriFitAnalysisProperties.KEEP_LAST_N
+	            			+ ". Deleting AutomationRequest \"" + toDeleteID +"\" and all its associated resources.");
+	            	
+		        	deleteAutomationRequest(null, toDeleteID);
+		        	deleteAutomationResult(null, toDeleteID);
+	        	}
+        	} catch (Exception e) {
+        		log.error("Failed to delete old AutomationRequest or Result with KEEP_LAST_N enabled");
+        	}
+        }
+        
         // End of user code
         return newResource;
     }

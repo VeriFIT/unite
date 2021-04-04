@@ -13,9 +13,12 @@
 HELP="
    Runs the run_all script and then Postman testsuites for the adapter using Newman.
 "
-USAGE="   Usage: $0 [-t|-h|-l|-ci]
+USAGE="   Usage: $0 [-h|-t|-n|-l|-ci]
       -t ... tools - Runs an additional testsuite which requires some analysis
                          tools to be installed (i.e. will not work on all machines)
+      -n ... keep last N - Only runs keep_last_N test suites for both adapters. Does NOT
+                           run any other test suites. Requires the adapter to be configured
+                           to have keep_last_n enabled with a value of 10.
       -l ... live - Only runs the test suites without launching the adapter. Expects
                     the adapter to be running already.
       -ci ... gitlab CI - Used when running this script in gitlab CI. Will not kill
@@ -50,13 +53,14 @@ killall() {
 
 main() {
     # process arguments
-    unset testedToolsFlag liveAdapterFlag gitlabCI
+    unset testedToolsFlag liveAdapterFlag gitlabCI keepLastNflag
     for arg in "$@"
     do
         case $arg in
             -t) testedToolsFlag=true ; shift ;;
             -l) liveAdapterFlag=true ; shift ;;
             -ci) gitlabCI=true ; shift ;;
+            -n) keepLastNflag=true ; shift ;;
             -h) print_help "$HELP" "$USAGE"; shift ;;
             *) invalid_arg "$arg" "$USAGE" ;;
         esac
@@ -83,26 +87,47 @@ main() {
 
 
     compilationRes=0
+    compilationKeepLastNRes=0
     analysisRes=0
     analysisToolsRes=0
+    analysisKeepLastNRes=0
     
-    echo
-    echo "Running Compilation adapter test suite" 
-    time newman run $ADAPTER_ROOT_DIR/compilation/tests/TestSuite.postman_collection
-    compilationRes=$?
+    if [ -z $keepLastNflag ]; then
+        echo
+        echo "Running Compilation adapter test suite" 
+        time newman run $ADAPTER_ROOT_DIR/compilation/tests/TestSuite.postman_collection
+        compilationRes=$?
 
-    echo
-    echo "Running Analysis adapter test suite" 
-    time newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite.postman_collection
-    analysisRes=$?
+        echo
+        echo "Running Analysis adapter test suite" 
+        time newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite.postman_collection
+        analysisRes=$?
 
-    echo
-    if [ -n "$testedToolsFlag" ]; then
-        echo "Running Analysis adapter Tested Tools test suite" 
-        time newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_TestedTools.postman_collection
-        analysisToolsRes=$?
+        echo
+        if [ -n "$testedToolsFlag" ]; then
+            echo "Running Analysis adapter Tested Tools test suite" 
+            time newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_TestedTools.postman_collection
+            analysisToolsRes=$?
+        else
+            echo "Skipping Analysis adapter Tested Tools test suite" 
+        fi
+
+        echo
+        echo "Skipping keep_last_n test suites." 
+
     else
-        echo "Skipping Analysis adapter Tested Tools test suite" 
+        echo
+        echo "Skipping all test suites except the keep_last_n test suites" 
+
+        echo ""
+        echo "Running Compilation adapter keep_last_n test suite" 
+        time newman run $ADAPTER_ROOT_DIR/compilation/tests/TestSuite_KeepLastN.postman_collection
+        compilationKeepLastNRes=$?
+
+        echo
+        echo "Running Analysis adapter keep_last_n test suite" 
+        time newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_KeepLastN.postman_collection
+        analysisKeepLastNRes=$?
     fi
 
     if [ -z $gitlabCI ]; then
@@ -114,7 +139,7 @@ main() {
     fi
 
     # return non-zero if there were failed tests
-    if [ "$compilationRes" -ne 0 ] || [ "$analysisRes" -ne 0 ] || [ "$analysisToolsRes" -ne 0 ]; then
+    if [ "$compilationRes" -ne 0 ] || [ "$analysisRes" -ne 0 ] || [ "$analysisToolsRes" -ne 0 ] || [ "$compilationKeepLastNRes" -ne 0 ] || [ "$analysisKeepLastNRes" -ne 0 ]; then
         echo -e "\n\n  TESTS FAILED\n"
         exit 1
     else

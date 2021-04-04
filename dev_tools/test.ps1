@@ -10,15 +10,19 @@
 param (
     [switch]$t,
     [switch]$l,
+    [switch]$n,
     [switch]$h
 )
 
 $HELP="
    Runs the run_all script and then Postman testsuites for the adapter using Newman.
 "
-$USAGE="   Usage: $PSCommandPath [-t|-h|-l]
+$USAGE="   Usage: $PSCommandPath [-h|-t|-n|-l]
       -t ... tools - Runs an additional testsuite which requires some analysis
                          tools to be installed (i.e. will not work on all machines)
+      -n ... keep last N - Only runs keep_last_N test suites for both adapters. Does NOT
+                           run any other test suites. Requires the adapter to be configured
+                           to have keep_last_n enabled with a value of 10.
       -l ... live - Only runs the test suites without launching the adapter. Expects
                     the adapter to be running already.
       -h ... help
@@ -73,43 +77,71 @@ if ( ! $l ) {
 
 
 $compilationRes=$true
+$compilationKeepLastNRes=$true
+
 $analysisRes=$true
 $analysisToolsRes=$true
+$analysisKeepLastNRes=$true
 
 
-echo ""
-echo "Running Compilation adapter test suite" 
-$clock = [Diagnostics.Stopwatch]::StartNew()
-newman run $ADAPTER_ROOT_DIR/compilation/tests/TestSuite.postman_collection
-$compilationRes=$?
-$clock.Stop()
-echo $clock.Elapsed
-
-echo ""
-echo "Running Analysis adapter test suite" 
-$clock = [Diagnostics.Stopwatch]::StartNew()
-newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite.postman_collection
-$analysisRes=$?
-$clock.Stop()
-echo $clock.Elapsed
-
-echo ""
-if ($t) {
-    echo "Running Analysis adapter Tested Tools test suite" 
+if ( ! $n) {
+    echo ""
+    echo "Running Compilation adapter test suite" 
     $clock = [Diagnostics.Stopwatch]::StartNew()
-    newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_TestedTools.postman_collection
-    $analysisToolsRes=$?
+    newman run $ADAPTER_ROOT_DIR/compilation/tests/TestSuite.postman_collection
+    $compilationRes=$?
     $clock.Stop()
     echo $clock.Elapsed
+
+    echo ""
+    echo "Running Analysis adapter test suite" 
+    $clock = [Diagnostics.Stopwatch]::StartNew()
+    newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite.postman_collection
+    $analysisRes=$?
+    $clock.Stop()
+    echo $clock.Elapsed
+
+    echo ""
+    if ($t) {
+        echo "Running Analysis adapter Tested Tools test suite" 
+        $clock = [Diagnostics.Stopwatch]::StartNew()
+        newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_TestedTools.postman_collection
+        $analysisToolsRes=$?
+        $clock.Stop()
+        echo $clock.Elapsed
+    } else {
+        echo "Skipping Analysis adapter Tested Tools test suite" 
+    }   
+
+    echo ""
+    echo "Skipping keep_last_n test suites." 
+
 } else {
-    echo "Skipping Analysis adapter Tested Tools test suite" 
+    echo ""
+    echo "Skipping all test suites except the keep_last_n test suites" 
+
+    echo ""
+    echo "Running Compilation adapter keep_last_n test suite" 
+    $clock = [Diagnostics.Stopwatch]::StartNew()
+    newman run $ADAPTER_ROOT_DIR/compilation/tests/TestSuite_KeepLastN.postman_collection
+    $compilationKeepLastNRes=$?
+    $clock.Stop()
+    echo $clock.Elapsed
+
+    echo ""
+    echo "Running Analysis adapter keep_last_n test suite" 
+    $clock = [Diagnostics.Stopwatch]::StartNew()
+    newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_KeepLastN.postman_collection
+    $analysisKeepLastNRes=$?
+    $clock.Stop()
+    echo $clock.Elapsed
 }
 
 # shutdown the adapter
 killAllWithChildren $PIDS_TO_KILL
 
 # return non-zero if there were failed tests
-if ( $compilationRes -ne $true -Or $analysisRes -ne $true -Or $analysisToolsRes -ne $true) {
+if ( $compilationRes -ne $true -Or $analysisRes -ne $true -Or $analysisToolsRes -ne $true -Or $compilationKeepLastNRes -ne $true -Or $analysisKeepLastNRes -ne $true) {
     echo "`n`n  TESTS FAILED`n"
     exit 1
 } else {

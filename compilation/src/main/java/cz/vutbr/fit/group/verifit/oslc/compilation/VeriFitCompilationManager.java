@@ -512,11 +512,26 @@ public class VeriFitCompilationManager {
 			log.error("Adapter configuration: Failed to load Java properties: " + e.getMessage());
 			System.exit(1);
 		}
+    	log.info("Loaded configuration:\n"
+    			+ "  ADAPTER_HOST: " + VeriFitCompilationProperties.ADAPTER_HOST + "\n"
+    			+ "  ADAPTER_PORT: " + VeriFitCompilationProperties.ADAPTER_PORT + "\n"
+    			+ "  SERVER_URL: " + VeriFitCompilationProperties.SERVER_URL + "\n"
+    			+ "  SPARQL_SERVER_NAMED_GRAPH_RESOURCES: " + VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES + "\n"
+    			+ "  SPARQL_SERVER_QUERY_ENDPOINT: " + VeriFitCompilationProperties.SPARQL_SERVER_QUERY_ENDPOINT + "\n"
+    			+ "  SPARQL_SERVER_UPDATE_ENDPOINT: " + VeriFitCompilationProperties.SPARQL_SERVER_UPDATE_ENDPOINT + "\n"
+    			+ "  AUTHENTICATION_ENABLED: " + VeriFitCompilationProperties.AUTHENTICATION_ENABLED + "\n"
+    			+ "  AUTHENTICATION_USERNAME: " + VeriFitCompilationProperties.AUTHENTICATION_USERNAME + "\n"
+    			+ "  AUTHENTICATION_PASSWORD: " + "********" + "\n"
+    			+ "  KEEP_LAST_N_ENABLED: " + VeriFitCompilationProperties.KEEP_LAST_N_ENABLED + "\n"
+    			+ "  KEEP_LAST_N: " + VeriFitCompilationProperties.KEEP_LAST_N + "\n"
+    			+ "  PERSIST_SUT_DIRS: " + VeriFitCompilationProperties.PERSIST_SUT_DIRS);
+    	
     	
     	// create the SUT directory
     	if (VeriFitCompilationProperties.PERSIST_SUT_DIRS == false) // make sure it was deleted if not persistent
     	{
     		try {
+    			log.info("Initialization: Persistency not enabled in conf. Deleting and recreating the SUT directory");
 				deleteTmpDir();
 			} catch (IOException e) {
 				// ignore
@@ -591,6 +606,7 @@ public class VeriFitCompilationManager {
 			System.exit(1);
 		}
 		AutoRequestIdGen = new ResourceIdGen(initReqId);
+		log.info("Initialization: resource ID gen starting at " + initReqId);
         
 		// initialize execution manager
 		AutoRequestExecManager = new ExecutionManager();
@@ -603,10 +619,12 @@ public class VeriFitCompilationManager {
     {
         
         // Start of user code contextDestroyed
+		log.info("Shutting down");
     	
     	// delete the TMP directory, if persistency is not enabled
     	if (VeriFitCompilationProperties.PERSIST_SUT_DIRS == false)
     	{	try {
+				log.info("Shutting down: Persistency not enabled in conf. Deleting the SUT directory");
 				deleteTmpDir();
 			} catch (IOException e) {
 				log.error("Adapter context destroy: Failed to delete the TMP folder: " + e.getMessage());
@@ -960,6 +978,28 @@ public class VeriFitCompilationManager {
         // End of user code
         
         // Start of user code createAutomationRequest
+        
+        if (VeriFitCompilationProperties.KEEP_LAST_N_ENABLED)
+        {
+        	try {
+	        	// only keep last N automation requests
+	        	// delete the one that is last N+1 when creating a new one 
+	        	long currentID = Integer.parseInt(Utils.getResourceIdFromUri(newResource.getAbout()));
+	        	if (currentID > VeriFitCompilationProperties.KEEP_LAST_N)
+	        	{
+		        	String toDeleteID = Long.toString(currentID - VeriFitCompilationProperties.KEEP_LAST_N);
+	            	log.info("KEEP_LAST_N is enabled with value of " + VeriFitCompilationProperties.KEEP_LAST_N
+	            			+ ". Deleting AutomationRequest \"" + toDeleteID +"\" and all its associated resources.");
+		        	
+		        	deleteAutomationRequest(null, toDeleteID);
+		        	deleteAutomationResult(null, toDeleteID);
+		        	deleteSUT(null, toDeleteID);
+	        	}
+        	} catch (Exception e) {
+        		log.error("Failed to delete old AutomationRequest, ResultM or SUT with KEEP_LAST_N enabled", e);
+        	}
+        }
+        
         // End of user code
         return newResource;
     }

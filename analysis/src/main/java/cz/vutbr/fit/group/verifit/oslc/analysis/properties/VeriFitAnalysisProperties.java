@@ -84,15 +84,44 @@ public class VeriFitAnalysisProperties
 		str_AUTHENTICAION_ENABLED = VeriFitAnalysisProperties.getProperty("enable_authentication");	
 		if (str_AUTHENTICAION_ENABLED == null)
 			throw new IOException("enable_authentication missing");
-		AUTHENTICATION_ENABLED = Boolean.parseBoolean(str_AUTHENTICAION_ENABLED);
+		try {
+			AUTHENTICATION_ENABLED = Boolean.parseBoolean(str_AUTHENTICAION_ENABLED);
+		} catch (Exception e) {
+			throw new IOException("failed to parse enable_authentication value - boolean expected");
+		}
 		
 		AUTHENTICATION_USERNAME = VeriFitAnalysisProperties.getProperty("username");	
-		if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
+		if (AUTHENTICATION_USERNAME == null)
 			throw new IOException("username missing");
 		
 		AUTHENTICATION_PASSWORD = VeriFitAnalysisProperties.getProperty("password");	
-		if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
+		if (AUTHENTICATION_PASSWORD == null)
 			throw new IOException("password missing");
+		
+		
+		String str_KEEP_LAST_N_ENABLED;
+		str_KEEP_LAST_N_ENABLED = VeriFitAnalysisProperties.getProperty("keep_last_n_enabled");	
+		if (str_KEEP_LAST_N_ENABLED == null)
+			throw new IOException("keep_last_n_enabled missing");
+		try {
+			KEEP_LAST_N_ENABLED = Boolean.parseBoolean(str_KEEP_LAST_N_ENABLED);
+		} catch (Exception e) {
+			throw new IOException("failed to parse keep_last_n_enabled value - boolean expected");
+			
+		}
+		
+		String str_KEEP_LAST_N;
+		str_KEEP_LAST_N = VeriFitAnalysisProperties.getProperty("keep_last_n");	
+		if (str_KEEP_LAST_N == null)
+			throw new IOException("keep_last_n missing");
+		try {
+			KEEP_LAST_N = Long.parseLong(str_KEEP_LAST_N);
+			if (KEEP_LAST_N < 1)
+				throw new Exception();
+		} catch (Exception e) {
+			throw new IOException("failed to parse keep_last_n value - positive non-zero integer expected");
+			
+		}
 	}
 	
 	/**
@@ -128,6 +157,9 @@ public class VeriFitAnalysisProperties
     public static Boolean AUTHENTICATION_ENABLED;
     public static String AUTHENTICATION_USERNAME;
     public static String AUTHENTICATION_PASSWORD;
+    
+    public static Boolean KEEP_LAST_N_ENABLED;
+    public static long KEEP_LAST_N;
     
     
     /*

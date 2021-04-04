@@ -38,10 +38,18 @@ test-start:
   stage: test
   script: /bin/bash ./dev_tools/ci_test_start.sh
 
-test-newman:
+test-newman-core:
   stage: test
-  before_script: # apt-get update && apt-get install -y nodejs npm && npm install -g newman
+  before_script:
     - apt-get update
     - apt-get install -y nodejs npm
     - npm install -g newman
   script: /bin/bash ./dev_tools/ci_test_suite.sh
+
+test-newman-keepLastN:
+  stage: test
+  before_script:
+    - apt-get update
+    - apt-get install -y nodejs npm
+    - npm install -g newman
+  script: /bin/bash ./dev_tools/ci_test_keep_last_n.sh
