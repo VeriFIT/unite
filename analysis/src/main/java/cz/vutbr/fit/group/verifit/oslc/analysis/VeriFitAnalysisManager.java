@@ -270,7 +270,16 @@ public class VeriFitAnalysisManager {
 				outputFilter.addAllowedValue(filterName);
 			}
 			newResource.addParameterDefinition(outputFilter);
+			
+			ParameterDefinition confFile = new ParameterDefinition();
+			confFile.setDescription("Creates a configuration file inside of the SUT directory before running analysis."
+					+ "Format for this parameter: \"conf_file_name\\nconf_file_txt_contents\"");
+			confFile.setName("confFile");
+			confFile.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
+			confFile.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
+			newResource.addParameterDefinition(confFile);
 
+			
 			// persist in the triplestore
 	        Store store = storePool.getStore();
 	        try {
@@ -558,7 +567,20 @@ public class VeriFitAnalysisManager {
         return updatedResource;
     }
 
-	
+    private static void checkInputParamValues(Set<ParameterInstance> inputParameter) throws OslcResourceException {
+
+    	for (ParameterInstance param : inputParameter)
+    	{
+    		if (param.getName().equals("confFile"))
+    		{
+    			String paramValue = param.getValue();
+    			int idxSplit = paramValue.indexOf('\n');
+    			if (idxSplit == -1)
+    				throw new OslcResourceException("Invalid format of confFile value. No \"\\n\" delimiter found. Expected format: filename\\file_contents");
+    		}
+    	}
+	}
+    
 	// End of user code
 
     public static void contextInitializeServletListener(final ServletContextEvent servletContextEvent)
@@ -940,9 +962,12 @@ public class VeriFitAnalysisManager {
 			}			
 			
 			
-			// check input parameters, and create output parameters
+			// check input parameters based on parameter definitions, and create output parameters
 			Set<ParameterInstance> outputParams = Utils.checkInputParamsAndProduceOuputParams(newResource.getInputParameter(), execAutoPlan.getParameterDefinition());
 
+			// check well formed parameter values
+			checkInputParamValues(newResource.getInputParameter());				
+			
 			// get some values from input parameters
 			String executedSutId = null;
 			for ( ParameterInstance param : newResource.getInputParameter())

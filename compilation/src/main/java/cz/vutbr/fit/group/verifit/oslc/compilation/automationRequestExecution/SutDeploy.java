@@ -228,21 +228,21 @@ public class SutDeploy extends RequestRunner
 			if (performCompilation)
 			{
 				ExecutionResult compRes = executeString(folderPath, paramBuildCommand, 0, "_compilation_" + this.execAutoRequestId);
-				statusMessage.setValue(statusMessage.getValue() + "Executing: " + paramBuildCommand + "\n   as: " + compRes.executedString + "\n   In dir: " + folderPath + "\n");
+				statusMessage.appendValue("Executing: " + paramBuildCommand + "\n   as: " + compRes.executedString + "\n   In dir: " + folderPath + "\n");
 				if (compRes.exceptionThrown != null)
 				{
 					// there was an error
 					executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
-					statusMessage.setValue(statusMessage.getValue() +  "Compilation execution error: " + compRes.exceptionThrown.getMessage());
+					statusMessage.appendValue("Compilation execution error: " + compRes.exceptionThrown.getMessage());
 				}
 				else if (compRes.retCode != 0)
 		    	{	// if the compilation returned non zero, set the verdict as failed
 					executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
-					statusMessage.setValue(statusMessage.getValue() +  "Compilation failed (returned non-zero: " + compRes.retCode + ")\n");
+					statusMessage.appendValue("Compilation failed (returned non-zero: " + compRes.retCode + ")\n");
 		    	}
 		    	else
 		    	{
-		    		statusMessage.setValue(statusMessage.getValue() +  "Compilation completed successfully\n");
+		    		statusMessage.appendValue("Compilation completed successfully\n");
 		    	}				    
 				
 				// only do more processing if there was no exception during execution
@@ -271,7 +271,7 @@ public class SutDeploy extends RequestRunner
 			    	resAutoResult.addContribution(compStderrLog);
 				}
 			} else {
-				statusMessage.setValue(statusMessage.getValue() + "Compilation not performed\n");
+				statusMessage.appendValue("Compilation not performed\n");
 			}
 			
 			
@@ -290,7 +290,7 @@ public class SutDeploy extends RequestRunner
 				newSut = VeriFitCompilationManager.createSUT(newSut, execAutoRequestId); // TODO
 				resAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(Utils.getResourceIdFromUri(newSut.getAbout()))); // TODO
 				
-				statusMessage.setValue(statusMessage.getValue() + "SUT resource created\n");
+				statusMessage.appendValue("SUT resource created\n");
 			}
 			
 			// update the AutoResult state and verdict, and AutoRequest state

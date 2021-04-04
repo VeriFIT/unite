@@ -274,6 +274,12 @@ public class Utils {
 			{				
 				if (definedParam.getName().equals(submittedParam.getName()))
 				{
+					// check that the parameter has a value
+					if (submittedParam.getValue() == null)
+					{
+						throw new OslcResourceException("parameter " + submittedParam.getName() + " is missing a value");
+					}
+						
 					// check if the value is allowed
 					Boolean validValue = true;
 					if (definedParam.getAllowedValue().size() > 0)

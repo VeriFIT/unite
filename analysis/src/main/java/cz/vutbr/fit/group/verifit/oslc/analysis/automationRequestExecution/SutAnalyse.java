@@ -10,8 +10,10 @@
 
 package cz.vutbr.fit.group.verifit.oslc.analysis.automationRequestExecution;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
@@ -108,6 +111,7 @@ public class SutAnalyse extends RequestRunner
 			String timeout = null;
 			String toolCommand = null;
 			String outputFilter = null;
+			String confFile = null;
 			
 			// extract values from parameters
 			for (ExecutionParameter param : this.execParameters)
@@ -117,6 +121,7 @@ public class SutAnalyse extends RequestRunner
 				else if (param.getName().equals("timeout")) timeout = param.getValue();
 				else if (param.getName().equals("toolCommand")) toolCommand = param.getValue();
 				else if (param.getName().equals("outputFilter")) outputFilter = param.getValue();
+				else if (param.getName().equals("confFile")) confFile = param.getValue();
 				
 			}
 	
@@ -163,7 +168,7 @@ public class SutAnalyse extends RequestRunner
 		    // warning if not compiled
 		    if (!execSut.isCompiled())
 		    {
-	    		statusMessage.setValue(statusMessage.getValue() + "Warning: Analysing an SUT which was not compiled\n");
+	    		statusMessage.appendValue("Warning: Analysing an SUT which was not compiled\n");
 		    }
 		    
 		    // take a snapshot of SUT files modification times before executing the analysis
@@ -177,31 +182,41 @@ public class SutAnalyse extends RequestRunner
 			this.filesToDeleteIfInterrupted.add(SUTdirAsPath.resolve("./.adapter/stderr_analysis_" + this.execAutoRequestId).toAbsolutePath().toFile());
 			this.filesToDeleteIfInterrupted.add(SUTdirAsPath.resolve("./.adapter/stdout_analysis_" + this.execAutoRequestId).toAbsolutePath().toFile());
 		    
+			// create a conf file in the SUT directory if confFile parameter was specified
+			if (confFile != null)
+			{
+				try {
+					createConfFile(SUTdirAsPath, confFile);
+					statusMessage.appendValue("Creating conf file \"" + confFile.substring(0, confFile.indexOf('\n')) + "\"");
+				} catch (Exception e) {
+					
+				}
+			}
+			
 			// execute analysis
 		    Link executionVerdict;
 		    ExecutionResult analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), "_analysis_" + this.execAutoRequestId);
-			statusMessage.setValue(statusMessage.getValue() +
-					"Executing: " + stringToExecute + "\n   as: " + analysisRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
+			statusMessage.appendValue("Executing: " + stringToExecute + "\n   as: " + analysisRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
 			if (analysisRes.exceptionThrown != null)
 			{
 				// there was an error
 				executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
-				statusMessage.setValue(statusMessage.getValue() +  "Analysis execution error: " + analysisRes.exceptionThrown.getMessage());
+				statusMessage.appendValue("Analysis execution error: " + analysisRes.exceptionThrown.getMessage() + "\n");
 			}
 			else if (analysisRes.timeouted)
 			{
 				executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
-				statusMessage.setValue(statusMessage.getValue() + "Analysis aborted due to a " + analysisRes.timeoutType + " timeout (" + timeout + " seconds)");
+				statusMessage.appendValue("Analysis aborted due to a " + analysisRes.timeoutType + " timeout (" + timeout + " seconds)");
 			}
 	    	else if (analysisRes.retCode != 0)
 	    	{
 				executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
-				statusMessage.setValue(statusMessage.getValue() + "Analysis failed (returned non-zero: " + analysisRes.retCode + ")\n");
+				statusMessage.appendValue("Analysis failed (returned non-zero: " + analysisRes.retCode + ")\n");
 			}
 	    	else
 	    	{
 	    		executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
-	    		statusMessage.setValue(statusMessage.getValue() + "Analysis completed successfully\n");
+	    		statusMessage.appendValue("Analysis completed successfully\n");
 	    	}
 	
 			// only do more processing if there was no exception during execution
@@ -228,7 +243,7 @@ public class SutAnalyse extends RequestRunner
 		    	for (Contribution c : fileContributions) {
 		    		resAutoResult.addContribution(c);
 		    	}
-				statusMessage.setValue(statusMessage.getValue() + "File Contributions added\n");
+				statusMessage.appendValue("File Contributions added\n");
 		    	
 		    	// now add them back in there (for zip later)
 				modifFiles.add(analysisRes.stdoutFile);
@@ -249,15 +264,15 @@ public class SutAnalyse extends RequestRunner
 					try {
 						Contribution zipContrib = zipAllFileContributions(modifFiles, zipName, zipDir);
 						resAutoResult.addContribution(zipContrib);
-						statusMessage.setValue(statusMessage.getValue() + "Added a ZIP contribution\n");
+						statusMessage.appendValue("Added a ZIP contribution\n");
 					} catch (Exception e) {
-						statusMessage.setValue(statusMessage.getValue() + "Failed to create a ZIP file: " + e.getMessage() + "\n");
+						statusMessage.appendValue("Failed to create a ZIP file: " + e.getMessage() + "\n");
 						System.out.println("ERROR: failed to ZIP outputs: " + e.getMessage()); // TODO
 					}
 				}
 				
 				// run the AutoResult contributions through a filter
-				statusMessage.setValue(statusMessage.getValue() + "Applying output filters\n");
+				statusMessage.appendValue("Applying output filters\n");
 				resAutoResult.addContribution(statusMessage);
 				Set<Contribution> parsedContributions = FilterManager.filterContributionsForTool(
 						autoPlanConf.getFilter(outputFilter),
@@ -300,9 +315,25 @@ public class SutAnalyse extends RequestRunner
 			executionFinishedNotifyManager();
 		}
 	}
-
 	
-
+	private void createConfFile(Path sUTdirAsPath, String confFileParam) throws IOException {
+		int idxSplit = confFileParam.indexOf('\n');
+		if (idxSplit == -1)
+			throw new IllegalArgumentException("Invalid format of confFile value. No \"\\n\" delimiter found. Expected format: filename\\file_contents");
+		
+		String filename = confFileParam.substring(0, confFileParam.indexOf('\n'));
+		String file_contents = confFileParam.substring(confFileParam.indexOf('\n') + 1);
+		
+		File confFile = sUTdirAsPath.resolve("./" + filename).toAbsolutePath().toFile();
+		InputStream sFileContents = new ByteArrayInputStream(file_contents.getBytes());
+	    if (!confFile.exists())
+	    {
+	    	FileUtils.forceMkdirParent(confFile);
+	    }
+		FileUtils.copyInputStreamToFile(sFileContents, confFile);
+		
+		this.filesToDeleteIfInterrupted.add(confFile);
+	}
 
 	private Contribution zipAllFileContributions(Collection<File> modifFiles, String zipName, Path zipDir) throws IOException {
 		Contribution zipedContribs = VeriFitAnalysisResourcesFactory.createContribution("zipedOutputs");
