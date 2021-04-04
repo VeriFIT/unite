@@ -125,6 +125,15 @@ public class Contribution
     // Start of user code classAttributes
     // End of user code
     // Start of user code classMethods
+    public void appendValue(final String value )
+    {
+        // Start of user code setterInit:value
+        // End of user code
+        this.value = this.value + value;
+    
+        // Start of user code setterFinalize:value
+        // End of user code
+    }
     // End of user code
     public Contribution()
     {

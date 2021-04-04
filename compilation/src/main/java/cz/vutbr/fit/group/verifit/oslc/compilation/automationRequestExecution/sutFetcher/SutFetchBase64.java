@@ -30,7 +30,7 @@ public class SutFetchBase64 implements SutFetcher {
 	{
 		int idxSplit = base64EncProgram.indexOf('\n');
 		if (idxSplit == -1)
-			throw new IllegalArgumentException("Invalid format of sourceBase64 value. No \"\\n\" delimiter found. Expected format: filename\\nbase64");
+			throw new IllegalArgumentException("Invalid format of sourceBase64 value. No \"\\n\" delimiter found. Expected format: filename\\nbase64");	// should never happen because this gets checked earlier
 		
 		String filename = base64EncProgram.substring(0, base64EncProgram.indexOf('\n'));
 		String base64 = base64EncProgram.substring(base64EncProgram.indexOf('\n') + 1);
