@@ -30,17 +30,17 @@ main () {
 
     # change configuration to enable keep_last_n
     echo -e "Changing configuration to keep_last_n 10\n"
-    cp $ADAPTER_ROOT_DIR/analysis/conf/VeriFitAnalysisDefault.properties $ADAPTER_ROOT_DIR/VeriFitAnalysis.properties    
-    sed -i 's|keep_last_n_enabled=false|keep_last_n_enabled=true|' $ADAPTER_ROOT_DIR/VeriFitAnalysis.properties
-    sed -i 's|keep_last_n=100|keep_last_n=10|' $ADAPTER_ROOT_DIR/VeriFitAnalysis.properties
+    cp $ADAPTER_ROOT_DIR/analysis/conf/VeriFitAnalysisDefault.properties $ADAPTER_ROOT_DIR/conf/VeriFitAnalysis.properties    
+    sed -i 's|keep_last_n_enabled=false|keep_last_n_enabled=true|' $ADAPTER_ROOT_DIR/conf/VeriFitAnalysis.properties
+    sed -i 's|keep_last_n=100|keep_last_n=10|' $ADAPTER_ROOT_DIR/conf/VeriFitAnalysis.properties
 
-    cp $ADAPTER_ROOT_DIR/compilation/conf/VeriFitCompilationDefault.properties $ADAPTER_ROOT_DIR/VeriFitCompilation.properties 
-    sed -i 's|keep_last_n_enabled=false|keep_last_n_enabled=true|' $ADAPTER_ROOT_DIR/VeriFitCompilation.properties
-    sed -i 's|keep_last_n=100|keep_last_n=10|' $ADAPTER_ROOT_DIR/VeriFitCompilation.properties
+    cp $ADAPTER_ROOT_DIR/compilation/conf/VeriFitCompilationDefault.properties $ADAPTER_ROOT_DIR/conf/VeriFitCompilation.properties 
+    sed -i 's|keep_last_n_enabled=false|keep_last_n_enabled=true|' $ADAPTER_ROOT_DIR/conf/VeriFitCompilation.properties
+    sed -i 's|keep_last_n=100|keep_last_n=10|' $ADAPTER_ROOT_DIR/conf/VeriFitCompilation.properties
 
     # run tests
     echo -e "Running test script\n"
-    $ADAPTER_ROOT_DIR/dev_tools/test.sh -ci -n
+    $ADAPTER_ROOT_DIR/dev_tools/test.sh -n -ci
     exit $?
 }
 

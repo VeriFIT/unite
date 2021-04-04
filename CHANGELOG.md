@@ -20,6 +20,7 @@
   - added a configuration option that tells the adapter to automatically delete old AutomationRequests and 
     their associated Results and all other artifacts (SUTs, Contributions, ...)
   - configured in *adapter*.properties using "keep_last_n_enabled" (bool) and "keep_last_n" (>0)
+  - added a test suite for keep_last_n (separate test suite due to requiring different adapter conf)
 
 ### v2.1.1
 - fixed high cpu usage on Windows
