@@ -176,6 +176,15 @@ public class Contribution
         if (asLocalResource) {
             result = result + "{a Local Contribution Resource} - update Contribution.toString() to present resource as desired.";
             // Start of user code toString_bodyForLocalResource
+            result = (title != null ? "--title=" + title + "<br>" : "")
+            		+ (created != null ? "--created=" + created + "<br>" : "")
+            		+ (modified != null ? "--modified=" + modified + "<br>" : "")
+            		+ (creator != null ? "--creator=" + creator.toString() + "<br>": "")
+    				+ (description != null ? "--description=" + description + "<br>" : "")
+    				+ (value != null ? "--value=" + value + "<br>" : "")
+    				+ (valueType != null && !valueType.isEmpty() ? "--valueType=" + valueType.iterator().next().getValue() + "<br>" : "")
+    				+ (filePath != null ? "--fileURI=" + filePath + "<br>" : "")
+    				+ (type != null && !type.isEmpty() ? "--type=" + type.iterator().next().getValue() + "<br>" : "");
             // End of user code
         }
         else {

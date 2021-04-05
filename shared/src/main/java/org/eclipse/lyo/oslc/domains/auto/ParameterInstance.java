@@ -153,6 +153,12 @@ public class ParameterInstance
         if (asLocalResource) {
             result = result + "{a Local ParameterInstance Resource} - update ParameterInstance.toString() to present resource as desired.";
             // Start of user code toString_bodyForLocalResource
+            result = (name != null ? "--name=" + name + "<br>" : "")
+            		+ (value != null ? "--value=" + value + "<br>" : "")
+    				+ (description != null ? "--description=" + description + "<br>" : "")
+    				+ (type != null && !type.isEmpty() ? "--type=" + type.iterator().next().getValue() + "<br>" : "")
+    				+ (instanceShape != null && !instanceShape.isEmpty() ? "--instanceShape=" + instanceShape.iterator().next().getValue() + "<br>" : "")
+    				+ (serviceProvider != null && !serviceProvider.isEmpty() ? "--serviceProvider=" + serviceProvider.iterator().next().getValue() : "");
             // End of user code
         }
         else {

@@ -174,6 +174,7 @@ public class SUT
         if (asLocalResource) {
             result = result + "{a Local SUT Resource} - update SUT.toString() to present resource as desired.";
             // Start of user code toString_bodyForLocalResource
+            result = String.valueOf(getAbout());
             // End of user code
         }
         else {

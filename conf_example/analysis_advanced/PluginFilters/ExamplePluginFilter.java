@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Ondřej Vašíček <ondrej.vasicek.0@gmail.com>, <xvasic25@stud.fit.vutbr.cz>
+ * Copyright (C) 2020 OndÅ™ej VaÅ¡Ã­Ä�ek <ondrej.vasicek.0@gmail.com>, <xvasic25@stud.fit.vutbr.cz>
  *
  * This program and the accompanying materials are made available under
  * the terms of the Eclipse Public License 2.0 which is available at
@@ -10,6 +10,7 @@
 
 package pluginFilters.customPluginFilters;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,16 +54,32 @@ public class ExamplePluginFilter implements IFilter, IExtension {
 		/**
 		 * Example below
 		 */
-		// delete all current contributions
-		inoutContributions.clear();
 		
-		// and create a single new one instead
+		// run Contributions through one of the builtin parsers first to load stdout and stderr file contents
+		new AddStdoutAndStderrValues().filter(inoutContributions);
+		
+		// look for data race detection reports in stdout
+		Boolean dataRaceFound = false;
+		for (Map<String, String> contrib : inoutContributions)
+		{
+			String title = contrib.get("title");
+			if (title.equals("stdout"))
+			{
+				String contentsOfTheStdout = contrib.get("value");
+				if (contentsOfTheStdout.contains("Data race detected at"))	// check if a data race was reported
+				{
+					dataRaceFound = true;
+				}
+			}	
+		}
+		
+		// create a contribution representing the result (based on the stdout contents)
 		Map<String, String> contrib = new HashMap<String, String>();
-		contrib.put("id", "testContributionId");
-		contrib.put("title", "Example name");
-		contrib.put("value", "Example value");
-		contrib.put("description", "This contribution was filtered by the ExamplePluginFilter");
-		contrib.put("valueType", OslcValues.OSLC_VAL_TYPE_STRING.getValue().toString());
+		contrib.put("id", "example_id");	// use any identifier you want (can be used to e.g. query the contribution)
+		contrib.put("title", "DataRaceDetected");		// use any name you want
+		contrib.put("description", "Holds the result of data race analysis.");
+		contrib.put("value", dataRaceFound.toString());
+		contrib.put("valueType", "http://www.w3.org/2001/XMLSchema#boolean");
 		inoutContributions.add(contrib);
 	}
 

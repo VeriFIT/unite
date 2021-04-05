@@ -202,6 +202,7 @@ public class AutomationRequest
         if (asLocalResource) {
             result = result + "{a Local AutomationRequest Resource} - update AutomationRequest.toString() to present resource as desired.";
             // Start of user code toString_bodyForLocalResource
+            result = String.valueOf(getAbout());
             // End of user code
         }
         else {

@@ -26,6 +26,7 @@
   - usecase: a tool that accepts a "--conf=path/to/file" parameter (like anaconda)
   - value format is "filename\nfilecontents"
 - added a link to the cratedSUT resource as a Contribution as well in the Compilation adapter for standard compliance
+- better plugin filter example
 
 ### v2.1.1
 - fixed high cpu usage on Windows
