@@ -209,7 +209,6 @@ public class VeriFitAnalysisManager {
 
 			String newID = aResource.getIdentifier();
 			newResource = VeriFitAnalysisResourcesFactory.createAutomationPlan(newID);
-			newResource.setParameterDefinition(aResource.getParameterDefinition());
 			newResource.setUsesExecutionEnvironment(aResource.getUsesExecutionEnvironment());
 			newResource.setTitle(aResource.getTitle());
 			newResource.setDescription(aResource.getDescription());
@@ -222,7 +221,6 @@ public class VeriFitAnalysisManager {
 			SUT.setName("SUT");
 			SUT.setOccurs(OslcValues.OSLC_OCCURS_ONE);
 			SUT.addValueType(OslcValues.OSLC_VAL_TYPE_STRING); // TODO change to URI
-			newResource.addParameterDefinition(SUT);
 
 			ParameterDefinition outputFileRegex = new ParameterDefinition();
 			outputFileRegex.setDescription("Files that change during execution and match this regex will "
@@ -232,7 +230,6 @@ public class VeriFitAnalysisManager {
 			outputFileRegex.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			outputFileRegex.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 			outputFileRegex.setDefaultValue(".^");
-			newResource.addParameterDefinition(outputFileRegex);
 
 			ParameterDefinition zipOutputs = new ParameterDefinition();
 			zipOutputs.setDescription("If set to true, then all file contributions will be ZIPed and provided as a single zip contribution");
@@ -240,7 +237,6 @@ public class VeriFitAnalysisManager {
 			zipOutputs.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			zipOutputs.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
 			zipOutputs.setDefaultValue("false");
-			newResource.addParameterDefinition(zipOutputs);
 
 			ParameterDefinition timeout = new ParameterDefinition();
 			timeout.setDescription("Timeout for the analysis. Zero means no timeout.");
@@ -248,7 +244,6 @@ public class VeriFitAnalysisManager {
 			timeout.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			timeout.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
 			timeout.setDefaultValue("0");
-			newResource.addParameterDefinition(timeout);
 
 			ParameterDefinition toolCommand = new ParameterDefinition();
 			toolCommand.setDescription("Used to omit the analysis tool launch command while executing analysis. True means the tool " + 
@@ -257,7 +252,6 @@ public class VeriFitAnalysisManager {
 			toolCommand.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			toolCommand.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
 			toolCommand.setDefaultValue("true");
-			newResource.addParameterDefinition(toolCommand);
 			
 			ParameterDefinition outputFilter = new ParameterDefinition();
 			outputFilter.setDescription("Use this parameter to select which output filter should be used to process"
@@ -269,7 +263,6 @@ public class VeriFitAnalysisManager {
 			for (String filterName : automationPlanConf.getFilters().keySet()) {	// set alloweValues based on defined filters
 				outputFilter.addAllowedValue(filterName);
 			}
-			newResource.addParameterDefinition(outputFilter);
 			
 			ParameterDefinition confFile = new ParameterDefinition();
 			confFile.setDescription("Creates a configuration file inside of the SUT directory before running analysis."
@@ -277,8 +270,76 @@ public class VeriFitAnalysisManager {
 			confFile.setName("confFile");
 			confFile.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			confFile.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
-			newResource.addParameterDefinition(confFile);
+			
+			ParameterDefinition beforeCommand = new ParameterDefinition();
+			beforeCommand.setDescription("A command to run just before analysis is executed.");
+			beforeCommand.setName("beforeCommand");
+			beforeCommand.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
+			beforeCommand.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 
+			ParameterDefinition afterCommand = new ParameterDefinition();
+			afterCommand.setDescription("A command to run just after analysis is executed.");
+			afterCommand.setName("afterCommand");
+			afterCommand.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
+			afterCommand.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+			
+			
+			// add all user defined parameter definitions, but check for any conflicting names
+			// conflicting names allow users to redefine default values (except for the SUT property)
+			for (ParameterDefinition userParam : aResource.getParameterDefinition())
+			{
+				if (userParam.getName().equals(SUT.getName()))
+				{
+		    		throw new OslcResourceException("AutomationPlan creation failed: Parameter \"" + SUT.getName() + "\"can not be redefined by user configuration.");
+				}
+				else if (userParam.getName().equals(outputFileRegex.getName()) && userParam.getDefaultValue() != null)
+				{
+					outputFileRegex.setDefaultValue(userParam.getDefaultValue());
+				}
+				else if (userParam.getName().equals(zipOutputs.getName()) && userParam.getDefaultValue() != null)
+				{
+					zipOutputs.setDefaultValue(userParam.getDefaultValue());
+				}
+				else if (userParam.getName().equals(timeout.getName()) && userParam.getDefaultValue() != null)
+				{
+					timeout.setDefaultValue(userParam.getDefaultValue());
+				}
+				else if (userParam.getName().equals(toolCommand.getName()) && userParam.getDefaultValue() != null)
+				{
+					toolCommand.setDefaultValue(userParam.getDefaultValue());
+				}
+				else if (userParam.getName().equals(outputFilter.getName()) && userParam.getDefaultValue() != null)
+				{
+					outputFilter.setDefaultValue(userParam.getDefaultValue());
+				}
+				else if (userParam.getName().equals(confFile.getName()) && userParam.getDefaultValue() != null)
+				{
+					confFile.setDefaultValue(userParam.getDefaultValue());
+				}
+				else if (userParam.getName().equals(beforeCommand.getName()) && userParam.getDefaultValue() != null)
+				{
+					beforeCommand.setDefaultValue(userParam.getDefaultValue());
+				}
+				else if (userParam.getName().equals(afterCommand.getName()) && userParam.getDefaultValue() != null)
+				{
+					afterCommand.setDefaultValue(userParam.getDefaultValue());
+				}
+				else	// non conflicting parameter
+				{
+					newResource.addParameterDefinition(userParam);
+				}
+			}
+			
+			// add all the predefined parameters (with possible defaultValue updates)
+			newResource.addParameterDefinition(SUT);
+			newResource.addParameterDefinition(outputFileRegex);
+			newResource.addParameterDefinition(zipOutputs);
+			newResource.addParameterDefinition(timeout);
+			newResource.addParameterDefinition(toolCommand);
+			newResource.addParameterDefinition(outputFilter);
+			newResource.addParameterDefinition(confFile);
+			newResource.addParameterDefinition(beforeCommand);
+			newResource.addParameterDefinition(afterCommand);
 			
 			// persist in the triplestore
 	        Store store = storePool.getStore();

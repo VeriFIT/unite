@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
@@ -63,7 +64,9 @@ public class SutAnalyse extends RequestRunner
 	private AutomationResult resAutoResult;
 	final private String execSutId;
 	private SUT execSut;
-
+	
+	final private String scriptFileEnding;
+	
 	final private AutomationPlanConf autoPlanConf;
 	
 	private Collection<File> filesToDeleteIfInterrupted = new ArrayList<File>();
@@ -92,6 +95,12 @@ public class SutAnalyse extends RequestRunner
 		this.execSutId = Utils.getResourceIdFromUri(execSut.getAbout());;
 		this.execSut = execSut;
 
+		if (SystemUtils.IS_OS_LINUX) {
+			scriptFileEnding = ".sh";
+		} else {
+			scriptFileEnding = ".ps1";
+		}
+		
 		// load the AutomationPlanConfiguration
 		AutomationPlanConfManager autoPlanConfManager = AutomationPlanConfManager.getInstance();
 		this.autoPlanConf = autoPlanConfManager.getAutoPlanConf(
@@ -112,6 +121,8 @@ public class SutAnalyse extends RequestRunner
 			String toolCommand = null;
 			String outputFilter = null;
 			String confFile = null;
+			String beforeCommand = null;
+			String afterCommand = null;
 			
 			// extract values from parameters
 			for (ExecutionParameter param : this.execParameters)
@@ -122,7 +133,8 @@ public class SutAnalyse extends RequestRunner
 				else if (param.getName().equals("toolCommand")) toolCommand = param.getValue();
 				else if (param.getName().equals("outputFilter")) outputFilter = param.getValue();
 				else if (param.getName().equals("confFile")) confFile = param.getValue();
-				
+				else if (param.getName().equals("beforeCommand")) beforeCommand = param.getValue();
+				else if (param.getName().equals("afterCommand")) afterCommand = param.getValue();
 			}
 	
 			// build the string to execute later from command line input parameters (those that have a commandline position)
@@ -164,6 +176,26 @@ public class SutAnalyse extends RequestRunner
 		    analysisStderr.setDescription("Error output of the analysis.");
 		    analysisStderr.setTitle("stderr");
 		    analysisStderr.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		    
+			Contribution beforeCmdStdout = VeriFitAnalysisResourcesFactory.createContribution("beforeCommandStdout");
+			beforeCmdStdout.setDescription("Standard output of the beforeCommand.");
+			beforeCmdStdout.setTitle("beforeCommandStdout");
+			beforeCmdStdout.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		    
+		    Contribution beforeCmdStderr = VeriFitAnalysisResourcesFactory.createContribution("beforeCommandStderr");
+		    beforeCmdStderr.setDescription("Error output of the beforeCommand.");
+		    beforeCmdStderr.setTitle("beforeCommandStderr");
+		    beforeCmdStderr.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		    
+			Contribution afterCmdStdout = VeriFitAnalysisResourcesFactory.createContribution("afterCommandStdout");
+			afterCmdStdout.setDescription("Standard output of the afterCommand.");
+			afterCmdStdout.setTitle("afterCommandStdout");
+			afterCmdStdout.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		    
+		    Contribution afterCmdStderr = VeriFitAnalysisResourcesFactory.createContribution("afterCommandStderr");
+		    afterCmdStderr.setDescription("Error output of the afterCommand.");
+		    afterCmdStderr.setTitle("afterCommandStderr");
+		    afterCmdStderr.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 			
 		    // warning if not compiled
 		    if (!execSut.isCompiled())
@@ -175,12 +207,8 @@ public class SutAnalyse extends RequestRunner
 		    GetModifFilesBySnapshot snapshotter = new GetModifFilesBySnapshot(new File(execSut.getSUTdirectoryPath()));
 		    snapshotter.takeBeforeSnapshot(outputRegex);
 		    
-		    // get the SUT path and set files to be deleted in case of interrupt (this is a bit of a hack because the ./.adapter/... is set inside the executeString() below)
+		    // get the SUT path
 			final Path SUTdirAsPath = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
-			this.filesToDeleteIfInterrupted.add(SUTdirAsPath.resolve("./.adapter/exec_analysis_" + this.execAutoRequestId + ".ps1").toAbsolutePath().toFile());
-			this.filesToDeleteIfInterrupted.add(SUTdirAsPath.resolve("./.adapter/exec_analysis_" + this.execAutoRequestId + ".sh").toAbsolutePath().toFile());
-			this.filesToDeleteIfInterrupted.add(SUTdirAsPath.resolve("./.adapter/stderr_analysis_" + this.execAutoRequestId).toAbsolutePath().toFile());
-			this.filesToDeleteIfInterrupted.add(SUTdirAsPath.resolve("./.adapter/stdout_analysis_" + this.execAutoRequestId).toAbsolutePath().toFile());
 		    
 			// create a conf file in the SUT directory if confFile parameter was specified
 			if (confFile != null)
@@ -193,50 +221,131 @@ public class SutAnalyse extends RequestRunner
 				}
 			}
 			
+			/* Initialize the verdict (result of execution) as passed. If any of the executed commands (before, analysis, after) sets it to error or failed,
+			 * then the commands after the failed one will not be executed.
+			 */ 
+		    Link executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
+			
+			// execute beforeCommand just before analysis
+		    ExecutionResult beforeCmdRes = null;
+		    if (beforeCommand != null)
+		    {
+		    	beforeCmdRes = executeString(SUTdirAsPath, beforeCommand, 0, "_analysis_" + this.execAutoRequestId + "_beforeCmd", this.filesToDeleteIfInterrupted);
+				statusMessage.appendValue("Executing beforeCommand: " + beforeCommand + "\n   as: " + beforeCmdRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
+		    
+				if (beforeCmdRes.exceptionThrown != null)
+				{
+					// there was an error
+					executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
+					statusMessage.appendValue("BeforeCommand execution error: " + beforeCmdRes.exceptionThrown.getMessage() + "\n");
+				}
+		    	else if (beforeCmdRes.retCode != 0)
+		    	{
+		    		executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
+					statusMessage.appendValue("BeforeCommand failed (returned non-zero: " + beforeCmdRes.retCode + ")\n");
+				}
+
+		    	// add file URIs to standard output contributions and add them to the automation result
+	    		beforeCmdStdout.setFilePath(beforeCmdRes.stdoutFile.getAbsolutePath());
+		    	resAutoResult.addContribution(beforeCmdStdout);
+		    	beforeCmdStderr.setFilePath(beforeCmdRes.stderrFile.getAbsolutePath());
+				resAutoResult.addContribution(beforeCmdStderr);
+		    }
+		    
 			// execute analysis
-		    Link executionVerdict;
-		    ExecutionResult analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), "_analysis_" + this.execAutoRequestId);
-			statusMessage.appendValue("Executing: " + stringToExecute + "\n   as: " + analysisRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
-			if (analysisRes.exceptionThrown != null)
-			{
-				// there was an error
-				executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
-				statusMessage.appendValue("Analysis execution error: " + analysisRes.exceptionThrown.getMessage() + "\n");
-			}
-			else if (analysisRes.timeouted)
-			{
-				executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
-				statusMessage.appendValue("Analysis aborted due to a " + analysisRes.timeoutType + " timeout (" + timeout + " seconds)");
-			}
-	    	else if (analysisRes.retCode != 0)
-	    	{
-				executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
-				statusMessage.appendValue("Analysis failed (returned non-zero: " + analysisRes.retCode + ")\n");
-			}
-	    	else
-	    	{
-	    		executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
-	    		statusMessage.appendValue("Analysis completed successfully\n");
-	    	}
-	
-			// only do more processing if there was no exception during execution
-			if (executionVerdict != OslcValues.AUTOMATION_VERDICT_ERROR)
-			{
+		    ExecutionResult analysisRes = null;
+		    if (executionVerdict.equals(OslcValues.AUTOMATION_VERDICT_PASSED)) 
+		    {
+			    analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), "_analysis_" + this.execAutoRequestId, this.filesToDeleteIfInterrupted);
+				statusMessage.appendValue("Executing analysis: " + stringToExecute + "\n   as: " + analysisRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
+				if (analysisRes.exceptionThrown != null)
+				{
+					// there was an error
+					executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
+					statusMessage.appendValue("Analysis execution error: " + analysisRes.exceptionThrown.getMessage() + "\n");
+				}
+				else if (analysisRes.timeouted)
+				{
+					executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
+					statusMessage.appendValue("Analysis aborted due to a " + analysisRes.timeoutType + " timeout (" + timeout + " seconds)");
+				}
+		    	else if (analysisRes.retCode != 0)
+		    	{
+					executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
+					statusMessage.appendValue("Analysis failed (returned non-zero: " + analysisRes.retCode + ")\n");
+				}
+		    	else
+		    	{
+		    		executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
+		    		statusMessage.appendValue("Analysis completed successfully\n");
+		    	}
+
+		    	// add file URIs to standard output contributions and add them to the automation result
+		    	analysisStdout.setFilePath(analysisRes.stdoutFile.getAbsolutePath());
+		    	resAutoResult.addContribution(analysisStdout);
+		    	analysisStderr.setFilePath(analysisRes.stderrFile.getAbsolutePath());
+				resAutoResult.addContribution(analysisStderr);
+
 				// add general compilation Contributions to the Automation Result
-				
 				executionTime.setValue(Long.toString(analysisRes.totalTime));
 				resAutoResult.addContribution(executionTime);
 				returnCode.setValue(Integer.toString(analysisRes.retCode));
 				resAutoResult.addContribution(returnCode);	
+		    }
+		    else
+		    {
+				statusMessage.appendValue("Skipping analysis due to previous failures\n");
+		    }
 		    
+			// execute afterCommand just after analysis
+		    ExecutionResult afterCmdRes = null;
+		    if (afterCommand != null)
+		    {
+			    if (executionVerdict.equals(OslcValues.AUTOMATION_VERDICT_PASSED))
+			    {
+			    	afterCmdRes = executeString(SUTdirAsPath, afterCommand, 0, "_analysis_" + this.execAutoRequestId + "_afterCmd", this.filesToDeleteIfInterrupted);
+					statusMessage.appendValue("Executing afterCommand: " + afterCommand + "\n   as: " + afterCmdRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
+	
+					if (afterCmdRes.exceptionThrown != null)
+					{
+						// there was an error
+						executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
+						statusMessage.appendValue("AfterCommand execution error: " + afterCmdRes.exceptionThrown.getMessage() + "\n");
+					}
+			    	else if (afterCmdRes.retCode != 0)
+			    	{
+			    		executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
+						statusMessage.appendValue("AfterCommand failed (returned non-zero: " + afterCmdRes.retCode + ")\n");
+					}
+					
+			    	// add file URIs to standard output contributions and add them to the automation result
+		    		afterCmdStdout.setFilePath(afterCmdRes.stdoutFile.getAbsolutePath());
+			    	resAutoResult.addContribution(afterCmdStdout);
+			    	afterCmdStderr.setFilePath(afterCmdRes.stderrFile.getAbsolutePath());
+					resAutoResult.addContribution(afterCmdStderr);
+			    }
+			    else
+			    {
+					statusMessage.appendValue("Skipping afterCommand due to previous failures\n");
+			    }
+		    }
+			
+			
+			// only do more processing if there was no exception during execution
+			if (executionVerdict != OslcValues.AUTOMATION_VERDICT_ERROR)
+			{		    
 				// take a snapshot of SUT files after analysis and get a list of modified ones
 		    	snapshotter.takeAfterSnapshot();
 		    	Collection<File> modifFiles = snapshotter.getModifFiles();
 		    	
 		    	// remove the stdout and stderr files from the list of modified files from the snapshot (if they are there)
-		    	// (will be added manually with special description etc..)
-				modifFiles.remove(analysisRes.stdoutFile);
-				modifFiles.remove(analysisRes.stderrFile);
+		    	// (will be added manually with special description etc..)	[hack]
+		    	if (analysisRes != null)  modifFiles.remove(analysisRes.stdoutFile);
+		    	if (analysisRes != null)  modifFiles.remove(analysisRes.stderrFile);
+				if (beforeCmdRes != null) modifFiles.remove(beforeCmdRes.stdoutFile);
+				if (beforeCmdRes != null) modifFiles.remove(beforeCmdRes.stderrFile);
+				if (afterCmdRes  != null) modifFiles.remove(afterCmdRes.stdoutFile);
+				if (afterCmdRes  != null) modifFiles.remove(afterCmdRes.stderrFile);
 			
 		    	// add all modified or produced files as contributions to the automation result
 		    	Collection<Contribution> fileContributions = createFileContributions(modifFiles);
@@ -245,16 +354,14 @@ public class SutAnalyse extends RequestRunner
 		    	}
 				statusMessage.appendValue("File Contributions added\n");
 		    	
-		    	// now add them back in there (for zip later)
-				modifFiles.add(analysisRes.stdoutFile);
-				modifFiles.add(analysisRes.stderrFile);
-		    	
-		    	// add file URIs to standard output contributions and add them to the automation result
-		    	analysisStdout.setFilePath(analysisRes.stdoutFile.getAbsolutePath());
-		    	resAutoResult.addContribution(analysisStdout);
-		    	analysisStderr.setFilePath(analysisRes.stderrFile.getAbsolutePath());
-				resAutoResult.addContribution(analysisStderr);
-		    	
+		    	// now add them back in there (for zip later)	[hack]
+				if (analysisRes != null)  modifFiles.add(analysisRes.stdoutFile);
+				if (analysisRes != null)  modifFiles.add(analysisRes.stderrFile);
+				if (beforeCmdRes != null) modifFiles.add(beforeCmdRes.stdoutFile);
+				if (beforeCmdRes != null) modifFiles.add(beforeCmdRes.stderrFile);
+				if (afterCmdRes  != null) modifFiles.add(afterCmdRes.stdoutFile);
+				if (afterCmdRes  != null) modifFiles.add(afterCmdRes.stderrFile);
+				
 				// create a zip of all file contributions if needed
 				if (zipOutputs.equalsIgnoreCase("true"))
 				{
