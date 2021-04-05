@@ -290,7 +290,7 @@ public class VeriFitAnalysisManager {
 			{
 				if (userParam.getName().equals(SUT.getName()))
 				{
-		    		throw new OslcResourceException("AutomationPlan creation failed: Parameter \"" + SUT.getName() + "\"can not be redefined by user configuration.");
+		    		throw new OslcResourceException("AutomationPlan creation failed: Parameter \"" + SUT.getName() + "\" can not be redefined by user configuration.");
 				}
 				else if (userParam.getName().equals(outputFileRegex.getName()) && userParam.getDefaultValue() != null)
 				{
