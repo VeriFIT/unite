@@ -187,7 +187,11 @@ public class SutDeploy extends RequestRunner
 			compStderrLog.setDescription("Error output of the compilation.");
 			compStderrLog.setTitle("stderr");
 			compStderrLog.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
-			
+
+			Contribution sutAsContribution = new Contribution();
+			sutAsContribution.setDescription("Created SUT resource. Also linked to by the createdSUT property.");
+			sutAsContribution.setTitle("SUT");
+			sutAsContribution.addValueType(new Link (new URI (VeriFitCompilationProperties.PATH_RESOURCE_SHAPES + "sUT")));
 			
 			// init compilation toggle flag
 			Boolean performCompilation = Boolean.valueOf(paramCompile);
@@ -289,6 +293,8 @@ public class SutDeploy extends RequestRunner
 				newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(execAutoRequestId));
 				newSut = VeriFitCompilationManager.createSUT(newSut, execAutoRequestId); // TODO
 				resAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(Utils.getResourceIdFromUri(newSut.getAbout()))); // TODO
+				sutAsContribution.setValue(newSut.getAbout().toString());	// add the SUT as an actual Contribution resource as well for standard compliance
+				resAutoResult.addContribution(sutAsContribution); 
 				
 				statusMessage.appendValue("SUT resource created\n");
 			}

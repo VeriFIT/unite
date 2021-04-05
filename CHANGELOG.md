@@ -21,6 +21,11 @@
     their associated Results and all other artifacts (SUTs, Contributions, ...)
   - configured in *adapter*.properties using "keep_last_n_enabled" (bool) and "keep_last_n" (>0)
   - added a test suite for keep_last_n (separate test suite due to requiring different adapter conf)
+- added a confFile input parameter to the Analysis adapter
+  - a file that gets created before the analysis is executed
+  - usecase: a tool that accepts a "--conf=path/to/file" parameter (like anaconda)
+  - value format is "filename\nfilecontents"
+- added a link to the cratedSUT resource as a Contribution as well in the Compilation adapter for standard compliance
 
 ### v2.1.1
 - fixed high cpu usage on Windows

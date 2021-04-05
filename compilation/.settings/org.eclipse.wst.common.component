@@ -12,7 +12,7 @@
                         
         
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
-        <dependent-module archiveName="SharedResources-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/shared/shared">
+        <dependent-module archiveName="SharedResources-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/SharedResources/SharedResources">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module deploy-path="/" handle="module:/overlay/var/M2_REPO/org/eclipse/lyo/server/oauth-webapp/4.0.0/oauth-webapp-4.0.0.war?unpackFolder=target/m2e-wtp/overlays&amp;includes=**/**&amp;excludes=META-INF/MANIFEST.MF">

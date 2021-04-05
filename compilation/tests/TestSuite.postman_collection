@@ -908,7 +908,12 @@
 											"    pm.expect(pm.response.text()).to.not.include(\"http://www.w3.org/2001/XMLSchema#base64binary\");",
 											"    pm.expect(pm.response.text()).to.not.include(\"http://www.w3.org/2001/XMLSchema#boolean\");",
 											"    pm.expect(pm.response.text()).to.include(\"http://www.w3.org/2001/XMLSchema#integer\");",
-											"});"
+											"});",
+											"pm.test(\"AutomationResult should contain an SUT contribution\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">SUT</dcterms:title>\");",
+											"});",
+											"",
+											""
 										],
 										"type": "text/javascript"
 									}
