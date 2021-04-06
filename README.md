@@ -71,4 +71,4 @@ server online at - http://*host*:*port*/compilation/
 ```
 
 # Acknowledgement
-This work was supported by the [AuFoVer](https://www.vutbr.cz/en/rad/projects/detail/29833) project.
+This work was supported by the [AuFoVer](https://www.vutbr.cz/en/rad/projects/detail/29833) project and the [Arrowhead](https://www.fit.vut.cz/research/project/1299/.en) project.

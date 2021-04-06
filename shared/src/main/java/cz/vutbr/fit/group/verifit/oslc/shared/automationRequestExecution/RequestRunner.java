@@ -20,6 +20,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -113,10 +114,11 @@ public abstract class RequestRunner extends Thread {
 	 * @param timeout         Time limit for execution in seconds. Zero
 	 *                        means no time limit
 	 * @param id 			  Identifier that is appended to the stdout and stderr output file names (e.g. id="1" -> "stdout1", "stderr1")
+	 * @param filesToDeleteIfInterrupted	A collection of Files to be deleted in case the execution is interrupted. An output parameter.
 	 * @return a "ExecutionResult" object that holds the stdout, stderr, return code, timeout flag, etc (see the ExecutionResult class)
 	 * @throws InterruptedException 
 	 */
-	protected ExecutionResult executeString(Path folderPath, String stringToExecute, int timeout, String id) throws InterruptedException
+	protected ExecutionResult executeString(Path folderPath, String stringToExecute, int timeout, String id, Collection<File> filesToDeleteIfInterrupted) throws InterruptedException
 	{
 		final String powershellExceptionExitCode = "1";
 		
@@ -143,6 +145,7 @@ public abstract class RequestRunner extends Thread {
 					+ "}";
 		}
 
+
 		String executedString = null;
 		Process process = null;
 		try {
@@ -167,6 +170,11 @@ public abstract class RequestRunner extends Thread {
 			File stderrFile = outputsDir.resolve("stderr" + id).toFile();
 			processBuilder.redirectOutput(stdoutFile);
 			processBuilder.redirectError(stderrFile);
+			
+		    // set files to be deleted in case of interrupt
+			filesToDeleteIfInterrupted.add(fileToExecute);
+			filesToDeleteIfInterrupted.add(stdoutFile);
+			filesToDeleteIfInterrupted.add(stderrFile);
 			
 			// start execution and get a timestamp of the start to measure execution time
 			Instant timeStampStart = Instant.now();

@@ -27,6 +27,13 @@
   - value format is "filename\nfilecontents"
 - added a link to the cratedSUT resource as a Contribution as well in the Compilation adapter for standard compliance
 - better plugin filter example
+- added a beforeCommand and an afterCommand to Analysis adapter
+  - commands that can be set to run right before or right after executing analysis
+  - if the beforeCommand fails, analysis is not executed, and neither is the afterCommand
+  - if analysis fails, the afterCommand is not executed
+- added an option to override default values of predefined ParameterDefinitions in the Analysis adapter
+  - when defining an analysis tool automation plan, define a ParameterDefinition with the same name as one of the predefined
+    parameters (e.g. timeout, zipOutputs, ...; except the SUT parameter) and your default value will be used instead
 
 ### v2.1.1
 - fixed high cpu usage on Windows
