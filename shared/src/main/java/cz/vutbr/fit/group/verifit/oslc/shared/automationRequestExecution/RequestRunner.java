@@ -20,6 +20,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.eclipse.lyo.oslc4j.core.model.Link;
 
 /**
  * A thread designed to execute an AutomationRequest.
@@ -36,8 +38,59 @@ import org.apache.commons.lang3.SystemUtils;
  *
  */
 public abstract class RequestRunner extends Thread {
-	public RequestRunner() {
+	public RequestRunner(String executedAutomationRequestId, String executedAutomationPlanId, Link startingState, Link desiredState) {
 		super();
+		
+		this.executedAutomationRequestId = executedAutomationRequestId;
+		this.desiredState = desiredState;
+		this.startingState = startingState;
+	}
+	
+	/**
+	 * Used to identify this runner
+	 */
+	private String executedAutomationRequestId;
+	
+	/**
+	 * Used for queuing purposes
+	 */
+	private String executedAutomationPlanId;
+	
+	/**
+	 * Used to determine whether to start execution
+	 */
+	private Link desiredState;
+	
+	/**
+	 * Used for queuing purposes
+	 */
+	private Link startingState;
+
+	public String getExecutedAutomationPlanId() {
+		return executedAutomationPlanId;
+	}
+
+	private IExecutionManager execManager; 
+	
+	public String getExecutedAutomationRequestId() {
+		return executedAutomationRequestId;
+	}
+
+	public Link getDesiredState() {
+		return desiredState;
+	}
+
+	public Link getStartingState() {
+		return startingState;
+	}
+	
+	public void setExecManager(IExecutionManager execManager) {
+		this.execManager = execManager;
+	}
+	
+	protected void executionFinishedNotifyManager()
+	{
+		execManager.executionFinishedCallback(this);
 	}
 	
 	public class ExecutionResult {
@@ -61,9 +114,11 @@ public abstract class RequestRunner extends Thread {
 	 * @param timeout         Time limit for execution in seconds. Zero
 	 *                        means no time limit
 	 * @param id 			  Identifier that is appended to the stdout and stderr output file names (e.g. id="1" -> "stdout1", "stderr1")
+	 * @param filesToDeleteIfInterrupted	A collection of Files to be deleted in case the execution is interrupted. An output parameter.
 	 * @return a "ExecutionResult" object that holds the stdout, stderr, return code, timeout flag, etc (see the ExecutionResult class)
+	 * @throws InterruptedException 
 	 */
-	protected ExecutionResult executeString(Path folderPath, String stringToExecute, int timeout, String id)
+	protected ExecutionResult executeString(Path folderPath, String stringToExecute, int timeout, String id, Collection<File> filesToDeleteIfInterrupted) throws InterruptedException
 	{
 		final String powershellExceptionExitCode = "1";
 		
@@ -90,7 +145,9 @@ public abstract class RequestRunner extends Thread {
 					+ "}";
 		}
 
+
 		String executedString = null;
+		Process process = null;
 		try {
 			// create a directory for execution outputs 
 			Path outputsDir = folderPath.resolve(".adapter");
@@ -114,39 +171,38 @@ public abstract class RequestRunner extends Thread {
 			processBuilder.redirectOutput(stdoutFile);
 			processBuilder.redirectError(stderrFile);
 			
+		    // set files to be deleted in case of interrupt
+			filesToDeleteIfInterrupted.add(fileToExecute);
+			filesToDeleteIfInterrupted.add(stdoutFile);
+			filesToDeleteIfInterrupted.add(stderrFile);
+			
 			// start execution and get a timestamp of the start to measure execution time
 			Instant timeStampStart = Instant.now();
-			Process process = processBuilder.start();
+			process = processBuilder.start();
 			
 			// wait for the process to exit
 			Boolean exitedInTime = true;
 			String timeoutType = "";
-			try {
-				// with timeout
-				if (timeout > 0) {
-					exitedInTime = process.waitFor(timeout, TimeUnit.SECONDS);
-					if (!exitedInTime) {
-						// try to kill gracefully
-						timeoutType = "graceful";
-						process.destroy();
-						Boolean killedInTime = process.waitFor(1, TimeUnit.SECONDS); // TODO one second to die
-						if (!killedInTime) {
-							// kill forcefully
-							timeoutType = "forceful";
-							process.destroyForcibly();
-						}
+			// with timeout
+			if (timeout > 0) {
+				exitedInTime = process.waitFor(timeout, TimeUnit.SECONDS);
+				if (!exitedInTime) {
+					// try to kill gracefully
+					timeoutType = "graceful";
+					process.destroy();
+					Boolean killedInTime = process.waitFor(1, TimeUnit.SECONDS); // TODO one second to die
+					if (!killedInTime) {
+						// kill forcefully
+						timeoutType = "forceful";
+						process.destroyForcibly();
 					}
 				}
-				// no timeout
-				else {
-					process.waitFor();
-				}
-	
-			} catch (InterruptedException e) {
-				// TODO Dont know what that means really
-				e.printStackTrace();
 			}
-			
+			// no timeout
+			else {
+				process.waitFor();
+			}
+	
 			// compute total execution time
 			Instant timeStampEnd = Instant.now(); // get execution end time
 			long totalTime = Duration.between(timeStampStart, timeStampEnd).toMillis();
@@ -163,7 +219,19 @@ public abstract class RequestRunner extends Thread {
 			res.executedString = executedString;
 			res.exceptionThrown = null;
 			return res;
-			
+		} catch (InterruptedException e) {
+			// this automation request execution was canceled, kill the running process and re-throw higher 
+			if (process != null)
+			{
+				// try to kill gracefully
+				process.destroy();
+				Boolean killedInTime = process.waitFor(1, TimeUnit.SECONDS); // TODO one second to die
+				if (!killedInTime) {
+					// kill forcefully
+					process.destroyForcibly();
+				}
+			}
+			throw e;
 		} catch (Exception e) {
 			ExecutionResult res = new ExecutionResult();
 			res.retCode = null;

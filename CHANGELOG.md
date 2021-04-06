@@ -1,3 +1,40 @@
+### v2.2.0
+- implemented resource delete
+  - delete capabilities for A.Requests, A.Results, Contributions (analysis only), SUT (compilation only)
+  - Requests, Results, and SUTs recognize a "cascade" parameter which when set to "true" makes it so that 
+    deleting any one of the three will result in all three getting deleted
+  - deleting a resource that is connected to a directory or a file will also delete the file/directory (SUT, contribution, A.Result)
+  - deleting an Automation Request that is not yet finished results in the request getting canceled first (using desiredState update),
+    unfinished Automation Results can not be deleted
+- implemented resource update
+  - update capabilities for A.Requests, A.Results, Contributions (analysis only), SUT (compilation only)
+  - not all properties can be updated
+  - properties can not be changed before execution finishes, except for the desiredState property of AutomationRequests
+- implemented execution cancel
+  - cancel Automation Request execution by updating the A.Request's desiredState property to "canceled"
+  - canceling only works on requests that are still state "inProgress"
+- reworked resource ID generators
+  - now use long instead of int
+  - initialization is based on a special bookmarkID resource instead of walking the whole triplestore
+- keep_last_n
+  - added a configuration option that tells the adapter to automatically delete old AutomationRequests and 
+    their associated Results and all other artifacts (SUTs, Contributions, ...)
+  - configured in *adapter*.properties using "keep_last_n_enabled" (bool) and "keep_last_n" (>0)
+  - added a test suite for keep_last_n (separate test suite due to requiring different adapter conf)
+- added a confFile input parameter to the Analysis adapter
+  - a file that gets created before the analysis is executed
+  - usecase: a tool that accepts a "--conf=path/to/file" parameter (like anaconda)
+  - value format is "filename\nfilecontents"
+- added a link to the cratedSUT resource as a Contribution as well in the Compilation adapter for standard compliance
+- better plugin filter example
+- added a beforeCommand and an afterCommand to Analysis adapter
+  - commands that can be set to run right before or right after executing analysis
+  - if the beforeCommand fails, analysis is not executed, and neither is the afterCommand
+  - if analysis fails, the afterCommand is not executed
+- added an option to override default values of predefined ParameterDefinitions in the Analysis adapter
+  - when defining an analysis tool automation plan, define a ParameterDefinition with the same name as one of the predefined
+    parameters (e.g. timeout, zipOutputs, ...; except the SUT parameter) and your default value will be used instead
+
 ### v2.1.1
 - fixed high cpu usage on Windows
   - run_all.ps1 had a active wait loop that was causing Powershell to use a lot of CPU

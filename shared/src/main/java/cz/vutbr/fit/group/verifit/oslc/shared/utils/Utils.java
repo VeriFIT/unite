@@ -39,25 +39,29 @@ import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.eclipse.lyo.oslc4j.provider.jena.JenaModelHelper;
 import org.eclipse.lyo.store.Store;
 import org.eclipse.lyo.store.StorePool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
 
 public class Utils {
 
+    
 	/**
 	 * Used to generate IDs for new resources in a synchronized way (datarace free)
 	 * @author od42
 	 */
 	public static class ResourceIdGen {
-	    int idCounter; 
+	    private static final Logger log = LoggerFactory.getLogger(ResourceIdGen.class);
+	    long idCounter; 
 	    
 	    public ResourceIdGen ()
 	    {
 	    	idCounter = 0;
 	    };
 	    
-	    public ResourceIdGen (int start)
+	    public ResourceIdGen (long start)
 	    {
 	    	idCounter = start;
 	    }
@@ -67,8 +71,23 @@ public class Utils {
 	     * @return New ID
 	     */
 	    public synchronized String getId() {
-	    	idCounter++;
-	        return Integer.toString(idCounter - 1);
+	    	if (idCounter > Long.MAX_VALUE - 10000)
+	    	{
+	    		log.warn("################################################################################\n"
+	    				+ "    ID GENERATOR IS NEARING THE LONG MAX VALUE (only 10,000 IDs left)"
+	    				+ "################################################################################");
+	    	}
+	    	else if (idCounter == Long.MAX_VALUE)
+	    	{
+	    		log.error("################################################################################\n"
+	    				+ "    ID GENERATOR JUST REACHED THE LONG MAX VALUE AND WILL START FROM ZERO"
+	    				+ "################################################################################");
+
+		    	idCounter = 0; // reset the counter
+	    	}
+	    	
+	    	idCounter++;    	
+	        return Long.toString(idCounter - 1);
 	    }
 	}
 	
@@ -255,6 +274,12 @@ public class Utils {
 			{				
 				if (definedParam.getName().equals(submittedParam.getName()))
 				{
+					// check that the parameter has a value
+					if (submittedParam.getValue() == null)
+					{
+						throw new OslcResourceException("parameter " + submittedParam.getName() + " is missing a value");
+					}
+						
 					// check if the value is allowed
 					Boolean validValue = true;
 					if (definedParam.getAllowedValue().size() > 0)

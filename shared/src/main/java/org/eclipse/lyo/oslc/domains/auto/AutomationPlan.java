@@ -188,6 +188,7 @@ public class AutomationPlan
         if (asLocalResource) {
             result = result + "{a Local AutomationPlan Resource} - update AutomationPlan.toString() to present resource as desired.";
             // Start of user code toString_bodyForLocalResource
+            result = String.valueOf(getAbout());
             // End of user code
         }
         else {

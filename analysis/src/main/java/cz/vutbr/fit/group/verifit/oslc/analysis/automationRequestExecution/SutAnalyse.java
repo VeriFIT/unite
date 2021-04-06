@@ -10,8 +10,10 @@
 
 package cz.vutbr.fit.group.verifit.oslc.analysis.automationRequestExecution;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -21,12 +23,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc4j.core.model.Link;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisResourcesFactory;
@@ -48,6 +55,8 @@ import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
  */
 public class SutAnalyse extends RequestRunner
 {
+    private static final Logger log = LoggerFactory.getLogger(SutAnalyse.class);
+    		
 	final private List<ExecutionParameter> execParameters;
 	final private String execAutoRequestId;
 	private AutomationRequest execAutoRequest;
@@ -55,8 +64,12 @@ public class SutAnalyse extends RequestRunner
 	private AutomationResult resAutoResult;
 	final private String execSutId;
 	private SUT execSut;
-
+	
+	final private String scriptFileEnding;
+	
 	final private AutomationPlanConf autoPlanConf;
+	
+	private Collection<File> filesToDeleteIfInterrupted = new ArrayList<File>();
 	
 	/**
 	 * @param serviceProviderId	ID of the service provider
@@ -68,7 +81,11 @@ public class SutAnalyse extends RequestRunner
 	 */
 	public SutAnalyse(AutomationRequest execAutoRequest, AutomationResult resAutoResult, SUT execSut, List<ExecutionParameter> execParameters) 
 	{
-		super();
+		super(  Utils.getResourceIdFromUri(execAutoRequest.getAbout()),
+				Utils.getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue()),
+				execAutoRequest.getState().iterator().next(),
+				execAutoRequest.getDesiredState()
+		);
 
 		this.execParameters = execParameters;
 		this.execAutoRequestId = Utils.getResourceIdFromUri(execAutoRequest.getAbout());
@@ -78,6 +95,12 @@ public class SutAnalyse extends RequestRunner
 		this.execSutId = Utils.getResourceIdFromUri(execSut.getAbout());;
 		this.execSut = execSut;
 
+		if (SystemUtils.IS_OS_LINUX) {
+			scriptFileEnding = ".sh";
+		} else {
+			scriptFileEnding = ".ps1";
+		}
+		
 		// load the AutomationPlanConfiguration
 		AutomationPlanConfManager autoPlanConfManager = AutomationPlanConfManager.getInstance();
 		this.autoPlanConf = autoPlanConfManager.getAutoPlanConf(
@@ -90,179 +113,334 @@ public class SutAnalyse extends RequestRunner
 	 */
 	public void run()
 	{
-		// input parameters
-		String outputRegex = null;
-		String zipOutputs = null;
-		String timeout = null;
-		String toolCommand = null;
-		String outputFilter = null;
-		
-		// extract values from parameters
-		for (ExecutionParameter param : this.execParameters)
-		{ 
-			if (param.getName().equals("outputFileRegex")) outputRegex = param.getValue();
-			else if (param.getName().equals("zipOutputs")) zipOutputs = param.getValue();
-			else if (param.getName().equals("timeout")) timeout = param.getValue();
-			else if (param.getName().equals("toolCommand")) toolCommand = param.getValue();
-			else if (param.getName().equals("outputFilter")) outputFilter = param.getValue();
+		try {
+			// input parameters
+			String outputRegex = null;
+			String zipOutputs = null;
+			String timeout = null;
+			String toolCommand = null;
+			String outputFilter = null;
+			String confFile = null;
+			String beforeCommand = null;
+			String afterCommand = null;
 			
-		}
-
-		// build the string to execute later from command line input parameters (those that have a commandline position)
-		final String stringToExecute = buildStringToExecFromParams(toolCommand, this.execParameters);
-
-		// set the states of the Automation Result and Request to "inProgress" - if they are not that already
-		if (!(execAutoRequest.getState().iterator().next().getValue()
-				.equals(OslcValues.AUTOMATION_STATE_INPROGRESS.getValue())))
-		{
-			resAutoResult.replaceState(OslcValues.AUTOMATION_STATE_INPROGRESS);
-			VeriFitAnalysisManager.updateAutomationResult(null, resAutoResult, resAutoResultId);
-			execAutoRequest.replaceState(OslcValues.AUTOMATION_STATE_INPROGRESS);
-			VeriFitAnalysisManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
-		}
-
-	    // prepare Contribution resources
-		Contribution executionTime = VeriFitAnalysisResourcesFactory.createContribution("executionTime");
-		executionTime.setDescription("Total execution time of the analysis in milliseconds."); // TODO CHECK really milliseconds?
-		executionTime.setTitle("executionTime");
-		executionTime.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
-	    
-		Contribution statusMessage = VeriFitAnalysisResourcesFactory.createContribution("statusMessage");
-		statusMessage.setDescription("Status messages from the adapter about the execution.");
-		statusMessage.setTitle("statusMessage");
-		statusMessage.setValue("");
-		statusMessage.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
-	    
-		Contribution returnCode = VeriFitAnalysisResourcesFactory.createContribution("returnCode");
-		returnCode.setDescription("Return code of the execution. If non-zero, then the verdict will be #failed.");
-		returnCode.setTitle("returnCode");
-		returnCode.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);	
-		
-		Contribution analysisStdout = VeriFitAnalysisResourcesFactory.createContribution("stdout");
-	    analysisStdout.setDescription("Standard output of the analysis.");
-	    analysisStdout.setTitle("stdout");
-	    analysisStdout.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
-	    
-	    Contribution analysisStderr = VeriFitAnalysisResourcesFactory.createContribution("stderr");
-	    analysisStderr.setDescription("Error output of the analysis.");
-	    analysisStderr.setTitle("stderr");
-	    analysisStderr.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
-		
-	    // warning if not compiled
-	    if (!execSut.isCompiled())
-	    {
-    		statusMessage.setValue(statusMessage.getValue() + "Warning: Analysing an SUT which was not compiled\n");
-	    }
-	    
-	    // take a snapshot of SUT files modification times before executing the analysis
-	    GetModifFilesBySnapshot snapshotter = new GetModifFilesBySnapshot(new File(execSut.getSUTdirectoryPath()));
-	    snapshotter.takeBeforeSnapshot(outputRegex);
-	    
-		// execute analysis
-	    Link executionVerdict;
-		final Path SUTdirAsPath = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
-	    ExecutionResult analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), "_analysis_" + this.execAutoRequestId);
-		statusMessage.setValue(statusMessage.getValue() +
-				"Executing: " + stringToExecute + "\n   as: " + analysisRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
-		if (analysisRes.exceptionThrown != null)
-		{
-			// there was an error
-			executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
-			statusMessage.setValue(statusMessage.getValue() +  "Analysis execution error: " + analysisRes.exceptionThrown.getMessage());
-		}
-		else if (analysisRes.timeouted)
-		{
-			executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
-			statusMessage.setValue(statusMessage.getValue() + "Analysis aborted due to a " + analysisRes.timeoutType + " timeout (" + timeout + " seconds)");
-		}
-    	else if (analysisRes.retCode != 0)
-    	{
-			executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
-			statusMessage.setValue(statusMessage.getValue() + "Analysis failed (returned non-zero: " + analysisRes.retCode + ")\n");
-		}
-    	else
-    	{
-    		executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
-    		statusMessage.setValue(statusMessage.getValue() + "Analysis completed successfully\n");
-    	}
-
-		// only do more processing if there was no exception during execution
-		if (executionVerdict != OslcValues.AUTOMATION_VERDICT_ERROR)
-		{
-			// add general compilation Contributions to the Automation Result
-			
-			executionTime.setValue(Long.toString(analysisRes.totalTime));
-			resAutoResult.addContribution(executionTime);
-			returnCode.setValue(Integer.toString(analysisRes.retCode));
-			resAutoResult.addContribution(returnCode);	
-	    
-			// take a snapshot of SUT files after analysis and get a list of modified ones
-	    	snapshotter.takeAfterSnapshot();
-	    	Collection<File> modifFiles = snapshotter.getModifFiles();
-	    	
-	    	// remove the stdout and stderr files from the list of modified files from the snapshot (if they are there)
-	    	// (will be added manually with special description etc..)
-			modifFiles.remove(analysisRes.stdoutFile);
-			modifFiles.remove(analysisRes.stderrFile);
-		
-	    	// add all modified or produced files as contributions to the automation result
-	    	Collection<Contribution> fileContributions = createFileContributions(modifFiles);
-	    	for (Contribution c : fileContributions) {
-	    		resAutoResult.addContribution(c);
-	    	}
-			statusMessage.setValue(statusMessage.getValue() + "File Contributions added\n");
-	    	
-	    	// now add them back in there (for zip later)
-			modifFiles.add(analysisRes.stdoutFile);
-			modifFiles.add(analysisRes.stderrFile);
-	    	
-	    	// add file URIs to standard output contributions and add them to the automation result
-	    	analysisStdout.setFilePath(analysisRes.stdoutFile.getPath());
-	    	resAutoResult.addContribution(analysisStdout);
-	    	analysisStderr.setFilePath(analysisRes.stderrFile.getPath());
-			resAutoResult.addContribution(analysisStderr);
-	    	
-			// create a zip of all file contributions if needed
-			if (zipOutputs.equalsIgnoreCase("true"))
+			// extract values from parameters
+			for (ExecutionParameter param : this.execParameters)
+			{ 
+				if (param.getName().equals("outputFileRegex")) outputRegex = param.getValue();
+				else if (param.getName().equals("zipOutputs")) zipOutputs = param.getValue();
+				else if (param.getName().equals("timeout")) timeout = param.getValue();
+				else if (param.getName().equals("toolCommand")) toolCommand = param.getValue();
+				else if (param.getName().equals("outputFilter")) outputFilter = param.getValue();
+				else if (param.getName().equals("confFile")) confFile = param.getValue();
+				else if (param.getName().equals("beforeCommand")) beforeCommand = param.getValue();
+				else if (param.getName().equals("afterCommand")) afterCommand = param.getValue();
+			}
+	
+			// build the string to execute later from command line input parameters (those that have a commandline position)
+			final String stringToExecute = buildStringToExecFromParams(toolCommand, this.execParameters);
+	
+			// set the states of the Automation Result and Request to "inProgress" - if they are not that already
+			if (!(execAutoRequest.getState().iterator().next().getValue()
+					.equals(OslcValues.AUTOMATION_STATE_INPROGRESS.getValue())))
 			{
-				final String zipName = "out" + this.execAutoRequestId + ".zip";
-				final Path zipDir = FileSystems.getDefault().getPath(this.execSut.getSUTdirectoryPath());
-				
+				resAutoResult.replaceState(OslcValues.AUTOMATION_STATE_INPROGRESS);
+				VeriFitAnalysisManager.internalUpdateAutomationResult(resAutoResult, resAutoResultId);
+				execAutoRequest.replaceState(OslcValues.AUTOMATION_STATE_INPROGRESS);
+				VeriFitAnalysisManager.internalUpdateAutomationRequest(execAutoRequest, execAutoRequestId);
+			}
+	
+		    // prepare Contribution resources
+			Contribution executionTime = VeriFitAnalysisResourcesFactory.createContribution("executionTime");
+			executionTime.setDescription("Total execution time of the analysis in milliseconds."); // TODO CHECK really milliseconds?
+			executionTime.setTitle("executionTime");
+			executionTime.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
+		    
+			Contribution statusMessage = VeriFitAnalysisResourcesFactory.createContribution("statusMessage");
+			statusMessage.setDescription("Status messages from the adapter about the execution.");
+			statusMessage.setTitle("statusMessage");
+			statusMessage.setValue("");
+			statusMessage.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		    
+			Contribution returnCode = VeriFitAnalysisResourcesFactory.createContribution("returnCode");
+			returnCode.setDescription("Return code of the execution. If non-zero, then the verdict will be #failed.");
+			returnCode.setTitle("returnCode");
+			returnCode.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);	
+			
+			Contribution analysisStdout = VeriFitAnalysisResourcesFactory.createContribution("stdout");
+		    analysisStdout.setDescription("Standard output of the analysis.");
+		    analysisStdout.setTitle("stdout");
+		    analysisStdout.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		    
+		    Contribution analysisStderr = VeriFitAnalysisResourcesFactory.createContribution("stderr");
+		    analysisStderr.setDescription("Error output of the analysis.");
+		    analysisStderr.setTitle("stderr");
+		    analysisStderr.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		    
+			Contribution beforeCmdStdout = VeriFitAnalysisResourcesFactory.createContribution("beforeCommandStdout");
+			beforeCmdStdout.setDescription("Standard output of the beforeCommand.");
+			beforeCmdStdout.setTitle("beforeCommandStdout");
+			beforeCmdStdout.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		    
+		    Contribution beforeCmdStderr = VeriFitAnalysisResourcesFactory.createContribution("beforeCommandStderr");
+		    beforeCmdStderr.setDescription("Error output of the beforeCommand.");
+		    beforeCmdStderr.setTitle("beforeCommandStderr");
+		    beforeCmdStderr.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		    
+			Contribution afterCmdStdout = VeriFitAnalysisResourcesFactory.createContribution("afterCommandStdout");
+			afterCmdStdout.setDescription("Standard output of the afterCommand.");
+			afterCmdStdout.setTitle("afterCommandStdout");
+			afterCmdStdout.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+		    
+		    Contribution afterCmdStderr = VeriFitAnalysisResourcesFactory.createContribution("afterCommandStderr");
+		    afterCmdStderr.setDescription("Error output of the afterCommand.");
+		    afterCmdStderr.setTitle("afterCommandStderr");
+		    afterCmdStderr.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+			
+		    // warning if not compiled
+		    if (!execSut.isCompiled())
+		    {
+	    		statusMessage.appendValue("Warning: Analysing an SUT which was not compiled\n");
+		    }
+		    
+		    // take a snapshot of SUT files modification times before executing the analysis
+		    GetModifFilesBySnapshot snapshotter = new GetModifFilesBySnapshot(new File(execSut.getSUTdirectoryPath()));
+		    snapshotter.takeBeforeSnapshot(outputRegex);
+		    
+		    // get the SUT path
+			final Path SUTdirAsPath = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
+		    
+			// create a conf file in the SUT directory if confFile parameter was specified
+			if (confFile != null)
+			{
 				try {
-					Contribution zipContrib = zipAllFileContributions(modifFiles, zipName, zipDir);
-					resAutoResult.addContribution(zipContrib);
-					statusMessage.setValue(statusMessage.getValue() + "Added a ZIP contribution\n");
+					createConfFile(SUTdirAsPath, confFile);
+					statusMessage.appendValue("Creating conf file \"" + confFile.substring(0, confFile.indexOf('\n')) + "\"");
 				} catch (Exception e) {
-					statusMessage.setValue(statusMessage.getValue() + "Failed to create a ZIP file: " + e.getMessage() + "\n");
-					System.out.println("ERROR: failed to ZIP outputs: " + e.getMessage()); // TODO
+					
 				}
 			}
 			
-			// run the AutoResult contributions through a filter
-			statusMessage.setValue(statusMessage.getValue() + "Applying output filters\n");
-			resAutoResult.addContribution(statusMessage);
-			Set<Contribution> parsedContributions = FilterManager.filterContributionsForTool(
-					autoPlanConf.getFilter(outputFilter),
-					resAutoResult.getContribution(),
-					this.resAutoResultId + "-"
-					);
-			resAutoResult.setContribution(parsedContributions);
-		}
-		
-		// update the AutoResult state and verdict, and AutoRequest state
-		resAutoResult.replaceState(OslcValues.AUTOMATION_STATE_COMPLETE);
-		resAutoResult.replaceVerdict(executionVerdict);
-		VeriFitAnalysisManager.updateAutomationResult(null, resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
-		execAutoRequest.setState(new HashSet<Link>());
-		execAutoRequest.addState(OslcValues.AUTOMATION_STATE_COMPLETE);
-		VeriFitAnalysisManager.updateAutomationRequest(null, execAutoRequest, execAutoRequestId);
+			/* Initialize the verdict (result of execution) as passed. If any of the executed commands (before, analysis, after) sets it to error or failed,
+			 * then the commands after the failed one will not be executed.
+			 */ 
+		    Link executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
+			
+			// execute beforeCommand just before analysis
+		    ExecutionResult beforeCmdRes = null;
+		    if (beforeCommand != null)
+		    {
+		    	beforeCmdRes = executeString(SUTdirAsPath, beforeCommand, 0, "_analysis_" + this.execAutoRequestId + "_beforeCmd", this.filesToDeleteIfInterrupted);
+				statusMessage.appendValue("Executing beforeCommand: " + beforeCommand + "\n   as: " + beforeCmdRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
+		    
+				if (beforeCmdRes.exceptionThrown != null)
+				{
+					// there was an error
+					executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
+					statusMessage.appendValue("BeforeCommand execution error: " + beforeCmdRes.exceptionThrown.getMessage() + "\n");
+				}
+		    	else if (beforeCmdRes.retCode != 0)
+		    	{
+		    		executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
+					statusMessage.appendValue("BeforeCommand failed (returned non-zero: " + beforeCmdRes.retCode + ")\n");
+				}
 
-		// end the request execution (in case it is part of a request queue)
-		VeriFitAnalysisManager.finishedAutomationRequestExecution(execAutoRequest);
-	}
+		    	// add file URIs to standard output contributions and add them to the automation result
+	    		beforeCmdStdout.setFilePath(beforeCmdRes.stdoutFile.getAbsolutePath());
+		    	resAutoResult.addContribution(beforeCmdStdout);
+		    	beforeCmdStderr.setFilePath(beforeCmdRes.stderrFile.getAbsolutePath());
+				resAutoResult.addContribution(beforeCmdStderr);
+		    }
+		    
+			// execute analysis
+		    ExecutionResult analysisRes = null;
+		    if (executionVerdict.equals(OslcValues.AUTOMATION_VERDICT_PASSED)) 
+		    {
+			    analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), "_analysis_" + this.execAutoRequestId, this.filesToDeleteIfInterrupted);
+				statusMessage.appendValue("Executing analysis: " + stringToExecute + "\n   as: " + analysisRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
+				if (analysisRes.exceptionThrown != null)
+				{
+					// there was an error
+					executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
+					statusMessage.appendValue("Analysis execution error: " + analysisRes.exceptionThrown.getMessage() + "\n");
+				}
+				else if (analysisRes.timeouted)
+				{
+					executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
+					statusMessage.appendValue("Analysis aborted due to a " + analysisRes.timeoutType + " timeout (" + timeout + " seconds)");
+				}
+		    	else if (analysisRes.retCode != 0)
+		    	{
+					executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
+					statusMessage.appendValue("Analysis failed (returned non-zero: " + analysisRes.retCode + ")\n");
+				}
+		    	else
+		    	{
+		    		executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
+		    		statusMessage.appendValue("Analysis completed successfully\n");
+		    	}
 
+		    	// add file URIs to standard output contributions and add them to the automation result
+		    	analysisStdout.setFilePath(analysisRes.stdoutFile.getAbsolutePath());
+		    	resAutoResult.addContribution(analysisStdout);
+		    	analysisStderr.setFilePath(analysisRes.stderrFile.getAbsolutePath());
+				resAutoResult.addContribution(analysisStderr);
+
+				// add general compilation Contributions to the Automation Result
+				executionTime.setValue(Long.toString(analysisRes.totalTime));
+				resAutoResult.addContribution(executionTime);
+				returnCode.setValue(Integer.toString(analysisRes.retCode));
+				resAutoResult.addContribution(returnCode);	
+		    }
+		    else
+		    {
+				statusMessage.appendValue("Skipping analysis due to previous failures\n");
+		    }
+		    
+			// execute afterCommand just after analysis
+		    ExecutionResult afterCmdRes = null;
+		    if (afterCommand != null)
+		    {
+			    if (executionVerdict.equals(OslcValues.AUTOMATION_VERDICT_PASSED))
+			    {
+			    	afterCmdRes = executeString(SUTdirAsPath, afterCommand, 0, "_analysis_" + this.execAutoRequestId + "_afterCmd", this.filesToDeleteIfInterrupted);
+					statusMessage.appendValue("Executing afterCommand: " + afterCommand + "\n   as: " + afterCmdRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
 	
+					if (afterCmdRes.exceptionThrown != null)
+					{
+						// there was an error
+						executionVerdict = OslcValues.AUTOMATION_VERDICT_ERROR;
+						statusMessage.appendValue("AfterCommand execution error: " + afterCmdRes.exceptionThrown.getMessage() + "\n");
+					}
+			    	else if (afterCmdRes.retCode != 0)
+			    	{
+			    		executionVerdict = OslcValues.AUTOMATION_VERDICT_FAILED;
+						statusMessage.appendValue("AfterCommand failed (returned non-zero: " + afterCmdRes.retCode + ")\n");
+					}
+					
+			    	// add file URIs to standard output contributions and add them to the automation result
+		    		afterCmdStdout.setFilePath(afterCmdRes.stdoutFile.getAbsolutePath());
+			    	resAutoResult.addContribution(afterCmdStdout);
+			    	afterCmdStderr.setFilePath(afterCmdRes.stderrFile.getAbsolutePath());
+					resAutoResult.addContribution(afterCmdStderr);
+			    }
+			    else
+			    {
+					statusMessage.appendValue("Skipping afterCommand due to previous failures\n");
+			    }
+		    }
+			
+			
+			// only do more processing if there was no exception during execution
+			if (executionVerdict != OslcValues.AUTOMATION_VERDICT_ERROR)
+			{		    
+				// take a snapshot of SUT files after analysis and get a list of modified ones
+		    	snapshotter.takeAfterSnapshot();
+		    	Collection<File> modifFiles = snapshotter.getModifFiles();
+		    	
+		    	// remove the stdout and stderr files from the list of modified files from the snapshot (if they are there)
+		    	// (will be added manually with special description etc..)	[hack]
+		    	if (analysisRes != null)  modifFiles.remove(analysisRes.stdoutFile);
+		    	if (analysisRes != null)  modifFiles.remove(analysisRes.stderrFile);
+				if (beforeCmdRes != null) modifFiles.remove(beforeCmdRes.stdoutFile);
+				if (beforeCmdRes != null) modifFiles.remove(beforeCmdRes.stderrFile);
+				if (afterCmdRes  != null) modifFiles.remove(afterCmdRes.stdoutFile);
+				if (afterCmdRes  != null) modifFiles.remove(afterCmdRes.stderrFile);
+			
+		    	// add all modified or produced files as contributions to the automation result
+		    	Collection<Contribution> fileContributions = createFileContributions(modifFiles);
+		    	for (Contribution c : fileContributions) {
+		    		resAutoResult.addContribution(c);
+		    	}
+				statusMessage.appendValue("File Contributions added\n");
+		    	
+		    	// now add them back in there (for zip later)	[hack]
+				if (analysisRes != null)  modifFiles.add(analysisRes.stdoutFile);
+				if (analysisRes != null)  modifFiles.add(analysisRes.stderrFile);
+				if (beforeCmdRes != null) modifFiles.add(beforeCmdRes.stdoutFile);
+				if (beforeCmdRes != null) modifFiles.add(beforeCmdRes.stderrFile);
+				if (afterCmdRes  != null) modifFiles.add(afterCmdRes.stdoutFile);
+				if (afterCmdRes  != null) modifFiles.add(afterCmdRes.stderrFile);
+				
+				// create a zip of all file contributions if needed
+				if (zipOutputs.equalsIgnoreCase("true"))
+				{
+					final String zipName = "out" + this.execAutoRequestId + ".zip";
+					final Path zipDir = FileSystems.getDefault().getPath(this.execSut.getSUTdirectoryPath());
+					
+					try {
+						Contribution zipContrib = zipAllFileContributions(modifFiles, zipName, zipDir);
+						resAutoResult.addContribution(zipContrib);
+						statusMessage.appendValue("Added a ZIP contribution\n");
+					} catch (Exception e) {
+						statusMessage.appendValue("Failed to create a ZIP file: " + e.getMessage() + "\n");
+						System.out.println("ERROR: failed to ZIP outputs: " + e.getMessage()); // TODO
+					}
+				}
+				
+				// run the AutoResult contributions through a filter
+				statusMessage.appendValue("Applying output filters\n");
+				resAutoResult.addContribution(statusMessage);
+				Set<Contribution> parsedContributions = FilterManager.filterContributionsForTool(
+						autoPlanConf.getFilter(outputFilter),
+						resAutoResult.getContribution(),
+						this.resAutoResultId + "-"
+						);
+				resAutoResult.setContribution(parsedContributions);
+			}
+			
+			// update the AutoResult state and verdict, and AutoRequest state
+			resAutoResult.replaceState(OslcValues.AUTOMATION_STATE_COMPLETE);
+			resAutoResult.replaceVerdict(executionVerdict);
+			VeriFitAnalysisManager.internalUpdateAutomationResult(resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
+			execAutoRequest.replaceState(OslcValues.AUTOMATION_STATE_COMPLETE);
+			VeriFitAnalysisManager.internalUpdateAutomationRequest(execAutoRequest, execAutoRequestId);
 
+		} catch (InterruptedException e) {
+			// this automation request execution was canceled
+			try {
+				Thread.sleep(500);	// TODO this sleep is needed otherwise the delete below fails (not sure why)
+			} catch (InterruptedException e2) {
+				// should not happen
+			}
+			
+			for (File f : this.filesToDeleteIfInterrupted) {
+				try {
+					FileDeleteStrategy.FORCE.delete(f);
+				} catch (IOException e1) {
+					log.error("Failed to delete a file during cleanup after a runner was interrupted", e1);
+				}
+			}
+			
+			// TODO currently does not delete any files outside of the .adapter directory! Those will just stay there lying around
+			
+		} catch (Exception e) {
+			log.error("Unexpected error during request execution!", e);
+		} finally {
+			// notify the execution manager that this execution finished
+			// in a finally clause to make sure it gets called no matter what 
+			executionFinishedNotifyManager();
+		}
+	}
+	
+	private void createConfFile(Path sUTdirAsPath, String confFileParam) throws IOException {
+		int idxSplit = confFileParam.indexOf('\n');
+		if (idxSplit == -1)
+			throw new IllegalArgumentException("Invalid format of confFile value. No \"\\n\" delimiter found. Expected format: filename\\file_contents");
+		
+		String filename = confFileParam.substring(0, confFileParam.indexOf('\n'));
+		String file_contents = confFileParam.substring(confFileParam.indexOf('\n') + 1);
+		
+		File confFile = sUTdirAsPath.resolve("./" + filename).toAbsolutePath().toFile();
+		InputStream sFileContents = new ByteArrayInputStream(file_contents.getBytes());
+	    if (!confFile.exists())
+	    {
+	    	FileUtils.forceMkdirParent(confFile);
+	    }
+		FileUtils.copyInputStreamToFile(sFileContents, confFile);
+		
+		this.filesToDeleteIfInterrupted.add(confFile);
+	}
 
 	private Contribution zipAllFileContributions(Collection<File> modifFiles, String zipName, Path zipDir) throws IOException {
 		Contribution zipedContribs = VeriFitAnalysisResourcesFactory.createContribution("zipedOutputs");
