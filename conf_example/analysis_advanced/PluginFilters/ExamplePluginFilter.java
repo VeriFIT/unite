@@ -29,7 +29,7 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.builtInFilters.Def
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.builtInFilters.RemoveAllFileValues;
 
 /**
- * Use this class as a Template for creating your own filtersv.
+ * Use this class as a Template for creating your own filters.
  * See the IFilter interface for more info.
  */
 public class ExamplePluginFilter implements IFilter, IExtension {
@@ -75,7 +75,7 @@ public class ExamplePluginFilter implements IFilter, IExtension {
 		
 		// create a contribution representing the result (based on the stdout contents)
 		Map<String, String> contrib = new HashMap<String, String>();
-		contrib.put("id", "example_id");	// use any identifier you want (can be used to e.g. query the contribution)
+		contrib.put("id", "example_id");	// use any identifier you want (can be used to e.g. query the contribution), careful about collisions with other contributions
 		contrib.put("title", "DataRaceDetected");		// use any name you want
 		contrib.put("description", "Holds the result of data race analysis.");
 		contrib.put("value", dataRaceFound.toString());
