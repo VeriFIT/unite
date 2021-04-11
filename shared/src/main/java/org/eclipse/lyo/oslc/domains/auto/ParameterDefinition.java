@@ -142,6 +142,9 @@ public class ParameterDefinition
     // Start of user code attributeAnnotation:propertyDefinition
     // End of user code
     private Link propertyDefinition;
+    // Start of user code attributeAnnotation:valuePrefix
+    // End of user code
+    private String valuePrefix;
     
     // Start of user code classAttributes
     // End of user code
@@ -483,6 +486,20 @@ public class ParameterDefinition
         return propertyDefinition;
     }
     
+    // Start of user code getterAnnotation:valuePrefix
+    // End of user code
+    @OslcName("valuePrefix")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "valuePrefix")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.String)
+    @OslcReadOnly(false)
+    public String getValuePrefix()
+    {
+        // Start of user code getterInit:valuePrefix
+        // End of user code
+        return valuePrefix;
+    }
+    
     
     // Start of user code setterAnnotation:description
     // End of user code
@@ -697,6 +714,18 @@ public class ParameterDefinition
         this.propertyDefinition = propertyDefinition;
     
         // Start of user code setterFinalize:propertyDefinition
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:valuePrefix
+    // End of user code
+    public void setValuePrefix(final String valuePrefix )
+    {
+        // Start of user code setterInit:valuePrefix
+        // End of user code
+        this.valuePrefix = valuePrefix;
+    
+        // Start of user code setterFinalize:valuePrefix
         // End of user code
     }
     

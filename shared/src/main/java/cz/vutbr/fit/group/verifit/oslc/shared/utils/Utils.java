@@ -273,26 +273,35 @@ public class Utils {
 			for (ParameterInstance submittedParam : inputParameters)
 			{				
 				if (definedParam.getName().equals(submittedParam.getName()))
-				{
-					// check that the parameter has a value
-					if (submittedParam.getValue() == null)
-					{
-						throw new OslcResourceException("parameter " + submittedParam.getName() + " is missing a value");
-					}
-						
-					// check if the value is allowed
+				{		
+					// check if the value is allowed, and check for empty value
 					Boolean validValue = true;
-					if (definedParam.getAllowedValue().size() > 0)
+					Boolean emptyValueAllowed = false;
+					if (definedParam.getAllowedValue() != null && definedParam.getAllowedValue().size() > 0)
 					{
 						validValue = false;
 						for (String allowedValue : definedParam.getAllowedValue())
 						{
-							if (allowedValue.equals(submittedParam.getValue()))
+							if (allowedValue.isEmpty())
+							{
+								emptyValueAllowed = true;
+							}		
+							
+							if (allowedValue.isEmpty() && submittedParam.getValue() == null)
+							{
+								validValue = true;
+								break;
+							}
+							else if (allowedValue.equals(submittedParam.getValue()))
 							{
 								validValue = true;
 								break;
 							}
 						}
+					}
+					if (submittedParam.getValue() == null && !emptyValueAllowed)
+					{
+						throw new OslcResourceException("parameter " + submittedParam.getName() + " is missing a value");
 					}
 					if (!validValue)
 					{

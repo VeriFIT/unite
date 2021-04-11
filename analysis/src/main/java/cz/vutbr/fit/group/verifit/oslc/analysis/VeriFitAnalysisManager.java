@@ -268,8 +268,16 @@ public class VeriFitAnalysisManager {
 			confFile.setDescription("Creates a configuration file inside of the SUT directory before running analysis."
 					+ "Format for this parameter: \"conf_file_name\\nconf_file_txt_contents\"");
 			confFile.setName("confFile");
-			confFile.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
-			confFile.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
+			confFile.setOccurs(OslcValues.OSLC_OCCURS_ZEROorMany);
+			confFile.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+			
+			ParameterDefinition confDir = new ParameterDefinition();
+			confDir.setDescription("Creates a configuration directory inside of the SUT directory before running analysis"
+					+ "from a base64 encoded string."
+					+ "Format for this parameter: \"path_to_unzip_to\\nbase64_encoded_zip_file\"");
+			confDir.setName("confDir");
+			confDir.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
+			confDir.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 			
 			ParameterDefinition beforeCommand = new ParameterDefinition();
 			beforeCommand.setDescription("A command to run just before analysis is executed.");
@@ -316,6 +324,10 @@ public class VeriFitAnalysisManager {
 				{
 					confFile.setDefaultValue(userParam.getDefaultValue());
 				}
+				else if (userParam.getName().equals(confDir.getName()) && userParam.getDefaultValue() != null)
+				{
+					confDir.setDefaultValue(userParam.getDefaultValue());
+				}
 				else if (userParam.getName().equals(beforeCommand.getName()) && userParam.getDefaultValue() != null)
 				{
 					beforeCommand.setDefaultValue(userParam.getDefaultValue());
@@ -338,6 +350,7 @@ public class VeriFitAnalysisManager {
 			newResource.addParameterDefinition(toolCommand);
 			newResource.addParameterDefinition(outputFilter);
 			newResource.addParameterDefinition(confFile);
+			newResource.addParameterDefinition(confDir);
 			newResource.addParameterDefinition(beforeCommand);
 			newResource.addParameterDefinition(afterCommand);
 			
@@ -638,6 +651,13 @@ public class VeriFitAnalysisManager {
     			int idxSplit = paramValue.indexOf('\n');
     			if (idxSplit == -1)
     				throw new OslcResourceException("Invalid format of confFile value. No \"\\n\" delimiter found. Expected format: filename\\file_contents");
+    		}
+    		if (param.getName().equals("confDir"))
+    		{
+    			String paramValue = param.getValue();
+    			int idxSplit = paramValue.indexOf('\n');
+    			if (idxSplit == -1)
+    				throw new OslcResourceException("Invalid format of confDir value. No \"\\n\" delimiter found. Expected format: dir_name\\base64_encoded_zip");
     		}
     	}
 	}

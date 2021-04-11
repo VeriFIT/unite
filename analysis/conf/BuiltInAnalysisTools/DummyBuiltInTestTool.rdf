@@ -37,6 +37,7 @@
             <oslc_auto:ParameterDefinition>
                 <oslc:name>arguments</oslc:name>
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--args=</fit:valuePrefix>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Exactly-one"/>
                 <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
                 <dcterms:description rdf:parseType="Literal">Specify which arguments should be passed to the command line.</dcterms:description>

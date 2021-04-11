@@ -1,3 +1,15 @@
+
+### v2.3.0
+- valuePrefix for command line parameters
+  - allows non-positional command line parameters to be defined for analysis tools
+  - e.g. prefix "--arg=" and parameter value "val" will result in the command line string containing "--arg=val"
+- confFile supports multiple instances (using the parameter multiple times to create multiple conf files) 
+- confDir parameter
+  - similar to confFile except its used to create a whole configuration directory in the SUT directory before analysis
+  - the directory is transferred as a base64 encoded zip file
+  - value format is "path/to/unzip/to\nbase64encodedZip"
+- complete anaconda interface and tests
+
 ### v2.2.0
 - implemented resource delete
   - delete capabilities for A.Requests, A.Results, Contributions (analysis only), SUT (compilation only)

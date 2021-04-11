@@ -19,18 +19,28 @@ import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 public class ExecutionParameter {
 	private String name;
 	private String value;
+	private String valuePrefix;
 	private Integer cmdPosition;
+	
+	public ExecutionParameter(String name, String value, String valuePrefix, Integer cmdPosition) {
+		this.name = name;
+		this.value = value;
+		this.valuePrefix = valuePrefix;
+		this.cmdPosition = cmdPosition;
+	}
 	
 	public ExecutionParameter(String name, String value, Integer cmdPosition) {
 		this.name = name;
 		this.value = value;
+		this.valuePrefix = "";
 		this.cmdPosition = cmdPosition;
 	}
 	
 	private ExecutionParameter(ParameterInstance paramInst, ParameterDefinition paramDef)
 	{
 		this.name = paramInst.getName();
-		this.value = paramInst.getValue();
+		this.value = (paramInst.getValue() == null ? "" : paramInst.getValue());
+		this.valuePrefix = (paramDef.getValuePrefix() == null ? "" : paramDef.getValuePrefix());
 		this.cmdPosition = paramDef.getCommandlinePosition();
 	}
 	
@@ -51,6 +61,10 @@ public class ExecutionParameter {
 		return value;
 	}
 
+	public String getValuePrefix() {
+		return valuePrefix;
+	}
+	
 	public void setValue(String value) {
 		this.value = value;
 	}
