@@ -489,71 +489,74 @@ public class VeriFitAnalysisManager {
 	private static void processSpecialInputParams(final SUT executedSUT, final AutomationResult newAutoResult, List<ExecutionParameter> execParams) throws OslcResourceException {
 		for ( ParameterInstance param : newAutoResult.getInputParameter())
 		{ 
-			if (param.getName().equals("launchSUT") || param.getName().equals("SUTbuildCommand"))
+			if (param.getName().equals("launchSUT"))
 			{
-				// add the value as an execution parameter
-				ExecutionParameter newSpecialExecParam = null;
-				
-				if (param.getName().equals("launchSUT"))
+				String launchCmd = "";
+				if (param.getValue().equalsIgnoreCase("true")) // only check the SUT property if parameter value was true
 				{
-					String launchCmd = executedSUT.getLaunchCommand();
+					// get property from SUT
+					launchCmd = executedSUT.getLaunchCommand();
 					if (launchCmd == null)
 						throw new OslcResourceException("paramer launchSUT - referenced SUT is missing a launchCommand");
-					if (Integer.valueOf(param.getValue()) >= 0) // only create the execution parameter if value was non-negative
-						newSpecialExecParam = new ExecutionParameter(
-							param.getName(),
-							launchCmd,
-							Integer.parseInt(param.getValue())
-						);
 				}
-				else if (param.getName().equals("SUTbuildCommand"))
+
+				// replace execution parameter value (from true to SUT property, or from false to "")
+				for (ExecutionParameter execParam : execParams)
+					if (execParam.getName().equals("launchSUT"))
+						execParam.setValue(launchCmd);
+			}
+			else if (param.getName().equals("SUTbuildCommand"))
+			{
+				String buildCmd = "";
+				if (param.getValue().equalsIgnoreCase("true")) // only check the SUT property if parameter value was true
 				{
-					String buildCmd = executedSUT.getBuildCommand();
+					// get property from SUT
+					buildCmd = executedSUT.getBuildCommand();
 					if (buildCmd == null)
 						throw new OslcResourceException("paramer SUTbuildCommand - referenced SUT is missing a buildCommand");
-					if (Integer.valueOf(param.getValue()) >= 0) // only create the execution parameter if value was non-negative
-						newSpecialExecParam = new ExecutionParameter(
-							param.getName(),
-							buildCmd,
-							Integer.parseInt(param.getValue())
-						);
 				}
-				execParams.add(newSpecialExecParam);
+
+				// replace execution command value (from true to SUT property)
+				for (ExecutionParameter execParam : execParams)
+					if (execParam.getName().equals("SUTbuildCommand"))
+						execParam.setValue(buildCmd);
 			}
 		}
-		// same thing for output parameters
+		
+		// same thing copy pasted for output parameters (will be used if one of the parameters was not supplied by the client and a default value was used instead)
 		for ( ParameterInstance param : newAutoResult.getOutputParameter())
 		{ 
-			if (param.getName().equals("launchSUT") || param.getName().equals("SUTbuildCommand"))
+			if (param.getName().equals("launchSUT"))
 			{
-				// add the value as an execution parameter
-				ExecutionParameter newSpecialExecParam = null;
-				
-				if (param.getName().equals("launchSUT"))
+				String launchCmd = "";
+				if (param.getValue().equalsIgnoreCase("true")) // only check the SUT property if parameter value was true
 				{
-					String launchCmd = executedSUT.getLaunchCommand();
+					// get property from SUT
+					launchCmd = executedSUT.getLaunchCommand();
 					if (launchCmd == null)
 						throw new OslcResourceException("paramer launchSUT - referenced SUT is missing a launchCommand");
-					if (Integer.valueOf(param.getValue()) >= 0) // only create the execution parameter if value was non-negative
-						newSpecialExecParam = new ExecutionParameter(
-							param.getName(),
-							launchCmd,
-							Integer.parseInt(param.getValue())
-						);
 				}
-				else if (param.getName().equals("SUTbuildCommand"))
+
+				// replace execution parameter value (from true to SUT property, or from false to "")
+				for (ExecutionParameter execParam : execParams)
+					if (execParam.getName().equals("launchSUT"))
+						execParam.setValue(launchCmd);
+			}
+			else if (param.getName().equals("SUTbuildCommand"))
+			{
+				String buildCmd = "";
+				if (param.getValue().equalsIgnoreCase("true")) // only check the SUT property if parameter value was true
 				{
-					String buildCmd = executedSUT.getBuildCommand();
+					// get property from SUT
+					buildCmd = executedSUT.getBuildCommand();
 					if (buildCmd == null)
 						throw new OslcResourceException("paramer SUTbuildCommand - referenced SUT is missing a buildCommand");
-					if (Integer.valueOf(param.getValue()) >= 0) // only create the execution parameter if value was non-negative
-						newSpecialExecParam = new ExecutionParameter(
-							param.getName(),
-							buildCmd,
-							Integer.parseInt(param.getValue())
-						);
 				}
-				execParams.add(newSpecialExecParam);
+
+				// replace execution command value (from true to SUT property)
+				for (ExecutionParameter execParam : execParams)
+					if (execParam.getName().equals("SUTbuildCommand"))
+						execParam.setValue(buildCmd);
 			}
 		}
 	}

@@ -46,13 +46,12 @@
         <oslc_auto:parameterDefinition>
             <!--
                 launchSUT is a special ParameterDefinition recognized by the adapter. The adapter will place the SUT launch command at the commandline position specified by this
-                parameter's value. In case a defaultValue is used and a client wants to not launch the SUT with his AutoRequest, then they need to submit a launchSUT input parameter
-                with a negative value.
-                Note that this ParameterDefinition does not have a commandlinePosition and thus it's value will not be placed on the commanline.
+                parameter if this parameters value is true.
             -->
             <oslc_auto:ParameterDefinition>
                 <oslc:name>launchSUT</oslc:name>
-                <oslc:defaultValue>2</oslc:defaultValue>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</fit:commandlinePosition>
+                <oslc:defaultValue>True</oslc:defaultValue>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
                 <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position</dcterms:description>
             </oslc_auto:ParameterDefinition>
@@ -61,11 +60,11 @@
         <oslc_auto:parameterDefinition>
             <!--
                 SUTbuildCommand is the same as "launchSUT" except that the SUT build command is placed on the command line (useful for static analysis tools)
-                Note that this ParameterDefinition does not have a commandlinePosition and thus it's value will not be placed on the commanline.
             -->
             <oslc_auto:ParameterDefinition>
                 <oslc:name>SUTbuildCommand</oslc:name>
-                <oslc:defaultValue>3</oslc:defaultValue>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</fit:commandlinePosition>
+                <oslc:defaultValue>True</oslc:defaultValue>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
                 <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position</dcterms:description>
             </oslc_auto:ParameterDefinition>
