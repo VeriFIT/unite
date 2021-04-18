@@ -699,14 +699,24 @@
 									"pm.test(\"AutomationPlan should contain a <dcterms:creator property\", function () {",
 									"    pm.expect(pm.response.text()).to.include(\"<dcterms:creator\");",
 									"});",
-									"pm.test(\"AutomationPlan should contain a analyser parameter definition\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>arguments</oslc:name>\");",
+									"pm.test(\"AutomationPlan should contain a tool parameter definition\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>tool</oslc:name>\");",
 									"});",
 									"pm.test(\"AutomationPlan should contain a SUT parameter definition\", function () {",
 									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>SUT</oslc:name>\");",
 									"});",
-									"pm.test(\"AutomationPlan should contain a executionParameters parameter definition\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>executionParameters</oslc:name>\");",
+									"pm.test(\"AutomationPlan should contain all the expected parameter definitions\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>help</oslc:name>\");",
+									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>quiet</oslc:name>\");",
+									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>verbose</oslc:name>\");",
+									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>trace-children</oslc:name>\");",
+									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>verbose</oslc:name>\");",
+									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>child-silent-after-fork</oslc:name>\");",
+									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>vgdb</oslc:name>\");",
+									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>vgdb-error</oslc:name>\");",
+									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>time-stamp</oslc:name>\");",
+									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>log-fd</oslc:name>\");",
+									"    // and more ....",
 									"});",
 									"pm.test(\"AutomationPlan should contain a launchSUT parameter definition\", function () {",
 									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>launchSUT</oslc:name>\");",
@@ -799,7 +809,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/valgrind\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value></rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>executionParameters</oslc:name>\n\t\t\t<rdf:value>HelloWorld!</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/valgrind\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>executionParameters</oslc:name>\n\t\t\t<rdf:value>HelloWorld!</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
@@ -1029,7 +1039,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/valgrind\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value>--tool=helgrind</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>executionParameters</oslc:name>\n\t\t\t<rdf:value>HelloWorld!</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/valgrind\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>tool</oslc:name>\n\t\t\t<rdf:value>helgrind</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>executionParameters</oslc:name>\n\t\t\t<rdf:value>HelloWorld!</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
@@ -1158,6 +1168,7 @@
 									"",
 									"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
 									"    pm.expect(pm.response.text()).to.include(\"Analysis completed successfully\");",
+									"    pm.expect(pm.response.text()).to.include(\" --tool=helgrind ./my_echo HelloWorld!\");",
 									"});",
 									"pm.test(\"returnCode should be 0\", function () {",
 									"    pm.expect(pm.response.text()).to.include(\"<rdf:value>0</rdf:value>\");",
@@ -1844,8 +1855,10 @@
 									"pm.test(\"AutomationPlan should contain a SUT parameter definition\", function () {",
 									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>SUT</oslc:name>\");",
 									"});",
-									"pm.test(\"AutomationPlan should contain a arguments parameter definition\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>arguments</oslc:name>\");",
+									"pm.test(\"AutomationPlan should contain expected parameter definitions\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>options</oslc:name>\");",
+									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>SUTbuildCommand</oslc:name>\");",
+									"    pm.expect(pm.response.text()).to.include(\"<oslc:name>command</oslc:name>\");",
 									"});"
 								],
 								"type": "text/javascript"
@@ -1934,7 +1947,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/infer\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value>run --reactive -- make</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>outputFileRegex</oslc:name>\n\t\t\t<rdf:value>.*</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/infer\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>command</oslc:name>\n\t\t\t<rdf:value>run</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>options</oslc:name>\n\t\t\t<rdf:value>--reactive</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUTbuildCommand</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>outputFileRegex</oslc:name>\n\t\t\t<rdf:value>.*</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",

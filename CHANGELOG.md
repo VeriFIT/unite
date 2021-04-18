@@ -8,7 +8,13 @@
   - similar to confFile except its used to create a whole configuration directory in the SUT directory before analysis
   - the directory is transferred as a base64 encoded zip file
   - value format is "path/to/unzip/to\nbase64encodedZip"
-- complete anaconda interface and tests
+- reworked launchSUT and SUTbuildCommand analysis parameters
+  - now use fit:commandlinePosition to define the place to put the command
+  - and the value is a boolean which says whether to place the command or not
+- better automation plan examples
+  - complete anaconda interface and tests
+  - mostly complete valgrind interface and tests
+  - mostly complete infer interface and tests
 
 ### v2.2.0
 - implemented resource delete
