@@ -30,7 +30,6 @@
         <oslc_auto:parameterDefinition>
             <oslc_auto:ParameterDefinition>
                 <oslc:name>other-options</oslc:name>
-                <oslc:defaultValue></oslc:defaultValue>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
                 <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
