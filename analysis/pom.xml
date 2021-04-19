@@ -30,6 +30,11 @@
     <repositories>
         <!-- Start of user code repositories
         -->
+        <!-- jSEM -->
+		<repository>
+		  <id>verifit-group-gitlab-maven</id>
+		  <url>https://pajda.fit.vutbr.cz/api/v4/groups/126/-/packages/maven</url>
+		</repository>
 
         <!-- End of user code
         -->
@@ -68,11 +73,11 @@
 		</dependency>  
 		
         <!-- jSEM for plugins -->
-		<dependency>  
-			<groupId>cz.vutbr.fit.group.verifit.jsem</groupId>  
-			<artifactId>jsem</artifactId>
-			<version>0.2.0.qualifier</version>
-		</dependency>  
+        <dependency>
+		  <groupId>cz.vutbr.fit.group.verifit</groupId>
+		  <artifactId>jsem-core</artifactId>
+		  <version>1.0.0</version>
+		</dependency>
         
         <!-- End of user code
         -->

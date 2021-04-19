@@ -18,6 +18,7 @@
 - outputFileRegex improvements
   - now reports an error if an invalid regex is supplied
   - file matching is now performed on the file path and not just the file name (to enable directory control)
+- jSEM dependency changed to Maven
 
 ### v2.2.0
 - implemented resource delete
