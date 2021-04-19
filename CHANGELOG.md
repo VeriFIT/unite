@@ -15,6 +15,9 @@
   - complete anaconda interface and tests
   - mostly complete valgrind interface and tests
   - mostly complete infer interface and tests
+- outputFileRegex improvements
+  - now reports an error if an invalid regex is supplied
+  - file matching is now performed on the file path and not just the file name (to enable directory control)
 
 ### v2.2.0
 - implemented resource delete

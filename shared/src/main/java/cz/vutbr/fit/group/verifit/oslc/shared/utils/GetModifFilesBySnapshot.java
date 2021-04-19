@@ -97,11 +97,10 @@ public class GetModifFilesBySnapshot {
 		{
             File currFile = it.next();
         	// TODO do I need read permissions to check the modification date?
-        	if (Pattern.matches(fileRegex, currFile.getName()))  
+            String path = currFile.getPath();
+        	if (Pattern.matches(fileRegex, path))  
         	{
-	        	String path = currFile.getPath();
 	        	Long timestamp = currFile.lastModified();
-	        	
 	        	files.put(path, timestamp);
         	}
 		}

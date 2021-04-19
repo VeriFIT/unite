@@ -85,6 +85,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
@@ -662,6 +664,15 @@ public class VeriFitAnalysisManager {
     			if (idxSplit == -1)
     				throw new OslcResourceException("Invalid format of confDir value. No \"\\n\" delimiter found. Expected format: dir_name\\base64_encoded_zip");
     		}
+    		if (param.getName().equals("outputFileRegex"))
+    		{
+    			String paramValue = param.getValue();
+    			try {
+    	            Pattern.compile(paramValue);
+    	        } catch (PatternSyntaxException e) {
+    				throw new OslcResourceException("Invalid format of outputFileRegex value: " + e);
+    	        }
+       		}
     	}
 	}
     
