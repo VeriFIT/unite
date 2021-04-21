@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
+import java.util.regex.Pattern;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -101,6 +102,28 @@ public class Utils {
 	{
 		Decoder decoder = Base64.getDecoder();
 		return decoder.decode(base64Str);
+	}
+	
+	public static boolean base64IsEncoded(String base64)
+	{
+    	if (Pattern.matches("^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$", base64))  
+	    	return true;
+    	else
+    		return false;
+	}
+	
+	/**
+	 * @param twoLines	String containing a \n and a base64 encoded string after the \n
+	 * @return	True if the input string is well formed (has \n and valid base64 chars after)
+	 */
+	public static boolean base64IsValueOnSecondLineValid(String twoLines)
+	{
+		int idxSplit = twoLines.indexOf('\n');
+		if (idxSplit == -1)
+			return false;
+		
+		String base64 = twoLines.substring(twoLines.indexOf('\n') + 1);
+		return base64IsEncoded(base64);
 	}
 
 	/**

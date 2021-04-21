@@ -223,6 +223,7 @@ public class VeriFitAnalysisManager {
 			SUT.setName("SUT");
 			SUT.setOccurs(OslcValues.OSLC_OCCURS_ONE);
 			SUT.addValueType(OslcValues.OSLC_VAL_TYPE_STRING); // TODO change to URI
+			newResource.addParameterDefinition(SUT);
 
 			ParameterDefinition outputFileRegex = new ParameterDefinition();
 			outputFileRegex.setDescription("Files that change during execution and match this regex will "
@@ -232,6 +233,7 @@ public class VeriFitAnalysisManager {
 			outputFileRegex.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			outputFileRegex.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 			outputFileRegex.setDefaultValue(".^");
+			newResource.addParameterDefinition(outputFileRegex);
 
 			ParameterDefinition zipOutputs = new ParameterDefinition();
 			zipOutputs.setDescription("If set to true, then all file contributions will be ZIPed and provided as a single zip contribution");
@@ -239,6 +241,7 @@ public class VeriFitAnalysisManager {
 			zipOutputs.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			zipOutputs.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
 			zipOutputs.setDefaultValue("false");
+			newResource.addParameterDefinition(zipOutputs);
 
 			ParameterDefinition timeout = new ParameterDefinition();
 			timeout.setDescription("Timeout for the analysis. Zero means no timeout.");
@@ -246,6 +249,7 @@ public class VeriFitAnalysisManager {
 			timeout.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			timeout.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
 			timeout.setDefaultValue("0");
+			newResource.addParameterDefinition(timeout);
 
 			ParameterDefinition toolCommand = new ParameterDefinition();
 			toolCommand.setDescription("Used to omit the analysis tool launch command while executing analysis. True means the tool " + 
@@ -254,6 +258,7 @@ public class VeriFitAnalysisManager {
 			toolCommand.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			toolCommand.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
 			toolCommand.setDefaultValue("true");
+			newResource.addParameterDefinition(toolCommand);
 			
 			ParameterDefinition outputFilter = new ParameterDefinition();
 			outputFilter.setDescription("Use this parameter to select which output filter should be used to process"
@@ -265,13 +270,16 @@ public class VeriFitAnalysisManager {
 			for (String filterName : automationPlanConf.getFilters().keySet()) {	// set alloweValues based on defined filters
 				outputFilter.addAllowedValue(filterName);
 			}
+			newResource.addParameterDefinition(outputFilter);
 			
 			ParameterDefinition confFile = new ParameterDefinition();
-			confFile.setDescription("Creates a configuration file inside of the SUT directory before running analysis."
+			confFile.setDescription("Creates a configuration file inside of the SUT directory before running analysis. "
+					+ "Can be used multiple times create multiple conf files."
 					+ "Format for this parameter: \"conf_file_name\\nconf_file_txt_contents\"");
 			confFile.setName("confFile");
 			confFile.setOccurs(OslcValues.OSLC_OCCURS_ZEROorMany);
 			confFile.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+			newResource.addParameterDefinition(confFile);
 			
 			ParameterDefinition confDir = new ParameterDefinition();
 			confDir.setDescription("Creates a configuration directory inside of the SUT directory before running analysis"
@@ -280,20 +288,32 @@ public class VeriFitAnalysisManager {
 			confDir.setName("confDir");
 			confDir.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			confDir.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+			newResource.addParameterDefinition(confDir);
 			
 			ParameterDefinition beforeCommand = new ParameterDefinition();
 			beforeCommand.setDescription("A command to run just before analysis is executed.");
 			beforeCommand.setName("beforeCommand");
 			beforeCommand.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			beforeCommand.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+			newResource.addParameterDefinition(beforeCommand);
 
 			ParameterDefinition afterCommand = new ParameterDefinition();
 			afterCommand.setDescription("A command to run just after analysis is executed.");
 			afterCommand.setName("afterCommand");
 			afterCommand.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			afterCommand.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+			newResource.addParameterDefinition(afterCommand);
 			
+			ParameterDefinition envVariable = new ParameterDefinition();
+			envVariable.setDescription("Environment variable to be set for execution. "
+					+ "Can be used multiple times for multiple variables."
+					+ "Expected value format: \"variable_name\\nvariable_value\"");
+			envVariable.setName("envVariable");
+			envVariable.setOccurs(OslcValues.OSLC_OCCURS_ZEROorMany);
+			envVariable.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
+			newResource.addParameterDefinition(envVariable);
 			
+
 			// add all user defined parameter definitions, but check for any conflicting names
 			// conflicting names allow users to redefine default values (except for the SUT property)
 			for (ParameterDefinition userParam : aResource.getParameterDefinition())
@@ -302,59 +322,28 @@ public class VeriFitAnalysisManager {
 				{
 		    		throw new OslcResourceException("AutomationPlan creation failed: Parameter \"" + SUT.getName() + "\" can not be redefined by user configuration.");
 				}
-				else if (userParam.getName().equals(outputFileRegex.getName()) && userParam.getDefaultValue() != null)
+				
+				boolean conflictingUserParam = false;
+				for (ParameterDefinition commonParam : newResource.getParameterDefinition())
 				{
-					outputFileRegex.setDefaultValue(userParam.getDefaultValue());
+					if (userParam.getName().equals(commonParam.getName()))
+					{
+						if (userParam.getDefaultValue() != null)
+							commonParam.setDefaultValue(userParam.getDefaultValue());
+						else
+							log.warn("AutomationPlan creation: Automation Plan \"" + aResource.getIdentifier()
+							+ "\": Parameter Definition \"" + userParam.getName() + "\" ignored because it conflicts with a common adapter Parameter Definition"
+									+ " and does not redefine its defaultValue.");
+							
+						conflictingUserParam = true;
+						break;
+					}
 				}
-				else if (userParam.getName().equals(zipOutputs.getName()) && userParam.getDefaultValue() != null)
-				{
-					zipOutputs.setDefaultValue(userParam.getDefaultValue());
-				}
-				else if (userParam.getName().equals(timeout.getName()) && userParam.getDefaultValue() != null)
-				{
-					timeout.setDefaultValue(userParam.getDefaultValue());
-				}
-				else if (userParam.getName().equals(toolCommand.getName()) && userParam.getDefaultValue() != null)
-				{
-					toolCommand.setDefaultValue(userParam.getDefaultValue());
-				}
-				else if (userParam.getName().equals(outputFilter.getName()) && userParam.getDefaultValue() != null)
-				{
-					outputFilter.setDefaultValue(userParam.getDefaultValue());
-				}
-				else if (userParam.getName().equals(confFile.getName()) && userParam.getDefaultValue() != null)
-				{
-					confFile.setDefaultValue(userParam.getDefaultValue());
-				}
-				else if (userParam.getName().equals(confDir.getName()) && userParam.getDefaultValue() != null)
-				{
-					confDir.setDefaultValue(userParam.getDefaultValue());
-				}
-				else if (userParam.getName().equals(beforeCommand.getName()) && userParam.getDefaultValue() != null)
-				{
-					beforeCommand.setDefaultValue(userParam.getDefaultValue());
-				}
-				else if (userParam.getName().equals(afterCommand.getName()) && userParam.getDefaultValue() != null)
-				{
-					afterCommand.setDefaultValue(userParam.getDefaultValue());
-				}
-				else	// non conflicting parameter
-				{
+				
+				// non conflicting parameter, add as a new parameter
+				if (!conflictingUserParam)	
 					newResource.addParameterDefinition(userParam);
-				}
 			}
-			
-			// add all the predefined parameters (with possible defaultValue updates)
-			newResource.addParameterDefinition(SUT);
-			newResource.addParameterDefinition(outputFileRegex);
-			newResource.addParameterDefinition(zipOutputs);
-			newResource.addParameterDefinition(timeout);
-			newResource.addParameterDefinition(toolCommand);
-			newResource.addParameterDefinition(outputFilter);
-			newResource.addParameterDefinition(confFile);
-			newResource.addParameterDefinition(confDir);
-			newResource.addParameterDefinition(beforeCommand);
-			newResource.addParameterDefinition(afterCommand);
 			
 			// persist in the triplestore
 	        Store store = storePool.getStore();
@@ -655,14 +644,12 @@ public class VeriFitAnalysisManager {
     			String paramValue = param.getValue();
     			int idxSplit = paramValue.indexOf('\n');
     			if (idxSplit == -1)
-    				throw new OslcResourceException("Invalid format of confFile value. No \"\\n\" delimiter found. Expected format: filename\\file_contents");
+    				throw new OslcResourceException("Invalid format of confFile value. No \"\\n\" delimiter found. Expected format: filename\\nfile_contents");
     		}
     		if (param.getName().equals("confDir"))
     		{
-    			String paramValue = param.getValue();
-    			int idxSplit = paramValue.indexOf('\n');
-    			if (idxSplit == -1)
-    				throw new OslcResourceException("Invalid format of confDir value. No \"\\n\" delimiter found. Expected format: dir_name\\base64_encoded_zip");
+    			if (!Utils.base64IsValueOnSecondLineValid(param.getValue()))
+    				throw new OslcResourceException("Invalid format of confDir value. No \"\\n\" delimiter found or invalid base64 encoding. Expected format: dir_name\\nbase64_encoded_zip");
     		}
     		if (param.getName().equals("outputFileRegex"))
     		{
@@ -672,6 +659,13 @@ public class VeriFitAnalysisManager {
     	        } catch (PatternSyntaxException e) {
     				throw new OslcResourceException("Invalid format of outputFileRegex value: " + e);
     	        }
+       		}
+    		if (param.getName().equals("envVariable"))
+    		{
+    			String paramValue = param.getValue();
+    			int idxSplit = paramValue.indexOf('\n');
+    			if (idxSplit == -1)
+    				throw new OslcResourceException("Invalid format of envVariable value. No \"\\n\" delimiter found. Expected format: variable_name\\nvariable_value");
        		}
     	}
 	}

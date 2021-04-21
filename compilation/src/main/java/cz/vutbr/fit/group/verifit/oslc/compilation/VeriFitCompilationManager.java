@@ -397,11 +397,8 @@ public class VeriFitCompilationManager {
 			// check that the sourceBase64 value is well formed
 			if (submittedParam.getName().equals("sourceBase64"))
 			{
-    			String paramValue = submittedParam.getValue();
-    			int idxSplit = paramValue.indexOf('\n');
-    			if (idxSplit == -1)
-    				throw new OslcResourceException("Invalid format of sourceBase64 value. No \"\\n\" delimiter found. Expected format: filename\\nbase64");
-
+    			if (!Utils.base64IsValueOnSecondLineValid(submittedParam.getValue()))
+    				throw new OslcResourceException("Invalid format of sourceBase64 value. No \"\\n\" delimiter found or invalid base64 encoding. Expected format: filename\\nbase64");
 			}
 		}
     	

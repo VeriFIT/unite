@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -123,10 +124,11 @@ public class SutAnalyse extends RequestRunner
 			String timeout = null;
 			String toolCommand = null;
 			String outputFilter = null;
-			List<String> confFiles = new ArrayList<String>();	// there can be multiple conf files
+			List<String> confFiles = new ArrayList<String>();		// there can be multiple conf files
 			String beforeCommand = null;
 			String afterCommand = null;
 			String confDir = null;
+			List<String> paramEnvVariables = new ArrayList<String>();	// there can be multiple env variables
 			
 			// extract values from parameters
 			for (ExecutionParameter param : this.execParameters)
@@ -140,6 +142,7 @@ public class SutAnalyse extends RequestRunner
 				else if (param.getName().equals("beforeCommand")) beforeCommand = param.getValue();
 				else if (param.getName().equals("afterCommand")) afterCommand = param.getValue();
 				else if (param.getName().equals("confDir")) confDir = param.getValue();
+				else if (param.getName().equals("envVariable")) paramEnvVariables.add(param.getValue());
 			}
 	
 			// build the string to execute later from command line input parameters (those that have a commandline position)
@@ -154,10 +157,14 @@ public class SutAnalyse extends RequestRunner
 				execAutoRequest.replaceState(OslcValues.AUTOMATION_STATE_INPROGRESS);
 				VeriFitAnalysisManager.internalUpdateAutomationRequest(execAutoRequest, execAutoRequestId);
 			}
+			
+			// transform parameEnvVariables to a set of name:value
+			Map<String,String> envVariables = prepareEvnVariableMapFromPrams(paramEnvVariables);
+			
 	
 		    // prepare Contribution resources
 			Contribution executionTime = VeriFitAnalysisResourcesFactory.createContribution("executionTime");
-			executionTime.setDescription("Total execution time of the analysis in milliseconds."); // TODO CHECK really milliseconds?
+			executionTime.setDescription("Total execution time of the analysis in milliseconds.");
 			executionTime.setTitle("executionTime");
 			executionTime.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
 		    
@@ -251,7 +258,7 @@ public class SutAnalyse extends RequestRunner
 		    ExecutionResult beforeCmdRes = null;
 		    if (beforeCommand != null)
 		    {
-		    	beforeCmdRes = executeString(SUTdirAsPath, beforeCommand, 0, "_analysis_" + this.execAutoRequestId + "_beforeCmd", this.filesToDeleteIfInterrupted);
+		    	beforeCmdRes = executeString(SUTdirAsPath, beforeCommand, 0, "_analysis_" + this.execAutoRequestId + "_beforeCmd", this.filesToDeleteIfInterrupted, envVariables);
 				statusMessage.appendValue("Executing beforeCommand: " + beforeCommand + "\n   as: " + beforeCmdRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
 		    
 				if (beforeCmdRes.exceptionThrown != null)
@@ -277,7 +284,7 @@ public class SutAnalyse extends RequestRunner
 		    ExecutionResult analysisRes = null;
 		    if (executionVerdict.equals(OslcValues.AUTOMATION_VERDICT_PASSED)) 
 		    {
-			    analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), "_analysis_" + this.execAutoRequestId, this.filesToDeleteIfInterrupted);
+			    analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), "_analysis_" + this.execAutoRequestId, this.filesToDeleteIfInterrupted, envVariables);
 				statusMessage.appendValue("Executing analysis: " + stringToExecute + "\n   as: " + analysisRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
 				if (analysisRes.exceptionThrown != null)
 				{
@@ -324,7 +331,7 @@ public class SutAnalyse extends RequestRunner
 		    {
 			    if (executionVerdict.equals(OslcValues.AUTOMATION_VERDICT_PASSED))
 			    {
-			    	afterCmdRes = executeString(SUTdirAsPath, afterCommand, 0, "_analysis_" + this.execAutoRequestId + "_afterCmd", this.filesToDeleteIfInterrupted);
+			    	afterCmdRes = executeString(SUTdirAsPath, afterCommand, 0, "_analysis_" + this.execAutoRequestId + "_afterCmd", this.filesToDeleteIfInterrupted, envVariables);
 					statusMessage.appendValue("Executing afterCommand: " + afterCommand + "\n   as: " + afterCmdRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
 	
 					if (afterCmdRes.exceptionThrown != null)
@@ -453,7 +460,7 @@ public class SutAnalyse extends RequestRunner
 	private void createConfFile(Path sUTdirAsPath, String confFileParam) throws IOException {
 		int idxSplit = confFileParam.indexOf('\n');
 		if (idxSplit == -1)
-			throw new IllegalArgumentException("Invalid format of confFile value. No \"\\n\" delimiter found. Expected format: filename\\file_contents");
+			throw new IllegalArgumentException("Invalid format of confFile value. No \"\\n\" delimiter found. Expected format: filename\\nfile_contents");
 		
 		String filename = confFileParam.substring(0, confFileParam.indexOf('\n'));
 		String file_contents = confFileParam.substring(confFileParam.indexOf('\n') + 1);
@@ -576,6 +583,24 @@ public class SutAnalyse extends RequestRunner
 		}
 		
 		return contributions;
+	}
+	
+	private Map<String,String> prepareEvnVariableMapFromPrams(Collection<String> paramEnvVariables)
+	{
+		Map<String,String> res = new HashMap<String,String>();
+		for (String envVarTwoLines : paramEnvVariables)
+		{
+			int idxSplit = envVarTwoLines.indexOf('\n');
+			if (idxSplit == -1)
+				throw new IllegalArgumentException("Invalid format of envVariable value. No \"\\n\" delimiter found. Expected format: variable_name\\nvariable_value"); // should never happen, gets checked earlier
+			
+			String varName = envVarTwoLines.substring(0, envVarTwoLines.indexOf('\n'));
+			String varValue = envVarTwoLines.substring(envVarTwoLines.indexOf('\n') + 1);
+			
+			res.put(varName, varValue);
+		}
+		
+		return res;
 	}
 	
 }

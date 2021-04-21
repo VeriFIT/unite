@@ -19,6 +19,11 @@
   - now reports an error if an invalid regex is supplied
   - file matching is now performed on the file path and not just the file name (to enable directory control)
 - jSEM dependency changed to Maven
+- added envVariable input parameter to the Analysis adapter
+  - allows environment variables to be set for execution
+  - can be used multiple times to set multiple variables
+  - expected value is "variable_name\nvariable_value"
+- base64 value check before execution to return an error immediately 
 
 ### v2.2.0
 - implemented resource delete
