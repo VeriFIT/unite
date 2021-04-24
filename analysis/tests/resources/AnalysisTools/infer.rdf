@@ -61,7 +61,7 @@
                 <oslc:defaultValue>False</oslc:defaultValue>
                 <oslc:name>SUTbuildCommand</oslc:name>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
-                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">3</fit:commandlinePosition>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</fit:commandlinePosition>
                 <dcterms:description rdf:parseType="Literal">Set to True to include "-- compile command" at the end of the string to execute</dcterms:description>
                 <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">-- </fit:valuePrefix>
             </oslc_auto:ParameterDefinition>
