@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:oslc_data="http://open-services.net/ns/servicemanagement/1.0/"
+    xmlns:oslc="http://open-services.net/ns/core#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/#"
+    xmlns:fit="http://fit.vutbr.cz/group/verifit/oslc/ns/universal-analysis#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:oslc_auto="http://open-services.net/ns/auto#">
+    <oslc_auto:AutomationRequest rdf:about="http://localhost:8081/compilation/services/resources/automationRequests/1">
+      <oslc_auto:executesAutomationPlan rdf:resource="http://localhost:8081/compilation/services/resources/automationPlans/0"/>
+      <dcterms:title rdf:parseType="Literal">Example SUT creation request</dcterms:title>
+      <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2021-04-26T14:58:11.055Z</dcterms:created>
+      <oslc_auto:state rdf:resource="http://open-services.net/ns/auto#inProgress"/>
+      <oslc_auto:inputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>TestEchoProgram.cpp
+I2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>
+          <oslc:name>sourceBase64</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:inputParameter>
+      <oslc_auto:producedAutomationResult rdf:resource="http://localhost:8081/compilation/services/resources/automationResults/1"/>
+      <dcterms:description rdf:parseType="Literal">example request</dcterms:description>
+      <oslc_auto:desiredState rdf:resource="http://open-services.net/ns/auto#complete"/>
+      <oslc_auto:inputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>./my_echo</rdf:value>
+          <oslc:name>launchCommand</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:inputParameter>
+      <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2021-04-26T14:58:11.055Z</dcterms:modified>
+      <oslc_auto:inputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>
+          <oslc:name>buildCommand</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:inputParameter>
+      <dcterms:identifier>2</dcterms:identifier>
+    </oslc_auto:AutomationRequest>
+  </rdf:RDF>

@@ -24,6 +24,8 @@
   - can be used multiple times to set multiple variables
   - expected value is "variable_name\nvariable_value"
 - base64 value check before execution to return an error immediately 
+- tutorials folder
+  - includes a version of the Wiki, conf_example, and Postman tutorial collection
 
 ### v2.2.0
 - implemented resource delete

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:oslc_data="http://open-services.net/ns/servicemanagement/1.0/"
+    xmlns:oslc="http://open-services.net/ns/core#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/#"
+    xmlns:fit="http://fit.vutbr.cz/group/verifit/oslc/ns/universal-analysis#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:oslc_auto="http://open-services.net/ns/auto#">
+    <fit:SUT rdf:about="http://localhost:8081/compilation/services/resources/sUTs/1">
+      <fit:buildCommand rdf:parseType="Literal">gcc -g TestEchoProgram.cpp -o my_echo</fit:buildCommand>
+      <dcterms:identifier>1</dcterms:identifier>
+      <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2021-04-26T14:03:17.856Z</dcterms:created>
+      <oslc_auto:producedByAutomationRequest rdf:resource="http://localhost:8081/compilation/services/resources/automationRequests/1"/>
+      <fit:compiled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</fit:compiled>
+      <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2021-04-26T14:03:17.856Z</dcterms:modified>
+      <fit:launchCommand rdf:parseType="Literal">./my_echo</fit:launchCommand>
+      <fit:SUTdirectoryPath rdf:parseType="Literal">C:\power42\matrix\universal-analysis-adapter\compilation\SUT\1</fit:SUTdirectoryPath>
+      <dcterms:title rdf:parseType="Literal">SUT - First prototype request</dcterms:title>
+    </fit:SUT>
+  </rdf:RDF>

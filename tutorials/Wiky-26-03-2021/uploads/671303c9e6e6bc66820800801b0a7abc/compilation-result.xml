@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:oslc_data="http://open-services.net/ns/servicemanagement/1.0/"
+    xmlns:oslc="http://open-services.net/ns/core#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/#"
+    xmlns:fit="http://fit.vutbr.cz/group/verifit/oslc/ns/universal-analysis#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:oslc_auto="http://open-services.net/ns/auto#">
+    <oslc_auto:AutomationResult rdf:about="http://localhost:8081/compilation/services/resources/automationResults/1">
+      <oslc_auto:inputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>./my_echo</rdf:value>
+          <oslc:name>launchCommand</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:inputParameter>
+      <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2021-04-26T14:03:13.156Z</dcterms:created>
+      <oslc_auto:contribution>
+        <oslc_auto:Contribution>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <dcterms:title rdf:parseType="Literal">statusMessage</dcterms:title>
+          <dcterms:description rdf:parseType="Literal">Status messages from the adapter about the execution.</dcterms:description>
+          <rdf:value>SUT fetch successful
+Executing: gcc -g TestEchoProgram.cpp -o my_echo
+   as: powershell.exe ./.adapter/exec_compilation_1.ps1 ""
+   In dir: SUT\1
+Compilation completed successfully
+SUT resource created
+</rdf:value>
+        </oslc_auto:Contribution>
+      </oslc_auto:contribution>
+      <oslc_auto:inputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>
+          <oslc:name>buildCommand</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:inputParameter>
+      <oslc_auto:outputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>true</rdf:value>
+          <oslc:name>compile</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:outputParameter>
+      <fit:createdSUT rdf:resource="http://localhost:8081/compilation/services/resources/sUTs/1"/>
+      <oslc_auto:desiredState rdf:resource="http://open-services.net/ns/auto#complete"/>
+      <oslc_auto:producedByAutomationRequest rdf:resource="http://localhost:8081/compilation/services/resources/automationRequests/1"/>
+      <oslc_auto:state rdf:resource="http://open-services.net/ns/auto#complete"/>
+      <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2021-04-26T14:03:17.968Z</dcterms:modified>
+      <oslc_auto:contribution>
+        <oslc_auto:Contribution>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <dcterms:title rdf:parseType="Literal">executionTime</dcterms:title>
+          <dcterms:description rdf:parseType="Literal">Total execution time of the analysis in milliseconds.</dcterms:description>
+          <rdf:value>4450</rdf:value>
+        </oslc_auto:Contribution>
+      </oslc_auto:contribution>
+      <oslc_auto:contribution>
+        <oslc_auto:Contribution>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <dcterms:title rdf:parseType="Literal">Fetching Output</dcterms:title>
+          <dcterms:description rdf:parseType="Literal">Output of the program fetching process.</dcterms:description>
+          <rdf:value>TODO currently only shows error messages</rdf:value>
+        </oslc_auto:Contribution>
+      </oslc_auto:contribution>
+      <dcterms:identifier>1</dcterms:identifier>
+      <oslc_auto:verdict rdf:resource="http://open-services.net/ns/auto#passed"/>
+      <oslc_auto:contribution>
+        <oslc_auto:Contribution>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+          <dcterms:title rdf:parseType="Literal">returnCode</dcterms:title>
+          <dcterms:description rdf:parseType="Literal">Return code of the execution. If non-zero, then the verdict will be #failed.</dcterms:description>
+          <rdf:value>0</rdf:value>
+        </oslc_auto:Contribution>
+      </oslc_auto:contribution>
+      <oslc_auto:outputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>false</rdf:value>
+          <oslc:name>unpackZip</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:outputParameter>
+      <oslc_auto:contribution>
+        <oslc_auto:Contribution>
+          <fit:filePath>C:\power42\matrix\universal-analysis-adapter\compilation\SUT\1\.adapter\stderr_compilation_1</fit:filePath>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <dcterms:title rdf:parseType="Literal">stderr</dcterms:title>
+          <dcterms:description rdf:parseType="Literal">Error output of the compilation.</dcterms:description>
+          <rdf:value>
+          </rdf:value>
+        </oslc_auto:Contribution>
+      </oslc_auto:contribution>
+      <oslc_auto:contribution>
+        <oslc_auto:Contribution>
+          <fit:filePath>C:\power42\matrix\universal-analysis-adapter\compilation\SUT\1\.adapter\stdout_compilation_1</fit:filePath>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <dcterms:title rdf:parseType="Literal">stdout</dcterms:title>
+          <dcterms:description rdf:parseType="Literal">Standard output of the compilation.</dcterms:description>
+          <rdf:value>
+          </rdf:value>
+        </oslc_auto:Contribution>
+      </oslc_auto:contribution>
+      <oslc_auto:contribution>
+        <oslc_auto:Contribution>
+          <oslc:valueType rdf:resource="http://localhost:8081/compilation/services/resourceShapes/sUT"/>
+          <dcterms:title rdf:parseType="Literal">SUT</dcterms:title>
+          <dcterms:description rdf:parseType="Literal">Created SUT resource. Also linked to by the createdSUT property.</dcterms:description>
+          <rdf:value>http://localhost:8081/compilation/services/resources/sUTs/1</rdf:value>
+        </oslc_auto:Contribution>
+      </oslc_auto:contribution>
+      <dcterms:title rdf:parseType="Literal">Result - First prototype request</dcterms:title>
+      <oslc_auto:inputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>TestEchoProgram.cpp
+I2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>
+          <oslc:name>sourceBase64</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:inputParameter>
+      <oslc_auto:reportsOnAutomationPlan rdf:resource="http://localhost:8081/compilation/services/resources/automationPlans/0"/>
+    </oslc_auto:AutomationResult>
+  </rdf:RDF>
