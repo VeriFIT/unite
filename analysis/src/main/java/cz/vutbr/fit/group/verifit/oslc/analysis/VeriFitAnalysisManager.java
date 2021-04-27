@@ -1033,12 +1033,13 @@ public class VeriFitAnalysisManager {
 			//newResource.replaceDesiredState(aResource.getDesiredState());	// TODO use this to implement deferred execution later
 			
 			// get the executed autoPlan and load its configuration
-			String execAutoPlanId = Utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue());
 			AutomationPlan execAutoPlan = null;
+			String execAutoPlanId = null;
 			try {
+				execAutoPlanId = Utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue());
 				execAutoPlan = getAutomationPlan(null, execAutoPlanId);
 			} catch (Exception e) {
-				throw new OslcResourceException("AutomationPlan not found (id: " + execAutoPlanId + ")");			
+				throw new OslcResourceException("AutomationPlan not found (" + newResource.getExecutesAutomationPlan().getValue() + ")");			
 			}
 			AutomationPlanConf execAutoPlanConf = AutomationPlanConfManager.getInstance().getAutoPlanConf(execAutoPlanId);
 
