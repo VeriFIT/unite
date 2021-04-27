@@ -6,7 +6,7 @@
 	},
 	"item": [
 		{
-			"name": "0) make sure to configure the collection variables!",
+			"name": "0) make sure to configure the collection variables! (if you changed the adapter configuration)",
 			"item": [
 				{
 					"name": "right click the collection - edit - variables",
@@ -1042,6 +1042,65 @@
 								"services",
 								"resources",
 								"queryAutomationResult"
+							],
+							"query": [
+								{
+									"key": "oslc.searchTerms",
+									"value": "TextToFind",
+									"description": "Full text search in all properties",
+									"disabled": true
+								},
+								{
+									"key": "oslc.where",
+									"value": "dcterms:identifier=\"0\"",
+									"description": "Equality of a certain property (supports INT, String, and URL). Needs to be used with oslc.prefix.",
+									"disabled": true
+								},
+								{
+									"key": "oslc.prefix",
+									"value": "dcterms=<http://purl.org/dc/terms/>",
+									"description": "Define prefixes used in oslc.where",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "20",
+									"description": "Number of resources per response",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "0",
+									"description": "Number of resources to skip (cycle through pages)",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "or compilaiton requests - see parameters",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/rdf+xml"
+							}
+						],
+						"url": {
+							"raw": "{{server_address}}:{{compilation_port}}/compilation/services/resources/queryAutomationRequest",
+							"host": [
+								"{{server_address}}"
+							],
+							"port": "{{compilation_port}}",
+							"path": [
+								"compilation",
+								"services",
+								"resources",
+								"queryAutomationRequest"
 							],
 							"query": [
 								{

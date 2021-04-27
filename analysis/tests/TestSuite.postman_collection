@@ -4078,7 +4078,7 @@
 													"    if (os == \"linux\"){",
 													"        pm.expect(pm.response.text()).to.include(\"dummy_tool.sh  --args=asdfasdf ./my_echo\");",
 													"    } else {",
-													"        pm.expect(pm.response.text()).to.include(\"dummy_tool.ps1  --args=asdfasdf my_echo\");",
+													"        pm.expect(pm.response.text()).to.include(\"dummy_tool.ps1  --args=asdfasdf ./my_echo\");",
 													"    }",
 													"});",
 													"pm.test(\"returnCode should be 0\", function () {",
@@ -4752,7 +4752,7 @@
 											"    if (os == \"linux\"){",
 											"        pm.expect(pm.response.text()).to.include(\"Executing analysis:   --args= ./my_echo gcc -g TestEchoProgram.cpp -o my_echo\");",
 											"    } else {",
-											"        pm.expect(pm.response.text()).to.include(\"Executing analysis:   --args= my_echo gcc -g TestEchoProgram.cpp -o my_echo\");",
+											"        pm.expect(pm.response.text()).to.include(\"Executing analysis:   --args= ./my_echo gcc -g TestEchoProgram.cpp -o my_echo\");",
 											"    }",
 											"});",
 											""
@@ -5216,9 +5216,16 @@
 													"    pm.expect(pm.response.text()).to.include(\"Creating conf file \\\"conf/test_conf_file3.conf\\\"\");",
 													"});",
 													"pm.test(\"conf files should be visible as contributions\", function () {",
-													"    pm.expect(pm.response.text()).to.include(\"conf/test_conf_file1.conf</fit:filePath>\");",
-													"    pm.expect(pm.response.text()).to.include(\"conf/test_conf_file2.conf</fit:filePath>\");",
-													"    pm.expect(pm.response.text()).to.include(\"conf/test_conf_file3.conf</fit:filePath>\");",
+													"    var os = pm.globals.get(\"currentOS\");",
+													"    if (os == \"linux\"){",
+													"        pm.expect(pm.response.text()).to.include(\"conf/test_conf_file1.conf</fit:filePath>\");",
+													"        pm.expect(pm.response.text()).to.include(\"conf/test_conf_file2.conf</fit:filePath>\");",
+													"        pm.expect(pm.response.text()).to.include(\"conf/test_conf_file3.conf</fit:filePath>\");",
+													"    } else {",
+													"        pm.expect(pm.response.text()).to.include(\"conf\\\\test_conf_file1.conf</fit:filePath>\");",
+													"        pm.expect(pm.response.text()).to.include(\"conf\\\\test_conf_file2.conf</fit:filePath>\");",
+													"        pm.expect(pm.response.text()).to.include(\"conf\\\\test_conf_file3.conf</fit:filePath>\");",
+													"    }",
 													"});",
 													"",
 													"pm.test(\"returnCode should be 0\", function () {",
@@ -8023,7 +8030,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>test</dcterms:title>\n\t<dcterms:description>test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/dummy\" />\n    \n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>toolCommand</oslc:name>\n\t\t\t<rdf:value>false</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n    \n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value></rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>test</dcterms:title>\n\t<dcterms:description>test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/dummy\" />\n    \n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value></rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
 									"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
