@@ -7,9 +7,12 @@ This is a development repository of the Universal OSLC Analysis Adapter which ai
 - analysis - OSLC analysis adapter as a maven webapp project.
 - compilation - OSLC compilation adapter as a maven webapp project.
 - conf - Place your configuration files in this directory.
-- conf_example - Example configuration.
+- tutorials
+    - conf_example - Example configuration.
+    - Wiky-*date* - A downloaded version of the [Wiky](https://pajda.fit.vutbr.cz/verifit/oslc-generic-analysis/-/wikis/home)
+    - Tutorial.postman_collection.json - A Postman collection with basic steps to take when using the adapter 
 - dev_tools - scripts used during the development, etc.
-- lib - External dependencies that were NOT created as a part of this project ([Jetty](https://www.eclipse.org/jetty/) and [jSEM](https://pajda.fit.vutbr.cz/ifiedor/jsem)
+- lib - External dependencies that were NOT created as a part of this project ([Jetty](https://www.eclipse.org/jetty/)
 - license - Licence files for the adapter and Eclipse Lyo generated code.
 - logs - Directory for logs produced by running the adapter.
 - model - Lyo Designer modeling project used to generate base code, and models cloned from Lyo Domain.

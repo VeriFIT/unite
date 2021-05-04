@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:oslc_data="http://open-services.net/ns/servicemanagement/1.0/"
+    xmlns:oslc="http://open-services.net/ns/core#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/#"
+    xmlns:fit="http://fit.vutbr.cz/group/verifit/oslc/ns/universal-analysis#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:oslc_auto="http://open-services.net/ns/auto#">
+    <oslc_auto:AutomationPlan rdf:about="http://localhost:8080/analysis/services/resources/automationPlans/dummy">
+      <dcterms:title rdf:parseType="Literal">Dummy Tool</dcterms:title>
+      <dcterms:identifier>dummy</dcterms:identifier>
+      <oslc_auto:parameterDefinition>
+        <oslc_auto:ParameterDefinition>
+          <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+          <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >3</fit:commandlinePosition>
+          <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position</dcterms:description>
+          <oslc:defaultValue>True</oslc:defaultValue>
+          <oslc:name>SUTbuildCommand</oslc:name>
+        </oslc_auto:ParameterDefinition>
+      </oslc_auto:parameterDefinition>
+      <oslc_auto:parameterDefinition>
+        <oslc_auto:ParameterDefinition>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <oslc:occurs rdf:resource="http://open-services.net/ns/core#Exactly-one"/>
+          <fit:valuePrefix>--args=</fit:valuePrefix>
+          <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</fit:commandlinePosition>
+          <dcterms:description rdf:parseType="Literal">Specify which arguments should be passed to the command line.</dcterms:description>
+          <oslc:name>arguments</oslc:name>
+        </oslc_auto:ParameterDefinition>
+      </oslc_auto:parameterDefinition>
+      <oslc_auto:parameterDefinition>
+        <oslc_auto:ParameterDefinition>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+          <dcterms:description rdf:parseType="Literal">A command to run just before analysis is executed.</dcterms:description>
+          <oslc:name>beforeCommand</oslc:name>
+        </oslc_auto:ParameterDefinition>
+      </oslc_auto:parameterDefinition>
+      <oslc_auto:parameterDefinition>
+        <oslc_auto:ParameterDefinition>
+          <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+          <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >2</fit:commandlinePosition>
+          <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position</dcterms:description>
+          <oslc:defaultValue>True</oslc:defaultValue>
+          <oslc:name>launchSUT</oslc:name>
+        </oslc_auto:ParameterDefinition>
+      </oslc_auto:parameterDefinition>
+      <oslc_auto:parameterDefinition>
+        <oslc_auto:ParameterDefinition>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+          <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+          <dcterms:description rdf:parseType="Literal">If set to true, then all file contributions will be ZIPed and provided as a single zip contribution</dcterms:description>
+          <oslc:defaultValue>false</oslc:defaultValue>
+          <oslc:name>zipOutputs</oslc:name>
+        </oslc_auto:ParameterDefinition>
+      </oslc_auto:parameterDefinition>
+      <oslc_auto:parameterDefinition>
+        <oslc_auto:ParameterDefinition>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+          <dcterms:description rdf:parseType="Literal">Files that change during execution and match this regex will be added as contributions to the Automation Result. The regex needs to match the whole filename.</dcterms:description>
+          <oslc:defaultValue>.^</oslc:defaultValue>
+          <oslc:name>outputFileRegex</oslc:name>
+        </oslc_auto:ParameterDefinition>
+      </oslc_auto:parameterDefinition>
+      <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2021-04-26T15:44:34.919Z</dcterms:modified>
+      <oslc_auto:parameterDefinition>
+        <oslc_auto:ParameterDefinition>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+          <oslc:allowedValue>default</oslc:allowedValue>
+          <oslc:allowedValue>dummy</oslc:allowedValue>
+          <oslc:allowedValue>removeAllFileValues</oslc:allowedValue>
+          <dcterms:description rdf:parseType="Literal">Use this parameter to select which output filter should be used to processContributions of this Automation Request. AllowedValues are loaded based on defined PluginFilters.</dcterms:description>
+          <oslc:defaultValue>default</oslc:defaultValue>
+          <oslc:name>outputFilter</oslc:name>
+        </oslc_auto:ParameterDefinition>
+      </oslc_auto:parameterDefinition>
+      <oslc_auto:parameterDefinition>
+        <oslc_auto:ParameterDefinition>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+          <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+          <dcterms:description rdf:parseType="Literal">Used to omit the analysis tool launch command while executing analysis. True means the tool will be used and False means the tool command will not be used. (eg. "./tool ./sut args" vs "/sut args").</dcterms:description>
+          <oslc:defaultValue>true</oslc:defaultValue>
+          <oslc:name>toolCommand</oslc:name>
+        </oslc_auto:ParameterDefinition>
+      </oslc_auto:parameterDefinition>
+      <dcterms:description rdf:parseType="Literal">Used to test the funcionality of this adapter and as an example.</dcterms:description>
+      <oslc_auto:parameterDefinition>
+        <oslc_auto:ParameterDefinition>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-many"/>
+          <dcterms:description rdf:parseType="Literal">Creates a configuration file inside of the SUT directory before running analysis. Can be used multiple times create multiple conf files.Format for this parameter: "conf_file_name\nconf_file_txt_contents"</dcterms:description>
+          <oslc:name>confFile</oslc:name>
+        </oslc_auto:ParameterDefinition>
+      </oslc_auto:parameterDefinition>
+      <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2021-04-26T15:44:34.919Z</dcterms:created>
+      <oslc_auto:parameterDefinition>
+        <oslc_auto:ParameterDefinition>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <oslc:occurs rdf:resource="http://open-services.net/ns/core#Exactly-one"/>
+          <dcterms:description rdf:parseType="Literal">Refference to an SUT resource to analyse. SUTs are created using the compilation provider.</dcterms:description>
+          <oslc:name>SUT</oslc:name>
+        </oslc_auto:ParameterDefinition>
+      </oslc_auto:parameterDefinition>
+      <oslc_auto:parameterDefinition>
+        <oslc_auto:ParameterDefinition>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+          <dcterms:description rdf:parseType="Literal">A command to run just after analysis is executed.</dcterms:description>
+          <oslc:name>afterCommand</oslc:name>
+        </oslc_auto:ParameterDefinition>
+      </oslc_auto:parameterDefinition>
+      <oslc_auto:usesExecutionEnvironment rdf:resource="https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis/-/blob/master/analysis/tests/dummy_tool.sh"/>
+      <dcterms:creator rdf:resource="https://pajda.fit.vutbr.cz/xvasic"/>
+      <oslc_auto:parameterDefinition>
+        <oslc_auto:ParameterDefinition>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+          <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+          <dcterms:description rdf:parseType="Literal">Timeout for the analysis. Zero means no timeout.</dcterms:description>
+          <oslc:defaultValue>0</oslc:defaultValue>
+          <oslc:name>timeout</oslc:name>
+        </oslc_auto:ParameterDefinition>
+      </oslc_auto:parameterDefinition>
+      <oslc_auto:parameterDefinition>
+        <oslc_auto:ParameterDefinition>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-many"/>
+          <dcterms:description rdf:parseType="Literal">Environment variable to be set for execution. Can be used multiple times for multiple variables.Expected value format: "variable_name\nvariable_value"</dcterms:description>
+          <oslc:name>envVariable</oslc:name>
+        </oslc_auto:ParameterDefinition>
+      </oslc_auto:parameterDefinition>
+      <oslc_auto:parameterDefinition>
+        <oslc_auto:ParameterDefinition>
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+          <dcterms:description rdf:parseType="Literal">Creates a configuration directory inside of the SUT directory before running analysisfrom a base64 encoded string.Format for this parameter: "path_to_unzip_to\nbase64_encoded_zip_file"</dcterms:description>
+          <oslc:name>confDir</oslc:name>
+        </oslc_auto:ParameterDefinition>
+      </oslc_auto:parameterDefinition>
+    </oslc_auto:AutomationPlan>
+  </rdf:RDF>

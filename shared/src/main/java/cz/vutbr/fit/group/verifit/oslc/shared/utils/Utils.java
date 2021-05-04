@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
+import java.util.regex.Pattern;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -101,6 +102,28 @@ public class Utils {
 	{
 		Decoder decoder = Base64.getDecoder();
 		return decoder.decode(base64Str);
+	}
+	
+	public static boolean base64IsEncoded(String base64)
+	{
+    	if (Pattern.matches("^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$", base64))  
+	    	return true;
+    	else
+    		return false;
+	}
+	
+	/**
+	 * @param twoLines	String containing a \n and a base64 encoded string after the \n
+	 * @return	True if the input string is well formed (has \n and valid base64 chars after)
+	 */
+	public static boolean base64IsValueOnSecondLineValid(String twoLines)
+	{
+		int idxSplit = twoLines.indexOf('\n');
+		if (idxSplit == -1)
+			return false;
+		
+		String base64 = twoLines.substring(twoLines.indexOf('\n') + 1);
+		return base64IsEncoded(base64);
 	}
 
 	/**
@@ -273,26 +296,35 @@ public class Utils {
 			for (ParameterInstance submittedParam : inputParameters)
 			{				
 				if (definedParam.getName().equals(submittedParam.getName()))
-				{
-					// check that the parameter has a value
-					if (submittedParam.getValue() == null)
-					{
-						throw new OslcResourceException("parameter " + submittedParam.getName() + " is missing a value");
-					}
-						
-					// check if the value is allowed
+				{		
+					// check if the value is allowed, and check for empty value
 					Boolean validValue = true;
-					if (definedParam.getAllowedValue().size() > 0)
+					Boolean emptyValueAllowed = false;
+					if (definedParam.getAllowedValue() != null && definedParam.getAllowedValue().size() > 0)
 					{
 						validValue = false;
 						for (String allowedValue : definedParam.getAllowedValue())
 						{
-							if (allowedValue.equals(submittedParam.getValue()))
+							if (allowedValue.isEmpty())
+							{
+								emptyValueAllowed = true;
+							}		
+							
+							if (allowedValue.isEmpty() && submittedParam.getValue() == null)
+							{
+								validValue = true;
+								break;
+							}
+							else if (allowedValue.equals(submittedParam.getValue()))
 							{
 								validValue = true;
 								break;
 							}
 						}
+					}
+					if (submittedParam.getValue() == null && !emptyValueAllowed)
+					{
+						throw new OslcResourceException("parameter " + submittedParam.getName() + " is missing a value");
 					}
 					if (!validValue)
 					{

@@ -83,7 +83,7 @@ sed -i 's|public static AutomationRequest updateAutomationRequest(HttpServletReq
 ../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/VeriFitCompilationManager.java
 sed -i 's|public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, final AutomationResult aResource, final String id) {|public static AutomationResult updateAutomationResult(HttpServletRequest httpServletRequest, AutomationResult aResource, final String id) {|' \
 ../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/VeriFitCompilationManager.java
-sed -i 's|public static SUT updateSUT(HttpServletRequest httpServletRequest, final SUT aResource, final String id) {public static SUT updateSUT(HttpServletRequest httpServletRequest, SUT aResource, final String id) {|' \
+sed -i 's|public static SUT updateSUT(HttpServletRequest httpServletRequest, final SUT aResource, final String id) {|public static SUT updateSUT(HttpServletRequest httpServletRequest, SUT aResource, final String id) {|' \
 ../compilation/src/main/java/cz/vutbr/fit/group/verifit/oslc/compilation/VeriFitCompilationManager.java
 
 

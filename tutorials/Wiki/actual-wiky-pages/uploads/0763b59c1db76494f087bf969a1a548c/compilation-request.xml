@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:dcterms="http://purl.org/dc/terms/"
+         xmlns:oslc="http://open-services.net/ns/core#"
+		 xmlns:oslc_auto="http://open-services.net/ns/auto#">
+
+  <oslc_auto:AutomationRequest>
+	<dcterms:title>Example SUT creation request</dcterms:title>
+	<dcterms:description>example request</dcterms:description>
+	<oslc_auto:executesAutomationPlan rdf:resource="http://localhost:8081/compilation/services/resources/automationPlans/0" />
+
+	<oslc_auto:inputParameter>
+		<oslc_auto:ParameterInstance>
+			<oslc:name>sourceBase64</oslc:name>
+			<rdf:value>TestEchoProgram.cpp
+I2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>
+		</oslc_auto:ParameterInstance>
+	</oslc_auto:inputParameter>
+
+	<oslc_auto:inputParameter>
+		<oslc_auto:ParameterInstance>
+			<oslc:name>buildCommand</oslc:name>
+			<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>
+		</oslc_auto:ParameterInstance>
+	</oslc_auto:inputParameter>
+
+	<oslc_auto:inputParameter>
+		<oslc_auto:ParameterInstance>
+			<oslc:name>launchCommand</oslc:name>
+			<rdf:value>./my_echo</rdf:value>
+		</oslc_auto:ParameterInstance>
+	</oslc_auto:inputParameter>
+
+  </oslc_auto:AutomationRequest>
+
+</rdf:RDF>

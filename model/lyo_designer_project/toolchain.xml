@@ -141,6 +141,7 @@
       <resourceProperties id="_tffyw2pHEeuDWZwlSoXo7A" name="commandlinePosition" occurs="zeroOrOne" valueType="Integer"/>
       <resourceProperties id="_tffyxGpHEeuDWZwlSoXo7A" name="filePath" occurs="zeroOrOne" valueType="String"/>
       <resourceProperties id="_ZGAioHrFEeuDQtNZS3H7hw" name="compiled"/>
+      <resourceProperties id="_YRwbkJrMEeuHXMzFKcNaBQ" name="valuePrefix" occurs="zeroOrOne" valueType="String"/>
       <configuration xsi:type="oslc4j_ai:MavenSpecificationConfiguration">
         <generalConfiguration filesBasePath="." javaBasePackageName="cz.vutbr.fit.group.verifit.oslc.domain"/>
         <projectConfiguration xsi:type="oslc4j_ai:MavenProjectConfiguration" doNotGenerateProjectConfigurationFiles="true" lyoVersion="4.0.0" groupId="cz.vutbr.fit.group.verifit.oslc.domain" artifactId="UniversalAnalysis" version="0.0.1-SNAPSHOT"/>
