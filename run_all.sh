@@ -34,9 +34,9 @@ ROOTDIR=$(dirname $(realpath $0))   # get the script directory
 source $ROOTDIR/dev_tools/shared.sh
 
 killTailTerminals(){
-    kill $(ps -ef | grep "tail -f .*/logs/../logs/../logs/analysis_" | head -1 | awk '{ print $2 }') &> /dev/null   # funny path /logs/../logs/../logs/ to avoid killing unwanted tail commands 
-    kill $(ps -ef | grep "tail -f .*/logs/../logs/../logs/compilation_" | head -1 | awk '{ print $2 }') &> /dev/null
-    kill $(ps -ef | grep "tail -f .*/logs/../logs/../logs/triplestore_" | head -1 | awk '{ print $2 }') &> /dev/null
+    kill $(ps -ef | grep "tail -f .*/logs/../logs/../logs/analysis_" | head -1 | awk '{ print $2 }') 1> /dev/null   # funny path /logs/../logs/../logs/ to avoid killing unwanted tail commands 
+    kill $(ps -ef | grep "tail -f .*/logs/../logs/../logs/compilation_" | head -1 | awk '{ print $2 }') 1> /dev/null
+    kill $(ps -ef | grep "tail -f .*/logs/../logs/../logs/triplestore_" | head -1 | awk '{ print $2 }') 1> /dev/null
 }
 
 # catch ctrl+c and kill all subprocesses

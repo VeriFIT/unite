@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:dcterms="http://purl.org/dc/terms/"
+         xmlns:oslc="http://open-services.net/ns/core#"
+		 xmlns:oslc_auto="http://open-services.net/ns/auto#">
+
+  <oslc_auto:AutomationRequest>
+	<dcterms:title>Tutorial title</dcterms:title>
+	<dcterms:description>Tutorial description</dcterms:description>
+	<oslc_auto:executesAutomationPlan rdf:resource="http://localhost:8080/analysis/services/resources/automationPlans/dummy" />
+	<dcterms:creator rdf:resource="Title-creator"/>
+	
+	<oslc_auto:inputParameter>
+		<oslc_auto:ParameterInstance>
+			<oslc:name>arguments</oslc:name>
+			<rdf:value>HelloWorld</rdf:value>
+		</oslc_auto:ParameterInstance>
+	</oslc_auto:inputParameter>
+	
+	<oslc_auto:inputParameter>
+		<oslc_auto:ParameterInstance>
+			<oslc:name>SUT</oslc:name>
+			<rdf:value>http://localhost:8081/compilation/services/resources/sUTs/1</rdf:value>
+		</oslc_auto:ParameterInstance>
+	</oslc_auto:inputParameter>
+  </oslc_auto:AutomationRequest>
+
+</rdf:RDF>

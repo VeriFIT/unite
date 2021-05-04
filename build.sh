@@ -47,8 +47,6 @@ main () {
     echo "############################################################"
     echo
 
-    mvn install:install-file -Dfile=$ROOTDIR/lib/cz.vutbr.fit.group.verifit.jsem_0.2.0.202103021435.jar -DgroupId=cz.vutbr.fit.group.verifit.jsem -DartifactId=jsem -Dversion=0.2.0.qualifier -Dpackaging=jar || exit "$?"
-    
     mvn -f $ROOTDIR/shared/pom.xml clean install || exit "$?"
 
     echo

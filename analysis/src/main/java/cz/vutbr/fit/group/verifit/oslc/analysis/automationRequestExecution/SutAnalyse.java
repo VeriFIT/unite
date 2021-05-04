@@ -12,16 +12,20 @@ package cz.vutbr.fit.group.verifit.oslc.analysis.automationRequestExecution;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Base64.Decoder;
 
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
@@ -120,9 +124,11 @@ public class SutAnalyse extends RequestRunner
 			String timeout = null;
 			String toolCommand = null;
 			String outputFilter = null;
-			String confFile = null;
+			List<String> confFiles = new ArrayList<String>();		// there can be multiple conf files
 			String beforeCommand = null;
 			String afterCommand = null;
+			String confDir = null;
+			List<String> paramEnvVariables = new ArrayList<String>();	// there can be multiple env variables
 			
 			// extract values from parameters
 			for (ExecutionParameter param : this.execParameters)
@@ -132,9 +138,11 @@ public class SutAnalyse extends RequestRunner
 				else if (param.getName().equals("timeout")) timeout = param.getValue();
 				else if (param.getName().equals("toolCommand")) toolCommand = param.getValue();
 				else if (param.getName().equals("outputFilter")) outputFilter = param.getValue();
-				else if (param.getName().equals("confFile")) confFile = param.getValue();
+				else if (param.getName().equals("confFile")) confFiles.add(param.getValue());
 				else if (param.getName().equals("beforeCommand")) beforeCommand = param.getValue();
 				else if (param.getName().equals("afterCommand")) afterCommand = param.getValue();
+				else if (param.getName().equals("confDir")) confDir = param.getValue();
+				else if (param.getName().equals("envVariable")) paramEnvVariables.add(param.getValue());
 			}
 	
 			// build the string to execute later from command line input parameters (those that have a commandline position)
@@ -149,10 +157,14 @@ public class SutAnalyse extends RequestRunner
 				execAutoRequest.replaceState(OslcValues.AUTOMATION_STATE_INPROGRESS);
 				VeriFitAnalysisManager.internalUpdateAutomationRequest(execAutoRequest, execAutoRequestId);
 			}
+			
+			// transform parameEnvVariables to a set of name:value
+			Map<String,String> envVariables = prepareEvnVariableMapFromPrams(paramEnvVariables);
+			
 	
 		    // prepare Contribution resources
 			Contribution executionTime = VeriFitAnalysisResourcesFactory.createContribution("executionTime");
-			executionTime.setDescription("Total execution time of the analysis in milliseconds."); // TODO CHECK really milliseconds?
+			executionTime.setDescription("Total execution time of the analysis in milliseconds.");
 			executionTime.setTitle("executionTime");
 			executionTime.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
 		    
@@ -210,14 +222,30 @@ public class SutAnalyse extends RequestRunner
 		    // get the SUT path
 			final Path SUTdirAsPath = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
 		    
-			// create a conf file in the SUT directory if confFile parameter was specified
-			if (confFile != null)
+			// create a conf directory in the SUT directory if confDir parameter was specified
+			if (confDir != null)
 			{
 				try {
-					createConfFile(SUTdirAsPath, confFile);
-					statusMessage.appendValue("Creating conf file \"" + confFile.substring(0, confFile.indexOf('\n')) + "\"");
+					createConfDir(SUTdirAsPath, confDir);
+					statusMessage.appendValue("Creating conf directory \"" + confDir.substring(0, confDir.indexOf('\n')) + "\"\n");
 				} catch (Exception e) {
-					
+					statusMessage.appendValue("Failed to create conf directory \"" + confDir.substring(0, confDir.indexOf('\n')) + "\"\n");
+					// TODO fail the whole execution or set a warning?
+				}
+			}
+			
+			// create a conf file in the SUT directory if confFile parameter was specified
+			if (!confFiles.isEmpty())
+			{
+				for (String cFile : confFiles)
+				{
+					try {
+						createConfFile(SUTdirAsPath, cFile);
+						statusMessage.appendValue("Creating conf file \"" + cFile.substring(0, cFile.indexOf('\n')) + "\"\n");
+					} catch (Exception e) {
+						statusMessage.appendValue("Failed to create conf file \"" + cFile.substring(0, cFile.indexOf('\n')) + "\"\n");
+						// TODO fail the whole execution or set a warning?
+					}
 				}
 			}
 			
@@ -230,7 +258,7 @@ public class SutAnalyse extends RequestRunner
 		    ExecutionResult beforeCmdRes = null;
 		    if (beforeCommand != null)
 		    {
-		    	beforeCmdRes = executeString(SUTdirAsPath, beforeCommand, 0, "_analysis_" + this.execAutoRequestId + "_beforeCmd", this.filesToDeleteIfInterrupted);
+		    	beforeCmdRes = executeString(SUTdirAsPath, beforeCommand, 0, "_analysis_" + this.execAutoRequestId + "_beforeCmd", this.filesToDeleteIfInterrupted, envVariables);
 				statusMessage.appendValue("Executing beforeCommand: " + beforeCommand + "\n   as: " + beforeCmdRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
 		    
 				if (beforeCmdRes.exceptionThrown != null)
@@ -256,7 +284,7 @@ public class SutAnalyse extends RequestRunner
 		    ExecutionResult analysisRes = null;
 		    if (executionVerdict.equals(OslcValues.AUTOMATION_VERDICT_PASSED)) 
 		    {
-			    analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), "_analysis_" + this.execAutoRequestId, this.filesToDeleteIfInterrupted);
+			    analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), "_analysis_" + this.execAutoRequestId, this.filesToDeleteIfInterrupted, envVariables);
 				statusMessage.appendValue("Executing analysis: " + stringToExecute + "\n   as: " + analysisRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
 				if (analysisRes.exceptionThrown != null)
 				{
@@ -303,7 +331,7 @@ public class SutAnalyse extends RequestRunner
 		    {
 			    if (executionVerdict.equals(OslcValues.AUTOMATION_VERDICT_PASSED))
 			    {
-			    	afterCmdRes = executeString(SUTdirAsPath, afterCommand, 0, "_analysis_" + this.execAutoRequestId + "_afterCmd", this.filesToDeleteIfInterrupted);
+			    	afterCmdRes = executeString(SUTdirAsPath, afterCommand, 0, "_analysis_" + this.execAutoRequestId + "_afterCmd", this.filesToDeleteIfInterrupted, envVariables);
 					statusMessage.appendValue("Executing afterCommand: " + afterCommand + "\n   as: " + afterCmdRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
 	
 					if (afterCmdRes.exceptionThrown != null)
@@ -377,16 +405,22 @@ public class SutAnalyse extends RequestRunner
 						System.out.println("ERROR: failed to ZIP outputs: " + e.getMessage()); // TODO
 					}
 				}
+
+				resAutoResult.addContribution(statusMessage);
 				
 				// run the AutoResult contributions through a filter
-				statusMessage.appendValue("Applying output filters\n");
-				resAutoResult.addContribution(statusMessage);
-				Set<Contribution> parsedContributions = FilterManager.filterContributionsForTool(
-						autoPlanConf.getFilter(outputFilter),
-						resAutoResult.getContribution(),
-						this.resAutoResultId + "-"
-						);
-				resAutoResult.setContribution(parsedContributions);
+				try {
+					Set<Contribution> parsedContributions = FilterManager.filterContributionsForTool(
+							autoPlanConf.getFilter(outputFilter),
+							resAutoResult.getContribution(),
+							this.resAutoResultId + "-"
+							);
+					resAutoResult.setContribution(parsedContributions);
+					statusMessage.appendValue("Applying output filters\n");
+				} catch (Exception e) {
+					statusMessage.appendValue("Failed to apply filters - " + e.getMessage() + "\n");
+				}
+
 			}
 			
 			// update the AutoResult state and verdict, and AutoRequest state
@@ -426,12 +460,12 @@ public class SutAnalyse extends RequestRunner
 	private void createConfFile(Path sUTdirAsPath, String confFileParam) throws IOException {
 		int idxSplit = confFileParam.indexOf('\n');
 		if (idxSplit == -1)
-			throw new IllegalArgumentException("Invalid format of confFile value. No \"\\n\" delimiter found. Expected format: filename\\file_contents");
+			throw new IllegalArgumentException("Invalid format of confFile value. No \"\\n\" delimiter found. Expected format: filename\\nfile_contents");
 		
 		String filename = confFileParam.substring(0, confFileParam.indexOf('\n'));
 		String file_contents = confFileParam.substring(confFileParam.indexOf('\n') + 1);
 		
-		File confFile = sUTdirAsPath.resolve("./" + filename).toAbsolutePath().toFile();
+		File confFile = sUTdirAsPath.resolve(filename).toAbsolutePath().toFile();
 		InputStream sFileContents = new ByteArrayInputStream(file_contents.getBytes());
 	    if (!confFile.exists())
 	    {
@@ -440,6 +474,32 @@ public class SutAnalyse extends RequestRunner
 		FileUtils.copyInputStreamToFile(sFileContents, confFile);
 		
 		this.filesToDeleteIfInterrupted.add(confFile);
+	}
+
+	private void createConfDir(Path sUTdirAsPath, String confDirParam) throws IOException {
+		
+
+		int idxSplit = confDirParam.indexOf('\n');
+		if (idxSplit == -1)
+			throw new IllegalArgumentException("Invalid format of confDir value. No \"\\n\" delimiter found. Expected format: filename\\nbase64");	// should never happen because this gets checked earlier
+		
+		String pathToUnzipTo = confDirParam.substring(0, confDirParam.indexOf('\n'));
+		String base64 = confDirParam.substring(confDirParam.indexOf('\n') + 1);
+		
+		Decoder decoder = Base64.getDecoder();
+		byte[] decodedDir = decoder.decode(base64);
+		File unzipTo = sUTdirAsPath.resolve(pathToUnzipTo).toAbsolutePath().toFile();
+		File zipFile = sUTdirAsPath.resolve(".adapter").resolve("confDir.zip").toAbsolutePath().toFile();
+		InputStream sFileContents = new ByteArrayInputStream(decodedDir);
+	    if (!unzipTo.exists())
+	    {
+	    	FileUtils.forceMkdirParent(unzipTo);
+	    }
+		FileUtils.copyInputStreamToFile(sFileContents, zipFile);
+		
+    	Utils.unzipFile(unzipTo.toPath(), zipFile);
+		
+		this.filesToDeleteIfInterrupted.add(unzipTo);
 	}
 
 	private Contribution zipAllFileContributions(Collection<File> modifFiles, String zipName, Path zipDir) throws IOException {
@@ -481,7 +541,7 @@ public class SutAnalyse extends RequestRunner
 		cmdLineParams.sort((ExecutionParameter a, ExecutionParameter b) -> a.getCmdPosition().compareTo(b.getCmdPosition()));
 		for (ExecutionParameter param : cmdLineParams)
 		{
-			buildStringToExecute += " " + param.getValue();
+			buildStringToExecute += " " + param.getValuePrefix() + param.getValue();
 		}
 		return buildStringToExecute;
 	}
@@ -523,6 +583,24 @@ public class SutAnalyse extends RequestRunner
 		}
 		
 		return contributions;
+	}
+	
+	private Map<String,String> prepareEvnVariableMapFromPrams(Collection<String> paramEnvVariables)
+	{
+		Map<String,String> res = new HashMap<String,String>();
+		for (String envVarTwoLines : paramEnvVariables)
+		{
+			int idxSplit = envVarTwoLines.indexOf('\n');
+			if (idxSplit == -1)
+				throw new IllegalArgumentException("Invalid format of envVariable value. No \"\\n\" delimiter found. Expected format: variable_name\\nvariable_value"); // should never happen, gets checked earlier
+			
+			String varName = envVarTwoLines.substring(0, envVarTwoLines.indexOf('\n'));
+			String varValue = envVarTwoLines.substring(envVarTwoLines.indexOf('\n') + 1);
+			
+			res.put(varName, varValue);
+		}
+		
+		return res;
 	}
 	
 }

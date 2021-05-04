@@ -20,11 +20,105 @@
 
         <oslc_auto:parameterDefinition>
             <oslc_auto:ParameterDefinition>
+                <oslc:name>help</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--help</fit:valuePrefix>
+                <dcterms:description rdf:parseType="Literal">Print the script usage</dcterms:description>
+                <oslc:allowedValue></oslc:allowedValue>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>run-type</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--run-type </fit:valuePrefix>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+                <dcterms:description rdf:parseType="Literal">Execute the program in ANaConDA, PIN or no framework (native run)</dcterms:description>
+                <oslc:allowedValue>anaconda</oslc:allowedValue>
+                <oslc:allowedValue>pin</oslc:allowedValue>
+                <oslc:allowedValue>native</oslc:allowedValue>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>config</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--config </fit:valuePrefix>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+                <dcterms:description rdf:parseType="Literal">A path to a directory containing ANaConDA settings</dcterms:description>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>time</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--time </fit:valuePrefix>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+                <dcterms:description rdf:parseType="Literal">Measure the execution time of the program being analysed</dcterms:description>
+                <oslc:allowedValue></oslc:allowedValue>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+        
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>threads</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--threads </fit:valuePrefix>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+                <dcterms:description rdf:parseType="Literal">A number of threads the analysed program should utilize</dcterms:description>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>verbose</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--verbose </fit:valuePrefix>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+                <dcterms:description rdf:parseType="Literal">Print detailed information about what the script is doing</dcterms:description>
+                <oslc:allowedValue></oslc:allowedValue>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>profile</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--profile </fit:valuePrefix>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+                <dcterms:description rdf:parseType="Literal">Profile the program being analysed using the oprofile profiler</dcterms:description>
+                <oslc:allowedValue></oslc:allowedValue>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
                 <oslc:name>analyser</oslc:name>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Exactly-one"/>
-                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</fit:commandlinePosition>
                 <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
                 <dcterms:description rdf:parseType="Literal">Specify what analyser to use</dcterms:description>
+                <oslc:allowedValue>atomrace</oslc:allowedValue>
+                <oslc:allowedValue>eraser</oslc:allowedValue>
+                <oslc:allowedValue>fasttrack2</oslc:allowedValue>
+                <oslc:allowedValue>contract-validator</oslc:allowedValue>
+                <oslc:allowedValue>data-printer</oslc:allowedValue>
+                <oslc:allowedValue>data-validator</oslc:allowedValue>
+                <oslc:allowedValue>hldr-detector</oslc:allowedValue>
+                <oslc:allowedValue>param-contract-validator</oslc:allowedValue>
+                <oslc:allowedValue>simple-contract-validator</oslc:allowedValue>
+                <oslc:allowedValue>statistics-collector</oslc:allowedValue>
+                <oslc:allowedValue>tx-monitor</oslc:allowedValue>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
         
@@ -32,16 +126,17 @@
             <oslc_auto:ParameterDefinition>
                 <oslc:name>launchSUT</oslc:name>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
-                <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position</dcterms:description>
+                <dcterms:description rdf:parseType="Literal">If set to true, This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position</dcterms:description>
                 <oslc:readOnly rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</oslc:readOnly>
-                <oslc:defaultValue>2</oslc:defaultValue>
+                <oslc:defaultValue>True</oslc:defaultValue>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</fit:commandlinePosition>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
 
         <oslc_auto:parameterDefinition>
             <oslc_auto:ParameterDefinition>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
-                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</fit:commandlinePosition>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</fit:commandlinePosition>
                 <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
                 <dcterms:description rdf:parseType="Literal">Set the execution parameters for the analyzed program. Write down all parameters as you would in a console.</dcterms:description>
                 <oslc:defaultValue></oslc:defaultValue>

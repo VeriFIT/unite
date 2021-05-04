@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:oslc_data="http://open-services.net/ns/servicemanagement/1.0/"
+    xmlns:oslc="http://open-services.net/ns/core#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/#"
+    xmlns:fit="http://fit.vutbr.cz/group/verifit/oslc/ns/universal-analysis#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:oslc_auto="http://open-services.net/ns/auto#">
+    <oslc_auto:AutomationRequest rdf:about="http://localhost:8080/analysis/services/resources/automationRequests/1">
+      <oslc_auto:desiredState rdf:resource="http://open-services.net/ns/auto#complete"/>
+      <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2021-04-26T16:05:01.341Z</dcterms:created>
+      <oslc_auto:executesAutomationPlan rdf:resource="http://localhost:8080/analysis/services/resources/automationPlans/dummy"/>
+      <oslc_auto:inputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>HelloWorld</rdf:value>
+          <oslc:name>arguments</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:inputParameter>
+      <dcterms:description rdf:parseType="Literal">Tutorial description</dcterms:description>
+      <dcterms:identifier>1</dcterms:identifier>
+      <oslc_auto:inputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>http://localhost:8081/compilation/services/resources/sUTs/1</rdf:value>
+          <oslc:name>SUT</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:inputParameter>
+      <dcterms:title rdf:parseType="Literal">Tutorial title</dcterms:title>
+      <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2021-04-26T16:05:01.341Z</dcterms:modified>
+      <dcterms:creator rdf:resource="file:///C:/power42/matrix/universal-analysis-adapter/analysis/Title-creator"/>
+      <oslc_auto:producedAutomationResult rdf:resource="http://localhost:8080/analysis/services/resources/automationResults/1"/>
+      <oslc_auto:state rdf:resource="http://open-services.net/ns/auto#inProgress"/>
+    </oslc_auto:AutomationRequest>
+  </rdf:RDF>

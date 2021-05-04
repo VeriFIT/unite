@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:oslc_data="http://open-services.net/ns/servicemanagement/1.0/"
+    xmlns:oslc="http://open-services.net/ns/core#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/#"
+    xmlns:fit="http://fit.vutbr.cz/group/verifit/oslc/ns/universal-analysis#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:oslc_auto="http://open-services.net/ns/auto#">
+    <oslc_auto:AutomationResult rdf:about="http://localhost:8080/analysis/services/resources/automationResults/1">
+      <oslc_auto:producedByAutomationRequest rdf:resource="http://localhost:8080/analysis/services/resources/automationRequests/1"/>
+      <oslc_auto:desiredState rdf:resource="http://open-services.net/ns/auto#complete"/>
+      <oslc_auto:inputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>HelloWorld</rdf:value>
+          <oslc:name>arguments</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:inputParameter>
+      <oslc_auto:outputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>0</rdf:value>
+          <oslc:name>timeout</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:outputParameter>
+      <oslc_auto:contribution>
+        <oslc_auto:Contribution rdf:about="http://localhost:8080/analysis/services/resources/contributions/1-stdout">
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <dcterms:title rdf:parseType="Literal">stdout</dcterms:title>
+          <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2021-04-26T16:05:09.674Z</dcterms:modified>
+          <fit:filePath>C:\power42\matrix\universal-analysis-adapter\compilation\SUT\1\.adapter\stdout_analysis_1</fit:filePath>
+          <dcterms:description rdf:parseType="Literal">Standard output of the analysis.</dcterms:description>
+          <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2021-04-26T16:05:09.674Z</dcterms:created>
+          <rdf:value>Dummy tool!&#xD;
+Your argument: --args=HelloWorld&#xD;
+SUT: ./my_echo&#xD;
+EnvVar1: &#xD;
+EnvVar2: &#xD;
+</rdf:value>
+        </oslc_auto:Contribution>
+      </oslc_auto:contribution>
+      <oslc_auto:outputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>false</rdf:value>
+          <oslc:name>zipOutputs</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:outputParameter>
+      <oslc_auto:contribution>
+        <oslc_auto:Contribution rdf:about="http://localhost:8080/analysis/services/resources/contributions/1-stderr">
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <dcterms:title rdf:parseType="Literal">stderr</dcterms:title>
+          <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2021-04-26T16:05:09.674Z</dcterms:modified>
+          <fit:filePath>C:\power42\matrix\universal-analysis-adapter\compilation\SUT\1\.adapter\stderr_analysis_1</fit:filePath>
+          <dcterms:description rdf:parseType="Literal">Error output of the analysis.</dcterms:description>
+          <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2021-04-26T16:05:09.674Z</dcterms:created>
+          <rdf:value>
+          </rdf:value>
+        </oslc_auto:Contribution>
+      </oslc_auto:contribution>
+      <oslc_auto:outputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>default</rdf:value>
+          <oslc:name>outputFilter</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:outputParameter>
+      <oslc_auto:outputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>True</rdf:value>
+          <oslc:name>launchSUT</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:outputParameter>
+      <oslc_auto:contribution>
+        <oslc_auto:Contribution rdf:about="http://localhost:8080/analysis/services/resources/contributions/1-executionTime">
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+          <dcterms:title rdf:parseType="Literal">executionTime</dcterms:title>
+          <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2021-04-26T16:05:09.674Z</dcterms:modified>
+          <dcterms:description rdf:parseType="Literal">Total execution time of the analysis in milliseconds.</dcterms:description>
+          <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2021-04-26T16:05:09.674Z</dcterms:created>
+          <rdf:value>6490</rdf:value>
+        </oslc_auto:Contribution>
+      </oslc_auto:contribution>
+      <oslc_auto:verdict rdf:resource="http://open-services.net/ns/auto#passed"/>
+      <oslc_auto:contribution>
+        <oslc_auto:Contribution rdf:about="http://localhost:8080/analysis/services/resources/contributions/1-statusMessage">
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+          <dcterms:title rdf:parseType="Literal">statusMessage</dcterms:title>
+          <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2021-04-26T16:05:09.674Z</dcterms:modified>
+          <dcterms:description rdf:parseType="Literal">Status messages from the adapter about the execution.</dcterms:description>
+          <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2021-04-26T16:05:09.674Z</dcterms:created>
+          <rdf:value>Executing analysis: C:\power42\matrix\universal-analysis-adapter\analysis\tests\resources\dummy_tool.ps1  --args=HelloWorld ./my_echo gcc -g TestEchoProgram.cpp -o my_echo
+   as: powershell.exe ./.adapter/exec_analysis_1.ps1 ""
+   In dir: C:\power42\matrix\universal-analysis-adapter\compilation\SUT\1
+Analysis completed successfully
+File Contributions added
+</rdf:value>
+        </oslc_auto:Contribution>
+      </oslc_auto:contribution>
+      <oslc_auto:reportsOnAutomationPlan rdf:resource="http://localhost:8080/analysis/services/resources/automationPlans/dummy"/>
+      <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2021-04-26T16:05:09.674Z</dcterms:modified>
+      <dcterms:identifier>1</dcterms:identifier>
+      <dcterms:title rdf:parseType="Literal">Result - Tutorial title</dcterms:title>
+      <oslc_auto:outputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>true</rdf:value>
+          <oslc:name>toolCommand</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:outputParameter>
+      <oslc_auto:contribution>
+        <oslc_auto:Contribution rdf:about="http://localhost:8080/analysis/services/resources/contributions/1-returnCode">
+          <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+          <dcterms:title rdf:parseType="Literal">returnCode</dcterms:title>
+          <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2021-04-26T16:05:09.674Z</dcterms:modified>
+          <dcterms:description rdf:parseType="Literal">Return code of the execution. If non-zero, then the verdict will be #failed.</dcterms:description>
+          <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+        >2021-04-26T16:05:09.674Z</dcterms:created>
+          <rdf:value>0</rdf:value>
+        </oslc_auto:Contribution>
+      </oslc_auto:contribution>
+      <oslc_auto:inputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>http://localhost:8081/compilation/services/resources/sUTs/1</rdf:value>
+          <oslc:name>SUT</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:inputParameter>
+      <oslc_auto:outputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>True</rdf:value>
+          <oslc:name>SUTbuildCommand</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:outputParameter>
+      <dcterms:creator rdf:resource="file:///C:/power42/matrix/universal-analysis-adapter/analysis/Title-creator"/>
+      <oslc_auto:state rdf:resource="http://open-services.net/ns/auto#complete"/>
+      <oslc_auto:outputParameter>
+        <oslc_auto:ParameterInstance>
+          <rdf:value>.^</rdf:value>
+          <oslc:name>outputFileRegex</oslc:name>
+        </oslc_auto:ParameterInstance>
+      </oslc_auto:outputParameter>
+      <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2021-04-26T16:05:02.879Z</dcterms:created>
+    </oslc_auto:AutomationResult>
+  </rdf:RDF>

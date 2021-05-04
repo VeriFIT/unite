@@ -1,3 +1,32 @@
+
+### v2.3.0
+- valuePrefix for command line parameters
+  - allows non-positional command line parameters to be defined for analysis tools
+  - e.g. prefix "--arg=" and parameter value "val" will result in the command line string containing "--arg=val"
+- confFile supports multiple instances (using the parameter multiple times to create multiple conf files) 
+- confDir parameter
+  - similar to confFile except its used to create a whole configuration directory in the SUT directory before analysis
+  - the directory is transferred as a base64 encoded zip file
+  - value format is "path/to/unzip/to\nbase64encodedZip"
+- reworked launchSUT and SUTbuildCommand analysis parameters
+  - now use fit:commandlinePosition to define the place to put the command
+  - and the value is a boolean which says whether to place the command or not
+- better automation plan examples
+  - complete anaconda interface and tests
+  - mostly complete valgrind interface and tests
+  - mostly complete infer interface and tests
+- outputFileRegex improvements
+  - now reports an error if an invalid regex is supplied
+  - file matching is now performed on the file path and not just the file name (to enable directory control)
+- jSEM dependency changed to Maven
+- added envVariable input parameter to the Analysis adapter
+  - allows environment variables to be set for execution
+  - can be used multiple times to set multiple variables
+  - expected value is "variable_name\nvariable_value"
+- base64 value check before execution to return an error immediately 
+- tutorials folder
+  - includes a version of the Wiki, conf_example, and Postman tutorial collection
+
 ### v2.2.0
 - implemented resource delete
   - delete capabilities for A.Requests, A.Results, Contributions (analysis only), SUT (compilation only)

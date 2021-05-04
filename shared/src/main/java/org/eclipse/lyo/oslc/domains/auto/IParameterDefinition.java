@@ -217,6 +217,13 @@ public interface IParameterDefinition
     @OslcReadOnly(false)
     public Link getPropertyDefinition();
 
+    @OslcName("valuePrefix")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "valuePrefix")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.String)
+    @OslcReadOnly(false)
+    public String getValuePrefix();
+
 
     public void setDescription(final String description );
     public void setTitle(final String title );
@@ -235,5 +242,6 @@ public interface IParameterDefinition
     public void setValueShape(final Link valueShape );
     public void setCommandlinePosition(final Integer commandlinePosition );
     public void setPropertyDefinition(final Link propertyDefinition );
+    public void setValuePrefix(final String valuePrefix );
 }
 

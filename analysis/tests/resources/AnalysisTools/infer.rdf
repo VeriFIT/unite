@@ -18,14 +18,55 @@
 
         <oslc_auto:parameterDefinition>
             <oslc_auto:ParameterDefinition>
-                <oslc:name>arguments</oslc:name>
-                <oslc:defaultValue></oslc:defaultValue>
+                <oslc:name>help</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</fit:commandlinePosition>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--help --help-format plain</fit:valuePrefix>
+                <dcterms:description rdf:parseType="Literal">Print infer usage</dcterms:description>
+                <oslc:allowedValue></oslc:allowedValue>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>sub-command</oslc:name>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
                 <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-                <dcterms:description rdf:parseType="Literal">infer arguments</dcterms:description>
+                <dcterms:description rdf:parseType="Literal">Pick an Infer sub-command to run</dcterms:description>
+                <oslc:allowedValue>analyze</oslc:allowedValue>
+                <oslc:allowedValue>capture</oslc:allowedValue>
+                <oslc:allowedValue>compile</oslc:allowedValue>
+                <oslc:allowedValue>report</oslc:allowedValue>
+                <oslc:allowedValue>reportdiff</oslc:allowedValue>
+                <oslc:allowedValue>run</oslc:allowedValue>
+                <oslc:allowedValue>--compilation-database</oslc:allowedValue>
+                <oslc:allowedValue>--compilation-database-escaped</oslc:allowedValue> 
+                <oslc:allowedValue></oslc:allowedValue>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>options</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</fit:commandlinePosition>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+                <dcterms:description rdf:parseType="Literal">Specify infer options. Each option could be defined as a separate parameter definition.</dcterms:description>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:defaultValue>False</oslc:defaultValue>
+                <oslc:name>SUTbuildCommand</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</fit:commandlinePosition>
+                <dcterms:description rdf:parseType="Literal">Set to True to include "-- compile command" at the end of the string to execute</dcterms:description>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">-- </fit:valuePrefix>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
     </oslc_auto:AutomationPlan>
     
 </rdf:RDF>

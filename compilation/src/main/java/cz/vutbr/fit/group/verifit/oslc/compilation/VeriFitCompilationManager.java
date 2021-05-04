@@ -397,11 +397,8 @@ public class VeriFitCompilationManager {
 			// check that the sourceBase64 value is well formed
 			if (submittedParam.getName().equals("sourceBase64"))
 			{
-    			String paramValue = submittedParam.getValue();
-    			int idxSplit = paramValue.indexOf('\n');
-    			if (idxSplit == -1)
-    				throw new OslcResourceException("Invalid format of sourceBase64 value. No \"\\n\" delimiter found. Expected format: filename\\nbase64");
-
+    			if (!Utils.base64IsValueOnSecondLineValid(submittedParam.getValue()))
+    				throw new OslcResourceException("Invalid format of sourceBase64 value. No \"\\n\" delimiter found or invalid base64 encoding. Expected format: filename\\nbase64");
 			}
 		}
     	
@@ -918,12 +915,12 @@ public class VeriFitCompilationManager {
 			//newResource.replaceDesiredState(aResource.getDesiredState());	// TODO use this to implement deferred execution later
 
 			// get the executed autoPlan
-			String execAutoPlanId = Utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue());
 			AutomationPlan execAutoPlan = null;
 			try {
+				String execAutoPlanId = Utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue());
 				execAutoPlan = getAutomationPlan(null, execAutoPlanId);
 			} catch (Exception e) {
-				throw new OslcResourceException("AutomationPlan not found (id: " + execAutoPlanId + ")");			
+				throw new OslcResourceException("AutomationPlan not found (" + newResource.getExecutesAutomationPlan().getValue() + ")");			
 			}
 
 			// check input parameters, and create output parameters
