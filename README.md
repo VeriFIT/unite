@@ -9,7 +9,7 @@ This is a development repository of the Universal OSLC Analysis Adapter which ai
 - conf - Place your configuration files in this directory.
 - tutorials
     - conf_example - Example configuration.
-    - Wiky-*date* - A downloaded version of the [Wiky](https://pajda.fit.vutbr.cz/verifit/oslc-generic-analysis/-/wikis/home)
+    - Wiki - A downloaded version of the [Wiki](https://pajda.fit.vutbr.cz/verifit/oslc-generic-analysis/-/wikis/home)
     - Tutorial.postman_collection.json - A Postman collection with basic steps to take when using the adapter 
 - dev_tools - scripts used during the development, etc.
 - lib - External dependencies that were NOT created as a part of this project ([Jetty](https://www.eclipse.org/jetty/)
@@ -51,8 +51,8 @@ The easiest way to run the Universal Analysis Adapter. Outputs of all three comp
 ##### Windows
 - Use the run_all.ps1 script. Then use ctrl+c to exit. Do not close the script by clicking X on the powershell window otherwise subprocesses will not be terminated (they run in their own consoles so they will be visible and can be closed manually)
 
-#### Option 2) Run manually
-This option is mainly used for debugging or simply to have more control. Launch each of the three components in separate terminals. Outputs will be visible directly through stdout and stderr with no implicit logging. The triple store needs to be up and running in order for the Analysis and Compilation adapters to launch successfully. 
+#### Option 2) Run manually (advanced)
+This option is mainly used for debugging. Note that conf files need to be moved into corresponding conf directories for each of the components manually (analysis/conf/, compilation/conf/, sparql_triplestore/start.ini). Launch each of the three components in separate terminals. Outputs will be visible directly through stdout and stderr with no implicit logging. The triple store needs to be up and running in order for the Analysis and Compilation adapters to launch successfully. 
 
 ##### Fuseki SPARQL jetty 
 ```
