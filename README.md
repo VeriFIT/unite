@@ -9,7 +9,7 @@ This is a development repository of the Universal OSLC Analysis Adapter which ai
 - conf - Place your configuration files in this directory.
 - tutorials
     - conf_example - Example configuration.
-    - Wiky - A downloaded version of the [Wiky](https://pajda.fit.vutbr.cz/verifit/oslc-generic-analysis/-/wikis/home)
+    - Wiki - A downloaded version of the [Wiki](https://pajda.fit.vutbr.cz/verifit/oslc-generic-analysis/-/wikis/home)
     - Tutorial.postman_collection.json - A Postman collection with basic steps to take when using the adapter 
 - dev_tools - scripts used during the development, etc.
 - lib - External dependencies that were NOT created as a part of this project ([Jetty](https://www.eclipse.org/jetty/)

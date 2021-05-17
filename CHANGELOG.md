@@ -1,4 +1,8 @@
 
+### v2.3.1
+- readme and wiki updates for thesis submission
+- NO functional changes
+
 ### v2.3.0
 - valuePrefix for command line parameters
   - allows non-positional command line parameters to be defined for analysis tools

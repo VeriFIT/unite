@@ -6,11 +6,11 @@
 				
 ##### Static analysis (Facebook infer) 
 - Use build command 
-- _Do not build [TODO]_
+- Do not build
 			 	
-##### _Model based (hilite) [TODO]_
-- _Does not need an SUT, just a payload or an artifact_
-- _Thus no build or launch command, maybe use the title or something?_
+##### Other (hilite - test case geenration)
+- Does not need an SUT, just a payload or an artifact
+- _hus no build or launch command, maybe use the title
 		
 ##### Statefull analysis or combination of tools (perun) 
 - Multiple analysis requests on the same SUT - easiest and the most easy to use
@@ -22,28 +22,29 @@
 # General steps for tools 
 ##### Before analysis  
 - setup the tool 
-    - _install tool [outside of the adapter]_
+    - install tool [outside of the adapter]
     - Create auto plan using XML config
 				
 
 ##### When requesting analysis 
 - Get SUT to the server and build 
     - Post to compilation adapter with build command and launch command  
-- _Configure the tool [TODO]_
-   - _Conf files with the SUT?_
-     _Or add conf files as input parameters_
-     _Or add an option to create a file in the SUT directory before the analysis (could be through SUT update but that is out of context)?_
+- Configure the tool
+   - Conf files with the SUT
+   - Or add conf files as input parameters
+   - Or add an option to create a file in the SUT directory before the analysis
 - Specify tool input parameters and execute
     - Defined in the auto plan with commandline positions 
     - SUT launch command can be fetched by the adapter 
+    - Set environmental variables
     - _Maybe an input parser that builds the command string to execute? (could remove command line positions from the inputs) [FUTURE IDEA]_
 			
 				
 ##### During analysis execution 
 - Check status 
     - Get the result or request 
-- _Cancel execution [TODO]_
-    - _Update or delete the request or result?_	
+- Cancel execution
+    - Update or delete the request or result	
 - _Make execution a priority [FUTURE IDEA]_
     - _Update the request or result?_
 		
@@ -51,7 +52,7 @@
 ##### After analysis 
 - Get analysis outputs 
     - Currently get all that match regex including their contents
-    - _Using plugin output parsers [TODO]_ 
+    - Or using plugin output filters
 - Persist analysis outputs 
     - Currently same as output parsers 
     - _Future through a “datastorage adapter” [FUTURE IDEA]_
