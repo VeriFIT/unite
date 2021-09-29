@@ -24,15 +24,15 @@ stages:
 build:
   stage: build
   script: /bin/bash ./build.sh
-#  artifacts: # TODO artifacts were too big...
-#    paths:
-#    - analysis/target
-#    - compilation/target
-#    - shared/target
-#    - analysis/VeriFitAnalysis.properties
-#    - compilation/VeriFitCompilation.properties
-#    - sparql_triplestore/jetty-distribution/start.ini
-#    expire_in: 20 minutes
+  artifacts: # TODO artifacts were too big...
+    paths:
+    - analysis/target
+    - compilation/target
+    - shared/target
+    - analysis/VeriFitAnalysis.properties
+    - compilation/VeriFitCompilation.properties
+    - sparql_triplestore/jetty-distribution/start.ini
+    expire_in: 20 minutes
 
 test-start:
   stage: test
