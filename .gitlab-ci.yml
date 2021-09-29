@@ -23,7 +23,9 @@ stages:
 
 build:
   stage: build
-  script: /bin/bash ./build.sh
+  script:
+    - /bin/bash ./build.sh
+    - du -sh analysis/target compilation/target shared/target
   artifacts: # TODO artifacts were too big...
     paths:
     - analysis/target
