@@ -107,11 +107,11 @@ $Host.UI.RawUI.FlushInputBuffer()
 # open new terminals that tail the log files and record their PIDs to kill later
 if ($t)
 {
-    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Triplestore Log (feel free to close this window)'; Get-Content $ROOTDIR\logs\..\logs\..\logs\triplestore_$CURTIME.log -Wait -Tail 10" -passthru
+    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Triplestore Log (feel free to close this window)'; Get-Content $ROOTDIR\logs\..\logs\..\logs\triplestore_$CURTIME.log -Wait -Tail 10; pause" -passthru
     $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
-    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Compilation Log (feel free to close this window)'; Get-Content $ROOTDIR\logs\..\logs\..\logs\compilation_$CURTIME.log -Wait -Tail 10" -passthru
+    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Compilation Log (feel free to close this window)'; Get-Content $ROOTDIR\logs\..\logs\..\logs\compilation_$CURTIME.log -Wait -Tail 10; pause" -passthru
     $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
-    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Analysis Log (feel free to close this window)'; Get-Content $ROOTDIR\logs\..\logs\..\logs\analysis_$CURTIME.log -Wait -Tail 10" -passthru
+    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Analysis Log (feel free to close this window)'; Get-Content $ROOTDIR\logs\..\logs\..\logs\analysis_$CURTIME.log -Wait -Tail 10; pause" -passthru
     $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 }
 

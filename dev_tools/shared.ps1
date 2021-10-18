@@ -36,7 +36,12 @@ function confAnalysisToolsCleanCheckAndCopy ()
     param (
         $1, $2
     )
-    rm "$2\*"
+
+    if (test-path $2) {
+        rm -r "$2"
+    }
+    mkdir $2
+
     if (Test-Path $1) {
         echo "    using custom: $1"
         cp "$1\*" "$2"
@@ -54,8 +59,16 @@ function confOutputFiltersCleanCheckAndCopy ()
     param (
         $1, $2, $3
     )
-    rm "$2\*"
-    rm "$3\*"
+    if (test-path $2) {
+        rm -r "$2"
+    }
+    mkdir $2
+    
+    if (test-path $3) {
+        rm -r "$3"
+    }
+    mkdir $3
+    
     if (Test-Path $1) {
         echo "    using custom: $1"
         cp "$1\*.properties" "$2"
