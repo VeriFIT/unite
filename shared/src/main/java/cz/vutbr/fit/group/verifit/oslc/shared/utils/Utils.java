@@ -29,8 +29,11 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+//import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.ZipFile;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -250,19 +253,14 @@ public class Utils {
 	 */
 	public static void unzipFile(Path dirToUnzipTo, File zipFile) throws IOException
 	{
-    	ZipFile zf = new ZipFile(zipFile);
-        Enumeration<? extends ZipEntry> zipEntries = zf.entries();
-        while(zipEntries.hasMoreElements())
-        {
-        	ZipEntry entry = zipEntries.nextElement();
-        	if (entry.isDirectory()) {
-                Path dirToCreate = dirToUnzipTo.resolve(entry.getName());
-                Files.createDirectories(dirToCreate);
-            } else {
-            	Path fileToCreate = dirToUnzipTo.resolve(entry.getName());
-                Files.copy(zf.getInputStream(entry), fileToCreate);
-            }
-        }
+		try {
+			String source = zipFile.getAbsolutePath();
+			String destination = dirToUnzipTo.toAbsolutePath().toString();
+			ZipFile zf = new ZipFile(source);
+			zf.extractAll(destination);
+		} catch (ZipException e) {
+			throw new IOException("Unzip failed: " + e.getMessage());
+		}
 	}
 
 	/**
