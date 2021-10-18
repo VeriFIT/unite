@@ -124,19 +124,21 @@ public abstract class RequestRunner extends Thread {
 	{
 		final String powershellExceptionExitCode = "1";
 		
-		// identify the OS
+		// identify the OS and tailor the execution for it
 		String shell;
+		String shellArg = "";
 		String fileEnding;
 		String scriptContents;
-		String arg = "";
+		String execArg = "";
 		if (SystemUtils.IS_OS_LINUX) {
 			shell = "/bin/bash";
 			fileEnding = ".sh";
-			arg = stringToExecute;
+			execArg = stringToExecute;
 			scriptContents = shell + " -c \"$1\"" + "\n"
 					+ "exit $?";
 		} else {
 			shell = "powershell.exe";
+			shellArg = "-NoProfile";	// to avoid changing directories due to a powershell profile
 			fileEnding = ".ps1";
 			scriptContents = "try { \n"
 					+ stringToExecute + "\n"
@@ -162,11 +164,16 @@ public abstract class RequestRunner extends Thread {
 			InputStream streamFileToExec = new ByteArrayInputStream(scriptContents.getBytes());
 			File fileToExecute = outputsDir.resolve("exec" + id + fileEnding).toFile();
 			String scriptToExecute = "./.adapter/" + fileToExecute.getName();
-			executedString = shell + " " + scriptToExecute + " \"" + arg + "\"";
+			executedString = shell + " " + scriptToExecute + " \"" + execArg + "\"";
 			FileUtils.copyInputStreamToFile(streamFileToExec, fileToExecute);
 			
 			// build process to execute the string in a directory using OS specific shell with outputs redirected to files
-		    ProcessBuilder processBuilder = new ProcessBuilder(shell, scriptToExecute, arg);
+		    ProcessBuilder processBuilder;
+		    if (shellArg.equals("")) {
+		    	processBuilder = new ProcessBuilder(shell, scriptToExecute, execArg);
+		    } else {
+		    	processBuilder = new ProcessBuilder(shell, shellArg, scriptToExecute, execArg);
+		    }
 		    processBuilder.directory(folderPath.toFile());
 			File stdoutFile = outputsDir.resolve("stdout" + id).toFile();
 			File stderrFile = outputsDir.resolve("stderr" + id).toFile();
