@@ -64,7 +64,7 @@ $analysis_url = lookupAnalysisURL "$ADAPTER_ROOT_DIR"
 
 if ( ! $l ) {
     echo "Booting up the Universal Analysis Adapter"
-    $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Universal Analysis Adapter'; '$ADAPTER_ROOT_DIR\run_all.ps1'" -passthru
+    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Universal Analysis Adapter'; & '$ADAPTER_ROOT_DIR\run_all.ps1' -t ; pause" -passthru
     $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
     $ret = curl_poll $analysis_url $SLEEP  # poll the analysis adapter because that one starts last in the run script
     echo "Adapter up and running`n"
