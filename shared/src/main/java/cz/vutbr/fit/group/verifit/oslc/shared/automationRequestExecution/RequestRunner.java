@@ -141,7 +141,7 @@ public abstract class RequestRunner extends Thread {
 			shellArg = "-NoProfile";	// to avoid changing directories due to a powershell profile
 			fileEnding = ".ps1";
 			scriptContents = "try { \n"
-					+ stringToExecute + "\n"
+					+ "& " + stringToExecute + "\n"
 					+ "exit $LastExitCode\n"
 					+ "} catch {\n"
 					+ "  Write-Error $_\n"

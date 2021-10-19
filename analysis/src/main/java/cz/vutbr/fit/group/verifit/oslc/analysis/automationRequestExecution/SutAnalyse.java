@@ -527,7 +527,7 @@ public class SutAnalyse extends RequestRunner
 		toolCommand = (toolCommand.equalsIgnoreCase("true") ? this.autoPlanConf.getLaunchCommand() : ""); // insert the analysis tool launch command if the parameter was true
 		
 		String buildStringToExecute = ""
-			+  toolCommand + " "
+			+ "\"" + toolCommand + "\""
 			+ this.autoPlanConf.getToolSpecificArgs();
 		
 		List<ExecutionParameter> cmdLineParams = new ArrayList<ExecutionParameter>();
