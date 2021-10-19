@@ -8,7 +8,6 @@
 # SPDX-License-Identifier: EPL-2.0
 ##########################
 
-$USRPATH=$(pwd)         # get the call directory
-$ROOTDIR=$PSScriptRoot  # get the script directory
-
-java -DFUSEKI_BASE="$ROOTDIR/triplestore" -jar  $ROOTDIR/../lib/jetty-distribution/start.jar jetty.base="$ROOTDIR"
+$USRPATH=$(pwd)           # get the call directory
+$ROOTDIR="$PSScriptRoot"  # get the script directory
+java -DFUSEKI_BASE="$ROOTDIR\triplestore" -jar  "$ROOTDIR\..\lib\jetty-distribution\start.jar" jetty.base="$ROOTDIR"

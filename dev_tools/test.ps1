@@ -32,16 +32,16 @@ $USAGE="   Usage: $PSCommandPath [-h|-t|-n|-l]
 $SLEEP=3
 
 $USRPATH=$(pwd)         # get the call directory
-$ROOTDIR=$PSScriptRoot  # get the script directory
-cd $ROOTDIR             # move to the script directory
+$ROOTDIR="$PSScriptRoot"# get the script directory
+cd "$ROOTDIR"             # move to the script directory
 cd ..
 $ADAPTER_ROOT_DIR=$(pwd) # get the adapter root directory
-cd $USRPATH              # move back to the user
+cd "$USRPATH"            # move back to the user
 
 $PIDS_TO_KILL=@()
 
 # source shared utils
-. $ADAPTER_ROOT_DIR/dev_tools/shared.ps1
+. "$ADAPTER_ROOT_DIR\dev_tools\shared.ps1"
 
 #
 # main
@@ -64,7 +64,7 @@ $analysis_url = lookupAnalysisURL "$ADAPTER_ROOT_DIR"
 
 if ( ! $l ) {
     echo "Booting up the Universal Analysis Adapter"
-    $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Universal Analysis Adapter'; $ADAPTER_ROOT_DIR/run_all.ps1" -passthru
+    $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Universal Analysis Adapter'; '$ADAPTER_ROOT_DIR\run_all.ps1'" -passthru
     $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
     $ret = curl_poll $analysis_url $SLEEP  # poll the analysis adapter because that one starts last in the run script
     echo "Adapter up and running`n"
@@ -88,7 +88,7 @@ if ( ! $n) {
     echo ""
     echo "Running Compilation adapter test suite" 
     $clock = [Diagnostics.Stopwatch]::StartNew()
-    newman run $ADAPTER_ROOT_DIR/compilation/tests/TestSuite.postman_collection
+    newman run "$ADAPTER_ROOT_DIR\compilation\tests\TestSuite.postman_collection"
     $compilationRes=$?
     $clock.Stop()
     echo $clock.Elapsed
@@ -96,7 +96,7 @@ if ( ! $n) {
     echo ""
     echo "Running Analysis adapter test suite" 
     $clock = [Diagnostics.Stopwatch]::StartNew()
-    newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite.postman_collection
+    newman run "$ADAPTER_ROOT_DIR\analysis\tests\TestSuite.postman_collection"
     $analysisRes=$?
     $clock.Stop()
     echo $clock.Elapsed
@@ -105,7 +105,7 @@ if ( ! $n) {
     if ($t) {
         echo "Running Analysis adapter Tested Tools test suite" 
         $clock = [Diagnostics.Stopwatch]::StartNew()
-        newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_TestedTools.postman_collection
+        newman run "$ADAPTER_ROOT_DIR\analysis\tests\TestSuite_TestedTools.postman_collection"
         $analysisToolsRes=$?
         $clock.Stop()
         echo $clock.Elapsed
@@ -123,7 +123,7 @@ if ( ! $n) {
     echo ""
     echo "Running Compilation adapter keep_last_n test suite" 
     $clock = [Diagnostics.Stopwatch]::StartNew()
-    newman run $ADAPTER_ROOT_DIR/compilation/tests/TestSuite_KeepLastN.postman_collection
+    newman run "$ADAPTER_ROOT_DIR\compilation\tests\TestSuite_KeepLastN.postman_collection"
     $compilationKeepLastNRes=$?
     $clock.Stop()
     echo $clock.Elapsed
@@ -131,7 +131,7 @@ if ( ! $n) {
     echo ""
     echo "Running Analysis adapter keep_last_n test suite" 
     $clock = [Diagnostics.Stopwatch]::StartNew()
-    newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_KeepLastN.postman_collection
+    newman run "$ADAPTER_ROOT_DIR\analysis\tests\TestSuite_KeepLastN.postman_collection"
     $analysisKeepLastNRes=$?
     $clock.Stop()
     echo $clock.Elapsed

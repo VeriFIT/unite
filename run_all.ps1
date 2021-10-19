@@ -29,14 +29,14 @@ $USAGE="   Usage: $PSCommandPath [-t|-h|-b]
 "
 
 $USRPATH=$(pwd)         # get the call directory
-$ROOTDIR=$PSScriptRoot  # get the script directory
+$ROOTDIR="$PSScriptRoot"  # get the script directory
 $PIDS_TO_KILL=@()
 
 # duration for polling (via curl)
 $SLEEP=3
 
 # source shared utils
-. $ROOTDIR/dev_tools/shared.ps1
+. "$ROOTDIR\dev_tools\shared.ps1"
 
 # Waits for an Url to go online. Will kill all child processes if curl gets interrupted
 # $1 ... url to poll
@@ -79,7 +79,7 @@ else {
 }
 
 # get and output version
-$VERSION=$(cat $ROOTDIR\VERSION.md 2> $null)
+$VERSION=$(cat "$ROOTDIR\VERSION.md" 2> $null)
 echo ""
 echo "########################################################"
 echo "    OSLC Universal Analysis, $VERSION"
@@ -92,12 +92,12 @@ $compilation_url = lookupCompilationURL "$ROOTDIR"
 $analysis_url = lookupAnalysisURL "$ROOTDIR"
 
 ## create log files and append headings
-mkdir -Force $ROOTDIR/logs > $null
+mkdir -Force "$ROOTDIR\logs" > $null
 $CURTIME=$(date).ToString("yyyy-MM-dd_HH.mm.ss")
 $CURTIME_FORLOG=$(date).ToString("yyyy-MM-dd_HH:mm:ss")
-echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR/logs/triplestore_$CURTIME.log"
-echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR/logs/compilation_$CURTIME.log"
-echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR/logs/analysis_$CURTIME.log"
+echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR\logs\triplestore_$CURTIME.log"
+echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR\logs\compilation_$CURTIME.log"
+echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR\logs\analysis_$CURTIME.log"
 
 # treat ctrl+c as input so that we can kill subprocesses (sleep and flush to properly flush input)
 [Console]::TreatControlCAsInput = $True
@@ -107,24 +107,25 @@ $Host.UI.RawUI.FlushInputBuffer()
 # open new terminals that tail the log files and record their PIDs to kill later
 if ($t)
 {
-    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Triplestore Log (feel free to close this window)'; Get-Content $ROOTDIR\logs\..\logs\..\logs\triplestore_$CURTIME.log -Wait -Tail 10; pause" -passthru
+    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Triplestore Log (feel free to close this window)'; Get-Content '$ROOTDIR\logs\..\logs\..\logs\triplestore_$CURTIME.log' -Wait -Tail 10; pause" -passthru
     $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
-    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Compilation Log (feel free to close this window)'; Get-Content $ROOTDIR\logs\..\logs\..\logs\compilation_$CURTIME.log -Wait -Tail 10; pause" -passthru
+    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Compilation Log (feel free to close this window)'; Get-Content '$ROOTDIR\logs\..\logs\..\logs\compilation_$CURTIME.log' -Wait -Tail 10; pause" -passthru
     $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
-    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Analysis Log (feel free to close this window)'; Get-Content $ROOTDIR\logs\..\logs\..\logs\analysis_$CURTIME.log -Wait -Tail 10; pause" -passthru
+    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Analysis Log (feel free to close this window)'; Get-Content '$ROOTDIR\logs\..\logs\..\logs\analysis_$CURTIME.log' -Wait -Tail 10; pause" -passthru
     $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 }
 
-# start the triplestore
-$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Triplestore'; $ROOTDIR/sparql_triplestore/run.ps1 >> $ROOTDIR/logs/triplestore_$CURTIME.log 2>&1" -passthru
+# start the triplestore 
+$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Triplestore'; cd '$ROOTDIR\sparql_triplestore'; .\run.ps1 >> '$ROOTDIR\logs\triplestore_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Triplestore to finish startup"
 waitForUrlOnline $triplestore_url
 echo "Triplestore running`n"
 
+
 ## start the compilation adapter
 echo "Starting the Compilation adapter"
-$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; cd $ROOTDIR/compilation ; mvn jetty:run-exploded >> $ROOTDIR/logs/compilation_$CURTIME.log 2>&1" -passthru
+$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; cd '$ROOTDIR\compilation' ; mvn jetty:run-exploded >> '$ROOTDIR\logs\compilation_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Compilation adapter to finish startup"
 waitForUrlOnline $compilation_url
@@ -132,7 +133,7 @@ echo "Compilation adapter running`n"
 
 # start the analysis adapter
 echo "Starting the Analysis adapter"
-$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; cd $ROOTDIR/analysis ; mvn jetty:run-exploded >> $ROOTDIR/logs/analysis_$CURTIME.log 2>&1" -passthru
+$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; cd '$ROOTDIR\analysis' ; mvn jetty:run-exploded >> '$ROOTDIR\logs\analysis_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Analysis adapter to finish startup"
 waitForUrlOnline $analysis_url

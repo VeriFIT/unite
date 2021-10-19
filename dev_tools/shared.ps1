@@ -19,7 +19,7 @@ function confFileCopyCustomOrDefault ()
     param (
         $1, $2, $3
     )
-    if (Test-Path $1 -PathType Leaf) {
+    if (Test-Path "$1" -PathType Leaf) {
         echo "    using custom: $1"
         cp "$1" "$3"
     } else {
@@ -37,12 +37,12 @@ function confAnalysisToolsCleanCheckAndCopy ()
         $1, $2
     )
 
-    if (test-path $2) {
+    if (test-path "$2") {
         rm -r "$2"
     }
-    mkdir $2
+    mkdir "$2" > $null
 
-    if (Test-Path $1) {
+    if (Test-Path "$1") {
         echo "    using custom: $1"
         cp "$1\*" "$2"
     } else {
@@ -59,17 +59,17 @@ function confOutputFiltersCleanCheckAndCopy ()
     param (
         $1, $2, $3
     )
-    if (test-path $2) {
+    if (test-path "$2") {
         rm -r "$2"
     }
-    mkdir $2
+    mkdir "$2" > $null
     
-    if (test-path $3) {
+    if (test-path "$3") {
         rm -r "$3"
     }
-    mkdir $3
+    mkdir "$3" > $null
     
-    if (Test-Path $1) {
+    if (Test-Path "$1") {
         echo "    using custom: $1"
         cp "$1\*.properties" "$2"
         cp "$1\*.java" "$3"
@@ -108,8 +108,8 @@ function lookupTriplestoreURL ()
     param (
         $1
     )
-    $triplestore_host=$(cat $1/sparql_triplestore/start.ini | Select-String -Pattern "^ *jetty.http.host=") -replace "^ *jetty.http.host=", "" -replace "/$", "" # removes final slash in case there is one (http://host/ vs http://host)
-    $triplestore_port=$(cat $1/sparql_triplestore/start.ini | Select-String -Pattern "^ *jetty.http.port=") -replace "^ *jetty.http.port=", ""
+    $triplestore_host=$(cat "$1\sparql_triplestore\start.ini" | Select-String -Pattern "^ *jetty.http.host=") -replace "^ *jetty.http.host=", "" -replace "/$", "" # removes final slash in case there is one (http://host/ vs http://host)
+    $triplestore_port=$(cat "$1\sparql_triplestore\start.ini" | Select-String -Pattern "^ *jetty.http.port=") -replace "^ *jetty.http.port=", ""
     $triplestore_url="http://${triplestore_host}:${triplestore_port}/fuseki/" # TODO prefix needs to be configurable for https
     return $triplestore_url
 }
@@ -120,8 +120,8 @@ function lookupCompilationURL ()
     param (
         $1
     )
-    $compilation_host=$(cat $1/compilation/conf/VeriFitCompilation.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
-    $compilation_port=$(cat $1/compilation/conf/VeriFitCompilation.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
+    $compilation_host=$(cat "$1\compilation\conf\VeriFitCompilation.properties" | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
+    $compilation_port=$(cat "$1\compilation\conf\VeriFitCompilation.properties" | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
     $compilation_url="${compilation_host}:${compilation_port}/compilation/"
     return $compilation_url
 }
@@ -133,8 +133,8 @@ function lookupAnalysisURL ()
     param (
         $1
     )
-    $analysis_host=$(cat $1/analysis/conf/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
-    $analysis_port=$(cat $1/analysis/conf/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
+    $analysis_host=$(cat "$1\analysis\conf\VeriFitAnalysis.properties" | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
+    $analysis_port=$(cat "$1\analysis\conf\VeriFitAnalysis.properties" | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
     $analysis_url="${analysis_host}:${analysis_port}/analysis/"
     return $analysis_url
 }

@@ -21,10 +21,10 @@ $USAGE="   Usage: $PSCommandPath [-h]
 "
 
 $USRPATH=$(pwd)         # get the call directory
-$ROOTDIR=$PSScriptRoot  # get the script directory
+$ROOTDIR="$PSScriptRoot"  # get the script directory
 
 # source shared utils
-. $ROOTDIR/dev_tools/shared.ps1
+. "$ROOTDIR\dev_tools\shared.ps1"
 
 
 #
@@ -50,7 +50,7 @@ echo "    Building and Installing shared resources"
 echo "############################################################"
 echo ""
 
-mvn -f $ROOTDIR/shared/pom.xml clean install
+mvn -f "$ROOTDIR\shared\pom.xml" clean install
 if ( ! $? ) {
     exit $LastExitCode
 }
@@ -60,7 +60,7 @@ echo "############################################################"
 echo "    Building and Installing the Compilation adapter"
 echo "############################################################"
 echo ""
-mvn -f $ROOTDIR/compilation/pom.xml clean install
+mvn -f "$ROOTDIR\compilation\pom.xml" clean install
 if ( ! $? ) {
     exit $LastExitCode
 }
@@ -70,7 +70,7 @@ echo "############################################################"
 echo "    Building and Installing the Analysis adapter"
 echo "############################################################"
 echo ""
-mvn -f $ROOTDIR/analysis/pom.xml clean install
+mvn -f "$ROOTDIR\analysis\pom.xml" clean install
 if ( ! $? ) {
     exit $LastExitCode
 }
