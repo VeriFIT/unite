@@ -121,7 +121,7 @@ $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Triplestore to finish startup"
 echo "(If it takes too long, try checking the logs)"
 waitForUrlOnline $triplestore_url
-echo "Triplestore running`n"
+echo "Triplestore running (1/3)`n"
 
 
 ## start the compilation adapter
@@ -131,7 +131,7 @@ $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Compilation adapter to finish startup"
 echo "(If it takes too long, try checking the logs)"
 waitForUrlOnline $compilation_url
-echo "Compilation adapter running`n"
+echo "Compilation adapter running (2/3)`n"
 
 # start the analysis adapter
 echo "Starting the Analysis adapter"
@@ -140,7 +140,7 @@ $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Analysis adapter to finish startup"
 echo "(If it takes too long, try checking the logs)"
 waitForUrlOnline $analysis_url
-echo "Analysis adapter running`n"
+echo "Analysis adapter running (3/3)`n"
 
 echo "Ready to go!"
 echo "Use ctrl+c to exit..."

@@ -529,7 +529,7 @@ public class SutAnalyse extends RequestRunner
 				: "" );
 		
 		String buildStringToExecute = ""
-			+ toolCommand 
+			+ toolCommand + " "
 			+ this.autoPlanConf.getToolSpecificArgs();
 		
 		List<ExecutionParameter> cmdLineParams = new ArrayList<ExecutionParameter>();

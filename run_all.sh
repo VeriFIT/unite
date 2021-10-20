@@ -108,7 +108,7 @@ main () {
     echo -e "Waiting for the Triplestore to finish startup"
     echo -e "(If it takes too long, try checking the logs)"         # TODO rework to check if PID is still going to be able to detect failed start instead of wating for ever
     curl_poll "$triplestore_url" "$SLEEP" 0
-    echo -e "Triplestore ${GREEN}running${NC}\n"
+    echo -e "Triplestore ${GREEN}running${NC} (1/3)\n"
 
     # start the compilation adapter
     echo "Starting the Compilation adapter"
@@ -118,7 +118,7 @@ main () {
     echo -e "Waiting for the Compilation adapter to finish startup"
     echo -e "(If it takes too long, try checking the logs)"
     curl_poll "$compilation_url" "$SLEEP" 0
-    echo -e "Compilation adapter ${GREEN}running${NC}\n"
+    echo -e "Compilation adapter ${GREEN}running${NC} (2/3)\n"
 
     # start the analysis adapter
     echo "Starting the Analysis adapter"
@@ -128,7 +128,7 @@ main () {
     echo -e "Waiting for the Analysis adapter to finish startup"
     echo -e "(If it takes too long, try checking the logs)"
     curl_poll "$analysis_url" "$SLEEP" 0
-    echo -e "Analysis adapter ${GREEN}running${NC}\n"
+    echo -e "Analysis adapter ${GREEN}running${NC} (3/3)\n"
 
     echo -e "${GREEN}Ready to go!${NC}"
     echo "Use ctrl+c to exit..."
