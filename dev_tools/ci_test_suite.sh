@@ -17,11 +17,12 @@ cd ..
 ADAPTER_ROOT_DIR="$PWD"               # get the adapter root directory
 cd "$ROOTDIR"                         # move back to the script directory
 
+source "$ADAPTER_ROOT_DIR/dev_tools/shared.sh"
 
 main () {
     # build 
     echo -e "Building\n"
-    "$ADAPTER_ROOT_DIR/build.sh &>/dev/null"
+    "$ADAPTER_ROOT_DIR/build.sh" &>/dev/null
     ret="$?"
     if [ "$ret" -ne 0 ]; then
         failed "$ret"
