@@ -83,17 +83,17 @@ confOutputFiltersCleanCheckAndCopy()
 processConfFiles()
 {    
     # basic conf files (analysis, compilation, triplestore properties)
-    echo "Checking Compilation Adapter conf:"
+    echo "Checking Compilation Adapter:"
     confFileCopyCustomOrDefault "$1/conf/VeriFitCompilation.properties" "$1/compilation/conf/VeriFitCompilationDefault.properties" "$1/compilation/conf/VeriFitCompilation.properties"
-    echo "Checking Triplestore conf:"
+    echo "Checking Triplestore:"
     confFileCopyCustomOrDefault "$1/conf/TriplestoreConf.ini"           "$1/sparql_triplestore/startDefault.ini"                   "$1/sparql_triplestore/start.ini"
-    echo "Checking Analysis Adapter conf:"
+    echo "Checking Analysis Adapter:"
     confFileCopyCustomOrDefault "$1/conf/VeriFitAnalysis.properties"    "$1/analysis/conf/VeriFitAnalysisDefault.properties"       "$1/analysis/conf/VeriFitAnalysis.properties"
 
     # Analysis adapter advanced conf files (tool definitions, output filters)
-    echo "Checking Analysis Tools conf:"
+    echo "Checking Analysis Tools:"
     confAnalysisToolsCleanCheckAndCopy "$1/conf/analysis_advanced/AnalysisTools" "$1/analysis/conf/CustomAnalysisTools"
-    echo "Checking Plugin Filters conf:"
+    echo "Checking Plugin Filters:"
     confOutputFiltersCleanCheckAndCopy "$1/conf/analysis_advanced/PluginFilters" "$1/analysis/conf/CustomPluginFiltersConfiguration" "$1/analysis/src/main/java/pluginFilters/customPluginFilters"
 }
 
