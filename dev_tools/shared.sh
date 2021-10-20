@@ -8,12 +8,24 @@
 # SPDX-License-Identifier: EPL-2.0
 ##########################
 
+# formating
+RED='\033[0;31m'    # use as ...${RED}...${NC}...
+GREEN='\033[0;32m'  # in echo -e or printf
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+BOLD='\033[1m'
+DIM='\033[2m'
+ITALIC='\033[3m'
+NORMAL='\033[0m'
+
 
 # $1 ... exit code
 failed()
 {
     echo "Failed!\n"
-    exit $1
+    exit "$1"
 }
 
 # look for a conf file
@@ -26,10 +38,10 @@ confFileCopyCustomOrDefault()
 {
     
     if [ -f "$1" ]; then
-        echo "    using custom: $1"
+        echo -e "    using ${YELLOW}custom${NC}: $1"
         cp "$1" "$3"
     else
-        echo "    using default: $2"
+        echo -e "    using ${BLUE}default${NC}: $2"
         cp "$2" "$3"
     fi
 }
@@ -41,10 +53,10 @@ confAnalysisToolsCleanCheckAndCopy()
 {
     rm -rf "$2"
     if [ -d "$1" ]; then
-        echo "    using custom: $1"
+        echo -e "    using ${YELLOW}custom${NC}: $1"
         cp -r "$1" "$2"
     else
-        echo "    no custom conf found in $1"
+        echo -e "    ${BLUE}no analysis tools${NC} found in $1"
     fi
 }
 
@@ -57,13 +69,13 @@ confOutputFiltersCleanCheckAndCopy()
     rm -rf "$2"
     rm -rf "$3"
     if [ -d "$1" ]; then
-        echo "    using custom: $1"
+        echo -e "    using ${YELLOW}custom${NC}: $1"
         mkdir "$2"
-        cp $1/*.properties "$2"
+        cp "$1"/*.properties "$2"
         mkdir "$3"
-        cp $1/*.java "$3"
+        cp "$1"/*.java "$3"
     else
-        echo "    no custom conf found in $1"
+        echo -e "    ${BLUE}no filters${NC} found in $1"
     fi
 }
 
@@ -71,17 +83,17 @@ confOutputFiltersCleanCheckAndCopy()
 processConfFiles()
 {    
     # basic conf files (analysis, compilation, triplestore properties)
-    echo "Checking VeriFitAnalysis.properties:"
-    confFileCopyCustomOrDefault "$1/conf/VeriFitAnalysis.properties"    "$1/analysis/conf/VeriFitAnalysisDefault.properties"       "$1/analysis/conf/VeriFitAnalysis.properties"
-    echo "Checking VeriFitCompilation.properties:"
+    echo "Checking Compilation Adapter conf:"
     confFileCopyCustomOrDefault "$1/conf/VeriFitCompilation.properties" "$1/compilation/conf/VeriFitCompilationDefault.properties" "$1/compilation/conf/VeriFitCompilation.properties"
-    echo "Checking TriplestoreConf.ini:"
+    echo "Checking Triplestore conf:"
     confFileCopyCustomOrDefault "$1/conf/TriplestoreConf.ini"           "$1/sparql_triplestore/startDefault.ini"                   "$1/sparql_triplestore/start.ini"
+    echo "Checking Analysis Adapter conf:"
+    confFileCopyCustomOrDefault "$1/conf/VeriFitAnalysis.properties"    "$1/analysis/conf/VeriFitAnalysisDefault.properties"       "$1/analysis/conf/VeriFitAnalysis.properties"
 
     # Analysis adapter advanced conf files (tool definitions, output filters)
-    echo "Checking AnalysisTools"
+    echo "Checking Analysis Tools conf:"
     confAnalysisToolsCleanCheckAndCopy "$1/conf/analysis_advanced/AnalysisTools" "$1/analysis/conf/CustomAnalysisTools"
-    echo "Checking PluginFilters"
+    echo "Checking Plugin Filters conf:"
     confOutputFiltersCleanCheckAndCopy "$1/conf/analysis_advanced/PluginFilters" "$1/analysis/conf/CustomPluginFiltersConfiguration" "$1/analysis/src/main/java/pluginFilters/customPluginFilters"
 }
 
@@ -90,8 +102,8 @@ processConfFiles()
 # $1 ... root directory of the project
 lookupTriplestoreURL()
 {
-    triplestore_host=$(cat $1/sparql_triplestore/start.ini | grep "^ *jetty.http.host=" | sed "s/^ *jetty.http.host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
-    triplestore_port=$(cat $1/sparql_triplestore/start.ini | grep "^ *jetty.http.port=" | sed "s/^ *jetty.http.port=//")
+    triplestore_host="$(cat "$1/sparql_triplestore/start.ini" | grep "^ *jetty.http.host=" | sed "s/^ *jetty.http.host=//" | sed "s|/$||")" # removes final slash in case there is one (http://host/ vs http://host)
+    triplestore_port="$(cat "$1/sparql_triplestore/start.ini" | grep "^ *jetty.http.port=" | sed "s/^ *jetty.http.port=//")"
     triplestore_url="$triplestore_host:$triplestore_port/fuseki/"
     echo "$triplestore_url"
 }
@@ -99,8 +111,8 @@ lookupTriplestoreURL()
 # $1 ... root directory of the project
 lookupCompilationURL()
 {
-    compilation_host=$(cat $1/compilation/conf/VeriFitCompilation.properties | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
-    compilation_port=$(cat $1/compilation/conf/VeriFitCompilation.properties | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")
+    compilation_host="$(cat "$1/compilation/conf/VeriFitCompilation.properties" | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||")" # removes final slash in case there is one (http://host/ vs http://host)
+    compilation_port="$(cat "$1/compilation/conf/VeriFitCompilation.properties" | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")"
     compilation_url="$compilation_host:$compilation_port/compilation/"
     echo "$compilation_url"
 }
@@ -108,8 +120,8 @@ lookupCompilationURL()
 # $1 ... root directory of the project
 lookupAnalysisURL()
 {
-    analysis_host=$(cat $1/analysis/conf/VeriFitAnalysis.properties | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||") # removes final slash in case there is one (http://host/ vs http://host)
-    analysis_port=$(cat $1/analysis/conf/VeriFitAnalysis.properties | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")
+    analysis_host="$(cat "$1/analysis/conf/VeriFitAnalysis.properties" | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||")" # removes final slash in case there is one (http://host/ vs http://host)
+    analysis_port="$(cat "$1/analysis/conf/VeriFitAnalysis.properties" | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")"
     analysis_url="$analysis_host:$analysis_port/analysis/"
     echo "$analysis_url"
 }
@@ -148,18 +160,18 @@ curl_poll()
 {
     curl_ret=42
     counter=0
-    while [ $curl_ret != 0 ]
+    while [ "$curl_ret" != 0 ]
     do
-        sleep $2
+        sleep "$2"
         echo -n "."
-        curl $1 &> /dev/null
-        curl_ret=$?
+        curl "$1" &> /dev/null
+        curl_ret="$?"
 
         if [ "$3" -ne "0" ] && [ "$counter" -ge "$3" ]; then # only check timout if there is one
             return 1
         fi
 
-        counter=$((counter+1))
+        counter="$((counter+1))"
     done
     return 0
 }

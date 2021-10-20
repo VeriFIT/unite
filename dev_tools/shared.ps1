@@ -46,7 +46,7 @@ function confAnalysisToolsCleanCheckAndCopy ()
         echo "    using custom: $1"
         cp "$1\*" "$2"
     } else {
-        echo "    no custom conf found in $1"
+        echo "    no analysis tools found in $1"
     }
 }
 
@@ -74,7 +74,7 @@ function confOutputFiltersCleanCheckAndCopy ()
         cp "$1\*.properties" "$2"
         cp "$1\*.java" "$3"
     } else {
-        echo "    no custom conf found in $1"
+        echo "    no filters found in $1"
     }
 }
 
@@ -86,17 +86,17 @@ function processConfFiles()
     )
     
     # basic conf files (analysis, compilation, triplestore properties)
-    echo "Checking VeriFitAnalysis.properties:"
-    confFileCopyCustomOrDefault "$1\conf\VeriFitAnalysis.properties"    "$1\analysis\conf\VeriFitAnalysisDefault.properties"       "$1\analysis\conf\VeriFitAnalysis.properties"
-    echo "Checking VeriFitCompilation.properties:"
+    echo "Checking Compilation Adapter conf:"
     confFileCopyCustomOrDefault "$1\conf\VeriFitCompilation.properties" "$1\compilation\conf\VeriFitCompilationDefault.properties" "$1\compilation\conf\VeriFitCompilation.properties"
-    echo "Checking TriplestoreConf.ini:"
+    echo "Checking Triplestore conf:"
     confFileCopyCustomOrDefault "$1\conf\TriplestoreConf.ini"           "$1\sparql_triplestore\startDefault.ini"                   "$1\sparql_triplestore\start.ini"
-
+    echo "Checking Analysis Adapter conf:"
+    confFileCopyCustomOrDefault "$1\conf\VeriFitAnalysis.properties"    "$1\analysis\conf\VeriFitAnalysisDefault.properties"       "$1\analysis\conf\VeriFitAnalysis.properties"
+    
     # Analysis adapter advanced conf files (tool definitions, output filters)
-    echo "Checking AnalysisTools"
+    echo "Checking Analysis Tools conf:"
     confAnalysisToolsCleanCheckAndCopy "$1\conf\analysis_advanced\AnalysisTools" "$1\analysis\conf\CustomAnalysisTools"
-    echo "Checking PluginFilters"
+    echo "Checking Plugin Filters conf:"
     confOutputFiltersCleanCheckAndCopy "$1\conf\analysis_advanced\PluginFilters" "$1\analysis\conf\CustomPluginFiltersConfiguration" "$1\analysis\src\main\java\pluginFilters\customPluginFilters"
 }
 

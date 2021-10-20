@@ -11,7 +11,7 @@
 # SPDX-License-Identifier: EPL-2.0
 ##########################
 
-USRPATH=$(pwd)         # get the call directory
-ROOTDIR=$(dirname $0)  # get the script directory
+USRPATH="$PWD"                          # get the call directory
+ROOTDIR="$(dirname "$(realpath "$0")")" # get the script directory
 
-exec java -DFUSEKI_BASE="$ROOTDIR/triplestore" -jar  $ROOTDIR/../lib/jetty-distribution/start.jar jetty.base="$ROOTDIR"
+exec java -DFUSEKI_BASE="$ROOTDIR/triplestore" -jar  "$ROOTDIR/../lib/jetty-distribution/start.jar" jetty.base="$ROOTDIR"

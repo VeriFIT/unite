@@ -82,7 +82,7 @@ else {
 $VERSION=$(cat "$ROOTDIR\VERSION.md" 2> $null)
 echo ""
 echo "########################################################"
-echo "    OSLC Universal Analysis, $VERSION"
+echo "    Unite, $VERSION"
 echo "########################################################"
 echo ""
 
@@ -119,6 +119,7 @@ if ($t)
 $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Triplestore'; cd '$ROOTDIR\sparql_triplestore'; .\run.ps1 >> '$ROOTDIR\logs\triplestore_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Triplestore to finish startup"
+echo "(If it takes too long, try checking the logs)"
 waitForUrlOnline $triplestore_url
 echo "Triplestore running`n"
 
@@ -128,6 +129,7 @@ echo "Starting the Compilation adapter"
 $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; cd '$ROOTDIR\compilation' ; mvn jetty:run-exploded >> '$ROOTDIR\logs\compilation_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Compilation adapter to finish startup"
+echo "(If it takes too long, try checking the logs)"
 waitForUrlOnline $compilation_url
 echo "Compilation adapter running`n"
 
@@ -136,6 +138,7 @@ echo "Starting the Analysis adapter"
 $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; cd '$ROOTDIR\analysis' ; mvn jetty:run-exploded >> '$ROOTDIR\logs\analysis_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Analysis adapter to finish startup"
+echo "(If it takes too long, try checking the logs)"
 waitForUrlOnline $analysis_url
 echo "Analysis adapter running`n"
 
