@@ -31,7 +31,7 @@ main () {
 
     # run tests
     echo -e "Running test script\n"
-    "$ADAPTER_ROOT_DIR/dev_tools/test.sh -ci"
+    "$ADAPTER_ROOT_DIR/dev_tools/test.sh" -ci
     exit "$?"
 }
 
