@@ -1,5 +1,5 @@
 # Unite
-author: Ondrej Vasicek, xvasic25@stud.fit.vutbr.cz
+author: Ondrej Vasicek, ivasicek@fit.vut.cz
 
 This is a development repository of *Unite* (UNIversal analysis adapTEr based on the OSLC standard) which aims to provide an easy way of adding an OSLC Automation interface to as many analysis tools as possible by leveraging their command-line similarities. The adapter consists of two main components - Analysis Adapter and Compilation Adapter. The Compilation Adapter manages SUT resources, and the Analysis Adapter executes analysis on SUT resources using any configured analysis tool. The repository also includes a distribution of Jetty with an Apache Fuseki WAR for user's convenience (to make the setup process easier) which allows the adapter to be connected to a SPARQL triplestore for resource persistence and query capabilities.
 
