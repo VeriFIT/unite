@@ -29,15 +29,16 @@ USAGE="   Usage: $0 [-h|-t|-n|-l|-ci]
 # duration for polling (via curl)
 SLEEP=3
 
-USRPATH=$PWD                        # get the call directory
-ROOTDIR=$(dirname $(realpath $0))   # get the script directory
-cd $ROOTDIR                         # move to the script directory
+USRPATH="$PWD"                          # get the call directory
+ROOTDIR="$(dirname "$(realpath "$0")")" # get the script directory
+cd "$ROOTDIR"                           # move to the script directory
+
 cd ..
-ADAPTER_ROOT_DIR=$PWD               # get the adapter root directory
-cd $ROOTDIR                         # move back to the script directory
+ADAPTER_ROOT_DIR="$PWD"                 # get the adapter root directory
+cd "$ROOTDIR"                           # move back to the script directory
 
 # source shared utils
-source $ADAPTER_ROOT_DIR/dev_tools/shared.sh
+source "$ADAPTER_ROOT_DIR/dev_tools/shared.sh"
 
 
 # catch ctrl+c and kill all subprocesses
@@ -56,7 +57,7 @@ main() {
     unset testedToolsFlag liveAdapterFlag gitlabCI keepLastNflag
     for arg in "$@"
     do
-        case $arg in
+        case "$arg" in
             -t) testedToolsFlag=true ; shift ;;
             -l) liveAdapterFlag=true ; shift ;;
             -ci) gitlabCI=true ; shift ;;
@@ -71,11 +72,11 @@ main() {
 
 
     # lookup analysis adapter config
-    analysis_url=$(lookupAnalysisURL "$ADAPTER_ROOT_DIR")
+    analysis_url="$(lookupAnalysisURL "$ADAPTER_ROOT_DIR")"
 
-    if [ -z $liveAdapterFlag ]; then
+    if [ -z "$liveAdapterFlag" ]; then
         echo "Booting up the Universal Analysis Adapter"
-        $ADAPTER_ROOT_DIR/run_all.sh &>/dev/null &
+        "$ADAPTER_ROOT_DIR/run_all.sh" &>/dev/null &
         curl_poll "$analysis_url" "$SLEEP" 0 # poll the analysis adapter because that one starts last in the run script
         echo -e "Adapter up and running\n"
     else
@@ -92,22 +93,22 @@ main() {
     analysisToolsRes=0
     analysisKeepLastNRes=0
     
-    if [ -z $keepLastNflag ]; then
+    if [ -z "$keepLastNflag" ]; then
         echo
         echo "Running Compilation adapter test suite" 
-        time newman run $ADAPTER_ROOT_DIR/compilation/tests/TestSuite.postman_collection
-        compilationRes=$?
+        time newman run "$ADAPTER_ROOT_DIR/compilation/tests/TestSuite.postman_collection"
+        compilationRes="$?"
 
         echo
         echo "Running Analysis adapter test suite" 
-        time newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite.postman_collection
-        analysisRes=$?
+        time newman run "$ADAPTER_ROOT_DIR/analysis/tests/TestSuite.postman_collection"
+        analysisRes="$?"
 
         echo
         if [ -n "$testedToolsFlag" ]; then
             echo "Running Analysis adapter Tested Tools test suite" 
-            time newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_TestedTools.postman_collection
-            analysisToolsRes=$?
+            time newman run "$ADAPTER_ROOT_DIR/analysis/tests/TestSuite_TestedTools.postman_collection"
+            analysisToolsRes="$?"
         else
             echo "Skipping Analysis adapter Tested Tools test suite" 
         fi
@@ -121,16 +122,16 @@ main() {
 
         echo ""
         echo "Running Compilation adapter keep_last_n test suite" 
-        time newman run $ADAPTER_ROOT_DIR/compilation/tests/TestSuite_KeepLastN.postman_collection
-        compilationKeepLastNRes=$?
+        time newman run "$ADAPTER_ROOT_DIR/compilation/tests/TestSuite_KeepLastN.postman_collection"
+        compilationKeepLastNRes="$?"
 
         echo
         echo "Running Analysis adapter keep_last_n test suite" 
-        time newman run $ADAPTER_ROOT_DIR/analysis/tests/TestSuite_KeepLastN.postman_collection
-        analysisKeepLastNRes=$?
+        time newman run "$ADAPTER_ROOT_DIR/analysis/tests/TestSuite_KeepLastN.postman_collection"
+        analysisKeepLastNRes="$?"
     fi
 
-    if [ -z $gitlabCI ]; then
+    if [ -z "$gitlabCI" ]; then
         echo -e "\nShutting down the adaters" 
         trap '' INT TERM     # ignore INT and TERM while shutting down
         kill -TERM 0

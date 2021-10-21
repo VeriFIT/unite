@@ -462,7 +462,7 @@
 									"    pm.expect(pm.response.text()).to.include(\"Analysis completed successfully\");",
 									"});",
 									"pm.test(\"the expected string should be executed\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"tools/run.sh \");",
+									"    pm.expect(pm.response.text()).to.include(\"tools/run.sh\\\"\");",
 									"    pm.expect(pm.response.text()).to.include(\" --config ./anacondaConf \");",
 									"    pm.expect(pm.response.text()).to.include(\" --run-type anaconda \");",
 									"    pm.expect(pm.response.text()).to.include(\" --time \");",

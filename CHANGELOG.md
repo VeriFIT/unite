@@ -1,3 +1,10 @@
+### v2.4.0
+- renamed to Unite
+- now should work in folders with spaces (linux and windows) (bug #1)
+- a bit of colored output on linux
+- fixed bug #2
+- better way of unziping files in the analysis adapter
+- added -NoProfile to powershell execution to avoid user profiles messing with the execution (e.g. directory change)
 
 ### v2.3.1
 - readme and wiki updates for thesis submission

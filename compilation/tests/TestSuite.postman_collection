@@ -15040,6 +15040,315 @@
 					]
 				}
 			]
+		},
+		{
+			"name": "Bugs",
+			"item": [
+				{
+					"name": "Unzipping hand made zip files",
+					"item": [
+						{
+							"name": "basic",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// save the request ID as a global variable for later tests to use",
+											"const response = xml2Json(pm.response.text());",
+											"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+											"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+											"var resourceId = resourceAboutSplit[resourceAboutSplit.length-1];",
+											"pm.globals.set('requestId', resourceId);",
+											"",
+											"pm.globals.set(\"waitCounter\", 0);",
+											"pm.test(\"Response code should be 201 (created)\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/xml"
+									},
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFilePath</oslc:name>\n\t\t\t<rdf:value>./tests/resources/java-zip.zip</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>unpackZip</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>ls</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+								},
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"createAutomationRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "wait for #complete (compilation/Bugs/Unzipping hand made zip files)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
+											"",
+											"var waitCounter = pm.globals.get(\"waitCounter\");",
+											"if(!waitCounter) {",
+											"    waitCounter = 0;",
+											"}",
+											"",
+											"if (pm.response.code != 200) { // wait for the resource to be created",
+											"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+											"        setTimeout(function(){}, [1000]); // 1 second",
+											"        waitCounter++;",
+											"        postman.setNextRequest(pm.info.requestName);",
+											"    } else { // timeout, reset counter",
+											"        waitCounter = 0;",
+											"    }",
+											"} else { // wait for the automation to complete",
+											"    const response = xml2Json(pm.response.text());",
+											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+											"    var waitCounter = pm.globals.get(\"waitCounter\");",
+											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+											"            setTimeout(function(){}, [1000]); // 1 second",
+											"            waitCounter++;",
+											"            postman.setNextRequest(pm.info.requestName);",
+											"        } else { // timeout, reset counter",
+											"            waitCounter = 0;",
+											"        }",
+											"    } else { // wait doen, reset counter",
+											"            waitCounter = 0;",
+											"    }",
+											"}",
+											"",
+											"pm.globals.set(\"waitCounter\", waitCounter);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"automationRequests",
+										"{{requestId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "check the result",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var requestId = pm.globals.get('requestId');",
+											"var serverAddr = pm.variables.get(\"server_address\");",
+											"var server_context = pm.variables.get(\"server_context\");",
+											"",
+											"pm.test(\"Response code should be 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"State should be complete\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\":state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+											"});",
+											"",
+											"pm.test(\"Verdict should be passed\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
+											"});",
+											"",
+											"pm.test(\"Should contain an SUT refference ID \" + requestId, function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\" + requestId);",
+											"});",
+											"",
+											"",
+											"pm.test(\"AutomationResult fetching output should have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value>TODO currently only shows error messages</rdf:value>\");",
+											"});",
+											"",
+											"pm.test(\"AutomationResult compilation stderr be empty (~)\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value></rdf:value>\");",
+											"});",
+											"",
+											"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value>SUT fetch successful\\nExecuting: \");",
+											"    pm.expect(pm.response.text()).to.include(\"Compilation completed successfully\");",
+											"});",
+											"pm.test(\"AutomationResult returnCode should have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value>0</rdf:value>\");",
+											"});",
+											"",
+											"pm.test(\"Zip file should be succesfully extracted\", function () {",
+											"    var os = pm.globals.get(\"currentOS\");",
+											"    if (os == \"linux\"){",
+											"        pm.expect(pm.response.text()).to.include(\"file1\\n\");",
+											"        pm.expect(pm.response.text()).to.include(\"java-zip.zip\\n\");",
+											"    } else {",
+											"        pm.expect(pm.response.text()).to.include(\" file1 \");",
+											"        pm.expect(pm.response.text()).to.include(\" java-zip.zip \");",
+											"    }",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"automationResults",
+										"{{requestId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "check the SUT",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// get global variable to use in this test",
+											"var requestId = pm.globals.get('requestId');",
+											"var serverAddr = pm.variables.get(\"server_address\");",
+											"var server_context = pm.variables.get(\"server_context\");",
+											"",
+											"pm.test(\"Response code should be 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"SUT should have the expected ID: \" + requestId, function () {",
+											"    pm.expect(pm.response.text()).to.include(\"fit:SUT rdf:about=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\" + requestId);",
+											"});",
+											"pm.test(\"SUT producedByAutomationRequest should match the AutomationRequest with ID \" + requestId, function () {",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:producedByAutomationRequest rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationRequests/\" + requestId);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/sUTs/{{requestId}}",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"sUTs",
+										"{{requestId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
 		}
 	],
 	"auth": {
