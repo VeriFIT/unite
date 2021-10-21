@@ -18,17 +18,17 @@ USAGE="   Usage: $0 [-h]
       -h ... help
 "
 
-USRPATH=$PWD                        # get the call directory
-ROOTDIR=$(dirname $(realpath $0))   # get the script directory
+USRPATH="$PWD"                          # get the call directory
+ROOTDIR="$(dirname "$(realpath "$0")")" # get the script directory
 
 # source shared utils
-source $ROOTDIR/dev_tools/shared.sh
+source "$ROOTDIR/dev_tools/shared.sh"
 
 main () {
     # process arguments
     for arg in "$@"
     do
-        case $arg in
+        case "$arg" in
             -h) print_help "$HELP" "$USAGE"; shift ;;
             *) invalid_arg "$arg" "$USAGE" ;;
         esac
@@ -47,24 +47,24 @@ main () {
     echo "############################################################"
     echo
 
-    mvn -f $ROOTDIR/shared/pom.xml clean install || exit "$?"
+    mvn -f "$ROOTDIR/shared/pom.xml" clean install || exit "$?"
 
     echo
     echo "############################################################"
     echo "    Building and Installing the Compilation adapter"
     echo "############################################################"
     echo
-    mvn -f $ROOTDIR/compilation/pom.xml clean install || exit "$?"
+    mvn -f "$ROOTDIR/compilation/pom.xml" clean install || exit "$?"
 
     echo
     echo "############################################################"
     echo "    Building and Installing the Analysis adapter"
     echo "############################################################"
     echo
-    mvn -f $ROOTDIR/analysis/pom.xml clean install || exit "$?"
+    mvn -f "$ROOTDIR/analysis/pom.xml" clean install || exit "$?"
 
     echo
-    echo "##### ALL DONE #############################################"
+    echo -e "##### ${GREEN}BUILD DONE${NC} ###########################################"
     echo
 
     exit 0

@@ -12,7 +12,8 @@
 # SPDX-License-Identifier: EPL-2.0
 ##########################
 
-cd "${BASH_SOURCE%/*}"
+ROOTDIR="$(dirname "$(realpath "$0")")" # get the script directory
+cd "$ROOTDIR"                           # move to the script directory
 
 rm -r ../analysis/src/main/webapp/static
 rm -r ../analysis/src/main/webapp/cz

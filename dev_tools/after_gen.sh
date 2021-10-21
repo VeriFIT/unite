@@ -11,8 +11,8 @@
 # SPDX-License-Identifier: EPL-2.0
 ##########################
 
-USRPATH=$PWD                        # get the call directory
-ROOTDIR=$(dirname $(realpath $0))   # get the script directory
-cd $ROOTDIR                         # move to the script directory
+USRPATH="$PWD"                          # get the call directory
+ROOTDIR="$(dirname "$(realpath "$0")")" # get the script directory
+cd "$ROOTDIR"                           # move to the script directory
 
 ./fix_redo_modifs.sh

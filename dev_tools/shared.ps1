@@ -19,7 +19,7 @@ function confFileCopyCustomOrDefault ()
     param (
         $1, $2, $3
     )
-    if (Test-Path $1 -PathType Leaf) {
+    if (Test-Path "$1" -PathType Leaf) {
         echo "    using custom: $1"
         cp "$1" "$3"
     } else {
@@ -36,12 +36,17 @@ function confAnalysisToolsCleanCheckAndCopy ()
     param (
         $1, $2
     )
-    rm "$2\*"
-    if (Test-Path $1) {
+
+    if (test-path "$2") {
+        rm -r "$2"
+    }
+    mkdir "$2" > $null
+
+    if (Test-Path "$1") {
         echo "    using custom: $1"
         cp "$1\*" "$2"
     } else {
-        echo "    no custom conf found in $1"
+        echo "    no analysis tools found in $1"
     }
 }
 
@@ -54,14 +59,22 @@ function confOutputFiltersCleanCheckAndCopy ()
     param (
         $1, $2, $3
     )
-    rm "$2\*"
-    rm "$3\*"
-    if (Test-Path $1) {
+    if (test-path "$2") {
+        rm -r "$2"
+    }
+    mkdir "$2" > $null
+    
+    if (test-path "$3") {
+        rm -r "$3"
+    }
+    mkdir "$3" > $null
+    
+    if (Test-Path "$1") {
         echo "    using custom: $1"
         cp "$1\*.properties" "$2"
         cp "$1\*.java" "$3"
     } else {
-        echo "    no custom conf found in $1"
+        echo "    no filters found in $1"
     }
 }
 
@@ -73,17 +86,17 @@ function processConfFiles()
     )
     
     # basic conf files (analysis, compilation, triplestore properties)
-    echo "Checking VeriFitAnalysis.properties:"
-    confFileCopyCustomOrDefault "$1\conf\VeriFitAnalysis.properties"    "$1\analysis\conf\VeriFitAnalysisDefault.properties"       "$1\analysis\conf\VeriFitAnalysis.properties"
-    echo "Checking VeriFitCompilation.properties:"
+    echo "Checking Compilation Adapter:"
     confFileCopyCustomOrDefault "$1\conf\VeriFitCompilation.properties" "$1\compilation\conf\VeriFitCompilationDefault.properties" "$1\compilation\conf\VeriFitCompilation.properties"
-    echo "Checking TriplestoreConf.ini:"
+    echo "Checking Triplestore:"
     confFileCopyCustomOrDefault "$1\conf\TriplestoreConf.ini"           "$1\sparql_triplestore\startDefault.ini"                   "$1\sparql_triplestore\start.ini"
-
+    echo "Checking Analysis Adapter:"
+    confFileCopyCustomOrDefault "$1\conf\VeriFitAnalysis.properties"    "$1\analysis\conf\VeriFitAnalysisDefault.properties"       "$1\analysis\conf\VeriFitAnalysis.properties"
+    
     # Analysis adapter advanced conf files (tool definitions, output filters)
-    echo "Checking AnalysisTools"
+    echo "Checking Analysis Tools:"
     confAnalysisToolsCleanCheckAndCopy "$1\conf\analysis_advanced\AnalysisTools" "$1\analysis\conf\CustomAnalysisTools"
-    echo "Checking PluginFilters"
+    echo "Checking Plugin Filters:"
     confOutputFiltersCleanCheckAndCopy "$1\conf\analysis_advanced\PluginFilters" "$1\analysis\conf\CustomPluginFiltersConfiguration" "$1\analysis\src\main\java\pluginFilters\customPluginFilters"
 }
 
@@ -95,8 +108,8 @@ function lookupTriplestoreURL ()
     param (
         $1
     )
-    $triplestore_host=$(cat $1/sparql_triplestore/start.ini | Select-String -Pattern "^ *jetty.http.host=") -replace "^ *jetty.http.host=", "" -replace "/$", "" # removes final slash in case there is one (http://host/ vs http://host)
-    $triplestore_port=$(cat $1/sparql_triplestore/start.ini | Select-String -Pattern "^ *jetty.http.port=") -replace "^ *jetty.http.port=", ""
+    $triplestore_host=$(cat "$1\sparql_triplestore\start.ini" | Select-String -Pattern "^ *jetty.http.host=") -replace "^ *jetty.http.host=", "" -replace "/$", "" # removes final slash in case there is one (http://host/ vs http://host)
+    $triplestore_port=$(cat "$1\sparql_triplestore\start.ini" | Select-String -Pattern "^ *jetty.http.port=") -replace "^ *jetty.http.port=", ""
     $triplestore_url="http://${triplestore_host}:${triplestore_port}/fuseki/" # TODO prefix needs to be configurable for https
     return $triplestore_url
 }
@@ -107,8 +120,8 @@ function lookupCompilationURL ()
     param (
         $1
     )
-    $compilation_host=$(cat $1/compilation/conf/VeriFitCompilation.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
-    $compilation_port=$(cat $1/compilation/conf/VeriFitCompilation.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
+    $compilation_host=$(cat "$1\compilation\conf\VeriFitCompilation.properties" | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
+    $compilation_port=$(cat "$1\compilation\conf\VeriFitCompilation.properties" | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
     $compilation_url="${compilation_host}:${compilation_port}/compilation/"
     return $compilation_url
 }
@@ -120,8 +133,8 @@ function lookupAnalysisURL ()
     param (
         $1
     )
-    $analysis_host=$(cat $1/analysis/conf/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
-    $analysis_port=$(cat $1/analysis/conf/VeriFitAnalysis.properties | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
+    $analysis_host=$(cat "$1\analysis\conf\VeriFitAnalysis.properties" | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
+    $analysis_port=$(cat "$1\analysis\conf\VeriFitAnalysis.properties" | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
     $analysis_url="${analysis_host}:${analysis_port}/analysis/"
     return $analysis_url
 }
