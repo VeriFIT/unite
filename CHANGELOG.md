@@ -1,3 +1,7 @@
+### v2.5.0
+- run & test scripts will now not wait forever when one of Unite's components fails to start
+  - all scripts now poll the URL (as before) and also check whether the components process is still running (to return an error instead of waiting forever)
+
 ### v2.4.0
 - renamed to Unite
 - now should work in folders with spaces (linux and windows) (bug #1)

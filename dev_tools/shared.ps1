@@ -170,7 +170,8 @@ function checkConfFiles()
     }
 }
 
-# polls an address using curl until the request returns True (i.e. the address responds)
+# Polls an address using curl until the request returns True (i.e. the address responds)
+# Checks whether ctrl+C was pressed in every loop and terminates if it was.
 # $1 ... URL for curl to poll
 # $2 ... sleep duration between polls
 function curl_poll
@@ -198,14 +199,57 @@ function curl_poll
     return 0
 }
 
+# Waits for an Url to go online.
+# Also checks whether the associated process is still running (in case it failed and exited).
+# Will kill all child processes if curl gets interrupted using ctrl+C.
+# $1 ... url to poll
+# $2 ... pid of the associated process
+# $3 ... sleep in second (between polls)
+# return ... 0 URL online, 1 the process stopped, 2 interrupted by ctrl+c
+function waitForUrlOnline ()
+{
+    Param(
+        $1, $2, $3
+    )
+
+    # poll the url using curl / Invoke-WebRequest
+    # loop until URL up, interrupted, or process exited
+    $curl_ret=$false
+    while ( $curl_ret -ne $true )
+    {
+        # wait a while
+        Start-Sleep -Seconds $3
+        
+        # check if URL online
+        Write-Host -NoNewline  "."
+        try{
+            Invoke-WebRequest -UseBasicParsing -Uri $1 -ErrorAction Ignore 2> $null > $null
+        } catch {
+            # TODO
+        }
+        $curl_ret=$?
+        
+        # check if the process is still running
+        $process = Get-Process -id $2 -ErrorAction SilentlyContinue
+        if ($process) {
+            # OK still running, lets wait a bit more (next loop)
+        } else {
+            # process not running --> must have encountered an error
+            return 1  
+        }
+
+        # check if the script should be killed (ctrl+C pressed)
+        $ret = checkForCtrlC    
+        if ($ret -eq 1) {
+            return 2
+        }
+    }
+    return 0
+}
 
 # Check if ctrl+c was pressed
-# $1 ... pids to kill
 # return ... 0 if not pressed, 1 if pressed
 function checkForCtrlC () {
-    Param(
-        $1
-    )
     If ($Host.UI.RawUI.KeyAvailable -and ($Key = $Host.UI.RawUI.ReadKey("AllowCtrlC,NoEcho,IncludeKeyUp"))) {
         If ([Int]$Key.Character -eq 3) {
             return 1
@@ -232,11 +276,9 @@ function killAllWithChildren {
     Param(
         $1
     )
-    echo "`nShutting down..."
     foreach ($i in $1) {
         KillWithChildren $i
     }
-    echo "All done."
 }
 
 # $1 ... help
