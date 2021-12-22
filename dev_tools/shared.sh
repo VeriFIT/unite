@@ -209,7 +209,7 @@ waitForUrlOnline()
         if [ "$4" -ne "0" ] && [ "$COUNTER" -ge "$4" ]; then # only check timout if there is one
             return 1
         fi
-        counter="$((counter+1))"
+        COUNTER="$((COUNTER+1))"
     done
     return 0
 }

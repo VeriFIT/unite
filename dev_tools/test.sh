@@ -78,7 +78,7 @@ main() {
         echo "Booting up the Universal Analysis Adapter"
         "$ADAPTER_ROOT_DIR/run_all.sh" &>/dev/null &
         PROCESS_PID=$!
-        waitForUrlOnline "$analysis_url" "$PROCESS_PID" # poll the analysis adapter because that one starts last in the run script
+        waitForUrlOnline "$analysis_url" "$PROCESS_PID" "$SLEEP" 0 # poll the analysis adapter because that one starts last in the run script
         ret="$?"
         if [ "$ret" -eq 0 ]; then
             echo -e "Adapter up and running\n"

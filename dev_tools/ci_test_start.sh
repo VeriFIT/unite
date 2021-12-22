@@ -37,7 +37,6 @@ main () {
     "$ADAPTER_ROOT_DIR/run_all.sh" &>/dev/null &
     PROCESS_PID=$!
 
-
     echo "triplestore"
     waitForUrlOnline "$triplestore_url" "$PROCESS_PID" "$SLEEP" 40 # 40 * 3 = 120 seconds
     ret="$?"
