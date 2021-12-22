@@ -43,7 +43,7 @@ All configuration files should be placed into the *cloned_repo*/conf directory. 
 Make sure you run a build script (build.sh or build.bat) before attempting to run anything, or use the -b parameter when running the run_all script!
 
 #### Option 1) Run all at once
-The easiest way to run the Universal Analysis Adapter. Outputs of all three components of the Adapter will be saved in a *cloned_repo*/log directory.
+The easiest way to run Unite. Outputs of all three components of the Adapter will be saved in a *cloned_repo*/log directory.
 
 ##### Linux
 - Use the run_all.sh script. Then use ctrl+c to exit.

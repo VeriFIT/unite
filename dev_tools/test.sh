@@ -75,7 +75,7 @@ main() {
     analysis_url="$(lookupAnalysisURL "$ADAPTER_ROOT_DIR")"
 
     if [ -z "$liveAdapterFlag" ]; then
-        echo "Booting up the Universal Analysis Adapter"
+        echo "Booting up Unite"
         "$ADAPTER_ROOT_DIR/run_all.sh" &>/dev/null &
         PROCESS_PID=$!
         waitForUrlOnline "$analysis_url" "$PROCESS_PID" "$SLEEP" 0 # poll the analysis adapter because that one starts last in the run script
