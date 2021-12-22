@@ -88,13 +88,21 @@ $triplestore_url = lookupTriplestoreURL "$ROOTDIR"
 $compilation_url = lookupCompilationURL "$ROOTDIR"
 $analysis_url = lookupAnalysisURL "$ROOTDIR"
 
-## create log files and append headings
+# create log files and append headings
 mkdir -Force "$ROOTDIR\logs" > $null
 $CURTIME=$(date).ToString("yyyy-MM-dd_HH.mm.ss")
 $CURTIME_FORLOG=$(date).ToString("yyyy-MM-dd_HH:mm:ss")
 echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR\logs\triplestore_$CURTIME.log"
 echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR\logs\compilation_$CURTIME.log"
 echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR\logs\analysis_$CURTIME.log"
+
+
+# rotate log files (delete all but last 5)
+cd "$ROOTDIR/logs"
+foreach( $log in ls -name | Sort-Object | out-string -stream | Select-String -Pattern triplestore_.*\.log | select -SkipLast 5) { rm "$log"}
+foreach( $log in ls -name | Sort-Object | out-string -stream | Select-String -Pattern compilation_.*\.log | select -SkipLast 5) { rm "$log"}
+foreach( $log in ls -name | Sort-Object | out-string -stream | Select-String -Pattern analysis_.*\.log | select -SkipLast 5) { rm "$log"}
+cd $USRPATH
 
 # treat ctrl+c as input so that we can kill subprocesses (sleep and flush to properly flush input)
 [Console]::TreatControlCAsInput = $True
