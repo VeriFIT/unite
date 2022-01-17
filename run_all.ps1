@@ -90,8 +90,8 @@ $analysis_url = lookupAnalysisURL "$ROOTDIR"
 
 # create log files and append headings
 mkdir -Force "$ROOTDIR\logs" > $null
-$CURTIME=$(date).ToString("yyyy-MM-dd_HH.mm.ss")
-$CURTIME_FORLOG=$(date).ToString("yyyy-MM-dd_HH:mm:ss")
+$CURTIME=$(Get-Date).ToString("yyyy-MM-dd_HH.mm.ss")
+$CURTIME_FORLOG=$(Get-Date).ToString("yyyy-MM-dd_HH:mm:ss")
 echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR\logs\triplestore_$CURTIME.log"
 echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR\logs\compilation_$CURTIME.log"
 echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR\logs\analysis_$CURTIME.log"
