@@ -1,3 +1,8 @@
+### v2.5.1
+ - "get-date" instead of "date" in run_all script
+ - bug fix - oneinstanceonly typo
+   - the loaded property was matched as OneInstanceOnly instead of oneInstanceOnly (capital first letter) 
+
 ### v2.5.0
 - run & test scripts will now not wait forever when one of Unite's components fails to start
   - all scripts now poll the URL (as before) and also check whether the components process is still running (to return an error instead of waiting forever)
