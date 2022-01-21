@@ -10246,6 +10246,9 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
+											"// wait a bit for some outputs to get to stdout\r",
+											"// the execution should take over 5 seconds\r",
+											"setTimeout(function(){}, [2000]); // 2 second\r",
 											""
 										],
 										"type": "text/javascript"
