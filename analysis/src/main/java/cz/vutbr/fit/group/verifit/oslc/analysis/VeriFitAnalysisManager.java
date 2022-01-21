@@ -52,6 +52,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.NoSuchElementException;
 import org.eclipse.lyo.store.ModelUnmarshallingException;
 import org.eclipse.lyo.store.Store;
@@ -569,6 +572,27 @@ public class VeriFitAnalysisManager {
 	    		aResource.addContribution(fullContrib);
     		} catch (Exception e) {
     			log.warn("AutomationResult GET: Error while flattening Contributions as local - Contribution was probably deleted: " + e.getMessage());
+    		}
+    	}
+	}
+	
+	/**
+	 * Loads the file contents of "stdout" and "stderr" contributions for an Automation Result. 
+	 * Expects that these contributions have a filePath but do not have a value (or not an up to date one).
+	 * @param autoResult 
+	 * @throws IOException When the file read failed
+	 */
+	private static void getAutomationResultInProgressStdOutputs(AutomationResult autoResult) throws IOException
+	{
+		Set<Contribution> contribs = autoResult.getContribution();    
+    	for (Contribution contrib : contribs)
+    	{
+    		// load the file contents of "stdout" and "stderr" contributions
+    		if (contrib.getTitle().equals("stdout") || contrib.getTitle().equals("stderr"))
+    		{
+    			Path f = Paths.get(contrib.getFilePath());
+    			byte [] fileContents = Files.readAllBytes(f);
+    			contrib.setValue(new String(fileContents));
     		}
     	}
 	}
@@ -1385,13 +1409,26 @@ public class VeriFitAnalysisManager {
             storePool.releaseStore(store);
         }
         // Start of user code getAutomationResult_storeFinalize
-        
+
         // the triple store only returns the resource as a link not as an inlined one -- fetch their contents
         getAutomationResultLocalContributions(httpServletRequest, aResource);
-        
+                
         // End of user code
         
         // Start of user code getAutomationResult
+        
+        // if the automation result is still in progress, provide some infos about the run (such as stdout and stderr)
+        // TODO currently the database is only updated after the result execution finishes to avoid too much database communication
+        if (aResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_INPROGRESS))
+        {
+        	// load the current contents of stdout and stderr 		// TODO potential performance issue when stdout/err is huge
+        	try {
+				getAutomationResultInProgressStdOutputs(aResource);
+			} catch (IOException e) {
+				log.warn("Automation Result GET: Failed to get contents of stdout or stderr of the execution", e);
+			}
+        }
+        
         // End of user code
         return aResource;
     }
