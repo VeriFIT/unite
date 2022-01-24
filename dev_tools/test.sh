@@ -75,10 +75,18 @@ main() {
     analysis_url="$(lookupAnalysisURL "$ADAPTER_ROOT_DIR")"
 
     if [ -z "$liveAdapterFlag" ]; then
-        echo "Booting up the Universal Analysis Adapter"
+        echo "Booting up Unite"
         "$ADAPTER_ROOT_DIR/run_all.sh" &>/dev/null &
-        curl_poll "$analysis_url" "$SLEEP" 0 # poll the analysis adapter because that one starts last in the run script
-        echo -e "Adapter up and running\n"
+        PROCESS_PID=$!
+        waitForUrlOnline "$analysis_url" "$PROCESS_PID" "$SLEEP" 0 # poll the analysis adapter because that one starts last in the run script
+        ret="$?"
+        if [ "$ret" -eq 0 ]; then
+            echo -e "Adapter up and running\n"
+        else
+            echo -e "Adapter ${RED}failed${NC} to start!\n" # TODO give more details?
+            echo -e "\n\n  TESTS FAILED\n"
+            exit 1
+        fi
     else
         echo "Skipping Adapter boot. Adapter expected to be running already." 
         

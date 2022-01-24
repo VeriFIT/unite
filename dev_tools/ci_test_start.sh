@@ -35,9 +35,10 @@ main () {
 
     echo -e "Booting\n"
     "$ADAPTER_ROOT_DIR/run_all.sh" &>/dev/null &
+    PROCESS_PID=$!
 
     echo "triplestore"
-    curl_poll "$triplestore_url" "$SLEEP" 40 # 40 * 3 = 120 seconds
+    waitForUrlOnline "$triplestore_url" "$PROCESS_PID" "$SLEEP" 40 # 40 * 3 = 120 seconds
     ret="$?"
     if [ "$ret" -ne 0 ]; then
         tail "$ADAPTER_ROOT_DIR/logs/triplestore"*
@@ -46,7 +47,7 @@ main () {
     echo -e "running\n"
 
     echo "compilation"
-    curl_poll "$compilation_url" "$SLEEP" 40
+    waitForUrlOnline "$compilation_url" "$PROCESS_PID" "$SLEEP" 40
     ret="$?"
     if [ "$ret" -ne 0 ]; then
         tail "$ADAPTER_ROOT_DIR/logs/compilation"*
@@ -55,7 +56,7 @@ main () {
     echo -e "running\n"
 
     echo "analysis"
-    curl_poll "$analysis_url" "$SLEEP" 40
+    waitForUrlOnline "$analysis_url" "$PROCESS_PID" "$SLEEP" 40
     ret="$?"
     if [ "$ret" -ne 0 ]; then
         tail "$ADAPTER_ROOT_DIR/logs/analysis"*

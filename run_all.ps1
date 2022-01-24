@@ -38,24 +38,21 @@ $SLEEP=3
 # source shared utils
 . "$ROOTDIR\dev_tools\shared.ps1"
 
-# Waits for an Url to go online. Will kill all child processes if curl gets interrupted
-# $1 ... url to poll
-function waitForUrlOnline ()
+# exits this scripts while killing all the subprocesses 
+function exit_killall ()
 {
-    Param(
-        $1
-    )
-    $ret = curl_poll $1 $SLEEP
-    if ($ret -eq 1) {
-        killAllWithChildren $PIDS_TO_KILL
-        [Console]::TreatControlCAsInput = $False
-        exit 0
-    }
+    echo "`nShutting down..."
+    killAllWithChildren $PIDS_TO_KILL
+    echo "All done."
+    [Console]::TreatControlCAsInput = $False
+    exit 0
 }
 
 #
 # main
 #
+
+# check args
 if ($args.length -ne 0) {
     invalid_arg $args[0] "$USAGE"
 }
@@ -73,7 +70,7 @@ if ($b)
         exit $LastExitCode
     }
 }
-# just update conf
+# otherwise just update conf
 else {
     processConfFiles "$ROOTDIR"
 }
@@ -91,13 +88,21 @@ $triplestore_url = lookupTriplestoreURL "$ROOTDIR"
 $compilation_url = lookupCompilationURL "$ROOTDIR"
 $analysis_url = lookupAnalysisURL "$ROOTDIR"
 
-## create log files and append headings
+# create log files and append headings
 mkdir -Force "$ROOTDIR\logs" > $null
-$CURTIME=$(date).ToString("yyyy-MM-dd_HH.mm.ss")
-$CURTIME_FORLOG=$(date).ToString("yyyy-MM-dd_HH:mm:ss")
+$CURTIME=$(Get-Date).ToString("yyyy-MM-dd_HH.mm.ss")
+$CURTIME_FORLOG=$(Get-Date).ToString("yyyy-MM-dd_HH:mm:ss")
 echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR\logs\triplestore_$CURTIME.log"
 echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR\logs\compilation_$CURTIME.log"
 echo "########################################################`r`n    Running version: $VERSION`r`n    Started at: $CURTIME_FORLOG`r`n########################################################`r`n" > "$ROOTDIR\logs\analysis_$CURTIME.log"
+
+
+# rotate log files (delete all but last 5)
+cd "$ROOTDIR/logs"
+foreach( $log in ls -name | Sort-Object | out-string -stream | Select-String -Pattern triplestore_.*\.log | select -SkipLast 5) { rm "$log"}
+foreach( $log in ls -name | Sort-Object | out-string -stream | Select-String -Pattern compilation_.*\.log | select -SkipLast 5) { rm "$log"}
+foreach( $log in ls -name | Sort-Object | out-string -stream | Select-String -Pattern analysis_.*\.log | select -SkipLast 5) { rm "$log"}
+cd $USRPATH
 
 # treat ctrl+c as input so that we can kill subprocesses (sleep and flush to properly flush input)
 [Console]::TreatControlCAsInput = $True
@@ -119,9 +124,17 @@ if ($t)
 $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Triplestore'; cd '$ROOTDIR\sparql_triplestore'; .\run.ps1 >> '$ROOTDIR\logs\triplestore_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Triplestore to finish startup"
-echo "(If it takes too long, try checking the logs)"
-waitForUrlOnline $triplestore_url
-echo "Triplestore running (1/3)`n"
+$ret = waitForUrlOnline $triplestore_url $process.id $SLEEP
+if ($ret -eq 0) {
+    echo "Triplestore running (1/3)`n"
+} elseif ($ret -eq 1) {
+    echo "Triplestore ${RED}failed${NC} to start!"
+    echo "Try checking the logs, or run again with '-t' to see the logs during startup."
+    exit_killall
+} else {
+    exit_killall
+}
+
 
 
 ## start the compilation adapter
@@ -129,18 +142,32 @@ echo "Starting the Compilation adapter"
 $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; cd '$ROOTDIR\compilation' ; mvn jetty:run-exploded >> '$ROOTDIR\logs\compilation_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Compilation adapter to finish startup"
-echo "(If it takes too long, try checking the logs)"
-waitForUrlOnline $compilation_url
-echo "Compilation adapter running (2/3)`n"
+$ret = waitForUrlOnline $compilation_url $process.id $SLEEP
+if ($ret -eq 0) {
+    echo "Compilation adapter running (2/3)`n"
+} elseif ($ret -eq 1) {
+    echo "Compilation adapter failed to start!"
+    echo "Try checking the logs, or run again with '-t' to see the logs during startup."
+    exit_killall
+} else {
+    exit_killall
+}
 
 # start the analysis adapter
 echo "Starting the Analysis adapter"
 $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; cd '$ROOTDIR\analysis' ; mvn jetty:run-exploded >> '$ROOTDIR\logs\analysis_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Analysis adapter to finish startup"
-echo "(If it takes too long, try checking the logs)"
-waitForUrlOnline $analysis_url
-echo "Analysis adapter running (3/3)`n"
+$ret = waitForUrlOnline $analysis_url $process.id $SLEEP
+if ($ret -eq 0) {
+    echo "Analysis adapter running (3/3)`n"
+} elseif ($ret -eq 1) {
+    echo "Analysis adapter failed to start!"
+    echo "Try checking the logs, or run again with '-t' to see the logs during startup."
+    exit_killall
+} else {
+    exit_killall
+}
 
 echo "Ready to go!"
 echo "Use ctrl+c to exit..."
@@ -150,8 +177,6 @@ While ($true) {
     Start-Sleep -s 1 # sleep for 1 second
     $ret = checkForCtrlC
     if ($ret -eq 1) {
-        killAllWithChildren $PIDS_TO_KILL
-        [Console]::TreatControlCAsInput = $False
-        exit 0
+        exit_killall
     }
 }

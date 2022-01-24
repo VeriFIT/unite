@@ -97,6 +97,13 @@ main () {
     echo -e "########################################################\n    Running version: $VERSION\n    Started at: $CURTIME\n########################################################\n" > "$ROOTDIR/logs/compilation_$CURTIME.log"
     echo -e "########################################################\n    Running version: $VERSION\n    Started at: $CURTIME\n########################################################\n" > "$ROOTDIR/logs/analysis_$CURTIME.log"
 
+    # rotate log files (delete all but last 5)
+    cd "$ROOTDIR/logs"
+    for log in `ls | grep triplestore_.*\.log | head -n -5` ; do rm $log ; done
+    for log in `ls | grep compilation_.*\.log | head -n -5` ; do rm $log ; done
+    for log in `ls | grep analysis_.*\.log | head -n -5` ; do rm $log ; done
+    cd -
+
     # open new terminals that tail the log files and record their PIDs to kill later
     if [ -n "$ARG_TAIL" ]; then
         gnome-terminal --title="tail: Triplestore Log (feel free to close this window)" -- /bin/bash -c "tail -f \"$ROOTDIR/logs/../logs/../logs/triplestore_$CURTIME.log\"" # funny path /logs/../logs/../logs/ to avoid killing unwanted tail commands 
@@ -107,30 +114,52 @@ main () {
     # start the triplestore
     echo "Starting the Triplestore"
     "$ROOTDIR/sparql_triplestore/run.sh" &> "$ROOTDIR/logs/triplestore_$CURTIME.log" &
+    PROCESS_PID=$!
     echo -e "Waiting for the Triplestore to finish startup"
-    echo -e "(If it takes too long, try checking the logs)"         # TODO rework to check if PID is still going to be able to detect failed start instead of wating for ever
-    curl_poll "$triplestore_url" "$SLEEP" 0
-    echo -e "Triplestore ${GREEN}running${NC} (1/3)\n"
+    waitForUrlOnline "$triplestore_url" "$PROCESS_PID" "$SLEEP" 0
+    ret="$?"
+    if [ "$ret" -eq 0 ]; then
+        echo -e "Triplestore ${GREEN}running${NC} (1/3)\n"
+    else
+        echo -e "Triplestore ${RED}failed${NC} to start!\n"
+        echo -e "Try checking the log $ROOTDIR/logs/triplestore_$CURTIME.log\nor run again with '-t' to see the logs during startup.\n"
+        killall # exit
+    fi
 
     # start the compilation adapter
     echo "Starting the Compilation adapter"
     cd "$ROOTDIR/compilation"
     mvn jetty:run-exploded &> "$ROOTDIR/logs/compilation_$CURTIME.log" &
+    PROCESS_PID=$!
+    echo $PROCESS_PID
     cd - > /dev/null
     echo -e "Waiting for the Compilation adapter to finish startup"
-    echo -e "(If it takes too long, try checking the logs)"
-    curl_poll "$compilation_url" "$SLEEP" 0
-    echo -e "Compilation adapter ${GREEN}running${NC} (2/3)\n"
+    waitForUrlOnline "$compilation_url" "$PROCESS_PID" "$SLEEP" 0
+    ret="$?"
+    if [ "$ret" -eq 0 ]; then
+        echo -e "Compilation adapter ${GREEN}running${NC} (2/3)\n"
+    else
+        echo -e "Compilation adapter ${RED}failed${NC} to start!\n"
+        echo -e "Try checking the log $ROOTDIR/logs/compilation_$CURTIME.log\nor run again with '-t' to see the logs during startup.\n"
+        killall # exit
+    fi
 
     # start the analysis adapter
     echo "Starting the Analysis adapter"
     cd "$ROOTDIR/analysis"
     mvn jetty:run-exploded &> "$ROOTDIR/logs/analysis_$CURTIME.log" &
+    PROCESS_PID=$!
     cd - > /dev/null
     echo -e "Waiting for the Analysis adapter to finish startup"
-    echo -e "(If it takes too long, try checking the logs)"
-    curl_poll "$analysis_url" "$SLEEP" 0
-    echo -e "Analysis adapter ${GREEN}running${NC} (3/3)\n"
+    waitForUrlOnline "$analysis_url" "$PROCESS_PID" "$SLEEP" 0
+    ret="$?"
+    if [ "$ret" -eq 0 ]; then
+        echo -e "Analysis adapter ${GREEN}running${NC} (3/3)\n"
+    else
+        echo -e "Analysis adapter ${RED}failed${NC} to start!\n"
+        echo -e "Try checking the log $ROOTDIR/logs/analysis_$CURTIME.log\nor run again with '-t' to see the logs during startup.\n"
+        killall # exit
+    fi
 
     echo -e "${GREEN}Ready to go!${NC}"
     echo "Use ctrl+c to exit..."

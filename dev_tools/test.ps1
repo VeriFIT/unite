@@ -43,6 +43,17 @@ $PIDS_TO_KILL=@()
 # source shared utils
 . "$ADAPTER_ROOT_DIR\dev_tools\shared.ps1"
 
+
+# exits this scripts while killing all the subprocesses 
+function exit_killall ()
+{
+    echo "`Aborting..."
+    killAllWithChildren $PIDS_TO_KILL
+    echo "All done."
+    [Console]::TreatControlCAsInput = $False
+    exit 0
+}
+
 #
 # main
 #
@@ -62,12 +73,33 @@ echo "`nNOTE2:`n  If this script gets killed prematurely, then multiple minimize
 $analysis_url = lookupAnalysisURL "$ADAPTER_ROOT_DIR"
 
 
+
 if ( ! $l ) {
-    echo "Booting up the Universal Analysis Adapter"
-    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Universal Analysis Adapter'; & '$ADAPTER_ROOT_DIR\run_all.ps1' -t ; pause" -passthru
+    
+    # treat ctrl+c as input so that we can kill subprocesses (sleep and flush to properly flush input)
+    # used to catch it and do our own handeling
+    [Console]::TreatControlCAsInput = $True
+    Start-Sleep -Seconds 1
+    $Host.UI.RawUI.FlushInputBuffer()
+
+    echo "Booting up Unite"
+    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Unite'; & '$ADAPTER_ROOT_DIR\run_all.ps1' -t ; pause" -passthru
     $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
-    $ret = curl_poll $analysis_url $SLEEP  # poll the analysis adapter because that one starts last in the run script
-    echo "Adapter up and running`n"
+    $ret = waitForUrlOnline $analysis_url $process.id $SLEEP  # poll the analysis adapter because that one starts last in the run script
+    if ($ret -eq 0) {
+        echo "Adapter up and running`n"
+    } elseif ($ret -eq 1) {
+        echo "Adapter failed to start!\n" # TODO give more details?
+        echo "`n`n  TESTS FAILED\n"
+        exit 1
+    } else {
+        # interrupted by ctrl+c
+        exit_killall
+    }
+
+    # dont treat ctrl+c as input anymore
+    [Console]::TreatControlCAsInput = $False # TODO the adapter will stay hanging if the test suite is killed
+
 } else {
     echo "Skipping Adapter boot. Adapter expected to be running already."
 

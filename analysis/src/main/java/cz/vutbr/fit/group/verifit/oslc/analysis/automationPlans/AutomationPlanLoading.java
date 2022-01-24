@@ -198,7 +198,7 @@ public class AutomationPlanLoading {
         }
         String toolSpecificArgs = autoPlanProps.getProperty("toolSpecificArgs");
         toolSpecificArgs = (toolSpecificArgs == null ? "" : toolSpecificArgs); // default value
-        Boolean OneInstanceOnly = Boolean.parseBoolean(autoPlanProps.getProperty("OneInstanceOnly"));
+        Boolean OneInstanceOnly = Boolean.parseBoolean(autoPlanProps.getProperty("oneInstanceOnly"));
         OneInstanceOnly = (OneInstanceOnly == null ? false : OneInstanceOnly); // default value
         
         return new AutomationPlanConf(

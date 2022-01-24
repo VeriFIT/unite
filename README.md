@@ -1,5 +1,5 @@
-# Universal OSLC Analysis Adapter
-author: Ondrej Vasicek, xvasic25@stud.fit.vutbr.cz
+# Unite
+author: Ondrej Vasicek, ivasicek@fit.vut.cz
 
 This is a development repository of *Unite* (UNIversal analysis adapTEr based on the OSLC standard) which aims to provide an easy way of adding an OSLC Automation interface to as many analysis tools as possible by leveraging their command-line similarities. The adapter consists of two main components - Analysis Adapter and Compilation Adapter. The Compilation Adapter manages SUT resources, and the Analysis Adapter executes analysis on SUT resources using any configured analysis tool. The repository also includes a distribution of Jetty with an Apache Fuseki WAR for user's convenience (to make the setup process easier) which allows the adapter to be connected to a SPARQL triplestore for resource persistence and query capabilities.
 
@@ -43,7 +43,7 @@ All configuration files should be placed into the *cloned_repo*/conf directory. 
 Make sure you run a build script (build.sh or build.bat) before attempting to run anything, or use the -b parameter when running the run_all script!
 
 #### Option 1) Run all at once
-The easiest way to run the Universal Analysis Adapter. Outputs of all three components of the Adapter will be saved in a *cloned_repo*/log directory.
+The easiest way to run Unite. Outputs of all three components of the Adapter will be saved in a *cloned_repo*/log directory.
 
 ##### Linux
 - Use the run_all.sh script. Then use ctrl+c to exit.
