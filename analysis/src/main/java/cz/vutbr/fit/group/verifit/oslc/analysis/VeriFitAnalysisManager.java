@@ -52,6 +52,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.NoSuchElementException;
 import org.eclipse.lyo.store.ModelUnmarshallingException;
 import org.eclipse.lyo.store.Store;
@@ -573,6 +576,27 @@ public class VeriFitAnalysisManager {
     	}
 	}
 	
+	/**
+	 * Loads the file contents of "stdout" and "stderr" contributions for an Automation Result. 
+	 * Expects that these contributions have a filePath but do not have a value (or not an up to date one).
+	 * @param autoResult 
+	 * @throws IOException When the file read failed
+	 */
+	private static void getAutomationResultInProgressStdOutputs(AutomationResult autoResult) throws IOException
+	{
+		Set<Contribution> contribs = autoResult.getContribution();    
+    	for (Contribution contrib : contribs)
+    	{
+    		// load the file contents of "stdout" and "stderr" contributions
+    		if (contrib.getTitle().equals("stdout") || contrib.getTitle().equals("stderr"))
+    		{
+    			Path f = Paths.get(contrib.getFilePath());
+    			byte [] fileContents = Files.readAllBytes(f);
+    			contrib.setValue(new String(fileContents));
+    		}
+    	}
+	}
+	
 
 	/**
 	 * Version of the updateAutomationRequest API function that is called by the adapter itself.
@@ -616,6 +640,21 @@ public class VeriFitAnalysisManager {
         AutomationResult updatedResource = null;
         aResource.setModified(new Date());
   
+
+        // Contribution resources need to be updated separately (not as part of the A.Result)
+        // to do that we need to remove all their attributes except "about" for the initial update
+        // and then update them one by one explicitly
+        // (this might be caused by a bug in lyo.store)
+		Set<Contribution> fullContributions = aResource.getContribution();
+        aResource.clearContribution();
+    	for (Contribution contrib : fullContributions)
+    	{
+    		Contribution contribWithAboutOnly = new Contribution();
+    		contribWithAboutOnly.setAbout(contrib.getAbout());
+    		aResource.addContribution(contribWithAboutOnly);
+    	}
+    	
+    	// now update the A.Result
         Store store = storePool.getStore();
         URI uri = VeriFitAnalysisResourcesFactory.constructURIForAutomationResult(id);
         if (!store.resourceExists(storePool.getDefaultNamedGraphUri(), uri)) {
@@ -631,6 +670,16 @@ public class VeriFitAnalysisManager {
         } finally {
             storePool.releaseStore(store);
         }
+        
+        // update the individual Contributions
+    	for (Contribution contrib : fullContributions)
+    	{
+    		VeriFitAnalysisManager.updateContribution(null, contrib, Utils.getResourceIdFromUri(contrib.getAbout()));
+    	}
+    	
+    	// restore the A.Result's contributions to their original versions 
+    	aResource.setContribution(fullContributions);
+        
         updatedResource = aResource;
         return updatedResource;
     }
@@ -1385,13 +1434,26 @@ public class VeriFitAnalysisManager {
             storePool.releaseStore(store);
         }
         // Start of user code getAutomationResult_storeFinalize
-        
+
         // the triple store only returns the resource as a link not as an inlined one -- fetch their contents
         getAutomationResultLocalContributions(httpServletRequest, aResource);
-        
+                
         // End of user code
         
         // Start of user code getAutomationResult
+        
+        // if the automation result is still in progress, provide some infos about the run (such as stdout and stderr)
+        // TODO currently the database is only updated after the result execution finishes to avoid too much database communication
+        if (aResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_INPROGRESS))
+        {
+        	// load the current contents of stdout and stderr 		// TODO potential performance issue when stdout/err is huge
+        	try {
+				getAutomationResultInProgressStdOutputs(aResource);
+			} catch (IOException e) {
+				log.warn("Automation Result GET: Failed to get contents of stdout or stderr of the execution", e);
+			}
+        }
+        
         // End of user code
         return aResource;
     }
@@ -1516,6 +1578,8 @@ public class VeriFitAnalysisManager {
         updatedResource.setCreator(aResource.getCreator());
         updatedResource.setContributor(aResource.getContributor());
         updatedResource.setExtendedProperties(aResource.getExtendedProperties());
+        // caution updating Contribution resources! -- seems like lyo.store doesnt update those properly as local resources (they would have duplicate attribute values)
+        
         
         // for the generated code below
         aResource = updatedResource;

@@ -163,48 +163,48 @@ public class SutAnalyse extends RequestRunner
 			
 	
 		    // prepare Contribution resources
-			Contribution executionTime = VeriFitAnalysisResourcesFactory.createContribution("executionTime");
+			Contribution executionTime = VeriFitAnalysisResourcesFactory.createContribution(this.resAutoResultId + "-" + "executionTime");
 			executionTime.setDescription("Total execution time of the analysis in milliseconds.");
 			executionTime.setTitle("executionTime");
 			executionTime.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
 		    
-			Contribution statusMessage = VeriFitAnalysisResourcesFactory.createContribution("statusMessage");
+			Contribution statusMessage = VeriFitAnalysisResourcesFactory.createContribution(this.resAutoResultId + "-" + "statusMessage");
 			statusMessage.setDescription("Status messages from the adapter about the execution.");
 			statusMessage.setTitle("statusMessage");
 			statusMessage.setValue("");
 			statusMessage.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 		    
-			Contribution returnCode = VeriFitAnalysisResourcesFactory.createContribution("returnCode");
+			Contribution returnCode = VeriFitAnalysisResourcesFactory.createContribution(this.resAutoResultId + "-" + "returnCode");
 			returnCode.setDescription("Return code of the execution. If non-zero, then the verdict will be #failed.");
 			returnCode.setTitle("returnCode");
 			returnCode.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);	
 			
-			Contribution analysisStdout = VeriFitAnalysisResourcesFactory.createContribution("stdout");
+			Contribution analysisStdout = VeriFitAnalysisResourcesFactory.createContribution(this.resAutoResultId + "-" + "stdout");
 		    analysisStdout.setDescription("Standard output of the analysis.");
 		    analysisStdout.setTitle("stdout");
 		    analysisStdout.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 		    
-		    Contribution analysisStderr = VeriFitAnalysisResourcesFactory.createContribution("stderr");
+		    Contribution analysisStderr = VeriFitAnalysisResourcesFactory.createContribution(this.resAutoResultId + "-" + "stderr");
 		    analysisStderr.setDescription("Error output of the analysis.");
 		    analysisStderr.setTitle("stderr");
 		    analysisStderr.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 		    
-			Contribution beforeCmdStdout = VeriFitAnalysisResourcesFactory.createContribution("beforeCommandStdout");
+			Contribution beforeCmdStdout = VeriFitAnalysisResourcesFactory.createContribution(this.resAutoResultId + "-" + "beforeCommandStdout");
 			beforeCmdStdout.setDescription("Standard output of the beforeCommand.");
 			beforeCmdStdout.setTitle("beforeCommandStdout");
 			beforeCmdStdout.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 		    
-		    Contribution beforeCmdStderr = VeriFitAnalysisResourcesFactory.createContribution("beforeCommandStderr");
+		    Contribution beforeCmdStderr = VeriFitAnalysisResourcesFactory.createContribution(this.resAutoResultId + "-" + "beforeCommandStderr");
 		    beforeCmdStderr.setDescription("Error output of the beforeCommand.");
 		    beforeCmdStderr.setTitle("beforeCommandStderr");
 		    beforeCmdStderr.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 		    
-			Contribution afterCmdStdout = VeriFitAnalysisResourcesFactory.createContribution("afterCommandStdout");
+			Contribution afterCmdStdout = VeriFitAnalysisResourcesFactory.createContribution(this.resAutoResultId + "-" + "afterCommandStdout");
 			afterCmdStdout.setDescription("Standard output of the afterCommand.");
 			afterCmdStdout.setTitle("afterCommandStdout");
 			afterCmdStdout.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
 		    
-		    Contribution afterCmdStderr = VeriFitAnalysisResourcesFactory.createContribution("afterCommandStderr");
+		    Contribution afterCmdStderr = VeriFitAnalysisResourcesFactory.createContribution(this.resAutoResultId + "-" + "afterCommandStderr");
 		    afterCmdStderr.setDescription("Error output of the afterCommand.");
 		    afterCmdStderr.setTitle("afterCommandStderr");
 		    afterCmdStderr.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
@@ -284,7 +284,18 @@ public class SutAnalyse extends RequestRunner
 		    ExecutionResult analysisRes = null;
 		    if (executionVerdict.equals(OslcValues.AUTOMATION_VERDICT_PASSED)) 
 		    {
-			    analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), "_analysis_" + this.execAutoRequestId, this.filesToDeleteIfInterrupted, envVariables);
+		    	
+		    	// add file URIs to standard output contributions, add them to the automation result, and update it in the triplestore 
+		    	// this allows clients to query the contents of stdout and stderr during execution
+		    	String stdOutputsIdentifier = "_analysis_" + this.execAutoRequestId;
+		    	analysisStdout.setFilePath(SUTdirAsPath.resolve(".adapter/stdout" + stdOutputsIdentifier).toAbsolutePath().toString());		// TODO HACK has to match the path used in executeString()
+		    	analysisStderr.setFilePath(SUTdirAsPath.resolve(".adapter/stderr" + stdOutputsIdentifier).toAbsolutePath().toString());		// TODO HACK 
+		    	resAutoResult.addContribution(analysisStdout);
+				resAutoResult.addContribution(analysisStderr);
+				VeriFitAnalysisManager.internalUpdateAutomationResult(resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
+				
+				// start execution
+			    analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), stdOutputsIdentifier, this.filesToDeleteIfInterrupted, envVariables);
 				statusMessage.appendValue("Executing analysis: " + stringToExecute + "\n   as: " + analysisRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
 				if (analysisRes.exceptionThrown != null)
 				{
@@ -307,12 +318,6 @@ public class SutAnalyse extends RequestRunner
 		    		executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
 		    		statusMessage.appendValue("Analysis completed successfully\n");
 		    	}
-
-		    	// add file URIs to standard output contributions and add them to the automation result
-		    	analysisStdout.setFilePath(analysisRes.stdoutFile.getAbsolutePath());
-		    	resAutoResult.addContribution(analysisStdout);
-		    	analysisStderr.setFilePath(analysisRes.stderrFile.getAbsolutePath());
-				resAutoResult.addContribution(analysisStderr);
 
 				// add general compilation Contributions to the Automation Result
 				executionTime.setValue(Long.toString(analysisRes.totalTime));
@@ -412,8 +417,7 @@ public class SutAnalyse extends RequestRunner
 				try {
 					Set<Contribution> parsedContributions = FilterManager.filterContributionsForTool(
 							autoPlanConf.getFilter(outputFilter),
-							resAutoResult.getContribution(),
-							this.resAutoResultId + "-"
+							resAutoResult.getContribution()
 							);
 					resAutoResult.setContribution(parsedContributions);
 					statusMessage.appendValue("Applying output filters\n");
@@ -503,7 +507,7 @@ public class SutAnalyse extends RequestRunner
 	}
 
 	private Contribution zipAllFileContributions(Collection<File> modifFiles, String zipName, Path zipDir) throws IOException {
-		Contribution zipedContribs = VeriFitAnalysisResourcesFactory.createContribution("zipedOutputs");
+		Contribution zipedContribs = VeriFitAnalysisResourcesFactory.createContribution(this.resAutoResultId + "-" + "zipedOutputs");
 		Path pathToZip = zipDir.resolve(zipName);
 
 		File newZipFile = Utils.zipFiles(modifFiles, zipDir, pathToZip);
@@ -560,7 +564,7 @@ public class SutAnalyse extends RequestRunner
 		int id_counter = 0;
 		for (File currFile : modifFiles)
 		{
-			Contribution newContrib = VeriFitAnalysisResourcesFactory.createContribution("file" + id_counter);
+			Contribution newContrib = VeriFitAnalysisResourcesFactory.createContribution(this.resAutoResultId + "-" + "file" + id_counter);
 		    newContrib.setFilePath(currFile.getPath());
 		    newContrib.setDescription("File produced or modified during execution of this Automation Request. "
 		    		+ "To download the file directly send a GET accepting application/octet-stream to the URI of this resource. "

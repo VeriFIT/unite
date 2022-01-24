@@ -1,3 +1,9 @@
+### v2.6.0
+ - Contents of stdout and stderr of executed analysis can now be polled by clients while the analysis is in progress
+ - Automation Result updates changed to update Contribution resources explicitly one by one instead of as part of the
+   whole A.Result. Otherwise the update would be incorrect and cause the Contributions to have duplicate values for 
+   their updated properties. This is likely a bug in lyo.store (or me not understanding SPARQL properly).
+
 ### v2.5.1
  - "get-date" instead of "date" in run_all script
  - bug fix - oneinstanceonly typo

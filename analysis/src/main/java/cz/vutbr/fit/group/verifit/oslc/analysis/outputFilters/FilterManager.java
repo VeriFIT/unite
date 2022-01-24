@@ -111,9 +111,8 @@ public final class FilterManager {
      * or even create new ones based on the original ones.
      * @param filter				name of the filter to use
      * @param outputContributions	contributions produced by the tool
-     * @param prefixID				String to use as the beginning of all output contribution IDs
      */
-    public static Set<Contribution> filterContributionsForTool(IFilter filter, Set<Contribution> outputContributions, String prefixId)
+    public static Set<Contribution> filterContributionsForTool(IFilter filter, Set<Contribution> outputContributions)
     {
     	// prepare the filter input
     	List<Map<String,String>> contributionsForFilter = new LinkedList<Map<String,String>>();
@@ -165,7 +164,7 @@ public final class FilterManager {
     		}
     		
     		// create new contribution base on the Map element
-			Contribution newContrib = VeriFitAnalysisResourcesFactory.createContribution(prefixId + id);
+			Contribution newContrib = VeriFitAnalysisResourcesFactory.createContribution(id);
 			newContrib.setTitle(title);
 			newContrib.setValue(value);
 			newContrib.setDescription(description);
