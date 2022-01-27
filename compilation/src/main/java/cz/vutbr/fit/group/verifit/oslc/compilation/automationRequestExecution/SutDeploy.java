@@ -231,7 +231,7 @@ public class SutDeploy extends RequestRunner
 			// compile source file if the fetching did not fail and compilation was requested
 			if (performCompilation)
 			{
-				ExecutionResult compRes = executeString(folderPath, paramBuildCommand, 0, "_compilation_" + this.execAutoRequestId, this.filesToDeleteIfInterrupted, null);
+				ExecutionResult compRes = executeString(folderPath, paramBuildCommand, 0, "_compilation_" + this.execAutoRequestId, this.filesToDeleteIfInterrupted, null, VeriFitCompilationProperties.CONFIG_OS);
 				statusMessage.appendValue("Executing: " + paramBuildCommand + "\n   as: " + compRes.executedString + "\n   In dir: " + folderPath + "\n");
 				if (compRes.exceptionThrown != null)
 				{

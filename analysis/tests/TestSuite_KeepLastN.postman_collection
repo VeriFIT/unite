@@ -6,55 +6,6 @@
 	},
 	"item": [
 		{
-			"name": "get OS to adjust the test suite",
-			"item": [
-				{
-					"name": "get OS",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response code should be 200 (OK)\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.globals.set(\"currentOS\", pm.response.text());"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{server_address}}/{{server_context}}/services/resources/getOS",
-							"host": [
-								"{{server_address}}"
-							],
-							"path": [
-								"{{server_context}}",
-								"services",
-								"resources",
-								"getOS"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "check keep last N (10)",
 			"item": [
 				{
