@@ -1,3 +1,8 @@
+### v2.6.0
+- It is now possible to choose between Powershell and CMD on Windows
+  - Use the configuration files (VeriFitAnalysis.properties, VeriFitCompilation.properties) to choose which 
+    shell to use by changing the "config_win_shell" property (values "windows_ps1" or "windows_bat").
+
 ### v2.5.0
 - Contents of stdout and stderr of executed analysis can now be polled by clients while the analysis is in progress
 - run & test scripts will now not wait forever when one of Unite's components fails to start
