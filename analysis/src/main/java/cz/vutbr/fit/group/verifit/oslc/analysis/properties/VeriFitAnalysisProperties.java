@@ -14,6 +14,8 @@ package cz.vutbr.fit.group.verifit.oslc.analysis.properties;
 
 import org.apache.commons.lang3.SystemUtils;
 
+import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.RequestRunner.ConfigOs;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -39,12 +41,16 @@ public class VeriFitAnalysisProperties
 	private static void setDummyToolPath()
 	{
 		// dummy
-		if (SystemUtils.IS_OS_LINUX)
+		if (VeriFitAnalysisProperties.CONFIG_OS == ConfigOs.LINUX)
 		{
 			DUMMYTOOL_PATH = Paths.get("tests/resources/dummy_tool.sh").toFile().getAbsolutePath();
 			
 		}
-		else if (SystemUtils.IS_OS_WINDOWS)
+		else if (VeriFitAnalysisProperties.CONFIG_OS == ConfigOs.WINDOWS_BAT)
+		{
+			DUMMYTOOL_PATH = Paths.get("tests/resources/dummy_tool.bat").toFile().getAbsolutePath();
+		}
+		else // if (VeriFitAnalysisProperties.CONFIG_OS == ConfigOs.WINDOWS_PS1)
 		{
 			DUMMYTOOL_PATH = Paths.get("tests/resources/dummy_tool.ps1").toFile().getAbsolutePath();
 		}
@@ -122,6 +128,28 @@ public class VeriFitAnalysisProperties
 			throw new IOException("failed to parse keep_last_n value - positive non-zero integer expected");
 			
 		}
+
+		
+		if (SystemUtils.IS_OS_LINUX) {
+			CONFIG_OS = ConfigOs.LINUX;
+			CONFIG_OS_STR = "linux";
+		} else {
+			String str_CONFIG_OS;
+			str_CONFIG_OS = VeriFitAnalysisProperties.getProperty("config_win_shell");	
+			if (str_CONFIG_OS == null)
+				throw new IOException("config_win_shell missing");
+			try {
+				if (str_CONFIG_OS.equalsIgnoreCase("windows_bat"))
+					CONFIG_OS = ConfigOs.WINDOWS_BAT;
+				else if (str_CONFIG_OS.equalsIgnoreCase("windows_ps1"))
+					CONFIG_OS = ConfigOs.WINDOWS_PS1;
+				else
+					throw new Exception();
+			} catch (Exception e) {
+				throw new IOException("failed to parse config_win_shell value - options are \"windows_ps1\" or \"windows_bat\"");
+			}
+			CONFIG_OS_STR = str_CONFIG_OS;
+		}
 	}
 	
 	/**
@@ -160,7 +188,9 @@ public class VeriFitAnalysisProperties
     
     public static Boolean KEEP_LAST_N_ENABLED;
     public static long KEEP_LAST_N;
-    
+
+	public static ConfigOs CONFIG_OS;
+	public static String CONFIG_OS_STR;    
     
     /*
      *  Internal constants

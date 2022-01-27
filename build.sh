@@ -34,6 +34,12 @@ main () {
         esac
     done
 
+    # firt check that the required utilities are available
+    if ! type "mvn" &> /dev/null; then
+        echo -e "\nERORR: The '${RED}mvn${NC}' utility is required by Unite but is ${RED}not available${NC}.\n"
+        exit "$?"
+    fi
+
     echo
     echo "############################################################"
     echo "    Processing configuration files"

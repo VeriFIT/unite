@@ -6,55 +6,6 @@
 	},
 	"item": [
 		{
-			"name": "get OS to adjust the test suite",
-			"item": [
-				{
-					"name": "get OS",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response code should be 200 (OK)\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.globals.set(\"currentOS\", pm.response.text());"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{server_address}}/{{server_context}}/services/resources/getOS",
-							"host": [
-								"{{server_address}}"
-							],
-							"path": [
-								"{{server_context}}",
-								"services",
-								"resources",
-								"getOS"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "anaconda",
 			"item": [
 				{
@@ -110,7 +61,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>analysis test</dcterms:title>\n\t<dcterms:description>analysis test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{compilation_provider}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n        <oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/bank.zip</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n        <oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>unpackZip</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>make</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./bank</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>analysis test</dcterms:title>\n\t<dcterms:description>analysis test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{compilation_provider}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n        <oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFilePath</oslc:name>\n\t\t\t<rdf:value>./tests/resources/bank.zip</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n        <oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>unpackZip</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>make</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./bank</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{compilation_provider}}/services/resources/createAutomationRequest",
@@ -2217,7 +2168,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>analysis test</dcterms:title>\n\t<dcterms:description>analysis test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{compilation_provider}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceGit</oslc:name>\n\t\t\t<rdf:value>https://github.com/od42/test.git</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>analysis test</dcterms:title>\n\t<dcterms:description>analysis test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{compilation_provider}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFilePath</oslc:name>\n\t\t\t<rdf:value>./tests/resources/test-master.zip</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n        <oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>unpackZip</oslc:name>\n\t\t\t<rdf:value>true</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n    \n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{compilation_provider}}/services/resources/createAutomationRequest",

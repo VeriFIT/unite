@@ -104,6 +104,14 @@ public abstract class RequestRunner extends Thread {
 		public String executedString;
 		public Exception exceptionThrown;
 	};
+	/**
+	 * Enum for supported OS versions --> controls which shell to use
+	 */
+	public enum ConfigOs {
+		LINUX,
+		WINDOWS_PS1,
+		WINDOWS_BAT
+	}
 
 	/**
 	 * Places the stringToExecute into a script file and then executes that script using OS specific shell in a directory while
@@ -116,11 +124,12 @@ public abstract class RequestRunner extends Thread {
 	 *                        means no time limit
 	 * @param id 			  Identifier that is appended to the stdout and stderr output file names (e.g. id="1" -> "stdout1", "stderr1")
 	 * @param filesToDeleteIfInterrupted	A collection of Files to be deleted in case the execution is interrupted. An output parameter.
-	 * @param envVariables	a map of name:value holding enviroment variables to be set when executing
+	 * @param envVariables	  a map of name:value holding environment variables to be set when executing
+	 * @param configOs	      used to control what execution shell to use
 	 * @return a "ExecutionResult" object that holds the stdout, stderr, return code, timeout flag, etc (see the ExecutionResult class)
 	 * @throws InterruptedException 
 	 */
-	protected ExecutionResult executeString(Path folderPath, String stringToExecute, int timeout, String id, Collection<File> filesToDeleteIfInterrupted, Map<String,String> envVariables) throws InterruptedException
+	protected ExecutionResult executeString(Path folderPath, String stringToExecute, int timeout, String id, Collection<File> filesToDeleteIfInterrupted, Map<String,String> envVariables, ConfigOs configOs) throws InterruptedException
 	{
 		final String powershellExceptionExitCode = "1";
 		
@@ -130,23 +139,36 @@ public abstract class RequestRunner extends Thread {
 		String fileEnding;
 		String scriptContents;
 		String execArg = "";
-		if (SystemUtils.IS_OS_LINUX) {
+		String pathSlash = "/";
+		if (configOs == ConfigOs.LINUX) {
 			shell = "/bin/bash";
 			fileEnding = ".sh";
 			execArg = stringToExecute;
 			scriptContents = shell + " -c \"$1\"" + "\n"
-					+ "exit $?";
+					+ "exit $?" + "\n"
+					+ "# $1 was: " + execArg; 
 		} else {
-			shell = "powershell.exe";
-			shellArg = "-NoProfile";	// to avoid changing directories due to a powershell profile
-			fileEnding = ".ps1";
-			scriptContents = "try { \n"
-					+ "& " + stringToExecute + "\n"
-					+ "exit $LastExitCode\n"
-					+ "} catch {\n"
-					+ "  Write-Error $_\n"
-					+ "  exit " + powershellExceptionExitCode + "\n"
-					+ "}";
+			if (configOs == ConfigOs.WINDOWS_BAT) // if CMD
+			{
+				shell = "cmd.exe";
+				pathSlash = "\\";
+				shellArg = "/c";	// to avoid changing directories due to a powershell profile
+				fileEnding = ".bat";
+				scriptContents = "@echo off" + "\n" + stringToExecute; 
+			}
+			else // if (configOs == ConfigOs.WINDOWS_PS1) // Powershell
+			{
+				shell = "powershell.exe";
+				shellArg = "-NoProfile";	// to avoid changing directories due to a powershell profile
+				fileEnding = ".ps1";
+				scriptContents = "try { \n"
+						+ "& " + stringToExecute + "\n"
+						+ "exit $LastExitCode\n"
+						+ "} catch {\n"
+						+ "  Write-Error $_\n"
+						+ "  exit " + powershellExceptionExitCode + "\n"
+						+ "}";
+			}
 		}
 
 
@@ -163,7 +185,7 @@ public abstract class RequestRunner extends Thread {
 			// put the string to execute into a script file
 			InputStream streamFileToExec = new ByteArrayInputStream(scriptContents.getBytes());
 			File fileToExecute = outputsDir.resolve("exec" + id + fileEnding).toFile();
-			String scriptToExecute = "./.adapter/" + fileToExecute.getName();
+			String scriptToExecute = "." + pathSlash + ".adapter" + pathSlash + fileToExecute.getName();
 			executedString = shell + " " + scriptToExecute + " \"" + execArg + "\"";
 			FileUtils.copyInputStreamToFile(streamFileToExec, fileToExecute);
 			

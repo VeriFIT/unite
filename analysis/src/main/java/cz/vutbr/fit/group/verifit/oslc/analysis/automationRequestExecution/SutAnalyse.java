@@ -44,6 +44,7 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisResourcesFactory;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager.AutomationPlanConf;
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.FilterManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionParameter;
@@ -258,7 +259,7 @@ public class SutAnalyse extends RequestRunner
 		    ExecutionResult beforeCmdRes = null;
 		    if (beforeCommand != null)
 		    {
-		    	beforeCmdRes = executeString(SUTdirAsPath, beforeCommand, 0, "_analysis_" + this.execAutoRequestId + "_beforeCmd", this.filesToDeleteIfInterrupted, envVariables);
+		    	beforeCmdRes = executeString(SUTdirAsPath, beforeCommand, 0, "_analysis_" + this.execAutoRequestId + "_beforeCmd", this.filesToDeleteIfInterrupted, envVariables, VeriFitAnalysisProperties.CONFIG_OS);
 				statusMessage.appendValue("Executing beforeCommand: " + beforeCommand + "\n   as: " + beforeCmdRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
 		    
 				if (beforeCmdRes.exceptionThrown != null)
@@ -295,7 +296,7 @@ public class SutAnalyse extends RequestRunner
 				VeriFitAnalysisManager.internalUpdateAutomationResult(resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
 				
 				// start execution
-			    analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), stdOutputsIdentifier, this.filesToDeleteIfInterrupted, envVariables);
+			    analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), stdOutputsIdentifier, this.filesToDeleteIfInterrupted, envVariables, VeriFitAnalysisProperties.CONFIG_OS);
 				statusMessage.appendValue("Executing analysis: " + stringToExecute + "\n   as: " + analysisRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
 				if (analysisRes.exceptionThrown != null)
 				{
@@ -336,7 +337,7 @@ public class SutAnalyse extends RequestRunner
 		    {
 			    if (executionVerdict.equals(OslcValues.AUTOMATION_VERDICT_PASSED))
 			    {
-			    	afterCmdRes = executeString(SUTdirAsPath, afterCommand, 0, "_analysis_" + this.execAutoRequestId + "_afterCmd", this.filesToDeleteIfInterrupted, envVariables);
+			    	afterCmdRes = executeString(SUTdirAsPath, afterCommand, 0, "_analysis_" + this.execAutoRequestId + "_afterCmd", this.filesToDeleteIfInterrupted, envVariables, VeriFitAnalysisProperties.CONFIG_OS);
 					statusMessage.appendValue("Executing afterCommand: " + afterCommand + "\n   as: " + afterCmdRes.executedString + "\n   In dir: " + SUTdirAsPath + "\n");
 	
 					if (afterCmdRes.exceptionThrown != null)

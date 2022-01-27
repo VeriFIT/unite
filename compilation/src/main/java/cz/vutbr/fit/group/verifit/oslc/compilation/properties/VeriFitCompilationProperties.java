@@ -10,12 +10,15 @@
 
 package cz.vutbr.fit.group.verifit.oslc.compilation.properties;
 
+import org.apache.commons.lang3.SystemUtils;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
 // End of user code
 import java.util.Properties;
+
+import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.RequestRunner.ConfigOs;
 
 public class VeriFitCompilationProperties
 {
@@ -109,6 +112,27 @@ public class VeriFitCompilationProperties
 			throw new IOException("failed to parse keep_last_n value - positive non-zero integer expected");
 			
 		}
+		
+		if (SystemUtils.IS_OS_LINUX) {
+			CONFIG_OS = ConfigOs.LINUX;
+			CONFIG_OS_STR = "linux";
+		} else {
+			String str_CONFIG_OS;
+			str_CONFIG_OS = VeriFitCompilationProperties.getProperty("config_win_shell");	
+			if (str_CONFIG_OS == null)
+				throw new IOException("config_win_shell missing");
+			try {
+				if (str_CONFIG_OS.equalsIgnoreCase("windows_bat"))
+					CONFIG_OS = ConfigOs.WINDOWS_BAT;
+				else if (str_CONFIG_OS.equalsIgnoreCase("windows_ps1"))
+					CONFIG_OS = ConfigOs.WINDOWS_PS1;
+				else
+					throw new Exception();
+			} catch (Exception e) {
+				throw new IOException("failed to parse config_win_shell value - options are \"windows_ps1\" or \"windows_bat\"");
+			}
+			CONFIG_OS_STR = str_CONFIG_OS;
+		}
 	}
 
 	
@@ -144,6 +168,8 @@ public class VeriFitCompilationProperties
     public static long KEEP_LAST_N;
     
     
+	public static ConfigOs CONFIG_OS;
+	public static String CONFIG_OS_STR;
     
     /*
      *  Internal constants

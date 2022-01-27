@@ -67,7 +67,17 @@ main () {
         esac
     done
 
-    # build first if requested by args
+    # firt check that the required utilities are available
+    if ! type "curl" &> /dev/null; then
+        echo -e "\nERORR: The '${RED}curl${NC}' utility is required by Unite but is ${RED}not available${NC}.\n"
+        exit "$?"
+    fi
+    if ! type "mvn" &> /dev/null; then
+        echo -e "\nERORR: The '${RED}mvn${NC}' utility is required by Unite but is ${RED}not available${NC}.\n"
+        exit "$?"
+    fi
+
+    # build Unite first if requested by args
     if [ -n "$ARG_BUILD" ]; then
         echo -e "\nRunning build.sh first"
         "$ROOTDIR/build.sh"
