@@ -1442,16 +1442,28 @@ public class VeriFitAnalysisManager {
         
         // Start of user code getAutomationResult
         
+        
+
         // if the automation result is still in progress, provide some infos about the run (such as stdout and stderr)
         // TODO currently the database is only updated after the result execution finishes to avoid too much database communication
-        if (aResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_INPROGRESS))
+        // can be disabled using a request parameter (query string)
+        if (httpServletRequest != null)
         {
-        	// load the current contents of stdout and stderr 		// TODO potential performance issue when stdout/err is huge
-        	try {
-				getAutomationResultInProgressStdOutputs(aResource);
-			} catch (IOException e) {
-				log.warn("Automation Result GET: Failed to get contents of stdout or stderr of the execution", e);
-			}
+        	String inprogressOutputsParam = httpServletRequest.getParameter("enableInProgressOutputs");
+        	boolean inProgressOutputsEnabled = true;
+        	if (inprogressOutputsParam != null && inprogressOutputsParam.equalsIgnoreCase("false"))
+        		inProgressOutputsEnabled = false;
+        	
+        	if (inProgressOutputsEnabled && aResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_INPROGRESS))
+            {
+            	// load the current contents of stdout and stderr
+            	try {
+    				getAutomationResultInProgressStdOutputs(aResource);
+    			} catch (IOException e) {
+    				log.warn("Automation Result GET: Failed to get contents of stdout or stderr of the execution", e);
+    			}
+            }
+        	
         }
         
         // End of user code
