@@ -247,8 +247,10 @@
 											"var os = pm.globals.get(\"currentOS\");",
 											"if (os == \"linux\"){",
 											"    pm.globals.set(\"sleepBuildCommand\", \" ; sleep 2\");",
-											"} else {",
+											"} else if (os == \"windows_ps1\") {",
 											"    pm.globals.set(\"sleepBuildCommand\", \" ; Start-Sleep -Seconds 2\");",
+											"} else { // os == \"windows_bat\")",
+											"    pm.globals.set(\"sleepBuildCommand\", \" &amp; ping -n 2 127.0.0.1 > nul\");",
 											"}",
 											"",
 											"pm.globals.set(\"launchCommand\", \"./my_echo\");",
@@ -873,7 +875,7 @@
 											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title rdf:parseType=\\\"Literal\\\">statusMessage</dcterms:title>\");",
 											"});",
 											"pm.test(\"AutomationResult statusMessage should have the expected value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<rdf:value>SUT fetch successful\\nExecuting: gcc -g TestEchoProgram.cpp -o my_echo ;\");",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value>SUT fetch successful\\nExecuting: gcc -g TestEchoProgram.cpp -o my_echo \");",
 											"    pm.expect(pm.response.text()).to.include(\"Compilation completed successfully\\nSUT resource created\");",
 											"});",
 											"pm.test(\"AutomationResult should contain a returnCode\", function () {",
@@ -1412,10 +1414,6 @@
 											"    pm.expect(pm.response.text()).to.include(\":verdict rdf:resource=\\\"http://open-services.net/ns/auto#failed\\\"/>\");",
 											"});",
 											"",
-											"",
-											"pm.test(\"Check the Compilation stdout\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<rdf:value></rdf:value>\");",
-											"});",
 											"pm.test(\"Check the Compilation stderr\", function () {",
 											"    if (pm.response.text().includes(\"asdfasdf: command not found\"))",
 											"    {",
@@ -1429,10 +1427,6 @@
 											"    {",
 											"        pm.expect(false);",
 											"    }",
-											"});",
-											"",
-											"pm.test(\"Check program fetching output\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<rdf:value></rdf:value>\");",
 											"});",
 											"",
 											"pm.test(\"Check the statusMessage \", function () {",
@@ -1562,7 +1556,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceUrl</oslc:name>\n\t\t\t<rdf:value>http://www.stud.fit.vutbr.cz/~xvasic25/TestEchoProgramError.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgramError.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceFilePath</oslc:name>\n\t\t\t<rdf:value>./tests/resources/TestEchoProgramError.cpp</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgramError.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
 									"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
@@ -1685,13 +1679,6 @@
 											"    pm.expect(pm.response.text()).to.not.include(\"<fit:createdSUT rdf:resource=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/sUTs/\");",
 											"});",
 											"",
-											"",
-											"pm.test(\"AutomationResult fetching output should have the expected value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<rdf:value></rdf:value>\");",
-											"});",
-											"pm.test(\"AutomationResult compilation stdout should have the expected value\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<rdf:value></rdf:value>\");",
-											"});",
 											"pm.test(\"Check the Compilation stderr\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"TestEchoProgramError.cpp: In function \");",
 											"    pm.expect(pm.response.text()).to.include(\"int main(int, char**)\");",
@@ -2484,6 +2471,50 @@
 						{
 							"name": "basic function",
 							"item": [
+								{
+									"name": "random request to skip this folder in case of no internet access",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"var internet = pm.variables.get(\"internetAccess\");",
+													"if (internet != \"true\"){",
+													"    postman.setNextRequest(\"basic (compilation/test fetching methods/sourceBase64/basic function)\")",
+													"}"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0"
+											]
+										}
+									},
+									"response": []
+								},
 								{
 									"name": "basic",
 									"event": [
@@ -3417,6 +3448,50 @@
 							"name": "basic function",
 							"item": [
 								{
+									"name": "random request to skip this folder in case of no internet access",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"var internet = pm.variables.get(\"internetAccess\");",
+													"if (internet != \"true\"){",
+													"    postman.setNextRequest(\"basic (compilation/test fetching methods/sourceBase64/basic function)\")",
+													"}"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0"
+											]
+										}
+									},
+									"response": []
+								},
+								{
 									"name": "basic",
 									"event": [
 										{
@@ -4343,7 +4418,7 @@
 							"name": "basic function",
 							"item": [
 								{
-									"name": "basic",
+									"name": "basic (compilation/test fetching methods/sourceBase64/basic function)",
 									"event": [
 										{
 											"listen": "test",
@@ -5715,6 +5790,50 @@
 							"name": "sourceUrl",
 							"item": [
 								{
+									"name": "random request to skip this folder in case of no internet access",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"var internet = pm.variables.get(\"internetAccess\");",
+													"if (internet != \"true\"){",
+													"    postman.setNextRequest(\"basic (compilation/test fetching methods/with zip/base64)\")",
+													"}"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{server_address}}/{{server_context}}/services/serviceProviders/A0",
+											"host": [
+												"{{server_address}}"
+											],
+											"path": [
+												"{{server_context}}",
+												"services",
+												"serviceProviders",
+												"A0"
+											]
+										}
+									},
+									"response": []
+								},
+								{
 									"name": "basic",
 									"event": [
 										{
@@ -6010,7 +6129,7 @@
 							"name": "base64",
 							"item": [
 								{
-									"name": "basic",
+									"name": "basic (compilation/test fetching methods/with zip/base64)",
 									"event": [
 										{
 											"listen": "test",
@@ -9666,9 +9785,12 @@
 													"var os = pm.globals.get(\"currentOS\");\r",
 													"if (os == \"linux\"){\r",
 													"    pm.globals.set(\"sleepBuildCommand\", \" ; sleep 5\");\r",
-													"} else {\r",
+													"} else if (os == \"windows_ps1\") {\r",
 													"    pm.globals.set(\"sleepBuildCommand\", \" ; Start-Sleep -Seconds 5\");\r",
-													"}"
+													"} else { // os == \"windows_bat\")\r",
+													"    pm.globals.set(\"sleepBuildCommand\", \" &amp; ping -n 5 127.0.0.1 > nul\");\r",
+													"}\r",
+													""
 												],
 												"type": "text/javascript"
 											}
@@ -11039,9 +11161,12 @@
 													"var os = pm.globals.get(\"currentOS\");\r",
 													"if (os == \"linux\"){\r",
 													"    pm.globals.set(\"sleepBuildCommand\", \" ; sleep 5\");\r",
-													"} else {\r",
+													"} else if (os == \"windows_ps1\") {\r",
 													"    pm.globals.set(\"sleepBuildCommand\", \" ; Start-Sleep -Seconds 5\");\r",
-													"}"
+													"} else { // os == \"windows_bat\")\r",
+													"    pm.globals.set(\"sleepBuildCommand\", \" &amp; ping -n 5 127.0.0.1 > nul\");\r",
+													"}\r",
+													""
 												],
 												"type": "text/javascript"
 											}
@@ -12907,9 +13032,12 @@
 													"var os = pm.globals.get(\"currentOS\");\r",
 													"if (os == \"linux\"){\r",
 													"    pm.globals.set(\"sleepBuildCommand\", \" ; sleep 5\");\r",
-													"} else {\r",
+													"} else if (os == \"windows_ps1\") {\r",
 													"    pm.globals.set(\"sleepBuildCommand\", \" ; Start-Sleep -Seconds 5\");\r",
-													"}"
+													"} else { // os == \"windows_bat\")\r",
+													"    pm.globals.set(\"sleepBuildCommand\", \" &amp; ping -n 5 127.0.0.1 > nul\");\r",
+													"}\r",
+													""
 												],
 												"type": "text/javascript"
 											}
@@ -13123,9 +13251,12 @@
 													"var os = pm.globals.get(\"currentOS\");\r",
 													"if (os == \"linux\"){\r",
 													"    pm.globals.set(\"sleepBuildCommand\", \" ; sleep 5\");\r",
-													"} else {\r",
+													"} else if (os == \"windows_ps1\") {\r",
 													"    pm.globals.set(\"sleepBuildCommand\", \" ; Start-Sleep -Seconds 5\");\r",
-													"}"
+													"} else { // os == \"windows_bat\")\r",
+													"    pm.globals.set(\"sleepBuildCommand\", \" &amp; ping -n 5 127.0.0.1 > nul\");\r",
+													"}\r",
+													""
 												],
 												"type": "text/javascript"
 											}
@@ -13822,9 +13953,12 @@
 													"var os = pm.globals.get(\"currentOS\");\r",
 													"if (os == \"linux\"){\r",
 													"    pm.globals.set(\"sleepBuildCommand\", \" ; sleep 5\");\r",
-													"} else {\r",
+													"} else if (os == \"windows_ps1\") {\r",
 													"    pm.globals.set(\"sleepBuildCommand\", \" ; Start-Sleep -Seconds 5\");\r",
-													"}"
+													"} else { // os == \"windows_bat\")\r",
+													"    pm.globals.set(\"sleepBuildCommand\", \" &amp; ping -n 5 127.0.0.1 > nul\");\r",
+													"}\r",
+													""
 												],
 												"type": "text/javascript"
 											}
@@ -14117,9 +14251,12 @@
 													"var os = pm.globals.get(\"currentOS\");\r",
 													"if (os == \"linux\"){\r",
 													"    pm.globals.set(\"sleepBuildCommand\", \" ; sleep 5\");\r",
-													"} else {\r",
+													"} else if (os == \"windows_ps1\") {\r",
 													"    pm.globals.set(\"sleepBuildCommand\", \" ; Start-Sleep -Seconds 5\");\r",
-													"}"
+													"} else { // os == \"windows_bat\")\r",
+													"    pm.globals.set(\"sleepBuildCommand\", \" &amp; ping -n 5 127.0.0.1 > nul\");\r",
+													"}\r",
+													""
 												],
 												"type": "text/javascript"
 											}
@@ -15241,9 +15378,12 @@
 											"    if (os == \"linux\"){",
 											"        pm.expect(pm.response.text()).to.include(\"file1\\n\");",
 											"        pm.expect(pm.response.text()).to.include(\"java-zip.zip\\n\");",
-											"    } else {",
+											"    } else if (os == \"windows_ps1\"){ ",
 											"        pm.expect(pm.response.text()).to.include(\" file1 \");",
 											"        pm.expect(pm.response.text()).to.include(\" java-zip.zip \");",
+											"    } else {",
+											"        pm.expect(pm.response.text()).to.include(\"file1\\n\");",
+											"        pm.expect(pm.response.text()).to.include(\"java-zip.zip\\n\");",
 											"    }",
 											"});",
 											""
@@ -15406,6 +15546,10 @@
 		{
 			"key": "automation_wait_time",
 			"value": "30"
+		},
+		{
+			"key": "internetAccess",
+			"value": "true"
 		}
 	]
 }

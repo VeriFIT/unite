@@ -86,6 +86,7 @@ import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
+import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisConstants;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
 import org.eclipse.lyo.oslc.domains.auto.Oslc_autoDomainConstants;
@@ -136,7 +137,7 @@ public class ServiceProviderService1
     )
     public Response getOS()
     {
-    	String os = SystemUtils.IS_OS_LINUX ? "linux" : "windows"; // TODO assumes that "not linux" means "windows"
+    	String os = VeriFitAnalysisProperties.CONFIG_OS_STR;
 		return Response.status(200).entity(os).build();
     }
     // End of user code
