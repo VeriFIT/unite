@@ -145,7 +145,7 @@ public abstract class RequestRunner extends Thread {
 			fileEnding = ".sh";
 			execArg = stringToExecute;
 			scriptContents = shell + " -c \"$1\"" + "\n"
-					+ "exit $?"
+					+ "exit $?" + "\n"
 					+ "# $1 was: " + execArg; 
 		} else {
 			if (configOs == ConfigOs.WINDOWS_BAT) // if CMD
