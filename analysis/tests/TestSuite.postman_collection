@@ -10422,7 +10422,7 @@
 															"    pm.expect(pm.response.text()).to.include(\"Dummy tool!\");",
 															"});",
 															"pm.test(\"file contributions should have their values\", function () {",
-															"    pm.expect(pm.response.text()).to.include(\"<rdf:value>test file \");",
+															"    pm.expect(pm.response.text()).to.include(\"<rdf:value>test file\");",
 															"});",
 															"pm.test(\"contributions like execution time or return code should have their value\", function () {",
 															"    pm.expect(pm.response.text()).to.include(\"<rdf:value>0</rdf:value>\");",
