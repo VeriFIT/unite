@@ -1,3 +1,10 @@
+### v2.6.1
+- GET requests for inProgress Automation Result now recognize a HTTP query string parameter called "enableInProgressOutputs"
+  - possible values are true/false
+  - default is currently true
+- fixed some built-in output filters not being listed
+- added more tests for built-in output filters
+
 ### v2.6.0
 - It is now possible to choose between Powershell and CMD on Windows
   - Use the configuration files (VeriFitAnalysis.properties, VeriFitCompilation.properties) to choose which 
