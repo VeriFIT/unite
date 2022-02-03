@@ -267,7 +267,9 @@ function KillWithChildren {
         $1
     )
     Get-WmiObject win32_process | where {$_.ParentProcessId -eq $1} | ForEach { KillWithChildren $_.ProcessId }
-    Stop-Process $1 2> $null
+    try {
+        Stop-Process $1 2> $null
+    } catch {}
 }
 
 # kills all listed pids

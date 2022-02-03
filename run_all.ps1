@@ -38,8 +38,20 @@ $SLEEP=3
 # source shared utils
 . "$ROOTDIR\dev_tools\shared.ps1"
 
-# exits this scripts while killing all the subprocesses 
+# exits this scripts while killing all the subprocesses
+# used when ctrl+c is received
 function exit_killall ()
+{
+    # try to kill all log tailing terminals regardless of the current startup state 
+    $PIDS_TO_KILL = $PIDS_TO_KILL + $PID_TRIPLESTORE_TAIL
+    $PIDS_TO_KILL = $PIDS_TO_KILL + $PID_ANALYSIS_TAIL
+    $PIDS_TO_KILL = $PIDS_TO_KILL + $PID_COMPILATION_TAIL
+
+    abortAll
+}
+
+# used by the script in case of failure
+function abortAll ()
 {
     echo "`nShutting down..."
     killAllWithChildren $PIDS_TO_KILL
@@ -109,15 +121,15 @@ cd $USRPATH
 Start-Sleep -Seconds 1
 $Host.UI.RawUI.FlushInputBuffer()
 
-# open new terminals that tail the log files and record their PIDs to kill later
+############################################################################################################
+#  Triplestore
+############################################################################################################
+
+# open new terminal that tails the log file and record its PID to kill later
 if ($t)
 {
     $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Triplestore Log (feel free to close this window)'; Get-Content '$ROOTDIR\logs\..\logs\..\logs\triplestore_$CURTIME.log' -Wait -Tail 10; pause" -passthru
-    $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
-    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Compilation Log (feel free to close this window)'; Get-Content '$ROOTDIR\logs\..\logs\..\logs\compilation_$CURTIME.log' -Wait -Tail 10; pause" -passthru
-    $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
-    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Analysis Log (feel free to close this window)'; Get-Content '$ROOTDIR\logs\..\logs\..\logs\analysis_$CURTIME.log' -Wait -Tail 10; pause" -passthru
-    $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
+    $PID_TRIPLESTORE_TAIL = $process.id
 }
 
 # start the triplestore 
@@ -125,19 +137,37 @@ $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.Ra
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 echo "Waiting for the Triplestore to finish startup"
 $ret = waitForUrlOnline $triplestore_url $process.id $SLEEP
-if ($ret -eq 0) {
+if ($ret -eq 0) {       # OK
     echo "Triplestore running (1/3)`n"
-} elseif ($ret -eq 1) {
+    $PIDS_TO_KILL = $PIDS_TO_KILL + $PID_TRIPLESTORE_TAIL
+} elseif ($ret -eq 1) { # startup fail
     echo "Triplestore ${RED}failed${NC} to start!"
-    echo "Try checking the logs, or run again with '-t' to see the logs during startup."
-    exit_killall
-} else {
+    if ($t)
+    {
+        echo "See the `"tail: Triplestore Log`" powershell window for the startup log."
+        echo "Or try checking the logs: `"$ROOTDIR\logs\triplestore_$CURTIME.log`""
+    } else {
+        echo "Try checking the logs: `"$ROOTDIR\logs\triplestore_$CURTIME.log`""
+        echo "Or run again with '-t' to see the logs during startup."
+    }
+    abortAll
+} else {                # ctrl+c pressed
     exit_killall
 }
 
 
+############################################################################################################
+#  Compilation
+############################################################################################################
 
-## start the compilation adapter
+# open new terminal that tails the log file and record its PID to kill later
+if ($t)
+{
+    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Compilation Log (feel free to close this window)'; Get-Content '$ROOTDIR\logs\..\logs\..\logs\compilation_$CURTIME.log' -Wait -Tail 10; pause" -passthru
+    $PID_COMPILATION_TAIL = $process.id
+}
+
+# start the compilation adapter
 echo "Starting the Compilation adapter"
 $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; cd '$ROOTDIR\compilation' ; mvn jetty:run-exploded >> '$ROOTDIR\logs\compilation_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
@@ -145,12 +175,32 @@ echo "Waiting for the Compilation adapter to finish startup"
 $ret = waitForUrlOnline $compilation_url $process.id $SLEEP
 if ($ret -eq 0) {
     echo "Compilation adapter running (2/3)`n"
+    $PIDS_TO_KILL = $PIDS_TO_KILL + $PID_COMPILATION_TAIL
 } elseif ($ret -eq 1) {
     echo "Compilation adapter failed to start!"
-    echo "Try checking the logs, or run again with '-t' to see the logs during startup."
-    exit_killall
+    if ($t)
+    {
+        echo "See the `"tail: Compilation Log`" powershell window for the startup log."
+        echo "Or try checking the logs: `"$ROOTDIR\logs\compilation_$CURTIME.log`""
+    } else {
+        echo "Try checking the logs: `"$ROOTDIR\logs\compilation_$CURTIME.log`""
+        echo "Or run again with '-t' to see the logs during startup."
+    }
+    abortAll
 } else {
     exit_killall
+}
+
+
+############################################################################################################
+#  Analysis
+############################################################################################################
+
+# open new terminal that tails the log file and record its PID to kill later
+if ($t)
+{
+    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Analysis Log (feel free to close this window)'; Get-Content '$ROOTDIR\logs\..\logs\..\logs\analysis_$CURTIME.log' -Wait -Tail 10; pause" -passthru
+    $PID_ANALYSIS_TAIL = $process.id
 }
 
 # start the analysis adapter
@@ -161,10 +211,18 @@ echo "Waiting for the Analysis adapter to finish startup"
 $ret = waitForUrlOnline $analysis_url $process.id $SLEEP
 if ($ret -eq 0) {
     echo "Analysis adapter running (3/3)`n"
+    $PIDS_TO_KILL = $PIDS_TO_KILL + $PID_ANALYSIS_TAIL
 } elseif ($ret -eq 1) {
     echo "Analysis adapter failed to start!"
-    echo "Try checking the logs, or run again with '-t' to see the logs during startup."
-    exit_killall
+    if ($t)
+    {
+        echo "See the `"tail: Analysis Log`" powershell window for the startup log."
+        echo "Or try checking the logs: `"$ROOTDIR\logs\analysis_$CURTIME.log`""
+    } else {
+        echo "Try checking the logs: `"$ROOTDIR\logs\analysis_$CURTIME.log`""
+        echo "Or run again with '-t' to see the logs during startup."
+    }
+    abortAll
 } else {
     exit_killall
 }
