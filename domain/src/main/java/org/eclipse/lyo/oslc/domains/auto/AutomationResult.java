@@ -76,12 +76,17 @@ import org.eclipse.lyo.oslc.domains.DctermsDomainConstants;
 import org.eclipse.lyo.oslc.domains.FoafDomainConstants;
 import org.eclipse.lyo.oslc4j.core.model.OslcDomainConstants;
 import org.eclipse.lyo.oslc.domains.RdfDomainConstants;
+import cz.vutbr.fit.group.verifit.oslc.domain.FitDomainConstants;
 import org.eclipse.lyo.oslc.domains.DctermsVocabularyConstants;
 import org.eclipse.lyo.oslc.domains.RdfVocabularyConstants;
-import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
+import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
+import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
+import org.eclipse.lyo.oslc.domains.auto.Contribution;
+import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 import org.eclipse.lyo.oslc.domains.Person;
+import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
 // Start of user code imports
-import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
+import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 // End of user code
 
 // Start of user code preClassCode
@@ -89,12 +94,12 @@ import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 
 // Start of user code classAnnotations
 // End of user code
-@OslcNamespace(Oslc_autoDomainConstants.AUTOMATIONPLAN_NAMESPACE)
-@OslcName(Oslc_autoDomainConstants.AUTOMATIONPLAN_LOCALNAME)
-@OslcResourceShape(title = "AutomationPlan Resource Shape", describes = Oslc_autoDomainConstants.AUTOMATIONPLAN_TYPE)
-public class AutomationPlan
+@OslcNamespace(Oslc_autoDomainConstants.AUTOMATIONRESULT_NAMESPACE)
+@OslcName(Oslc_autoDomainConstants.AUTOMATIONRESULT_LOCALNAME)
+@OslcResourceShape(title = "AutomationResult Resource Shape", describes = Oslc_autoDomainConstants.AUTOMATIONRESULT_TYPE)
+public class AutomationResult
     extends AbstractResource
-    implements IAutomationPlan
+    implements IAutomationResult
 {
     // Start of user code attributeAnnotation:contributor
     // End of user code
@@ -105,9 +110,6 @@ public class AutomationPlan
     // Start of user code attributeAnnotation:creator
     // End of user code
     private Set<Link> creator = new HashSet<Link>();
-    // Start of user code attributeAnnotation:description
-    // End of user code
-    private String description;
     // Start of user code attributeAnnotation:identifier
     // End of user code
     private String identifier;
@@ -129,21 +131,57 @@ public class AutomationPlan
     // Start of user code attributeAnnotation:serviceProvider
     // End of user code
     private Set<Link> serviceProvider = new HashSet<Link>();
-    // Start of user code attributeAnnotation:parameterDefinition
+    // Start of user code attributeAnnotation:state
     // End of user code
-    private Set<ParameterDefinition> parameterDefinition = new HashSet<ParameterDefinition>();
-    // Start of user code attributeAnnotation:usesExecutionEnvironment
+    private Set<Link> state = new HashSet<Link>();
+    // Start of user code attributeAnnotation:desiredState
     // End of user code
-    private Set<Link> usesExecutionEnvironment = new HashSet<Link>();
-    // Start of user code attributeAnnotation:futureAction
+    private Link desiredState;
+    // Start of user code attributeAnnotation:verdict
     // End of user code
-    private Set<Link> futureAction = new HashSet<Link>();
+    private Set<Link> verdict = new HashSet<Link>();
+    // Start of user code attributeAnnotation:contribution
+    // End of user code
+    private Set<Contribution> contribution = new HashSet<Contribution>();
+    // Start of user code attributeAnnotation:inputParameter
+    // End of user code
+    private Set<ParameterInstance> inputParameter = new HashSet<ParameterInstance>();
+    // Start of user code attributeAnnotation:outputParameter
+    // End of user code
+    private Set<ParameterInstance> outputParameter = new HashSet<ParameterInstance>();
+    // Start of user code attributeAnnotation:producedByAutomationRequest
+    // End of user code
+    private Link producedByAutomationRequest;
+    // Start of user code attributeAnnotation:reportsOnAutomationPlan
+    // End of user code
+    private Link reportsOnAutomationPlan;
+    // Start of user code attributeAnnotation:createdSUT
+    // End of user code
+    private Link createdSUT;
     
     // Start of user code classAttributes
     // End of user code
     // Start of user code classMethods
+
+    public void replaceState(Link state)
+    {
+		setState(new HashSet<Link>());
+		addState(state);
+    }
+
+    public void replaceVerdict(Link verdict)
+    {
+		setVerdict(new HashSet<Link>());
+		addVerdict(verdict);
+    }
+ 
+    public void clearContribution()
+    {
+    	contribution = new HashSet<Contribution>();
+    }
+    
     // End of user code
-    public AutomationPlan()
+    public AutomationResult()
     {
         super();
     
@@ -151,26 +189,28 @@ public class AutomationPlan
         // End of user code
     }
     
-    public AutomationPlan(final URI about)
+    public AutomationResult(final URI about)
     {
         super(about);
     
         // Start of user code constructor2
-		this.setIdentifier(Utils.getResourceIdFromUri(about));
+		this.setIdentifier(OslcValues.getResourceIdFromUri(about));
 		Date timestamp = new Date();
 		this.setCreated(timestamp);
 		this.setModified(timestamp);
-		//this.setInstanceShape(new URI(VeriFitAnalysisProperties.PATH_RESOURCE_SHAPES + "automationPlan"));
-		//this.addServiceProvider(new URI(VeriFitAnalysisProperties.PATH_AUTOMATION_SERVICE_PROVIDERS + serviceProviderId));
-		//this.addType(new URI("http://open-services.net/ns/auto#AutomationPlan"));
+		this.replaceState(OslcValues.AUTOMATION_STATE_NEW);
+		this.setDesiredState(OslcValues.AUTOMATION_STATE_COMPLETE);
+		this.replaceVerdict(OslcValues.AUTOMATION_VERDICT_UNAVAILABLE);
+		//this.setInstanceShape(new URI(VeriFitAnalysisProperties.PATH_RESOURCE_SHAPES + "automationResult"));
+		//this.addType(new URI("http://open-services.net/ns/auto#AutomationResult"));
         // End of user code
     }
     
     public static ResourceShape createResourceShape() throws OslcCoreApplicationException, URISyntaxException {
         return ResourceShapeFactory.createResourceShape(OSLC4JUtils.getServletURI(),
         OslcConstants.PATH_RESOURCE_SHAPES,
-        Oslc_autoDomainConstants.AUTOMATIONPLAN_PATH,
-        AutomationPlan.class);
+        Oslc_autoDomainConstants.AUTOMATIONRESULT_PATH,
+        AutomationResult.class);
     }
     
     
@@ -186,7 +226,7 @@ public class AutomationPlan
         // End of user code
     
         if (asLocalResource) {
-            result = result + "{a Local AutomationPlan Resource} - update AutomationPlan.toString() to present resource as desired.";
+            result = result + "{a Local AutomationResult Resource} - update AutomationResult.toString() to present resource as desired.";
             // Start of user code toString_bodyForLocalResource
             result = String.valueOf(getAbout());
             // End of user code
@@ -231,19 +271,29 @@ public class AutomationPlan
         this.serviceProvider.add(serviceProvider);
     }
     
-    public void addParameterDefinition(final ParameterDefinition parameterDefinition)
+    public void addState(final Link state)
     {
-        this.parameterDefinition.add(parameterDefinition);
+        this.state.add(state);
     }
     
-    public void addUsesExecutionEnvironment(final Link usesExecutionEnvironment)
+    public void addVerdict(final Link verdict)
     {
-        this.usesExecutionEnvironment.add(usesExecutionEnvironment);
+        this.verdict.add(verdict);
     }
     
-    public void addFutureAction(final Link futureAction)
+    public void addContribution(final Contribution contribution)
     {
-        this.futureAction.add(futureAction);
+        this.contribution.add(contribution);
+    }
+    
+    public void addInputParameter(final ParameterInstance inputParameter)
+    {
+        this.inputParameter.add(inputParameter);
+    }
+    
+    public void addOutputParameter(final ParameterInstance outputParameter)
+    {
+        this.outputParameter.add(outputParameter);
     }
     
     
@@ -292,21 +342,6 @@ public class AutomationPlan
         // Start of user code getterInit:creator
         // End of user code
         return creator;
-    }
-    
-    // Start of user code getterAnnotation:description
-    // End of user code
-    @OslcName("description")
-    @OslcPropertyDefinition(DctermsVocabularyConstants.DUBLIN_CORE_NAMSPACE + "description")
-    @OslcDescription("Descriptive text about resource represented as rich text in XHTML content. SHOULD include only content that is valid and suitable inside an XHTML <div> element.")
-    @OslcOccurs(Occurs.ZeroOrOne)
-    @OslcValueType(ValueType.XMLLiteral)
-    @OslcReadOnly(false)
-    public String getDescription()
-    {
-        // Start of user code getterInit:description
-        // End of user code
-        return description;
     }
     
     // Start of user code getterAnnotation:identifier
@@ -417,52 +452,146 @@ public class AutomationPlan
         return serviceProvider;
     }
     
-    // Start of user code getterAnnotation:parameterDefinition
+    // Start of user code getterAnnotation:state
     // End of user code
-    @OslcName("parameterDefinition")
-    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "parameterDefinition")
-    @OslcDescription("The definition of a parameter for this Automation Plan. parameterDefinitions are either a local (inline) or referenced resource and use the attributes (the range) of the  oslc:Property resource with one exception. When used in the context of an oslc_auto:parameterDefinition, the cardinality of oslc:propertyDefinition becomes zero-or-one instead of exactly-one. Automation consumers creating Automation Requests MUST use the oslc:occurs attribute of the parameterDefinition, if present, to determine if a given parameter is required when creating the Automation Request. If the oslc:occurs attribute indicates the parameter is required (exactly-one or one-or-more), the service provider must guarantee the named parameter will be present in the Automation Result either as an oslc_auto:inputParmeter when unmodified during execution, or as an oslc_auto:outputParameter when modified during execution.")
+    @OslcName("state")
+    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "state")
+    @OslcDescription("Used to indicate the state of the automation request based on values defined by the service provider. Most often a read-only property. It is expected that this will be a resource reference to a definition of a valid automation request state on the service provider.")
+    @OslcOccurs(Occurs.OneOrMany)
+    @OslcValueType(ValueType.Resource)
+    @OslcReadOnly(true)
+    public Set<Link> getState()
+    {
+        // Start of user code getterInit:state
+        // End of user code
+        return state;
+    }
+    
+    // Start of user code getterAnnotation:desiredState
+    // End of user code
+    @OslcName("desiredState")
+    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "desiredState")
+    @OslcDescription("Used to indicate the desired state of the Automation Request based on values defined by the service provider. It is expected that this will be a resource reference to a definition of a valid automation request state on the service provider.")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.Resource)
+    @OslcReadOnly(false)
+    public Link getDesiredState()
+    {
+        // Start of user code getterInit:desiredState
+        // End of user code
+        return desiredState;
+    }
+    
+    // Start of user code getterAnnotation:verdict
+    // End of user code
+    @OslcName("verdict")
+    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "verdict")
+    @OslcDescription("Used to indicate the verdict of the automation result based on values defined by the service provider. Most often a read-only property. It is expected that this will be a resource reference to a definition of a valid automation result verdict on the service provider.")
+    @OslcOccurs(Occurs.OneOrMany)
+    @OslcValueType(ValueType.Resource)
+    @OslcReadOnly(false)
+    public Set<Link> getVerdict()
+    {
+        // Start of user code getterInit:verdict
+        // End of user code
+        return verdict;
+    }
+    
+    // Start of user code getterAnnotation:contribution
+    // End of user code
+    @OslcName("contribution")
+    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "contribution")
+    @OslcDescription("A result contribution associated with this automation result. It is recommended that the contribution be an inline resource which can be retrieved with the automation result. The recommended attributes beyond the contribution itself are dcterms:title, dcterms:description and dcterms:type to provide a description of the contribution which would be appropriate for display in a simple UI for an automation result.")
     @OslcOccurs(Occurs.ZeroOrMany)
     @OslcValueType(ValueType.LocalResource)
-    @OslcRange({Oslc_autoDomainConstants.PARAMETERDEFINITION_TYPE})
+    @OslcRange({Oslc_autoDomainConstants.CONTRIBUTION_TYPE})
     @OslcReadOnly(false)
-    public Set<ParameterDefinition> getParameterDefinition()
+    public Set<Contribution> getContribution()
     {
-        // Start of user code getterInit:parameterDefinition
+        // Start of user code getterInit:contribution
         // End of user code
-        return parameterDefinition;
+        return contribution;
     }
     
-    // Start of user code getterAnnotation:usesExecutionEnvironment
+    // Start of user code getterAnnotation:inputParameter
     // End of user code
-    @OslcName("usesExecutionEnvironment")
-    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "usesExecutionEnvironment")
-    @OslcDescription("A resource representing the environment(s) which this Automation Plan can be executed in. The execution environment resource could represent a grouping of environmental details such as operating system, database, browser, compiler, etc. See also the execution environments section.")
+    @OslcName("inputParameter")
+    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "inputParameter")
+    @OslcDescription("Parameters provided when Automation Requests are created. These include parameters provided by the creator of the Automation Request (whether by delegated UI or HTTP POST) and MAY include additional parameters added by the service provider during Automation Request creation. See the definition of the oslc_auto:parameterDefinition attribute of the Automation Plan for additional guidance on determining which parameters are required. Creators of Automation Requests MAY provide parameters beyond those defined in the Automation Plan without guarantee the service provider will recognize or honor them. It is expected that this attribute is write-able on Automation Request creation and read-only thereafter.")
     @OslcOccurs(Occurs.ZeroOrMany)
-    @OslcValueType(ValueType.Resource)
-    @OslcRepresentation(Representation.Reference)
+    @OslcValueType(ValueType.LocalResource)
+    @OslcRange({Oslc_autoDomainConstants.PARAMETERINSTANCE_TYPE})
     @OslcReadOnly(false)
-    public Set<Link> getUsesExecutionEnvironment()
+    public Set<ParameterInstance> getInputParameter()
     {
-        // Start of user code getterInit:usesExecutionEnvironment
+        // Start of user code getterInit:inputParameter
         // End of user code
-        return usesExecutionEnvironment;
+        return inputParameter;
     }
     
-    // Start of user code getterAnnotation:futureAction
+    // Start of user code getterAnnotation:outputParameter
     // End of user code
-    @OslcName("futureAction")
-    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "futureAction")
-    @OslcDescription("A resource representing actions that will become available on Automation Results that result from execution of this Plan. The resource is likely to be of type oslc:Action, but it can be of any type. Automation defines oslc_auto:TeardownAction as one kind of future action.")
+    @OslcName("outputParameter")
+    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "outputParameter")
+    @OslcDescription("Automation Result output parameters are parameters associated with the automation execution which produced this Result. This includes the final value of all parameters used to initiate the execution and any additional parameters which may have been created during automation execution by the service provider or external agents. The value of a given oslc_auto:outputParameter MAY change as the execution proceeds. Point-in-time accuracy of the values of output parameters is not covered by this specification. Once the Automation Result is in a final state ( oslc_auto:complete or oslc_auto:canceled), the oslc_auto:outputParameter values MUST NOT change.")
     @OslcOccurs(Occurs.ZeroOrMany)
+    @OslcValueType(ValueType.LocalResource)
+    @OslcRange({Oslc_autoDomainConstants.PARAMETERINSTANCE_TYPE})
+    @OslcReadOnly(false)
+    public Set<ParameterInstance> getOutputParameter()
+    {
+        // Start of user code getterInit:outputParameter
+        // End of user code
+        return outputParameter;
+    }
+    
+    // Start of user code getterAnnotation:producedByAutomationRequest
+    // End of user code
+    @OslcName("producedByAutomationRequest")
+    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "producedByAutomationRequest")
+    @OslcDescription("Automation Request which produced the Automation Result. It is likely that the target resource will be an oslc_auto:AutomationRequest but that is not necessarily the case.")
+    @OslcOccurs(Occurs.ZeroOrOne)
     @OslcValueType(ValueType.Resource)
     @OslcRepresentation(Representation.Reference)
+    @OslcRange({Oslc_autoDomainConstants.AUTOMATIONREQUEST_TYPE})
     @OslcReadOnly(false)
-    public Set<Link> getFutureAction()
+    public Link getProducedByAutomationRequest()
     {
-        // Start of user code getterInit:futureAction
+        // Start of user code getterInit:producedByAutomationRequest
         // End of user code
-        return futureAction;
+        return producedByAutomationRequest;
+    }
+    
+    // Start of user code getterAnnotation:reportsOnAutomationPlan
+    // End of user code
+    @OslcName("reportsOnAutomationPlan")
+    @OslcPropertyDefinition(Oslc_autoDomainConstants.AUTOMATION_NAMSPACE + "reportsOnAutomationPlan")
+    @OslcDescription("Automation Plan which the Automation Result reports on. It is likely that the target resource will be an oslc_auto:AutomationPlan but that is not necessarily the case.")
+    @OslcOccurs(Occurs.ExactlyOne)
+    @OslcValueType(ValueType.Resource)
+    @OslcRepresentation(Representation.Reference)
+    @OslcRange({Oslc_autoDomainConstants.AUTOMATIONPLAN_TYPE})
+    @OslcReadOnly(false)
+    public Link getReportsOnAutomationPlan()
+    {
+        // Start of user code getterInit:reportsOnAutomationPlan
+        // End of user code
+        return reportsOnAutomationPlan;
+    }
+    
+    // Start of user code getterAnnotation:createdSUT
+    // End of user code
+    @OslcName("createdSUT")
+    @OslcPropertyDefinition(FitDomainConstants.VERIFIT_UNIVERSAL_ANALYSIS_NAMSPACE + "createdSUT")
+    @OslcOccurs(Occurs.ZeroOrOne)
+    @OslcValueType(ValueType.Resource)
+    @OslcRange({FitDomainConstants.SUT_TYPE})
+    @OslcReadOnly(false)
+    public Link getCreatedSUT()
+    {
+        // Start of user code getterInit:createdSUT
+        // End of user code
+        return createdSUT;
     }
     
     
@@ -507,18 +636,6 @@ public class AutomationPlan
         }
     
         // Start of user code setterFinalize:creator
-        // End of user code
-    }
-    
-    // Start of user code setterAnnotation:description
-    // End of user code
-    public void setDescription(final String description )
-    {
-        // Start of user code setterInit:description
-        // End of user code
-        this.description = description;
-    
-        // Start of user code setterFinalize:description
         // End of user code
     }
     
@@ -622,51 +739,131 @@ public class AutomationPlan
         // End of user code
     }
     
-    // Start of user code setterAnnotation:parameterDefinition
+    // Start of user code setterAnnotation:state
     // End of user code
-    public void setParameterDefinition(final Set<ParameterDefinition> parameterDefinition )
+    public void setState(final Set<Link> state )
     {
-        // Start of user code setterInit:parameterDefinition
+        // Start of user code setterInit:state
         // End of user code
-        this.parameterDefinition.clear();
-        if (parameterDefinition != null)
+        this.state.clear();
+        if (state != null)
         {
-            this.parameterDefinition.addAll(parameterDefinition);
+            this.state.addAll(state);
         }
     
-        // Start of user code setterFinalize:parameterDefinition
+        // Start of user code setterFinalize:state
         // End of user code
     }
     
-    // Start of user code setterAnnotation:usesExecutionEnvironment
+    // Start of user code setterAnnotation:desiredState
     // End of user code
-    public void setUsesExecutionEnvironment(final Set<Link> usesExecutionEnvironment )
+    public void setDesiredState(final Link desiredState )
     {
-        // Start of user code setterInit:usesExecutionEnvironment
+        // Start of user code setterInit:desiredState
         // End of user code
-        this.usesExecutionEnvironment.clear();
-        if (usesExecutionEnvironment != null)
-        {
-            this.usesExecutionEnvironment.addAll(usesExecutionEnvironment);
-        }
+        this.desiredState = desiredState;
     
-        // Start of user code setterFinalize:usesExecutionEnvironment
+        // Start of user code setterFinalize:desiredState
         // End of user code
     }
     
-    // Start of user code setterAnnotation:futureAction
+    // Start of user code setterAnnotation:verdict
     // End of user code
-    public void setFutureAction(final Set<Link> futureAction )
+    public void setVerdict(final Set<Link> verdict )
     {
-        // Start of user code setterInit:futureAction
+        // Start of user code setterInit:verdict
         // End of user code
-        this.futureAction.clear();
-        if (futureAction != null)
+        this.verdict.clear();
+        if (verdict != null)
         {
-            this.futureAction.addAll(futureAction);
+            this.verdict.addAll(verdict);
         }
     
-        // Start of user code setterFinalize:futureAction
+        // Start of user code setterFinalize:verdict
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:contribution
+    // End of user code
+    public void setContribution(final Set<Contribution> contribution )
+    {
+        // Start of user code setterInit:contribution
+        // End of user code
+        this.contribution.clear();
+        if (contribution != null)
+        {
+            this.contribution.addAll(contribution);
+        }
+    
+        // Start of user code setterFinalize:contribution
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:inputParameter
+    // End of user code
+    public void setInputParameter(final Set<ParameterInstance> inputParameter )
+    {
+        // Start of user code setterInit:inputParameter
+        // End of user code
+        this.inputParameter.clear();
+        if (inputParameter != null)
+        {
+            this.inputParameter.addAll(inputParameter);
+        }
+    
+        // Start of user code setterFinalize:inputParameter
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:outputParameter
+    // End of user code
+    public void setOutputParameter(final Set<ParameterInstance> outputParameter )
+    {
+        // Start of user code setterInit:outputParameter
+        // End of user code
+        this.outputParameter.clear();
+        if (outputParameter != null)
+        {
+            this.outputParameter.addAll(outputParameter);
+        }
+    
+        // Start of user code setterFinalize:outputParameter
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:producedByAutomationRequest
+    // End of user code
+    public void setProducedByAutomationRequest(final Link producedByAutomationRequest )
+    {
+        // Start of user code setterInit:producedByAutomationRequest
+        // End of user code
+        this.producedByAutomationRequest = producedByAutomationRequest;
+    
+        // Start of user code setterFinalize:producedByAutomationRequest
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:reportsOnAutomationPlan
+    // End of user code
+    public void setReportsOnAutomationPlan(final Link reportsOnAutomationPlan )
+    {
+        // Start of user code setterInit:reportsOnAutomationPlan
+        // End of user code
+        this.reportsOnAutomationPlan = reportsOnAutomationPlan;
+    
+        // Start of user code setterFinalize:reportsOnAutomationPlan
+        // End of user code
+    }
+    
+    // Start of user code setterAnnotation:createdSUT
+    // End of user code
+    public void setCreatedSUT(final Link createdSUT )
+    {
+        // Start of user code setterInit:createdSUT
+        // End of user code
+        this.createdSUT = createdSUT;
+    
+        // Start of user code setterFinalize:createdSUT
         // End of user code
     }
     

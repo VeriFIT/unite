@@ -79,7 +79,7 @@ else {
 $VERSION=$(cat "$ROOTDIR\VERSION.md" 2> $null)
 echo ""
 echo "########################################################"
-echo "    Unite, $VERSION"
+echo "    Unite $VERSION"
 echo "########################################################"
 echo ""
 

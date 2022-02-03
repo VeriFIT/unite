@@ -31,6 +31,7 @@ import cz.vutbr.fit.group.verifit.jsem.ExtensionInfoQuery;
 import cz.vutbr.fit.group.verifit.jsem.ExtensionManager;
 import cz.vutbr.fit.group.verifit.jsem.IExtension;
 import cz.vutbr.fit.group.verifit.jsem.IExtensionWithInfo;
+import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisResourcesFactory;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager.AutomationPlanConf;
@@ -125,7 +126,7 @@ public final class FilterManager {
     	for (Contribution contrib : outputContributions)
     	{
     		Map<String,String> newMap = new HashMap<String,String>();
-    		newMap.put("id", Utils.getResourceIdFromUri(contrib.getAbout()));
+    		newMap.put("id", OslcValues.getResourceIdFromUri(contrib.getAbout()));
     		newMap.put("title", contrib.getTitle());
     		newMap.put("value", contrib.getValue());
 			newMap.put("filePath", contrib.getFilePath());

@@ -65,6 +65,13 @@
 			<artifactId>SharedResources</artifactId>  
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>  
+		
+        <!-- Unite domain module -->
+		<dependency>  
+			<groupId>cz.vutbr.fit.group.verifit.oslc.domain</groupId>  
+			<artifactId>UniteDomain</artifactId>
+			<version>0.0.1-SNAPSHOT</version>  
+		</dependency>  
         
 		<!-- GIT dependencies https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
 		<dependency>

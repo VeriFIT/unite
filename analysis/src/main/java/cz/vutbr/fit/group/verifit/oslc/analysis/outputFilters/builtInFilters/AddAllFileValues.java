@@ -14,8 +14,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.FilterUtils;
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 
 public class AddAllFileValues extends DefaultFilter {
 

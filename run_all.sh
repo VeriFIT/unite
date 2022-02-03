@@ -92,7 +92,7 @@ main () {
     # get and output version
     VERSION="$(cat "$ROOTDIR/VERSION.md" 2>/dev/null)"
     echo -e "\n########################################################"
-    echo -e "    ${BOLD}Unite${NORMAL}, ${VERSION}"
+    echo -e "    ${BOLD}Unite${NORMAL} ${VERSION}"
     echo -e "########################################################\n"
 
     # lookup config URLs

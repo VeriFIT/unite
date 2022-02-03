@@ -50,6 +50,10 @@ echo "    Building and Installing shared resources"
 echo "############################################################"
 echo ""
 
+mvn -f "$ROOTDIR\domain\pom.xml" clean install
+if ( ! $? ) {
+    exit $LastExitCode
+}
 mvn -f "$ROOTDIR\shared\pom.xml" clean install
 if ( ! $? ) {
     exit $LastExitCode
