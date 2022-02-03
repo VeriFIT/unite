@@ -1,6 +1,8 @@
 ### v2.6.2
-- split the java shared and domain modules to allow the domain to be reused elsewhere without dependencies
-- modified the dummy tool to make the analysis test suite faster
+- Split the java shared and domain modules to allow the domain to be reused elsewhere without dependencies
+- Modified the dummy tool to make the analysis test suite faster
+- The relevant log tailing terminal now stays open when its corresponding components fails to startup
+  - There was a bug which caused all the log tailing terminals to close in case of startup failure
 
 ### v2.6.1
 - GET requests for inProgress Automation Result now recognize a HTTP query string parameter called "enableInProgressOutputs"

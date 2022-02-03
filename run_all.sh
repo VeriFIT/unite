@@ -38,13 +38,13 @@ source "$ROOTDIR/dev_tools/shared.sh"
 # (i.e. their corresponding component started succesfully)
 unset KILL_TRIPLESTORE_TAIL KILL_COMPILATION_TAIL KILL_ANALYSIS_TAIL
 killTailTerminals(){
-    if [ -n "$KILL_ANALYSIS_TAIL" ] || [ -n $1 ]; then
+    if [ -n "$KILL_ANALYSIS_TAIL" ] || [ $1 -eq 1 ]; then
         kill "$(ps -ef | grep "tail -f .*/logs/../logs/../logs/analysis_" | head -1 | awk '{ print $2 }')" &> /dev/null     # funny path /logs/../logs/../logs/ to avoid killing unwanted tail commands
     fi
-    if [ -n "$KILL_COMPILATION_TAIL" ] || [ -n $1 ]; then
+    if [ -n "$KILL_COMPILATION_TAIL" ] || [ $1 -eq 1 ]; then
         kill "$(ps -ef | grep "tail -f .*/logs/../logs/../logs/compilation_" | head -1 | awk '{ print $2 }')" &> /dev/null  # TODO use PIDs instead ($!)
     fi
-    if [ -n "$KILL_TRIPLESTORE_TAIL" ] || [ -n $1 ]; then
+    if [ -n "$KILL_TRIPLESTORE_TAIL" ] || [ $1 -eq 1 ]; then
         kill "$(ps -ef | grep "tail -f .*/logs/../logs/../logs/triplestore_" | head -1 | awk '{ print $2 }')" &> /dev/null
     fi
 }
@@ -56,7 +56,7 @@ killall() {
     echo -e "\nShutting down..."
     kill -TERM 0
     if [ -n "$ARG_TAIL" ]; then
-        killTailTerminals true
+        killTailTerminals 1
     fi
     wait
     echo "All done."
@@ -70,7 +70,7 @@ abortAll() {
     echo -e "\nShutting down..."
     kill -TERM 0
     if [ -n "$ARG_TAIL" ]; then
-        killTailTerminals
+        killTailTerminals 0
     fi
     wait
     echo "All done."
@@ -136,7 +136,7 @@ main () {
     for log in `ls | grep triplestore_.*\.log | head -n -5` ; do rm $log ; done
     for log in `ls | grep compilation_.*\.log | head -n -5` ; do rm $log ; done
     for log in `ls | grep analysis_.*\.log | head -n -5` ; do rm $log ; done
-    cd -
+    cd - &> /dev/null
 
     ############################################################################################################
     #  Triplestore
@@ -148,9 +148,10 @@ main () {
     fi
 
     # start the triplestore
-    echo "Starting the Triplestore"
+    echo -n "Starting the Triplestore"
     "$ROOTDIR/sparql_triplestore/run.sh" &> "$ROOTDIR/logs/triplestore_$CURTIME.log" &
     PROCESS_PID=$!
+    echo " ($PROCESS_PID)"
     echo -e "Waiting for the Triplestore to finish startup"
     waitForUrlOnline "$triplestore_url" "$PROCESS_PID" "$SLEEP" 0
     ret="$?"
@@ -158,13 +159,13 @@ main () {
         echo -e "Triplestore ${GREEN}running${NC} (1/3)\n"
         KILL_TRIPLESTORE_TAIL=true
     else
-        echo -e "Triplestore ${RED}failed${NC} to start!\n"
+        echo -e "Triplestore ${RED}failed${NC} to start!"
         if [ -n "$ARG_TAIL" ]; then
             echo -e "See the \"tail: Triplestore Log\" terminal window for the startup log."
-            echo -e "Or try checking the logs: \"$ROOTDIR/logs/triplestore_$CURTIME.log\"\n"
+            echo -e "Or try checking the logs: \"$ROOTDIR/logs/triplestore_$CURTIME.log\""
         else
             echo -e "Try checking the logs: \"$ROOTDIR/logs/triplestore_$CURTIME.log\""
-            echo -e "Or run again with '-t' to see the logs during startup.\n"
+            echo -e "Or run again with '-t' to see the logs during startup."
         fi
         abortAll # exit
     fi
@@ -180,11 +181,11 @@ main () {
     fi
 
     # start the compilation adapter
-    echo "Starting the Compilation adapter"
+    echo -n "Starting the Compilation adapter"
     cd "$ROOTDIR/compilation"
     mvn jetty:run-exploded &> "$ROOTDIR/logs/compilation_$CURTIME.log" &
     PROCESS_PID=$!
-    echo $PROCESS_PID
+    echo " ($PROCESS_PID)"
     cd - > /dev/null
     echo -e "Waiting for the Compilation adapter to finish startup"
     waitForUrlOnline "$compilation_url" "$PROCESS_PID" "$SLEEP" 0
@@ -193,13 +194,13 @@ main () {
         echo -e "Compilation adapter ${GREEN}running${NC} (2/3)\n"
         KILL_COMPILATION_TAIL=true
     else
-        echo -e "Compilation adapter ${RED}failed${NC} to start!\n"
+        echo -e "Compilation adapter ${RED}failed${NC} to start!"
         if [ -n "$ARG_TAIL" ]; then
             echo -e "See the \"tail: Compilation Log\" terminal window for the startup log."
-            echo -e "Or try checking the logs: \"$ROOTDIR/logs/compilation_$CURTIME.log\"\n"
+            echo -e "Or try checking the logs: \"$ROOTDIR/logs/compilation_$CURTIME.log\""
         else
             echo -e "Try checking the logs: \"$ROOTDIR/logs/compilation_$CURTIME.log\""
-            echo -e "Or run again with '-t' to see the logs during startup.\n"
+            echo -e "Or run again with '-t' to see the logs during startup."
         fi
         abortAll # exit
     fi
@@ -215,10 +216,11 @@ main () {
     fi
 
     # start the analysis adapter
-    echo "Starting the Analysis adapter"
+    echo -n "Starting the Analysis adapter"
     cd "$ROOTDIR/analysis"
     mvn jetty:run-exploded &> "$ROOTDIR/logs/analysis_$CURTIME.log" &
     PROCESS_PID=$!
+    echo " ($PROCESS_PID)"
     cd - > /dev/null
     echo -e "Waiting for the Analysis adapter to finish startup"
     waitForUrlOnline "$analysis_url" "$PROCESS_PID" "$SLEEP" 0
@@ -227,13 +229,13 @@ main () {
         echo -e "Analysis adapter ${GREEN}running${NC} (3/3)\n"
         KILL_ANALYSIS_TAIL=true
     else
-        echo -e "Analysis adapter ${RED}failed${NC} to start!\n"
+        echo -e "Analysis adapter ${RED}failed${NC} to start!"
         if [ -n "$ARG_TAIL" ]; then
             echo -e "See the \"tail: Analysis Log\" terminal window for the startup log."
-            echo -e "Or try checking the logs: \"$ROOTDIR/logs/analysis_$CURTIME.log\"\n"
+            echo -e "Or try checking the logs: \"$ROOTDIR/logs/analysis_$CURTIME.log\""
         else
             echo -e "Try checking the logs: \"$ROOTDIR/logs/analysis_$CURTIME.log\""
-            echo -e "Or run again with '-t' to see the logs during startup.\n"
+            echo -e "Or run again with '-t' to see the logs during startup."
         fi
         abortAll # exit
     fi

@@ -133,8 +133,10 @@ if ($t)
 }
 
 # start the triplestore 
+Write-Host -NoNewline "Starting the Triplestore"
 $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Triplestore'; cd '$ROOTDIR\sparql_triplestore'; .\run.ps1 >> '$ROOTDIR\logs\triplestore_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
+echo " ($process.id)"
 echo "Waiting for the Triplestore to finish startup"
 $ret = waitForUrlOnline $triplestore_url $process.id $SLEEP
 if ($ret -eq 0) {       # OK
@@ -168,9 +170,10 @@ if ($t)
 }
 
 # start the compilation adapter
-echo "Starting the Compilation adapter"
+Write-Host -NoNewline "Starting the Compilation adapter"
 $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; cd '$ROOTDIR\compilation' ; mvn jetty:run-exploded >> '$ROOTDIR\logs\compilation_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
+echo " ($process.id)"
 echo "Waiting for the Compilation adapter to finish startup"
 $ret = waitForUrlOnline $compilation_url $process.id $SLEEP
 if ($ret -eq 0) {
@@ -204,9 +207,10 @@ if ($t)
 }
 
 # start the analysis adapter
-echo "Starting the Analysis adapter"
+Write-Host -NoNewline "Starting the Analysis adapter"
 $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; cd '$ROOTDIR\analysis' ; mvn jetty:run-exploded >> '$ROOTDIR\logs\analysis_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
+echo " ($process.id)"
 echo "Waiting for the Analysis adapter to finish startup"
 $ret = waitForUrlOnline $analysis_url $process.id $SLEEP
 if ($ret -eq 0) {
