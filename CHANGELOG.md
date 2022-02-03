@@ -1,3 +1,7 @@
+### v2.6.2
+- split the java shared and domain modules to allow the domain to be reused elsewhere without dependencies
+- modified the dummy tool to make the analysis test suite faster
+
 ### v2.6.1
 - GET requests for inProgress Automation Result now recognize a HTTP query string parameter called "enableInProgressOutputs"
   - possible values are true/false
