@@ -242,7 +242,7 @@ main () {
 
     echo -e "${GREEN}Ready to go!${NC}"
     echo "Use ctrl+c to exit..."
-    cat # wait forever
+    wait # wait for jobs to finish (forever)
 }
 
 main "$@"
