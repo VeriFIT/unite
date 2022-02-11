@@ -242,7 +242,8 @@ main () {
 
     echo -e "${GREEN}Ready to go!${NC}"
     echo "Use ctrl+c to exit..."
-    cat # wait forever
+    wait # wait for jobs to finish (forever)
+    killall # make sure all terminals get closed and the exit message is printed
 }
 
 main "$@"
