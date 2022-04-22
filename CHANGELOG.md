@@ -1,3 +1,7 @@
+### v2.7.0
+- Analysis tool launch commands now do not have automatic quotes to give more control to users.
+- fixed plugin filter dependencies (OslcValues moved from "shared")
+
 ### v2.6.2
 - Split the java shared and domain modules to allow the domain to be reused elsewhere without dependencies
 - Modified the dummy tool to make the analysis test suite faster

@@ -530,7 +530,7 @@ public class SutAnalyse extends RequestRunner
 	private String buildStringToExecFromParams(String toolCommand, List<ExecutionParameter> execParams)
 	{
 		toolCommand = (toolCommand.equalsIgnoreCase("true")  // insert the analysis tool launch command if the parameter was true
-				? "\""+ this.autoPlanConf.getLaunchCommand() + "\""	// add quotes in case of spaces in the launch command
+				? this.autoPlanConf.getLaunchCommand()
 				: "" );
 		
 		String buildStringToExecute = ""
