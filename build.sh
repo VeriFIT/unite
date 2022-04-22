@@ -53,6 +53,7 @@ main () {
     echo "############################################################"
     echo
 
+    mvn -f "$ROOTDIR/domain/pom.xml" clean install || exit "$?"
     mvn -f "$ROOTDIR/shared/pom.xml" clean install || exit "$?"
 
     echo

@@ -18,9 +18,9 @@ import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.eclipse.lyo.store.StoreAccessException;
 
+import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.compilation.VeriFitCompilationConstants;
 import cz.vutbr.fit.group.verifit.oslc.compilation.VeriFitCompilationManager;
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 
 /**
  * This class defines AutomationPlans predefined for the adapter.

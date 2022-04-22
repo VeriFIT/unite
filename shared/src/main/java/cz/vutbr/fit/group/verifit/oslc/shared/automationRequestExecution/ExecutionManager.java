@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.queuing.RequestRunnerQueues;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 

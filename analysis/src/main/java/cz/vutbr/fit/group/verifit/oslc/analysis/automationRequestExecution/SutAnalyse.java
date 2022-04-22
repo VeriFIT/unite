@@ -39,6 +39,7 @@ import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisResourcesFactory;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
@@ -46,7 +47,6 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanCo
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.FilterManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionParameter;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.RequestRunner;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.GetModifFilesBySnapshot;
@@ -86,18 +86,18 @@ public class SutAnalyse extends RequestRunner
 	 */
 	public SutAnalyse(AutomationRequest execAutoRequest, AutomationResult resAutoResult, SUT execSut, List<ExecutionParameter> execParameters) 
 	{
-		super(  Utils.getResourceIdFromUri(execAutoRequest.getAbout()),
-				Utils.getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue()),
+		super(  OslcValues.getResourceIdFromUri(execAutoRequest.getAbout()),
+				OslcValues.getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue()),
 				execAutoRequest.getState().iterator().next(),
 				execAutoRequest.getDesiredState()
 		);
 
 		this.execParameters = execParameters;
-		this.execAutoRequestId = Utils.getResourceIdFromUri(execAutoRequest.getAbout());
+		this.execAutoRequestId = OslcValues.getResourceIdFromUri(execAutoRequest.getAbout());
 		this.execAutoRequest = execAutoRequest;
-		this.resAutoResultId = Utils.getResourceIdFromUri(resAutoResult.getAbout());
+		this.resAutoResultId = OslcValues.getResourceIdFromUri(resAutoResult.getAbout());
 		this.resAutoResult = resAutoResult;
-		this.execSutId = Utils.getResourceIdFromUri(execSut.getAbout());;
+		this.execSutId = OslcValues.getResourceIdFromUri(execSut.getAbout());;
 		this.execSut = execSut;
 
 		if (SystemUtils.IS_OS_LINUX) {
@@ -109,7 +109,7 @@ public class SutAnalyse extends RequestRunner
 		// load the AutomationPlanConfiguration
 		AutomationPlanConfManager autoPlanConfManager = AutomationPlanConfManager.getInstance();
 		this.autoPlanConf = autoPlanConfManager.getAutoPlanConf(
-				Utils.getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue())
+				OslcValues.getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue())
 			);
 	}
 
@@ -293,7 +293,7 @@ public class SutAnalyse extends RequestRunner
 		    	analysisStderr.setFilePath(SUTdirAsPath.resolve(".adapter/stderr" + stdOutputsIdentifier).toAbsolutePath().toString());		// TODO HACK 
 		    	resAutoResult.addContribution(analysisStdout);
 				resAutoResult.addContribution(analysisStderr);
-				VeriFitAnalysisManager.internalUpdateAutomationResult(resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
+				VeriFitAnalysisManager.internalUpdateAutomationResult(resAutoResult, OslcValues.getResourceIdFromUri(resAutoResult.getAbout()));
 				
 				// start execution
 			    analysisRes = executeString(SUTdirAsPath, stringToExecute, Integer.parseInt(timeout), stdOutputsIdentifier, this.filesToDeleteIfInterrupted, envVariables, VeriFitAnalysisProperties.CONFIG_OS);
@@ -431,7 +431,7 @@ public class SutAnalyse extends RequestRunner
 			// update the AutoResult state and verdict, and AutoRequest state
 			resAutoResult.replaceState(OslcValues.AUTOMATION_STATE_COMPLETE);
 			resAutoResult.replaceVerdict(executionVerdict);
-			VeriFitAnalysisManager.internalUpdateAutomationResult(resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
+			VeriFitAnalysisManager.internalUpdateAutomationResult(resAutoResult, OslcValues.getResourceIdFromUri(resAutoResult.getAbout()));
 			execAutoRequest.replaceState(OslcValues.AUTOMATION_STATE_COMPLETE);
 			VeriFitAnalysisManager.internalUpdateAutomationRequest(execAutoRequest, execAutoRequestId);
 
@@ -530,7 +530,7 @@ public class SutAnalyse extends RequestRunner
 	private String buildStringToExecFromParams(String toolCommand, List<ExecutionParameter> execParams)
 	{
 		toolCommand = (toolCommand.equalsIgnoreCase("true")  // insert the analysis tool launch command if the parameter was true
-				? "\""+ this.autoPlanConf.getLaunchCommand() + "\""	// add quotes in case of spaces in the launch command
+				? this.autoPlanConf.getLaunchCommand()
 				: "" );
 		
 		String buildStringToExecute = ""

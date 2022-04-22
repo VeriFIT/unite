@@ -79,7 +79,7 @@ import org.eclipse.lyo.oslc.domains.DctermsVocabularyConstants;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.Person;
 // Start of user code imports
-import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
+import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 // End of user code
 
 // Start of user code preClassCode
@@ -145,7 +145,7 @@ public class SUT
         super(about);
     
         // Start of user code constructor2
-		this.setIdentifier(Utils.getResourceIdFromUri(about));
+		this.setIdentifier(OslcValues.getResourceIdFromUri(about));
 		Date timestamp = new Date();
 		this.setCreated(timestamp);
 		this.setModified(timestamp);

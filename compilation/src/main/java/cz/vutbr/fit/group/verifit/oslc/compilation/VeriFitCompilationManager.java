@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 import cz.vutbr.fit.group.verifit.oslc.compilation.servlet.ServiceProviderCatalogSingleton;
+import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.compilation.ServiceProviderInfo;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
@@ -69,7 +70,6 @@ import cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution.Su
 import cz.vutbr.fit.group.verifit.oslc.compilation.properties.VeriFitCompilationProperties;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils.ResourceIdGen;
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionManager;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionParameter;
 import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
@@ -136,7 +136,7 @@ public class VeriFitCompilationManager {
 				{	
 					for (AutomationRequest autoReq : listAutoRequests)
 					{
-						long reqId = Long.parseLong(Utils.getResourceIdFromUri(autoReq.getAbout()));
+						long reqId = Long.parseLong(OslcValues.getResourceIdFromUri(autoReq.getAbout()));
 						if (reqId > currMaxReqId)
 						{
 							currMaxReqId = reqId;
@@ -770,7 +770,7 @@ public class VeriFitCompilationManager {
         for (AutomationRequest req : resources)
         {
             // dont show the bookmark resource in query responses
-            if (Utils.getResourceIdFromUri(req.getAbout()).equals("bookmarkID"))
+            if (OslcValues.getResourceIdFromUri(req.getAbout()).equals("bookmarkID"))
             {
             	resources.remove(req);
             	break;
@@ -917,7 +917,7 @@ public class VeriFitCompilationManager {
 			// get the executed autoPlan
 			AutomationPlan execAutoPlan = null;
 			try {
-				String execAutoPlanId = Utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue());
+				String execAutoPlanId = OslcValues.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue());
 				execAutoPlan = getAutomationPlan(null, execAutoPlanId);
 			} catch (Exception e) {
 				throw new OslcResourceException("AutomationPlan not found (" + newResource.getExecutesAutomationPlan().getValue() + ")");			
@@ -991,7 +991,7 @@ public class VeriFitCompilationManager {
         	try {
 	        	// only keep last N automation requests
 	        	// delete the one that is last N+1 when creating a new one 
-	        	long currentID = Integer.parseInt(Utils.getResourceIdFromUri(newResource.getAbout()));
+	        	long currentID = Integer.parseInt(OslcValues.getResourceIdFromUri(newResource.getAbout()));
 	        	if (currentID > VeriFitCompilationProperties.KEEP_LAST_N)
 	        	{
 		        	String toDeleteID = Long.toString(currentID - VeriFitCompilationProperties.KEEP_LAST_N);
@@ -1161,7 +1161,7 @@ public class VeriFitCompilationManager {
 	    			updatedResource.setDesiredState(OslcValues.AUTOMATION_STATE_CANCELED);
 					
 					// update the associated automation result
-	    			String resultId = Utils.getResourceIdFromUri(updatedResource.getProducedAutomationResult().getValue());
+	    			String resultId = OslcValues.getResourceIdFromUri(updatedResource.getProducedAutomationResult().getValue());
 	    			AutomationResult associatedResult = getAutomationResult(null, resultId);
 	    			associatedResult.replaceState(OslcValues.AUTOMATION_STATE_CANCELED);
 	    			associatedResult.replaceVerdict(OslcValues.AUTOMATION_VERDICT_UNAVAILABLE);

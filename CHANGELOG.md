@@ -1,3 +1,20 @@
+### v2.7.0
+- Analysis tool launch commands now do not have automatic quotes to give more control to users.
+- fixed plugin filter dependencies (OslcValues moved from "shared")
+
+### v2.6.2
+- Split the java shared and domain modules to allow the domain to be reused elsewhere without dependencies
+- Modified the dummy tool to make the analysis test suite faster
+- The relevant log tailing terminal now stays open when its corresponding components fails to startup
+  - There was a bug which caused all the log tailing terminals to close in case of startup failure
+
+### v2.6.1
+- GET requests for inProgress Automation Result now recognize a HTTP query string parameter called "enableInProgressOutputs"
+  - possible values are true/false
+  - default is currently true
+- fixed some built-in output filters not being listed
+- added more tests for built-in output filters
+
 ### v2.6.0
 - It is now possible to choose between Powershell and CMD on Windows
   - Use the configuration files (VeriFitAnalysis.properties, VeriFitCompilation.properties) to choose which 

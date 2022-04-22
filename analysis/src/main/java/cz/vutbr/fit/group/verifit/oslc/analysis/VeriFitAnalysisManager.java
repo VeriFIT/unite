@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 import cz.vutbr.fit.group.verifit.oslc.analysis.servlet.ServiceProviderCatalogSingleton;
+import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.analysis.ServiceProviderInfo;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
@@ -69,7 +70,6 @@ import javax.ws.rs.core.Response.Status;
 // Start of user code imports
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils.ResourceIdGen;
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionManager;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionParameter;
 import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
@@ -153,7 +153,7 @@ public class VeriFitAnalysisManager {
 				{	
 					for (AutomationRequest autoReq : listAutoRequests)
 					{
-						long reqId = Long.parseLong(Utils.getResourceIdFromUri(autoReq.getAbout()));
+						long reqId = Long.parseLong(OslcValues.getResourceIdFromUri(autoReq.getAbout()));
 						if (reqId > currMaxReqId)
 						{
 							currMaxReqId = reqId;
@@ -568,7 +568,7 @@ public class VeriFitAnalysisManager {
     	for (Contribution contrib : contribs)
     	{
     		try {
-	    		Contribution fullContrib = getContribution(httpServletRequest, Utils.getResourceIdFromUri(contrib.getAbout()));
+	    		Contribution fullContrib = getContribution(httpServletRequest, OslcValues.getResourceIdFromUri(contrib.getAbout()));
 	    		aResource.addContribution(fullContrib);
     		} catch (Exception e) {
     			log.warn("AutomationResult GET: Error while flattening Contributions as local - Contribution was probably deleted: " + e.getMessage());
@@ -674,7 +674,7 @@ public class VeriFitAnalysisManager {
         // update the individual Contributions
     	for (Contribution contrib : fullContributions)
     	{
-    		VeriFitAnalysisManager.updateContribution(null, contrib, Utils.getResourceIdFromUri(contrib.getAbout()));
+    		VeriFitAnalysisManager.updateContribution(null, contrib, OslcValues.getResourceIdFromUri(contrib.getAbout()));
     	}
     	
     	// restore the A.Result's contributions to their original versions 
@@ -944,7 +944,7 @@ public class VeriFitAnalysisManager {
         for (AutomationRequest req : resources)
         {
             // dont show the bookmark resource in query responses
-            if (Utils.getResourceIdFromUri(req.getAbout()).equals("bookmarkID"))
+            if (OslcValues.getResourceIdFromUri(req.getAbout()).equals("bookmarkID"))
             {
             	resources.remove(req);
             	break;
@@ -1085,7 +1085,7 @@ public class VeriFitAnalysisManager {
 			AutomationPlan execAutoPlan = null;
 			String execAutoPlanId = null;
 			try {
-				execAutoPlanId = Utils.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue());
+				execAutoPlanId = OslcValues.getResourceIdFromUri(newResource.getExecutesAutomationPlan().getValue());
 				execAutoPlan = getAutomationPlan(null, execAutoPlanId);
 			} catch (Exception e) {
 				throw new OslcResourceException("AutomationPlan not found (" + newResource.getExecutesAutomationPlan().getValue() + ")");			
@@ -1187,7 +1187,7 @@ public class VeriFitAnalysisManager {
         	try {
 	        	// only keep last N automation requests
 	        	// delete the one that is last N+1 when creating a new one 
-	        	long currentID = Integer.parseInt(Utils.getResourceIdFromUri(newResource.getAbout()));
+	        	long currentID = Integer.parseInt(OslcValues.getResourceIdFromUri(newResource.getAbout()));
 	        	if (currentID > VeriFitAnalysisProperties.KEEP_LAST_N)
 	        	{
 		        	String toDeleteID = Long.toString(currentID - VeriFitAnalysisProperties.KEEP_LAST_N);
@@ -1352,7 +1352,7 @@ public class VeriFitAnalysisManager {
 	    			updatedResource.setDesiredState(OslcValues.AUTOMATION_STATE_CANCELED);
 					
 					// update the associated automation result
-	    			String resultId = Utils.getResourceIdFromUri(updatedResource.getProducedAutomationResult().getValue());
+	    			String resultId = OslcValues.getResourceIdFromUri(updatedResource.getProducedAutomationResult().getValue());
 	    			AutomationResult associatedResult = getAutomationResult(null, resultId);
 	    			associatedResult.replaceState(OslcValues.AUTOMATION_STATE_CANCELED);
 	    			associatedResult.replaceVerdict(OslcValues.AUTOMATION_VERDICT_UNAVAILABLE);
@@ -1442,16 +1442,28 @@ public class VeriFitAnalysisManager {
         
         // Start of user code getAutomationResult
         
+        
+
         // if the automation result is still in progress, provide some infos about the run (such as stdout and stderr)
         // TODO currently the database is only updated after the result execution finishes to avoid too much database communication
-        if (aResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_INPROGRESS))
+        // can be disabled using a request parameter (query string)
+        if (httpServletRequest != null)
         {
-        	// load the current contents of stdout and stderr 		// TODO potential performance issue when stdout/err is huge
-        	try {
-				getAutomationResultInProgressStdOutputs(aResource);
-			} catch (IOException e) {
-				log.warn("Automation Result GET: Failed to get contents of stdout or stderr of the execution", e);
-			}
+        	String inprogressOutputsParam = httpServletRequest.getParameter("enableInProgressOutputs");
+        	boolean inProgressOutputsEnabled = true;
+        	if (inprogressOutputsParam != null && inprogressOutputsParam.equalsIgnoreCase("false"))
+        		inProgressOutputsEnabled = false;
+        	
+        	if (inProgressOutputsEnabled && aResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_INPROGRESS))
+            {
+            	// load the current contents of stdout and stderr
+            	try {
+    				getAutomationResultInProgressStdOutputs(aResource);
+    			} catch (IOException e) {
+    				log.warn("Automation Result GET: Failed to get contents of stdout or stderr of the execution", e);
+    			}
+            }
+        	
         }
         
         // End of user code
@@ -1510,7 +1522,7 @@ public class VeriFitAnalysisManager {
         	String sutPath = null;
 	        for (Contribution contrib : resultToDelete.getContribution())
 	        {
-	        	deleteContribution(null, Utils.getResourceIdFromUri(contrib.getAbout()));
+	        	deleteContribution(null, OslcValues.getResourceIdFromUri(contrib.getAbout()));
 	        	
 	        	// get the sut directory to be able to delete *sut*/.adapter/exec_analysis_N.sh or .ps
 	        	if (contrib.getFilePath() != null && contrib.getFilePath().contains(".adapter"))

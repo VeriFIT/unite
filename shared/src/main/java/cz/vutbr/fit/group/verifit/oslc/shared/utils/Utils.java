@@ -46,7 +46,7 @@ import org.eclipse.lyo.store.StorePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
 
 public class Utils {
@@ -143,24 +143,7 @@ public class Utils {
 		Model model = ModelFactory.createDefaultModel();
 		model.read(inStream, null);
 		return JenaModelHelper.unmarshal(model, clazz);
-	}
-
-	/**
-	 * Get the ID of an OSLC resource from its URI (About(), or Link)
-	 * @param	uri	OSLC resource uri (eg. from a Link)
-	 * @return 		ID of the OSLC resource
-	 */
-	public static String getResourceIdFromUri(URI uri)
-	{
-		String uriPath = uri.getPath();
-		return uriPath.substring(uriPath.lastIndexOf('/') + 1);
-	}
-	
-	public static String getResourceIdFromUri(String uri)
-	{
-		return uri.substring(uri.lastIndexOf('/') + 1);
-	}
-	
+	}	
 
 	/**
 	 * Check that the triplestore is running by sending a request. 

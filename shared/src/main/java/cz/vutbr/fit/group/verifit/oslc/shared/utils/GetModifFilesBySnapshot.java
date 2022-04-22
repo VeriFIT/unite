@@ -25,7 +25,7 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.lyo.oslc.domains.auto.Contribution;
 import org.eclipse.lyo.oslc4j.core.model.Link;
 
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
+import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 
 public class GetModifFilesBySnapshot {
 	

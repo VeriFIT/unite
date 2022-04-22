@@ -16,9 +16,7 @@ import java.util.Map;
 
 import cz.vutbr.fit.group.verifit.jsem.IExtension;
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.IFilter;
-
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues; // use this for defined oslc value types
-
+import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.FilterUtils; // see this for useful utils
 
 // built-in filters

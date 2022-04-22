@@ -32,6 +32,14 @@
     </repositories>
     
     <dependencies>
+    
+        <!-- Unite domain module -->
+		<dependency>  
+			<groupId>cz.vutbr.fit.group.verifit.oslc.domain</groupId>  
+			<artifactId>UniteDomain</artifactId>
+			<version>0.0.1-SNAPSHOT</version>  
+		</dependency>  
+		
         <!-- Lyo dependencies -->
         <dependency>
             <groupId>org.eclipse.lyo.oslc4j.core</groupId>

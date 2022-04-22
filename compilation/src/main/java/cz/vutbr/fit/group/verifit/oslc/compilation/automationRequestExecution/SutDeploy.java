@@ -36,6 +36,7 @@ import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.compilation.VeriFitCompilationConstants;
 import cz.vutbr.fit.group.verifit.oslc.compilation.VeriFitCompilationManager;
 import cz.vutbr.fit.group.verifit.oslc.compilation.VeriFitCompilationResourcesFactory;
@@ -46,7 +47,6 @@ import cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution.su
 import cz.vutbr.fit.group.verifit.oslc.compilation.automationRequestExecution.sutFetcher.SutFetcher;
 import cz.vutbr.fit.group.verifit.oslc.compilation.properties.VeriFitCompilationProperties;
 import cz.vutbr.fit.group.verifit.oslc.domain.SUT;
-import cz.vutbr.fit.group.verifit.oslc.shared.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.ExecutionParameter;
 import cz.vutbr.fit.group.verifit.oslc.shared.automationRequestExecution.RequestRunner;
 import cz.vutbr.fit.group.verifit.oslc.shared.utils.Utils;
@@ -75,16 +75,16 @@ public class SutDeploy extends RequestRunner
 	 */
 	public SutDeploy(AutomationRequest execAutoRequest, AutomationResult resAutoResult, List<ExecutionParameter> execParameters) 
 	{
-		super(  Utils.getResourceIdFromUri(execAutoRequest.getAbout()),
-				Utils.getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue()),
+		super(  OslcValues.getResourceIdFromUri(execAutoRequest.getAbout()),
+				OslcValues.getResourceIdFromUri(execAutoRequest.getExecutesAutomationPlan().getValue()),
 				execAutoRequest.getState().iterator().next(),
 				execAutoRequest.getDesiredState()
 		);
 		
 		this.execParameters = execParameters;
-		this.execAutoRequestId = Utils.getResourceIdFromUri(execAutoRequest.getAbout());
+		this.execAutoRequestId = OslcValues.getResourceIdFromUri(execAutoRequest.getAbout());
 		this.execAutoRequest = execAutoRequest;
-		this.resAutoResultId = Utils.getResourceIdFromUri(resAutoResult.getAbout());
+		this.resAutoResultId = OslcValues.getResourceIdFromUri(resAutoResult.getAbout());
 		this.resAutoResult = resAutoResult;
 		
 	}
@@ -292,7 +292,7 @@ public class SutDeploy extends RequestRunner
 				newSut.setCreator(execAutoRequest.getCreator());
 				newSut.setProducedByAutomationRequest(VeriFitCompilationResourcesFactory.constructLinkForAutomationRequest(execAutoRequestId));
 				newSut = VeriFitCompilationManager.createSUT(newSut, execAutoRequestId); // TODO
-				resAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(Utils.getResourceIdFromUri(newSut.getAbout()))); // TODO
+				resAutoResult.setCreatedSUT(VeriFitCompilationResourcesFactory.constructLinkForSUT(OslcValues.getResourceIdFromUri(newSut.getAbout()))); // TODO
 				sutAsContribution.setValue(newSut.getAbout().toString());	// add the SUT as an actual Contribution resource as well for standard compliance
 				resAutoResult.addContribution(sutAsContribution); 
 				
@@ -303,7 +303,7 @@ public class SutDeploy extends RequestRunner
 			resAutoResult.addContribution(statusMessage);
 			resAutoResult.replaceState(OslcValues.AUTOMATION_STATE_COMPLETE);
 			resAutoResult.replaceVerdict(executionVerdict);
-			VeriFitCompilationManager.internalUpdateAutomationResult(resAutoResult, Utils.getResourceIdFromUri(resAutoResult.getAbout()));
+			VeriFitCompilationManager.internalUpdateAutomationResult(resAutoResult, OslcValues.getResourceIdFromUri(resAutoResult.getAbout()));
 			execAutoRequest.replaceState(OslcValues.AUTOMATION_STATE_COMPLETE);
 			VeriFitCompilationManager.internalUpdateAutomationRequest(execAutoRequest, execAutoRequestId);
 

@@ -31,9 +31,13 @@ import cz.vutbr.fit.group.verifit.jsem.ExtensionInfoQuery;
 import cz.vutbr.fit.group.verifit.jsem.ExtensionManager;
 import cz.vutbr.fit.group.verifit.jsem.IExtension;
 import cz.vutbr.fit.group.verifit.jsem.IExtensionWithInfo;
+import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisResourcesFactory;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager.AutomationPlanConf;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.builtInFilters.AddAllFileValues;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.builtInFilters.AddAllNonBinaryFileValues;
+import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.builtInFilters.AddStdoutAndStderrValues;
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.builtInFilters.DefaultFilter;
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.builtInFilters.RemoveAllFileValues;
 import cz.vutbr.fit.group.verifit.oslc.analysis.properties.VeriFitAnalysisProperties;
@@ -103,7 +107,10 @@ public final class FilterManager {
     
     private void addDefaultFilters(AutomationPlanConf conf) {
 		conf.putFilter(new DefaultFilter().getName(), new DefaultFilter());
+		conf.putFilter(new AddStdoutAndStderrValues().getName(), new AddStdoutAndStderrValues());
 		conf.putFilter(new RemoveAllFileValues().getName(), new RemoveAllFileValues());
+		conf.putFilter(new AddAllNonBinaryFileValues().getName(), new AddAllNonBinaryFileValues());
+		conf.putFilter(new AddAllFileValues().getName(), new AddAllFileValues());
 	}
 
 	/**
@@ -119,7 +126,7 @@ public final class FilterManager {
     	for (Contribution contrib : outputContributions)
     	{
     		Map<String,String> newMap = new HashMap<String,String>();
-    		newMap.put("id", Utils.getResourceIdFromUri(contrib.getAbout()));
+    		newMap.put("id", OslcValues.getResourceIdFromUri(contrib.getAbout()));
     		newMap.put("title", contrib.getTitle());
     		newMap.put("value", contrib.getValue());
 			newMap.put("filePath", contrib.getFilePath());

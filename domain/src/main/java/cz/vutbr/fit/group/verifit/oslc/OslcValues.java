@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package cz.vutbr.fit.group.verifit.oslc.shared;
+package cz.vutbr.fit.group.verifit.oslc;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -60,4 +60,19 @@ public final class OslcValues
 		}
     }
 
+	/**
+	 * Get the ID of an OSLC resource from its URI (About(), or Link)
+	 * @param	uri	OSLC resource uri (eg. from a Link)
+	 * @return 		ID of the OSLC resource
+	 */
+	public static String getResourceIdFromUri(URI uri)
+	{
+		String uriPath = uri.getPath();
+		return uriPath.substring(uriPath.lastIndexOf('/') + 1);
+	}
+	
+	public static String getResourceIdFromUri(String uri)
+	{
+		return uri.substring(uri.lastIndexOf('/') + 1);
+	}
 }

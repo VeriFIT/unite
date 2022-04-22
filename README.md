@@ -17,6 +17,7 @@ This is a development repository of *Unite* (UNIversal analysis adapTEr based on
 - logs - Directory for logs produced by running the adapter.
 - model - Lyo Designer modeling project used to generate base code, and models cloned from Lyo Domain.
 - shared - Shared resources for both adapters as a maven project.
+- domain - Domain resource classes for both adapters as a maven project.
 - sparql_triplestore - Jetty base directory with an [Apache Jena Fuseki](https://jena.apache.org/documentation/fuseki2/) SPARQL server WAR deployed in it.
 
 ## How To Configure

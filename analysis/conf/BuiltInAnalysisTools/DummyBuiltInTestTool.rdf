@@ -29,6 +29,16 @@
         -->
 
         <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>sleepDuration</oslc:name>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <oslc:defaultValue>0</oslc:defaultValue>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <dcterms:description rdf:parseType="Literal">Used to pass a sleep duration in seconds to the dummy tool</dcterms:description>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
             <!--
                 This ParameterDefintion stands for inserting any string as the tools arguments. This is the simplest solution. Alternatively, every argument from the tools interface
                 can be defined as a separate ParameterDefinition. That would allow the AutoPlan to provide more information to clients such as allowedValues, but this approach is not
@@ -36,13 +46,14 @@
             -->
             <oslc_auto:ParameterDefinition>
                 <oslc:name>arguments</oslc:name>
-                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</fit:commandlinePosition>
                 <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--args=</fit:valuePrefix>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Exactly-one"/>
                 <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
                 <dcterms:description rdf:parseType="Literal">Specify which arguments should be passed to the command line.</dcterms:description>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
+
 
         <oslc_auto:parameterDefinition>
             <!--
@@ -51,7 +62,7 @@
             -->
             <oslc_auto:ParameterDefinition>
                 <oslc:name>launchSUT</oslc:name>
-                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</fit:commandlinePosition>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</fit:commandlinePosition>
                 <oslc:defaultValue>True</oslc:defaultValue>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
                 <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position</dcterms:description>
@@ -64,7 +75,7 @@
             -->
             <oslc_auto:ParameterDefinition>
                 <oslc:name>SUTbuildCommand</oslc:name>
-                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</fit:commandlinePosition>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</fit:commandlinePosition>
                 <oslc:defaultValue>True</oslc:defaultValue>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
                 <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position</dcterms:description>
