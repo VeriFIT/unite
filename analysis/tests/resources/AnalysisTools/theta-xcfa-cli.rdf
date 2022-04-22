@@ -25,7 +25,7 @@
                 <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
                 <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--input </fit:valuePrefix>
                 <!-- <oslc:defaultValue>*.c</oslc:defaultValue> --> <!-- TODO could be useful? -->
-                <dcterms:description rdf:parseType="Literal">Which .c file whould be analysed. Expects path within the SUT.</dcterms:description>
+                <dcterms:description rdf:parseType="Literal">Which .c file should be analysed. Expects path within the SUT.</dcterms:description>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
 
