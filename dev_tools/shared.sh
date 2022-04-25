@@ -52,7 +52,6 @@ confFileCopyCustomOrDefault()
 confAnalysisToolsCleanCheckAndCopy()
 {
     rm -rf "$2"
-    mkdir "$2"
 
     if [ -d "$1" ]; then
         if ls "$1" | grep --quiet ".*[.]rdf\|.*[.]properties"; then
