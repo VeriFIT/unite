@@ -28,7 +28,7 @@ function confFileCopyCustomOrDefault ()
     }
 }
 
-# Check if a conf directory exists, if yes then copy its contents over to a destination. Clean the destination first
+# Check if a conf contains any conf files, if yes then copy its contents over to a destination. Clean the destination first
 # $1 ... directory to check
 # $2 ... location to copy to
 function confAnalysisToolsCleanCheckAndCopy ()
@@ -43,14 +43,19 @@ function confAnalysisToolsCleanCheckAndCopy ()
     mkdir "$2" > $null
 
     if (Test-Path "$1") {
-        echo "    using custom: $1"
-        cp "$1\*" "$2"
+        $confFilesInfo = ls "$1" | Where-Object {$_.name -match ".*[.]rdf|.*[.]properties"} | Measure-Object
+        if ($confFilesInfo.count -ne 0) {
+            echo "    using custom: $1"
+            cp "$1\*" "$2"
+        } else {
+            echo "    no analysis tools found in $1"
+        }
     } else {
         echo "    no analysis tools found in $1"
     }
 }
 
-# Check if a conf directory exists, if yes then copy its contents over to destinations. Clean the destinations first
+# Check if a conf contains any conf files, if yes then copy its contents over to destinations. Clean the destinations first
 # $1 ... directory to check
 # $2 ... location to copy .propertires files to
 # $3 ... location to copy .java files to
@@ -70,9 +75,14 @@ function confOutputFiltersCleanCheckAndCopy ()
     mkdir "$3" > $null
     
     if (Test-Path "$1") {
-        echo "    using custom: $1"
-        cp "$1\*.properties" "$2"
-        cp "$1\*.java" "$3"
+        $confFilesInfo = ls "$1" | Where-Object {$_.name -match ".*[.]java|.*[.]properties"} | Measure-Object
+        if ($confFilesInfo.count -ne 0) {
+            echo "    using custom: $1"
+            cp "$1\*.properties" "$2"
+            cp "$1\*.java" "$3"
+        } else {
+            echo "    no filters found in $1"
+        }
     } else {
         echo "    no filters found in $1"
     }

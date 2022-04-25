@@ -46,36 +46,46 @@ confFileCopyCustomOrDefault()
     fi
 }
 
-# Check if a conf directory exists, if yes then copy its contents over to a destination. Clean the destination first
+# Check if a conf contains any conf files, if yes then copy its contents over to a destination. Clean the destination first
 # $1 ... directory to check
 # $2 ... location to copy to
 confAnalysisToolsCleanCheckAndCopy()
 {
     rm -rf "$2"
+    mkdir "$2"
+        $confFilesInfo = ls "$1" | Where-Object {$_.name -match ".*[.]rdf|.*[.]properties"} | Measure-Object
     if [ -d "$1" ]; then
-        echo -e "    using ${YELLOW}custom${NC}: $1"
-        cp -r "$1" "$2"
+        if ls "$1" | grep --quiet ".*[.]rdf|.*[.]properties"; then
+            echo -e "    using ${YELLOW}custom${NC}: $1"
+            cp -r "$1" "$2"
+        else
+            echo -e "    ${BLUE}no analysis tools${NC} found in $1"
+        fi
     else
         echo -e "    ${BLUE}no analysis tools${NC} found in $1"
     fi
 }
 
-# Check if a conf directory exists, if yes then copy its contents over to destinations. Clean the destinations first
+# Check if a conf contains any conf files, if yes then copy its contents over to destinations. Clean the destinations first
 # $1 ... directory to check
 # $2 ... location to copy .propertires files to
 # $3 ... location to copy .java files to
 confOutputFiltersCleanCheckAndCopy()
 {
     rm -rf "$2"
+    mkdir "$2"
     rm -rf "$3"
+    mkdir "$3"
     if [ -d "$1" ]; then
-        echo -e "    using ${YELLOW}custom${NC}: $1"
-        mkdir "$2"
-        cp "$1"/*.properties "$2"
-        mkdir "$3"
-        cp "$1"/*.java "$3"
+        if ls "$1" | grep --quiet ".*[.]java|.*[.]properties"; then
+            echo -e "    using ${YELLOW}custom${NC}: $1"
+            cp "$1"/*.properties "$2"
+            cp "$1"/*.java "$3"
+        else
+            echo -e "    ${BLUE}no filters${NC} found in $1"
+        fi
     else
-        echo -e "    ${BLUE}no filters${NC} found in $1"
+        echo -e "    ${BLUE}no analysis tools${NC} found in $1"
     fi
 }
 
