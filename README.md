@@ -19,6 +19,7 @@ This is a development repository of *Unite* (UNIversal analysis adapTEr based on
 - shared - Shared resources for both adapters as a maven project.
 - domain - Domain resource classes for both adapters as a maven project.
 - sparql_triplestore - Jetty base directory with an [Apache Jena Fuseki](https://jena.apache.org/documentation/fuseki2/) SPARQL server WAR deployed in it.
+- docker - docker files for Unite
 
 ## How To Configure
 Main things that need to be configured - analysis host&port, compilation host&port, triplestore host&port - defaults are "localhost" and ports "8080, 8081, 8082".

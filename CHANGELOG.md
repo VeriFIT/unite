@@ -1,3 +1,7 @@
+### v2.7.1
+- Added docker files for Unite and Unite+Infer
+- conf directory now contains the whole dir structure (empty) in git
+
 ### v2.7.0
 - Analysis tool launch commands now do not have automatic quotes to give more control to users.
 - fixed plugin filter dependencies (OslcValues moved from "shared")
