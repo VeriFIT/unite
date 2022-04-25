@@ -53,7 +53,7 @@ confAnalysisToolsCleanCheckAndCopy()
 {
     rm -rf "$2"
     mkdir "$2"
-        $confFilesInfo = ls "$1" | Where-Object {$_.name -match ".*[.]rdf|.*[.]properties"} | Measure-Object
+
     if [ -d "$1" ]; then
         if ls "$1" | grep --quiet ".*[.]rdf|.*[.]properties"; then
             echo -e "    using ${YELLOW}custom${NC}: $1"
@@ -76,6 +76,7 @@ confOutputFiltersCleanCheckAndCopy()
     mkdir "$2"
     rm -rf "$3"
     mkdir "$3"
+    
     if [ -d "$1" ]; then
         if ls "$1" | grep --quiet ".*[.]java|.*[.]properties"; then
             echo -e "    using ${YELLOW}custom${NC}: $1"
