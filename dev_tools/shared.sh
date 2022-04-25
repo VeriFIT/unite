@@ -55,7 +55,7 @@ confAnalysisToolsCleanCheckAndCopy()
     mkdir "$2"
 
     if [ -d "$1" ]; then
-        if ls "$1" | grep --quiet ".*[.]rdf|.*[.]properties"; then
+        if ls "$1" | grep --quiet ".*[.]rdf\|.*[.]properties"; then
             echo -e "    using ${YELLOW}custom${NC}: $1"
             cp -r "$1" "$2"
         else
@@ -78,7 +78,7 @@ confOutputFiltersCleanCheckAndCopy()
     mkdir "$3"
     
     if [ -d "$1" ]; then
-        if ls "$1" | grep --quiet ".*[.]java|.*[.]properties"; then
+        if ls "$1" | grep --quiet ".*[.]java\|.*[.]properties"; then
             echo -e "    using ${YELLOW}custom${NC}: $1"
             cp "$1"/*.properties "$2"
             cp "$1"/*.java "$3"
