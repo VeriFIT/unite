@@ -1,1 +1,1 @@
-anaconda docker is untested!
+anaconda docker is currently broken due to build errors!

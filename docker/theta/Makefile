@@ -1,5 +1,5 @@
-image = unite-anaconda
-container = unite-anaconda
+image = unite-theta
+container = unite-theta
 
 build: dependency
 	docker build -t $(image):latest .
