@@ -1,5 +1,5 @@
-image = unite-anaconda
-container = unite-anaconda
+image = unite-valgrind
+container = unite-valgrind
 
 build: dependency
 	docker build -t $(image):latest .

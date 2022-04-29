@@ -1,3 +1,6 @@
+### v2.7.2
+- Added docker files for Theta and Valgrind
+
 ### v2.7.1
 - Added docker files for Unite and Unite+Infer
 - conf directory now contains the whole dir structure (empty) in git

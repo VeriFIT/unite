@@ -2,6 +2,9 @@ image = unite
 container = unite
 
 build:
+	docker build -t $(image):latest .
+
+build-clean:
 	docker build --no-cache -t $(image):latest .
 
 run-new:
@@ -11,11 +14,12 @@ run-existing:
 	docker start -a $(container)
 
 clean-image:
-	docker image prune
+	docker image rm $(container)
 
 clean-container:
-	docker container prune
+	docker container rm $(container)
 
-clean:
-	docker image prune
-	docker container prune
+clean: clean-image clean-container
+
+dependency:
+	$(MAKE) -C ../unite-only build
