@@ -132,6 +132,15 @@ function lookupCompilationURL ()
     )
     $compilation_host=$(cat "$1\compilation\conf\VeriFitCompilation.properties" | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
     $compilation_port=$(cat "$1\compilation\conf\VeriFitCompilation.properties" | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
+    
+    # configuration can be overridden by env variables
+    if ($null -ne $env:UNITE_COMPILATION_PORT) { # if not defined
+        $compilation_port = $env:UNITE_COMPILATION_PORT
+    }
+    if ($null -ne $env:UNITE_COMPILATION_HOST) {
+        $compilation_host = $env:UNITE_COMPILATION_HOST
+    }
+
     $compilation_url="${compilation_host}:${compilation_port}/compilation/"
     return $compilation_url
 }
@@ -145,6 +154,15 @@ function lookupAnalysisURL ()
     )
     $analysis_host=$(cat "$1\analysis\conf\VeriFitAnalysis.properties" | Select-String -Pattern "^ *adapter_host=") -replace "^ *adapter_host=", "" -replace "/$", ""
     $analysis_port=$(cat "$1\analysis\conf\VeriFitAnalysis.properties" | Select-String -Pattern "^ *adapter_port=") -replace "^ *adapter_port=", ""
+    
+    # configuration can be overridden by env variables
+    if ($null -ne $env:UNITE_ANALYSIS_PORT) { # if not defined
+        $analysis_port = $env:UNITE_ANALYSIS_PORT
+    }
+    if ($null -ne $env:UNITE_ANALYSIS_HOST) {
+        $analysis_host = $env:UNITE_ANALYSIS_HOST
+    }
+    
     $analysis_url="${analysis_host}:${analysis_port}/analysis/"
     return $analysis_url
 }

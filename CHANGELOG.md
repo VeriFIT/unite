@@ -1,3 +1,7 @@
+### v2.7.3
+- added run.sh/ps1 to analysis and compilation
+- configuration of host/port through env variables
+
 ### v2.7.2
 - Added docker files for Theta and Valgrind
 

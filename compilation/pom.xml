@@ -23,7 +23,9 @@
         <swagger-ui.version>3.25.0</swagger-ui.version>
         <!-- Start of user code properties
         -->
-
+        <adapter_port>${env.UNITE_COMPILATION_PORT}</adapter_port>
+        <adapter_host>${env.UNITE_COMPILATION_HOST}</adapter_host>
+        <jetty.port>${env.UNITE_COMPILATION_PORT}</jetty.port> <!-- not sure if needed -->
         <!-- End of user code
         -->
     </properties>
@@ -167,25 +169,13 @@
         <plugins>
             <!-- Start of user code plugins
             -->
-            
-			<!-- load & set properties -->
+
+			<!-- set Jetty properties -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>properties-maven-plugin</artifactId>
 				<version>1.0.0</version>
 				<executions>
-					<execution>
-						<id>load</id>
-						<phase>initialize</phase>
-						<goals>
-						<goal>read-project-properties</goal>
-						</goals>
-						<configuration>
-						<files>
-							<file>${project.basedir}/conf/VeriFitCompilation.properties</file>
-						</files>
-						</configuration>
-					</execution>
 					<execution>
 						<id>set</id>
 						<goals>

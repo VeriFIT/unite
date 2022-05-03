@@ -123,6 +123,14 @@ lookupCompilationURL()
 {
     compilation_host="$(cat "$1/compilation/conf/VeriFitCompilation.properties" | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||")" # removes final slash in case there is one (http://host/ vs http://host)
     compilation_port="$(cat "$1/compilation/conf/VeriFitCompilation.properties" | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")"
+    
+    if [ -n "$UNITE_COMPILATION_PORT" ]; then
+        compilation_port="$UNITE_COMPILATION_PORT"
+    fi
+    if [ -n "$UNITE_COMPILATION_HOST" ]; then
+        compilation_host="$UNITE_COMPILATION_HOST"
+    fi
+    
     compilation_url="$compilation_host:$compilation_port/compilation/"
     echo "$compilation_url"
 }
@@ -132,6 +140,14 @@ lookupAnalysisURL()
 {
     analysis_host="$(cat "$1/analysis/conf/VeriFitAnalysis.properties" | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||")" # removes final slash in case there is one (http://host/ vs http://host)
     analysis_port="$(cat "$1/analysis/conf/VeriFitAnalysis.properties" | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")"
+
+    if [ -n "$UNITE_ANALYSIS_PORT" ]; then
+        analysis_port="$UNITE_ANALYSIS_PORT"
+    fi
+    if [ -n "$UNITE_ANALYSIS_HOST" ]; then
+        analysis_host="$UNITE_ANALYSIS_HOST"
+    fi
+
     analysis_url="$analysis_host:$analysis_port/analysis/"
     echo "$analysis_url"
 }
