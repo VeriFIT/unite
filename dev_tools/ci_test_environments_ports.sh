@@ -29,8 +29,10 @@ main () {
     echo -e "done\n"
 
     echo -e "Setting environment variables UNITE_ANALYSIS_PORT=9090, UNITE_COMPILATION_PORT=9091"
-    export UNITE_ANALYSIS_PORT=9090
-    export UNITE_COMPILATION_PORT=9091
+    UNITE_ANALYSIS_PORT=9090
+    UNITE_COMPILATION_PORT=9091
+    export UNITE_ANALYSIS_PORT
+    export UNITE_COMPILATION_PORT
 
     echo -e "Changing ports inside of the Newman test suite\n"
     sed -i 's|http://localhost:8080|http://localhost:9080|' "$ADAPTER_ROOT_DIR/analysis/tests/TestSuite.postman_collection"
