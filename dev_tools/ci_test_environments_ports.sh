@@ -28,9 +28,9 @@ main () {
     fi
     echo -e "done\n"
 
-    echo -e "Setting environment variables UNITE_ANALYSIS_PORT=9090, UNITE_COMPILATION_PORT=9091"
-    UNITE_ANALYSIS_PORT=9090
-    UNITE_COMPILATION_PORT=9091
+    echo -e "Setting environment variables UNITE_ANALYSIS_PORT=9080, UNITE_COMPILATION_PORT=9081"
+    UNITE_ANALYSIS_PORT=9080
+    UNITE_COMPILATION_PORT=9081
     export UNITE_ANALYSIS_PORT
     export UNITE_COMPILATION_PORT
 
