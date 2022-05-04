@@ -34,6 +34,7 @@ public class VeriFitAnalysisProperties
 	public static void initializeProperties() throws FileNotFoundException, IOException
 	{
 		loadPropertiesFromFile();
+		overridePropertiesWithEnvVariables();
 		updateProperties();
 		setDummyToolPath();
 	}
@@ -150,6 +151,21 @@ public class VeriFitAnalysisProperties
 			}
 			CONFIG_OS_STR = str_CONFIG_OS;
 		}
+	}
+
+	/**
+	 * Checks if any relevant environmental variables are defined and if yes, then 
+	 * they are used to override the .properties configuration
+	 */
+	private static void overridePropertiesWithEnvVariables()
+	{
+		String envAdapterHost = System.getenv("UNITE_ANALYSIS_HOST");
+		if (envAdapterHost != null)
+			ADAPTER_HOST = envAdapterHost;
+
+		String envAdapterPort = System.getenv("UNITE_ANALYSIS_PORT");
+		if (envAdapterPort != null)
+			ADAPTER_PORT = envAdapterPort;
 	}
 	
 	/**

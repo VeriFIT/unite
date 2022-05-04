@@ -1820,7 +1820,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\r\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\r\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\r\n\r\n  <oslc_auto:AutomationRequest rdf:about=\"http://localhost:8081/compilation/services/resources/automationRequests/bookmarkID\">\r\n\t<dcterms:title>not important</dcterms:title>\r\n\t<dcterms:description>not important</dcterms:description>\r\n  </oslc_auto:AutomationRequest>\r\n\r\n</rdf:RDF>",
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\r\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\r\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\r\n\r\n  <oslc_auto:AutomationRequest rdf:about=\"{{server_address}}/{{server_context}}/services/resources/automationRequests/bookmarkID\">\r\n\t<dcterms:title>not important</dcterms:title>\r\n\t<dcterms:description>not important</dcterms:description>\r\n  </oslc_auto:AutomationRequest>\r\n\r\n</rdf:RDF>",
 									"options": {
 										"raw": {
 											"language": "xml"

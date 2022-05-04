@@ -31,6 +31,7 @@ public class VeriFitCompilationProperties
 	public static void initializeProperties() throws FileNotFoundException, IOException
 	{
 		loadPropertiesFromFile();
+		overridePropertiesWithEnvVariables();
 		updateProperties();
 	}
 
@@ -135,6 +136,20 @@ public class VeriFitCompilationProperties
 		}
 	}
 
+	/**
+	 * Checks if any relevant environmental variables are defined and if yes, then 
+	 * they are used to override the .properties configuration
+	 */
+	private static void overridePropertiesWithEnvVariables()
+	{
+		String envAdapterHost = System.getenv("UNITE_COMPILATION_HOST");
+		if (envAdapterHost != null)
+			ADAPTER_HOST = envAdapterHost;
+
+		String envAdapterPort = System.getenv("UNITE_COMPILATION_PORT");
+		if (envAdapterPort != null)
+			ADAPTER_PORT = envAdapterPort;
+	}
 	
 	/**
 	 * Update properties which are derived from the configuration file (not directly loaded from it)

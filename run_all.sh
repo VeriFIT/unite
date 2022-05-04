@@ -182,11 +182,9 @@ main () {
 
     # start the compilation adapter
     echo -n "Starting the Compilation adapter"
-    cd "$ROOTDIR/compilation"
-    mvn jetty:run-exploded &> "$ROOTDIR/logs/compilation_$CURTIME.log" &
+    "$ROOTDIR/compilation/run.sh" &> "$ROOTDIR/logs/compilation_$CURTIME.log" &
     PROCESS_PID=$!
     echo " ($PROCESS_PID)"
-    cd - > /dev/null
     echo -e "Waiting for the Compilation adapter to finish startup"
     waitForUrlOnline "$compilation_url" "$PROCESS_PID" "$SLEEP" 0
     ret="$?"
@@ -217,11 +215,9 @@ main () {
 
     # start the analysis adapter
     echo -n "Starting the Analysis adapter"
-    cd "$ROOTDIR/analysis"
-    mvn jetty:run-exploded &> "$ROOTDIR/logs/analysis_$CURTIME.log" &
+    "$ROOTDIR/analysis/run.sh" &> "$ROOTDIR/logs/analysis_$CURTIME.log" &
     PROCESS_PID=$!
     echo " ($PROCESS_PID)"
-    cd - > /dev/null
     echo -e "Waiting for the Analysis adapter to finish startup"
     waitForUrlOnline "$analysis_url" "$PROCESS_PID" "$SLEEP" 0
     ret="$?"

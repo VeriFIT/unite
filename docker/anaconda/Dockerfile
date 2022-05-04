@@ -1,7 +1,8 @@
 FROM unite:latest
 
 # copy over Unite configuration for anaconda
-COPY ./unite-conf/* ./unite/conf/analysis_advanced/AnalysisTools/
+# make sure to set the right ports in case you change then in the conf
+COPY ./unite-conf ./unite/conf
 
 # install anaconda
 RUN apt-get install -y m4 wget && \
