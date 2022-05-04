@@ -41,6 +41,9 @@ All configuration files should be placed into the *cloned_repo*/conf directory. 
 - Output filter definition
     - in *conf/analysis_advanced/PluginFilters* define an output filters using a .java file and a .properties file for every filter. Use the "ExamplePluginFilter" definition in *conf_example/analysis_advanced/PluginFilters* as a guide on how to define your own. For more details refer to the [wiki](https://pajda.fit.vutbr.cz/verifit/oslc-generic-analysis/-/wikis/Usage-Guide/3.-Plugin-Output-Filters).
 
+Alternatively, one can use environmental variables to override configuration from configuration files.
+The available environmental variables are: UNITE_ANALYSIS_PORT, UNITE_ANALYSIS_HOST, UNITE_COMPILATION_PORT, UNITE_COMPILATION_HOST
+
 ## How To Run
 Make sure you run a build script (build.sh or build.bat) before attempting to run anything, or use the -b parameter when running the run_all script!
 
@@ -65,13 +68,13 @@ server online at - http://*host*:*port*/fuseki/
 ##### Analysis adapter
 ```
 $ cd *cloned_repo*/analysis
-$ mvn jetty:run-exploded
+$ ./run.[sh/ps1] 
 server online at - http://*host*:*port*/analysis/
 ```
 ##### Compilation adapter
 ```
 $ cd *cloned_repo*/compilation
-$ mvn jetty:run-exploded
+$ ./run.[sh/ps1] 
 server online at - http://*host*:*port*/compilation/
 ```
 
