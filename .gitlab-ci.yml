@@ -37,10 +37,12 @@ build:
     - sparql_triplestore/jetty-distribution/start.ini
     expire_in: 20 minutes
 
+# test that Unite can start
 test-start:
   stage: test
   script: /bin/bash ./dev_tools/ci_test_start.sh
 
+# test the main functionality of Unite
 test-newman-core:
   stage: test
   before_script:
@@ -49,6 +51,7 @@ test-newman-core:
     - npm install -g newman
   script: /bin/bash ./dev_tools/ci_test_suite.sh
 
+# test keepLastN functionality
 test-newman-keepLastN:
   stage: test
   before_script:
@@ -56,3 +59,12 @@ test-newman-keepLastN:
     - apt-get install -y nodejs npm
     - npm install -g newman
   script: /bin/bash ./dev_tools/ci_test_keep_last_n.sh
+
+# test port configuration through environment variables
+test-newman-env-ports:
+  stage: test
+  before_script:
+    - apt-get update
+    - apt-get install -y nodejs npm
+    - npm install -g newman
+  script: /bin/bash ./dev_tools/ci_test_environments_ports.sh

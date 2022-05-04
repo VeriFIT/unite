@@ -93,10 +93,10 @@ confOutputFiltersCleanCheckAndCopy()
 processConfFiles()
 {    
     # basic conf files (analysis, compilation, triplestore properties)
-    echo "Checking Compilation Adapter:"
-    confFileCopyCustomOrDefault "$1/conf/VeriFitCompilation.properties" "$1/compilation/conf/VeriFitCompilationDefault.properties" "$1/compilation/conf/VeriFitCompilation.properties"
     echo "Checking Triplestore:"
     confFileCopyCustomOrDefault "$1/conf/TriplestoreConf.ini"           "$1/sparql_triplestore/startDefault.ini"                   "$1/sparql_triplestore/start.ini"
+    echo "Checking Compilation Adapter:"
+    confFileCopyCustomOrDefault "$1/conf/VeriFitCompilation.properties" "$1/compilation/conf/VeriFitCompilationDefault.properties" "$1/compilation/conf/VeriFitCompilation.properties"
     echo "Checking Analysis Adapter:"
     confFileCopyCustomOrDefault "$1/conf/VeriFitAnalysis.properties"    "$1/analysis/conf/VeriFitAnalysisDefault.properties"       "$1/analysis/conf/VeriFitAnalysis.properties"
 
@@ -117,21 +117,80 @@ lookupTriplestoreURL()
     triplestore_url="$triplestore_host:$triplestore_port/fuseki/"
     echo "$triplestore_url"
 }
-    
+
+# looks up the adapter_host configuration of the Compilation adapter
+# env variable UNITE_COMPILATION_HOST overrides the configuration
+# $1 ... root directory of the project
+lookupCompilationHost()
+{
+    compilation_host="$(cat "$1/compilation/conf/VeriFitCompilation.properties" | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||")" # removes final slash in case there is one (http://host/ vs http://host)
+
+    if [ -n "$UNITE_COMPILATION_HOST" ]; then
+        compilation_host="$UNITE_COMPILATION_HOST"
+    fi
+
+    echo "$compilation_host"
+}
+
+# looks up the adapter_port configuration of the Compilation adapter
+# env variable UNITE_COMPILATION_PORT overrides the configuration
+# $1 ... root directory of the project
+lookupCompilationPort()
+{
+    compilation_port="$(cat "$1/compilation/conf/VeriFitCompilation.properties" | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")"
+
+    if [ -n "$UNITE_COMPILATION_PORT" ]; then
+        compilation_port="$UNITE_COMPILATION_PORT"
+    fi
+
+    echo "$compilation_port"
+}
+
 # $1 ... root directory of the project
 lookupCompilationURL()
 {
-    compilation_host="$(cat "$1/compilation/conf/VeriFitCompilation.properties" | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||")" # removes final slash in case there is one (http://host/ vs http://host)
-    compilation_port="$(cat "$1/compilation/conf/VeriFitCompilation.properties" | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")"
+    compilation_host="$(lookupCompilationHost "$1")"
+    compilation_port="$(lookupCompilationPort "$1")"
+    
     compilation_url="$compilation_host:$compilation_port/compilation/"
     echo "$compilation_url"
+}
+
+
+# looks up the adapter_host configuration of the Analysis adapter
+# env variable UNITE_ANALYSIS_HOST overrides the configuration
+# $1 ... root directory of the project
+lookupAnalysisHost()
+{
+    analysis_host="$(cat "$1/analysis/conf/VeriFitAnalysis.properties" | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||")" # removes final slash in case there is one (http://host/ vs http://host)
+
+    if [ -n "$UNITE_ANALYSIS_HOST" ]; then
+        analysis_host="$UNITE_ANALYSIS_HOST"
+    fi
+
+    echo "$analysis_host"
+}
+
+# looks up the adapter_port configuration of the Analysis adapter
+# env variable UNITE_ANALYSIS_PORT overrides the configuration
+# $1 ... root directory of the project
+lookupAnalysisPort()
+{
+    analysis_port="$(cat "$1/analysis/conf/VeriFitAnalysis.properties" | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")"
+
+    if [ -n "$UNITE_ANALYSIS_PORT" ]; then
+        analysis_port="$UNITE_ANALYSIS_PORT"
+    fi
+
+    echo "$analysis_port"
 }
 
 # $1 ... root directory of the project
 lookupAnalysisURL()
 {
-    analysis_host="$(cat "$1/analysis/conf/VeriFitAnalysis.properties" | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||")" # removes final slash in case there is one (http://host/ vs http://host)
-    analysis_port="$(cat "$1/analysis/conf/VeriFitAnalysis.properties" | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")"
+    analysis_host="$(lookupAnalysisHost "$1")"
+    analysis_port="$(lookupAnalysisPort "$1")"
+    
     analysis_url="$analysis_host:$analysis_port/analysis/"
     echo "$analysis_url"
 }

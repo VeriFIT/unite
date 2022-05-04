@@ -172,7 +172,7 @@ if ($t)
 
 # start the compilation adapter
 Write-Host -NoNewline "Starting the Compilation adapter"
-$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; cd '$ROOTDIR\compilation' ; mvn jetty:run-exploded >> '$ROOTDIR\logs\compilation_$CURTIME.log' 2>&1" -passthru
+$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; cd '$ROOTDIR\compilation' ; .\run.ps1 >> '$ROOTDIR\logs\compilation_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 $pid_as_string = $process.id
 echo " ($pid_as_string)"
@@ -210,7 +210,7 @@ if ($t)
 
 # start the analysis adapter
 Write-Host -NoNewline "Starting the Analysis adapter"
-$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; cd '$ROOTDIR\analysis' ; mvn jetty:run-exploded >> '$ROOTDIR\logs\analysis_$CURTIME.log' 2>&1" -passthru
+$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; cd '$ROOTDIR\analysis' ; .\run.ps1 >> '$ROOTDIR\logs\analysis_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 $pid_as_string = $process.id
 echo " ($pid_as_string)"

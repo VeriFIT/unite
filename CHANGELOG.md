@@ -1,3 +1,12 @@
+### v2.7.3
+- Added configuration of host/port through environment variables.
+  Env variables override conf files. Available env variables are:
+  - UNITE_ANALYSIS_PORT
+  - UNITE_ANALYSIS_HOST
+  - UNITE_COMPILATION_PORT
+  - UNITE_COMPILATION_HOST
+- Added dedicated run.sh/ps1 to analysis and compilation
+
 ### v2.7.2
 - Added docker files for Theta and Valgrind
 

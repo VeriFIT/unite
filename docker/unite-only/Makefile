@@ -21,5 +21,6 @@ clean-container:
 
 clean: clean-image clean-container
 
-dependency:
-	$(MAKE) -C ../unite-only build
+
+compose:
+	docker-compose up
