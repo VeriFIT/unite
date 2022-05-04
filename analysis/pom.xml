@@ -23,7 +23,6 @@
         <swagger-ui.version>3.25.0</swagger-ui.version>
         <!-- Start of user code properties
         -->
-        <jetty.port>${adapter_port}</jetty.port> <!-- not sure if needed -->
         <!-- End of user code
         -->
     </properties>

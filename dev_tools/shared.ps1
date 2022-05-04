@@ -96,10 +96,10 @@ function processConfFiles()
     )
     
     # basic conf files (analysis, compilation, triplestore properties)
-    echo "Checking Compilation Adapter:"
-    confFileCopyCustomOrDefault "$1\conf\VeriFitCompilation.properties" "$1\compilation\conf\VeriFitCompilationDefault.properties" "$1\compilation\conf\VeriFitCompilation.properties"
     echo "Checking Triplestore:"
     confFileCopyCustomOrDefault "$1\conf\TriplestoreConf.ini"           "$1\sparql_triplestore\startDefault.ini"                   "$1\sparql_triplestore\start.ini"
+    echo "Checking Compilation Adapter:"
+    confFileCopyCustomOrDefault "$1\conf\VeriFitCompilation.properties" "$1\compilation\conf\VeriFitCompilationDefault.properties" "$1\compilation\conf\VeriFitCompilation.properties"
     echo "Checking Analysis Adapter:"
     confFileCopyCustomOrDefault "$1\conf\VeriFitAnalysis.properties"    "$1\analysis\conf\VeriFitAnalysisDefault.properties"       "$1\analysis\conf\VeriFitAnalysis.properties"
     

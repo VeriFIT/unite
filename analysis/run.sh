@@ -13,6 +13,40 @@
 USRPATH="$PWD"                          # get the call directory
 ROOTDIR="$(dirname "$(realpath "$0")")" # get the script directory
 
-# TODO env variables and load config
+# looks up the adapter_host configuration of the Analysis adapter
+# env variable UNITE_ANALYSIS_HOST overrides the configuration
+# NOTE: duplicit code with shared.sh
+# $1 ... root directory of the project
+lookupAnalysisHost()
+{
+    analysis_host="$(cat "$1/conf/VeriFitAnalysis.properties" | grep "^ *adapter_host=" | sed "s/^ *adapter_host=//" | sed "s|/$||")" # removes final slash in case there is one (http://host/ vs http://host)
 
+    if [ -n "$UNITE_ANALYSIS_HOST" ]; then
+        analysis_host="$UNITE_ANALYSIS_HOST"
+    fi
+
+    echo "$analysis_host"
+}
+
+# looks up the adapter_port configuration of the Analysis adapter
+# env variable UNITE_ANALYSIS_PORT overrides the configuration
+# NOTE: duplicit code with shared.sh
+# $1 ... root directory of the project
+lookupAnalysisPort()
+{
+    analysis_port="$(cat "$1/conf/VeriFitAnalysis.properties" | grep "^ *adapter_port=" | sed "s/^ *adapter_port=//")"
+
+    if [ -n "$UNITE_ANALYSIS_PORT" ]; then
+        analysis_port="$UNITE_ANALYSIS_PORT"
+    fi
+
+    echo "$analysis_port"
+}
+
+# lookup adapter host/port as configuration or environment variables
+adapter_host="$(lookupAnalysisHost "$ROOTDIR")"
+adapter_port="$(lookupAnalysisPort "$ROOTDIR")"
+
+cd "$ROOTDIR"
 exec mvn -Dadapter_port="$adapter_port" -Dadapter_host="$adapter_host" jetty:run-exploded
+cd "$USRPATH"

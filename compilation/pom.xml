@@ -23,9 +23,6 @@
         <swagger-ui.version>3.25.0</swagger-ui.version>
         <!-- Start of user code properties
         -->
-        <adapter_port>${env.UNITE_COMPILATION_PORT}</adapter_port>
-        <adapter_host>${env.UNITE_COMPILATION_HOST}</adapter_host>
-        <jetty.port>${env.UNITE_COMPILATION_PORT}</jetty.port> <!-- not sure if needed -->
         <!-- End of user code
         -->
     </properties>
