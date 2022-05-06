@@ -1,3 +1,8 @@
+### v2.7.4
+- run_all log now prints URL's of the started services
+- unite-only docker rename to unite-base
+- unite-base docker now uses the docker-base Git tag as its code base
+
 ### v2.7.3
 - Added configuration of host/port through environment variables.
   Env variables override conf files. Available env variables are:
