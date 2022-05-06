@@ -151,12 +151,12 @@ main () {
     echo -n "Starting the Triplestore"
     "$ROOTDIR/sparql_triplestore/run.sh" &> "$ROOTDIR/logs/triplestore_$CURTIME.log" &
     PROCESS_PID=$!
-    echo " ($PROCESS_PID)"
+    echo " (PID: $PROCESS_PID)"
     echo -e "Waiting for the Triplestore to finish startup"
     waitForUrlOnline "$triplestore_url" "$PROCESS_PID" "$SLEEP" 0
     ret="$?"
     if [ "$ret" -eq 0 ]; then
-        echo -e "Triplestore ${GREEN}running${NC} (1/3)\n"
+        echo -e "Triplestore ${GREEN}running${NC} (1/3)\n  at $triplestore_url\n"
         KILL_TRIPLESTORE_TAIL=true
     else
         echo -e "Triplestore ${RED}failed${NC} to start!"
@@ -184,12 +184,12 @@ main () {
     echo -n "Starting the Compilation adapter"
     "$ROOTDIR/compilation/run.sh" &> "$ROOTDIR/logs/compilation_$CURTIME.log" &
     PROCESS_PID=$!
-    echo " ($PROCESS_PID)"
+    echo " (PID: $PROCESS_PID)"
     echo -e "Waiting for the Compilation adapter to finish startup"
     waitForUrlOnline "$compilation_url" "$PROCESS_PID" "$SLEEP" 0
     ret="$?"
     if [ "$ret" -eq 0 ]; then
-        echo -e "Compilation adapter ${GREEN}running${NC} (2/3)\n"
+        echo -e "Compilation adapter ${GREEN}running${NC} (2/3)\n  at $compilation_url\n"
         KILL_COMPILATION_TAIL=true
     else
         echo -e "Compilation adapter ${RED}failed${NC} to start!"
@@ -217,12 +217,12 @@ main () {
     echo -n "Starting the Analysis adapter"
     "$ROOTDIR/analysis/run.sh" &> "$ROOTDIR/logs/analysis_$CURTIME.log" &
     PROCESS_PID=$!
-    echo " ($PROCESS_PID)"
+    echo " (PID: $PROCESS_PID)"
     echo -e "Waiting for the Analysis adapter to finish startup"
     waitForUrlOnline "$analysis_url" "$PROCESS_PID" "$SLEEP" 0
     ret="$?"
     if [ "$ret" -eq 0 ]; then
-        echo -e "Analysis adapter ${GREEN}running${NC} (3/3)\n"
+        echo -e "Analysis adapter ${GREEN}running${NC} (3/3)\n  at $analysis_url\n"
         KILL_ANALYSIS_TAIL=true
     else
         echo -e "Analysis adapter ${RED}failed${NC} to start!"
