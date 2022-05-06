@@ -1,5 +1,6 @@
 # Docker Images for Unite
 This directory contains a docker image for Unite (in ./unite-base/).
+The image uses the Git tag "unite-docker" to clone Unite's code.
 Then there is a number of analysis tools setup with Unite in separate docker
 images. Each analysis tool image is based on the base Unite image. 
 
