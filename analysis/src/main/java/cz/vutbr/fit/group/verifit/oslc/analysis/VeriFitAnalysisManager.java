@@ -37,6 +37,10 @@ import org.slf4j.LoggerFactory;
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 import cz.vutbr.fit.group.verifit.oslc.analysis.servlet.ServiceProviderCatalogSingleton;
+import cz.vutbr.fit.group.verifit.arrowhead.client.ArrowheadClient;
+import cz.vutbr.fit.group.verifit.arrowhead.client.ArrowheadClientBuilder;
+import cz.vutbr.fit.group.verifit.arrowhead.client.ArrowheadServiceRegistryClient;
+import cz.vutbr.fit.group.verifit.arrowhead.dto.ArrowheadServiceRegistrationForm;
 import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.analysis.ServiceProviderInfo;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
@@ -56,6 +60,11 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.NoSuchElementException;
 import org.eclipse.lyo.store.ModelUnmarshallingException;
 import org.eclipse.lyo.store.Store;
@@ -823,6 +832,44 @@ public class VeriFitAnalysisManager {
 		// initialize execution manager
 		AutoRequestExecManager = new ExecutionManager();
 		
+		
+		// AHT client
+		System.out.println("XXXXXXXXXXXXXXXXXXXXXX AHT start XXXXXXXXXXXXXXXXXXXXXX");
+		ArrowheadClient fitClient1;
+		try {
+			fitClient1 = ArrowheadClientBuilder.newBuilder().certificate(
+				      new FileInputStream(Paths.get(
+				        "./conf/fit-client1.p12").toFile()),
+				      "123456")
+				      .defaultLogger()
+				      .build();
+			System.out.println("XXXXXXXXXXXXXXXXXXXXXX AHT after client XXXXXXXXXXXXXXXXXXXXXX");
+
+		    ArrowheadServiceRegistryClient srFitClient1
+		      = new ArrowheadServiceRegistryClient(fitClient1, "teta.fit.vutbr.cz", 8443);
+
+			System.out.println("XXXXXXXXXXXXXXXXXXXXXX AHT after registry XXXXXXXXXXXXXXXXXXXXXX");
+			
+		    ArrowheadServiceRegistrationForm registrationForm
+		      = new ArrowheadServiceRegistrationForm("verify-oslc", "fit-client1",
+		        "147.229.12.81", 8080, "/oslc");
+		    
+			System.out.println("XXXXXXXXXXXXXXXXXXXXXX AHT after form XXXXXXXXXXXXXXXXXXXXXX");
+
+		    System.out.println(srFitClient1.unregister(registrationForm));
+		    
+			System.out.println("XXXXXXXXXXXXXXXXXXXXXX AHT after unregister XXXXXXXXXXXXXXXXXXXXXX");
+
+		    System.out.println(srFitClient1.register(registrationForm));
+		    
+			System.out.println("XXXXXXXXXXXXXXXXXXXXXX AHT after register XXXXXXXXXXXXXXXXXXXXXX");
+		    
+		} catch (UnrecoverableKeyException | KeyManagementException | KeyStoreException | NoSuchAlgorithmException
+				| CertificateException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+		}
         // End of user code
         
     }
