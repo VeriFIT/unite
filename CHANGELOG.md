@@ -1,3 +1,6 @@
+### v.2.8.0
+- added AHT framework service registration
+
 ### v2.7.4
 - run_all log now prints URL's of the started services
 - unite-only docker rename to unite-base
