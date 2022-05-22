@@ -63,12 +63,23 @@
         <!-- Specific dependencies -->
         <!-- Start of user code dependencies
         -->
-        <!-- AHT client as jar -->
+        <!-- AHT client as jar & other needed dependencies -->
 		<dependency>  
 			<groupId>cz.vutbr.fit.group.verifit.arrowhead.client</groupId>  
 			<artifactId>jersey</artifactId>
 			<version>0.1.0.qualifier</version>
-		</dependency>  
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<version>2.25.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.bundles.repackaged</groupId>
+			<artifactId>jersey-guava</artifactId>
+			<version>2.25.1</version>
+		</dependency>
+		
 		
         <!-- shared code module -->
 		<dependency>  
