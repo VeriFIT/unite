@@ -854,6 +854,7 @@ public class VeriFitAnalysisManager {
 					new FileInputStream(Paths.get(
 					"./conf/certificates/" + VeriFitAnalysisProperties.AHT_CERTIFICATE).toFile()),	// certificate
 					VeriFitAnalysisProperties.AHT_CERTIFICATE_PASSWORD)								// password
+					.defaultLogger()
 					.build();
 				
 			    ahtClientServiceRegistry = new ArrowheadServiceRegistryClient(ahtClient,

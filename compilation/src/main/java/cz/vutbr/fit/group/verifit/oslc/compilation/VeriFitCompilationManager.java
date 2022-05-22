@@ -650,6 +650,7 @@ public class VeriFitCompilationManager {
 					new FileInputStream(Paths.get(
 					"./conf/certificates/" + VeriFitCompilationProperties.AHT_CERTIFICATE).toFile()),	// certificate
 					VeriFitCompilationProperties.AHT_CERTIFICATE_PASSWORD)								// password
+					.defaultLogger()
 					.build();
 				
 			    ahtClientServiceRegistry = new ArrowheadServiceRegistryClient(ahtClient,
