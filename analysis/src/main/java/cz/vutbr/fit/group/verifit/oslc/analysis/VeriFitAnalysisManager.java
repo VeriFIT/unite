@@ -41,6 +41,7 @@ import cz.vutbr.fit.group.verifit.arrowhead.client.ArrowheadClient;
 import cz.vutbr.fit.group.verifit.arrowhead.client.ArrowheadClientBuilder;
 import cz.vutbr.fit.group.verifit.arrowhead.client.ArrowheadServiceRegistryClient;
 import cz.vutbr.fit.group.verifit.arrowhead.dto.ArrowheadServiceRegistrationForm;
+import cz.vutbr.fit.group.verifit.arrowhead.dto.ArrowheadServiceRegistryEntry;
 import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.analysis.ServiceProviderInfo;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
@@ -763,6 +764,7 @@ public class VeriFitAnalysisManager {
     			+ "  AUTHENTICATION_PASSWORD: " + "********" + "\n"
     			+ "  KEEP_LAST_N_ENABLED: " + VeriFitAnalysisProperties.KEEP_LAST_N_ENABLED + "\n"
     			+ "  KEEP_LAST_N: " + VeriFitAnalysisProperties.KEEP_LAST_N + "\n"
+    			+ "  DUMMYTOOL_PATH: " + VeriFitAnalysisProperties.DUMMYTOOL_PATH + "\n"
     			+ "  AHT_ENABLED: " + VeriFitAnalysisProperties.AHT_ENABLED + "\n"
     			+ (VeriFitAnalysisProperties.AHT_ENABLED ? 
 					  "    AHT_SERVICE_REGISTRY_HOST: " + VeriFitAnalysisProperties.AHT_SERVICE_REGISTRY_HOST + "\n"
@@ -772,7 +774,7 @@ public class VeriFitAnalysisManager {
 	    			+ "    AHT_CERTIFICATE: " + VeriFitAnalysisProperties.AHT_CERTIFICATE + "\n"
 	    			+ "    AHT_CERTIFICATE_PASSWORD: " + "********" + "\n"
 	    			: "")
-    			+ "  DUMMYTOOL_PATH: " + VeriFitAnalysisProperties.DUMMYTOOL_PATH);
+    			);
     	
         // End of user code
         // Start of user code StoreInitialise
@@ -852,7 +854,6 @@ public class VeriFitAnalysisManager {
 					new FileInputStream(Paths.get(
 					"./conf/certificates/" + VeriFitAnalysisProperties.AHT_CERTIFICATE).toFile()),	// certificate
 					VeriFitAnalysisProperties.AHT_CERTIFICATE_PASSWORD)								// password
-					.defaultLogger()
 					.build();
 				
 			    ahtClientServiceRegistry = new ArrowheadServiceRegistryClient(ahtClient,
@@ -866,8 +867,10 @@ public class VeriFitAnalysisManager {
 			    		VeriFitAnalysisProperties.ADAPTER_CONTEXT);					// uri
 	
 			    // unregister and then register
-			    System.out.println(ahtClientServiceRegistry.unregister(ahtFormServiceRegistration));
-			    System.out.println(ahtClientServiceRegistry.register(ahtFormServiceRegistration));
+			    ahtClientServiceRegistry.unregister(ahtFormServiceRegistration);
+			    ArrowheadServiceRegistryEntry ahtEntry = ahtClientServiceRegistry.register(ahtFormServiceRegistration);
+			    // TODO check result using ahtEntry
+			    
 				log.info("Initialization: Registered successfully as an AHT service ");
 			    
 			} catch (UnrecoverableKeyException | KeyManagementException | KeyStoreException | NoSuchAlgorithmException
@@ -889,7 +892,10 @@ public class VeriFitAnalysisManager {
 		// register as an AHT service 
 		if (VeriFitAnalysisProperties.AHT_ENABLED) {
 			log.info("Shutdown: Un-registering as an AHT service");
-			log.info("Shutdown: " + ahtClientServiceRegistry.unregister(ahtFormServiceRegistration));
+			Boolean res =  ahtClientServiceRegistry.unregister(ahtFormServiceRegistration);
+			if (res == false){
+				log.warn("AHT service was not un-registered!");
+			}
 		}
         // End of user code
     }

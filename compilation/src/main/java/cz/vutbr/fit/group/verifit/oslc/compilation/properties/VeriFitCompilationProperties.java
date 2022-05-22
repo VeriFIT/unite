@@ -134,6 +134,49 @@ public class VeriFitCompilationProperties
 			}
 			CONFIG_OS_STR = str_CONFIG_OS;
 		}
+		
+
+		// AHT service registry configuration
+		String str_AHT_ENABLED;
+		str_AHT_ENABLED = VeriFitCompilationProperties.getProperty("aht_enabled");	
+		if (str_AHT_ENABLED == null)
+			throw new IOException("aht_enabled missing");
+		try {
+			AHT_ENABLED = Boolean.parseBoolean(str_AHT_ENABLED);
+		} catch (Exception e) {
+			throw new IOException("failed to parse aht_enabled value - boolean expected");
+			
+		}
+		if (AHT_ENABLED) { // load other AHT props only if enabled
+			AHT_SERVICE_REGISTRY_HOST = VeriFitCompilationProperties.getProperty("aht_service_registry_host");	
+			if (AHT_SERVICE_REGISTRY_HOST == null)
+				throw new IOException("aht_service_registry_host missing");
+			
+			AHT_SERVICE_REGISTRY_PORT = VeriFitCompilationProperties.getProperty("aht_service_registry_port");	
+			if (AHT_SERVICE_REGISTRY_PORT == null)
+				throw new IOException("aht_service_registry_port missing");
+			try { // check if parsable as int
+				Integer.parseInt(AHT_SERVICE_REGISTRY_PORT);
+			} catch (Exception e) {
+				throw new IOException("failed to parse aht_service_registry_port value - int expected");
+			}
+			
+			AHT_SERVICE_NAME = VeriFitCompilationProperties.getProperty("aht_service_name");	
+			if (AHT_SERVICE_NAME == null)
+				throw new IOException("aht_service_name missing");
+			
+			AHT_SYSTEM_NAME = VeriFitCompilationProperties.getProperty("aht_system_name");	
+			if (AHT_SYSTEM_NAME == null)
+				throw new IOException("aht_system_name missing");
+			
+			AHT_CERTIFICATE = VeriFitCompilationProperties.getProperty("aht_certificate");
+			if (AHT_CERTIFICATE == null)
+				throw new IOException("aht_certificate missing");
+			
+			AHT_CERTIFICATE_PASSWORD = VeriFitCompilationProperties.getProperty("aht_certificate_password");
+			if (AHT_CERTIFICATE_PASSWORD == null)
+				throw new IOException("aht_certificate_password missing");
+		}
 	}
 
 	/**
@@ -182,18 +225,25 @@ public class VeriFitCompilationProperties
     public static Boolean KEEP_LAST_N_ENABLED;
     public static long KEEP_LAST_N;
     
-    
 	public static ConfigOs CONFIG_OS;
 	public static String CONFIG_OS_STR;
+	
+	public static Boolean AHT_ENABLED;
+    public static String AHT_SERVICE_REGISTRY_HOST;
+    public static String AHT_SERVICE_REGISTRY_PORT;
+    public static String AHT_SERVICE_NAME;
+    public static String AHT_SYSTEM_NAME;
+    public static String AHT_CERTIFICATE;
+    public static String AHT_CERTIFICATE_PASSWORD;
     
     /*
      *  Internal constants
      */
 	public static final String AUTOMATION_PROVIDER_ID = "A0";
-	public static String SERVER_URL = ADAPTER_HOST + ":" + ADAPTER_PORT + "/";
-	public static final String ADAPTER_CONTEXT = "compilation/";
-    public static String PATH_AUTOMATION_SERVICE_PROVIDERS = SERVER_URL + ADAPTER_CONTEXT + "services/serviceProviders/";
-    public static String PATH_RESOURCE_SHAPES = SERVER_URL + ADAPTER_CONTEXT + "services/resourceShapes/";
+	public static String SERVER_URL = ADAPTER_HOST + ":" + ADAPTER_PORT;
+	public static final String ADAPTER_CONTEXT = "/compilation";
+    public static String PATH_AUTOMATION_SERVICE_PROVIDERS = SERVER_URL + ADAPTER_CONTEXT + "/services/serviceProviders";
+    public static String PATH_RESOURCE_SHAPES = SERVER_URL + ADAPTER_CONTEXT + "/services/resourceShapes";
     
     public static String SUT_FOLDER = "SUT";	// TODO if this changes, there might be changes required in AnalysisManager->deleteContribution()
 }

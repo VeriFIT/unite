@@ -37,6 +37,11 @@ import org.slf4j.LoggerFactory;
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 import cz.vutbr.fit.group.verifit.oslc.compilation.servlet.ServiceProviderCatalogSingleton;
+import cz.vutbr.fit.group.verifit.arrowhead.client.ArrowheadClient;
+import cz.vutbr.fit.group.verifit.arrowhead.client.ArrowheadClientBuilder;
+import cz.vutbr.fit.group.verifit.arrowhead.client.ArrowheadServiceRegistryClient;
+import cz.vutbr.fit.group.verifit.arrowhead.dto.ArrowheadServiceRegistrationForm;
+import cz.vutbr.fit.group.verifit.arrowhead.dto.ArrowheadServiceRegistryEntry;
 import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.compilation.ServiceProviderInfo;
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
@@ -53,6 +58,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
+import java.nio.file.Paths;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.NoSuchElementException;
 import org.eclipse.lyo.store.ModelUnmarshallingException;
 import org.eclipse.lyo.store.Store;
@@ -100,6 +111,9 @@ public class VeriFitCompilationManager {
 	static ResourceIdGen AutoRequestIdGen;
 
 	static ExecutionManager AutoRequestExecManager;
+
+	static ArrowheadServiceRegistryClient ahtClientServiceRegistry;
+	static ArrowheadServiceRegistrationForm ahtFormServiceRegistration;
     // End of user code
     
     
@@ -531,7 +545,17 @@ public class VeriFitCompilationManager {
     			+ "  AUTHENTICATION_PASSWORD: " + "********" + "\n"
     			+ "  KEEP_LAST_N_ENABLED: " + VeriFitCompilationProperties.KEEP_LAST_N_ENABLED + "\n"
     			+ "  KEEP_LAST_N: " + VeriFitCompilationProperties.KEEP_LAST_N + "\n"
-    			+ "  PERSIST_SUT_DIRS: " + VeriFitCompilationProperties.PERSIST_SUT_DIRS);
+    			+ "  PERSIST_SUT_DIRS: " + VeriFitCompilationProperties.PERSIST_SUT_DIRS + "\n"
+				+ "  AHT_ENABLED: " + VeriFitCompilationProperties.AHT_ENABLED + "\n"
+				+ (VeriFitCompilationProperties.AHT_ENABLED ? 
+					  "    AHT_SERVICE_REGISTRY_HOST: " + VeriFitCompilationProperties.AHT_SERVICE_REGISTRY_HOST + "\n"
+					+ "    AHT_SERVICE_REGISTRY_PORT: " + VeriFitCompilationProperties.AHT_SERVICE_REGISTRY_PORT + "\n"
+					+ "    AHT_SERVICE_NAME: " + VeriFitCompilationProperties.AHT_SERVICE_NAME + "\n"
+					+ "    AHT_SYSTEM_NAME: " + VeriFitCompilationProperties.AHT_SYSTEM_NAME + "\n"
+					+ "    AHT_CERTIFICATE: " + VeriFitCompilationProperties.AHT_CERTIFICATE + "\n"
+					+ "    AHT_CERTIFICATE_PASSWORD: " + "********" + "\n"
+					: "")
+				);
     	
     	
     	// create the SUT directory
@@ -618,6 +642,39 @@ public class VeriFitCompilationManager {
 		// initialize execution manager
 		AutoRequestExecManager = new ExecutionManager();
 		
+		// register as an AHT service 
+		if (VeriFitCompilationProperties.AHT_ENABLED) {
+			log.info("Initialization: Registering as an AHT service");
+			try {
+				ArrowheadClient ahtClient = ArrowheadClientBuilder.newBuilder().certificate(
+					new FileInputStream(Paths.get(
+					"./conf/certificates/" + VeriFitCompilationProperties.AHT_CERTIFICATE).toFile()),	// certificate
+					VeriFitCompilationProperties.AHT_CERTIFICATE_PASSWORD)								// password
+					.build();
+				
+			    ahtClientServiceRegistry = new ArrowheadServiceRegistryClient(ahtClient,
+			    		VeriFitCompilationProperties.AHT_SERVICE_REGISTRY_HOST,
+			    		Integer.parseInt(VeriFitCompilationProperties.AHT_SERVICE_REGISTRY_PORT));
+			    ahtFormServiceRegistration = new ArrowheadServiceRegistrationForm(
+			    		VeriFitCompilationProperties.AHT_SERVICE_NAME,					// service name
+			    		VeriFitCompilationProperties.AHT_SYSTEM_NAME,					// system name 
+			    		VeriFitCompilationProperties.ADAPTER_HOST,						// address
+			    		Integer.parseInt(VeriFitCompilationProperties.ADAPTER_PORT),	// port
+			    		VeriFitCompilationProperties.ADAPTER_CONTEXT);					// uri
+	
+			    // unregister and then register
+			    ahtClientServiceRegistry.unregister(ahtFormServiceRegistration);
+			    ArrowheadServiceRegistryEntry ahtEntry = ahtClientServiceRegistry.register(ahtFormServiceRegistration);
+			    // TODO check result using ahtEntry
+			    
+				log.info("Initialization: Registered successfully as an AHT service ");
+			    
+			} catch (UnrecoverableKeyException | KeyManagementException | KeyStoreException | NoSuchAlgorithmException
+					| CertificateException | IOException e) {
+				log.error("Adapter initialization: Failed to register as an AHT service: " + e.getMessage());
+				System.exit(1);
+			}
+		}
         // End of user code
         
     }
@@ -637,6 +694,15 @@ public class VeriFitCompilationManager {
 				log.error("Adapter context destroy: Failed to delete the TMP folder: " + e.getMessage());
 			}
     	}
+
+		// register as an AHT service 
+		if (VeriFitCompilationProperties.AHT_ENABLED) {
+			log.info("Shutdown: Un-registering as an AHT service");
+			Boolean res =  ahtClientServiceRegistry.unregister(ahtFormServiceRegistration);
+			if (res == false){
+				log.warn("AHT service was not un-registered!");
+			}
+		}
         // End of user code
     }
 
