@@ -22,10 +22,10 @@ clean-container:
 clean: clean-image clean-container
 
 dependency:
-	$(MAKE) -C ../unite-only build
+	$(MAKE) -C ../unite-base build
 
 dependency-clean:
-	$(MAKE) -C ../unite-only build-clean
+	$(MAKE) -C ../unite-base build-clean
 
 
 compose: dependency

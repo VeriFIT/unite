@@ -1,5 +1,6 @@
 # Docker Images for Unite
-This directory contains a docker image for Unite (in ./unite-only/).
+This directory contains a docker image for Unite (in ./unite-base/).
+The image uses the Git tag "unite-docker" to clone Unite's code.
 Then there is a number of analysis tools setup with Unite in separate docker
 images. Each analysis tool image is based on the base Unite image. 
 
@@ -9,7 +10,7 @@ Pick a directory based on the desired docker image and run:
 $ cd facebook-infer        # or any other directory
 $ make build
 $ make run-new
-# Unite is now listing on ports 8080 and 8081
+# Unite is now listening on localhost on ports 8080 and 8081
 ```
 
 To rerun an existing container try using:
@@ -27,6 +28,6 @@ docker image and then run:
 ```
 $ cd facebook-infer        # or any other directory
 $ make compose
-# Unite is now listing on ports 8080 and 8081
-# Or you can change the docker-compose.yml to customize ports
+# Unite is now listening on localhost on ports 8080 and 8081
+# Or you can change the docker-compose.yml to customize ports and host
 ```

@@ -137,11 +137,11 @@ Write-Host -NoNewline "Starting the Triplestore"
 $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Triplestore'; cd '$ROOTDIR\sparql_triplestore'; .\run.ps1 >> '$ROOTDIR\logs\triplestore_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 $pid_as_string = $process.id
-echo " ($pid_as_string)"
+echo " (PID: $pid_as_string)"
 echo "Waiting for the Triplestore to finish startup"
 $ret = waitForUrlOnline $triplestore_url $process.id $SLEEP
 if ($ret -eq 0) {       # OK
-    echo "Triplestore running (1/3)`n"
+    echo "Triplestore running (1/3)`n  at $triplestore_url`n"
     $PIDS_TO_KILL = $PIDS_TO_KILL + $PID_TRIPLESTORE_TAIL
 } elseif ($ret -eq 1) { # startup fail
     echo "Triplestore ${RED}failed${NC} to start!"
@@ -175,11 +175,11 @@ Write-Host -NoNewline "Starting the Compilation adapter"
 $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; cd '$ROOTDIR\compilation' ; .\run.ps1 >> '$ROOTDIR\logs\compilation_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 $pid_as_string = $process.id
-echo " ($pid_as_string)"
+echo " (PID: $pid_as_string)"
 echo "Waiting for the Compilation adapter to finish startup"
 $ret = waitForUrlOnline $compilation_url $process.id $SLEEP
 if ($ret -eq 0) {
-    echo "Compilation adapter running (2/3)`n"
+    echo "Compilation adapter running (2/3)`n  at $compilation_url`n"
     $PIDS_TO_KILL = $PIDS_TO_KILL + $PID_COMPILATION_TAIL
 } elseif ($ret -eq 1) {
     echo "Compilation adapter failed to start!"
@@ -213,11 +213,11 @@ Write-Host -NoNewline "Starting the Analysis adapter"
 $process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; cd '$ROOTDIR\analysis' ; .\run.ps1 >> '$ROOTDIR\logs\analysis_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 $pid_as_string = $process.id
-echo " ($pid_as_string)"
+echo " (PID: $pid_as_string)"
 echo "Waiting for the Analysis adapter to finish startup"
 $ret = waitForUrlOnline $analysis_url $process.id $SLEEP
 if ($ret -eq 0) {
-    echo "Analysis adapter running (3/3)`n"
+    echo "Analysis adapter running (3/3)`n  at $analysis_url`n"
     $PIDS_TO_KILL = $PIDS_TO_KILL + $PID_ANALYSIS_TAIL
 } elseif ($ret -eq 1) {
     echo "Analysis adapter failed to start!"

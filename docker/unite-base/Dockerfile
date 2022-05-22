@@ -11,7 +11,7 @@ RUN apt-get update && \
     apt-get install -y curl && \
     apt-get install -y procps && \
     apt-get install -y git && \
-    git clone --depth 1 https://pajda.fit.vutbr.cz/verifit/unite.git && \
+    git clone --depth 1 --branch docker-base https://pajda.fit.vutbr.cz/verifit/unite.git && \
     /bin/bash ./unite/build.sh
 
 # copy over Unite configuration (by default there is no configuration)
