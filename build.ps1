@@ -58,7 +58,7 @@ mvn -f "$ROOTDIR\shared\pom.xml" clean install
 if ( ! $? ) {
     exit $LastExitCode
 }
-mvn install:install-file -Dfile="$ROOTDIR\lib\cz.vutbr.fit.group.verifit.arrowhead.client.jersey_0.1.0.202205212052.jar" -DgroupId='cz.vutbr.fit.group.verifit.arrowhead.client' -DartifactId='jersey' -Dversion='0.1.0.qualifier' -Dpackaging='jar'
+mvn install:install-file -Dfile="$ROOTDIR\lib\cz.vutbr.fit.group.verifit.arrowhead.client.jersey_0.1.0.202205231408.jar" -DgroupId='cz.vutbr.fit.group.verifit.arrowhead.client' -DartifactId='jersey' -Dversion='0.1.0.qualifier' -Dpackaging='jar'
 if ( ! $? ) {
     exit $LastExitCode
 }

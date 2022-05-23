@@ -95,6 +95,7 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.IFilter;
 import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.FilterManager;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -848,24 +849,47 @@ public class VeriFitAnalysisManager {
 		
 		// register as an AHT service 
 		if (VeriFitAnalysisProperties.AHT_ENABLED) {
-			log.info("Initialization: Registering as an AHT service");
 			try {
+				log.info("Initialization: Registering as an AHT service");
+
+				// load Unic configuration properties files
+				Properties propertiesUnicConf = new Properties();
+				propertiesUnicConf.load(new FileInputStream(Paths.get("./conf/unic/UnicConf.properties").toFile()));
+				Properties propertiesTasksConf = new Properties();
+				propertiesTasksConf.load(new FileInputStream(Paths.get("./conf/unic/TasksConf.properties").toFile()));			
+				
+				// merge the two files while prefixing their property names to differentiate them
+				Map<String,String> propertiesAhtService = new HashMap<String,String>();
+		        Set<String> propertyNames = propertiesUnicConf.stringPropertyNames();
+		        for (String name : propertyNames) {
+		            String propertyValue = propertiesUnicConf.getProperty(name);
+		            propertiesAhtService.put("unic.config." + name, propertyValue);
+			    }
+		        propertyNames = propertiesTasksConf.stringPropertyNames();
+		        for (String name : propertyNames) {
+		            String propertyValue = propertiesTasksConf.getProperty(name);
+		            propertiesAhtService.put("unic.tasks." + name, propertyValue);
+			    }
+			
+		        // build a client to connect to the AHT service registry
 				ArrowheadClient ahtClient = ArrowheadClientBuilder.newBuilder().certificate(
 					new FileInputStream(Paths.get(
 					"./conf/certificates/" + VeriFitAnalysisProperties.AHT_CERTIFICATE).toFile()),	// certificate
 					VeriFitAnalysisProperties.AHT_CERTIFICATE_PASSWORD)								// password
 					.defaultLogger()
 					.build();
-				
 			    ahtClientServiceRegistry = new ArrowheadServiceRegistryClient(ahtClient,
 			    		VeriFitAnalysisProperties.AHT_SERVICE_REGISTRY_HOST,
 			    		Integer.parseInt(VeriFitAnalysisProperties.AHT_SERVICE_REGISTRY_PORT));
+			    
+			    // build a registration form
 			    ahtFormServiceRegistration = new ArrowheadServiceRegistrationForm(
 			    		VeriFitAnalysisProperties.AHT_SERVICE_NAME,					// service name
 			    		VeriFitAnalysisProperties.AHT_SYSTEM_NAME,					// system name 
 			    		VeriFitAnalysisProperties.ADAPTER_HOST,						// address
 			    		Integer.parseInt(VeriFitAnalysisProperties.ADAPTER_PORT),	// port
-			    		VeriFitAnalysisProperties.ADAPTER_CONTEXT);					// uri
+			    		VeriFitAnalysisProperties.ADAPTER_CONTEXT,					// uri
+			    		propertiesAhtService);										// metadata
 	
 			    // unregister and then register
 			    ahtClientServiceRegistry.unregister(ahtFormServiceRegistration);

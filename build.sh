@@ -55,7 +55,7 @@ main () {
 
     mvn -f "$ROOTDIR/domain/pom.xml" clean install || exit "$?"
     mvn -f "$ROOTDIR/shared/pom.xml" clean install || exit "$?"
-    mvn install:install-file -Dfile="$ROOTDIR/lib/cz.vutbr.fit.group.verifit.arrowhead.client.jersey_0.1.0.202205212052.jar" -DgroupId='cz.vutbr.fit.group.verifit.arrowhead.client' -DartifactId='jersey' -Dversion='0.1.0.qualifier' -Dpackaging='jar' || exit "$?"
+    mvn install:install-file -Dfile="$ROOTDIR/lib/cz.vutbr.fit.group.verifit.arrowhead.client.jersey_0.1.0.202205231408.jar" -DgroupId='cz.vutbr.fit.group.verifit.arrowhead.client' -DartifactId='jersey' -Dversion='0.1.0.qualifier' -Dpackaging='jar' || exit "$?"
 
 
     echo

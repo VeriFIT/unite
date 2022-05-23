@@ -133,6 +133,10 @@ function processConfFiles()
     echo "Checking certificates."
     confDirectoryCleanCheckAndCopy "$1\conf\certificates" "$1\analysis\conf\certificates"
     confDirectoryCleanCheckAndCopy "$1\conf\certificates" "$1\compilation\conf\certificates"
+
+    # Unic config
+    echo "Checking UniC conf files."
+    confDirectoryCleanCheckAndCopy "$1\conf\unic" "$1\analysis\conf\unic"
 }
 
 
