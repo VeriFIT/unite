@@ -883,6 +883,7 @@ public class VeriFitAnalysisManager {
 			    		Integer.parseInt(VeriFitAnalysisProperties.AHT_SERVICE_REGISTRY_PORT));
 			    
 			    // build a registration form
+			    /*
 			    ahtFormServiceRegistration = new ArrowheadServiceRegistrationForm(
 			    		VeriFitAnalysisProperties.AHT_SERVICE_NAME,					// service name
 			    		VeriFitAnalysisProperties.AHT_SYSTEM_NAME,					// system name 
@@ -890,6 +891,14 @@ public class VeriFitAnalysisManager {
 			    		Integer.parseInt(VeriFitAnalysisProperties.ADAPTER_PORT),	// port
 			    		VeriFitAnalysisProperties.ADAPTER_CONTEXT,					// uri
 			    		propertiesAhtService);										// metadata
+	    		*/
+			    ahtFormServiceRegistration = new ArrowheadServiceRegistrationForm(
+			    		"verify-oslc",		// service name
+			    		"fit-client1",		// system name 
+			    		"147.229.12.81",	// address
+			    		8080,				// port
+			    		"/oslc",			// uri
+			    		propertiesAhtService);	
 	
 			    // unregister and then register
 			    ahtClientServiceRegistry.unregister(ahtFormServiceRegistration);
