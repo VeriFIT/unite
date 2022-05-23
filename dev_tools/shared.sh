@@ -123,7 +123,7 @@ processConfFiles()
     confOutputFiltersCleanCheckAndCopy "$1/conf/analysis_advanced/PluginFilters" "$1/analysis/conf/CustomPluginFiltersConfiguration" "$1/analysis/src/main/java/pluginFilters/customPluginFilters"
 
     # Certificates
-    echo "Checking UniC conf files."
+    echo "Checking certificates."
     confDirectoryCleanCheckAndCopy "$1/conf/certificates" "$1/analysis/conf/certificates"
     confDirectoryCleanCheckAndCopy "$1/conf/certificates" "$1/compilation/conf/certificates"
 
