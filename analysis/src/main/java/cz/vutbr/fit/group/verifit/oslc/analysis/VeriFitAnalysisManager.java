@@ -848,15 +848,15 @@ public class VeriFitAnalysisManager {
 		AutoRequestExecManager = new ExecutionManager();
 		
 		// register as an AHT service 
-		if (VeriFitAnalysisProperties.AHT_ENABLED) {
+		if (VeriFitAnalysisProperties.AHT_ENABLED) {		// TODO as a function
 			try {
 				log.info("Initialization: Registering as an AHT service");
 
 				// load Unic configuration properties files
 				Properties propertiesUnicConf = new Properties();
-				propertiesUnicConf.load(new FileInputStream(Paths.get("./conf/unic/UnicConf.properties").toFile()));
+				propertiesUnicConf.load(new FileInputStream(Paths.get("./conf/unic/infer-aht.config").toFile()));	// TODO file name as config
 				Properties propertiesTasksConf = new Properties();
-				propertiesTasksConf.load(new FileInputStream(Paths.get("./conf/unic/TasksConf.properties").toFile()));			
+				propertiesTasksConf.load(new FileInputStream(Paths.get("./conf/unic/infer-aht.tasks").toFile()));	// TODO file name as config			
 				
 				// merge the two files while prefixing their property names to differentiate them
 				Map<String,String> propertiesAhtService = new HashMap<String,String>();
