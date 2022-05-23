@@ -1549,9 +1549,9 @@ public class VeriFitAnalysisManager {
         if (httpServletRequest != null)
         {
         	String inprogressOutputsParam = httpServletRequest.getParameter("enableInProgressOutputs");
-        	boolean inProgressOutputsEnabled = true;
-        	if (inprogressOutputsParam != null && inprogressOutputsParam.equalsIgnoreCase("false"))
-        		inProgressOutputsEnabled = false;
+        	boolean inProgressOutputsEnabled = false;
+        	if (inprogressOutputsParam != null && inprogressOutputsParam.equalsIgnoreCase("true"))
+        		inProgressOutputsEnabled = true;
         	
         	if (inProgressOutputsEnabled && aResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_INPROGRESS))
             {
