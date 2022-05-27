@@ -367,10 +367,10 @@ public class Utils {
 	/**
 	 * Remove all non-XML v1.0 characters from a string
 	 * https://stackoverflow.com/questions/4237625/removing-invalid-xml-characters-from-a-string-in-java
-	 * @param bytesToProcess
+	 * @param strToProcess
 	 * @return String with non-XML 1.0 characters removed
 	 */
-	public static String removeNonXML10CharsFromBytes(String strToProcess)
+	public static String removeNonXML10Chars(String strToProcess)
 	{
 		// XML 1.0
 		// #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
@@ -383,5 +383,31 @@ public class Utils {
 		
 		return strToProcess.replace(xml10pattern,"");
 	}
+	
+	/**
+	 * Remove all non-XML v1.0 characters from a string
+	 * https://stackoverflow.com/questions/25245716/remove-all-ansi-colors-styles-from-strings
+	 * @param strToProcess
+	 * @return String with ANSI sequences removed
+	 */
+	public static String removeAnsiSequences(String strToProcess)
+	{
+		return strToProcess.replace("/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g","");
+	}
+	
+	/**
+	 * shortcut for calling both removeAnsiSequences and removeNonXML10Chars
+	 * @param strToProcess
+	 * @return
+	 */
+	public static String removeAnsiAndNonXML10Chars(String strToProcess)
+	{
+		String properString = Utils.removeAnsiSequences(strToProcess);
+		properString = Utils.removeNonXML10Chars(properString);
+		return properString;
+	}
+	
+	
+	
 	
 }

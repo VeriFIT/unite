@@ -22,7 +22,7 @@ public class FilterUtils {
 
 	/**
 	 * Loads the entire contents of a file identified by its contribution filePath property.
-	 * Only xml 1.0 encodable characters are allowed
+	 * Only xml 1.0 encodable characters are allowed, and all ANSI sequences are removed.
 	 * @param filePath
 	 * @return
 	 * @throws IOException
@@ -30,7 +30,8 @@ public class FilterUtils {
 	public static String loadContentsOfFilePathFile(String filePath) throws IOException {
 		Path f = Paths.get(filePath);
 		byte [] fileContents = Files.readAllBytes(f);
-		return Utils.removeNonXML10CharsFromBytes(new String(fileContents));
+
+		return Utils.removeAnsiAndNonXML10Chars(new String(fileContents));
 	}
 	
 }

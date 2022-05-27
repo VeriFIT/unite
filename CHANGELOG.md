@@ -1,5 +1,8 @@
 ### v.2.8.0
 - added AHT framework service registration
+- All Contribution values (e.g. file contents inlined as part of a contribution) are now limited only to XML 1.0 legal characters.
+  Any illegal characters are removed when loading the contribution's file contents. The original unchanged file can be 
+  accessed by downloading the contribution directly or by defining a custom output filter (at your own risk of encoding issues).
 
 ### v2.7.4
 - run_all log now prints URL's of the started services

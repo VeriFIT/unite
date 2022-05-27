@@ -260,14 +260,14 @@ public class SutDeploy extends RequestRunner
 	
 					// load stdout and stderr file contents into contribution values
 					try {
-						compStdoutLog.setValue(Utils.removeNonXML10CharsFromBytes(new String(Files.readAllBytes(compRes.stdoutFile.toPath()))));
+						compStdoutLog.setValue(Utils.removeAnsiAndNonXML10Chars(new String(Files.readAllBytes(compRes.stdoutFile.toPath()))));
 					} catch (IOException e) {
 						compStdoutLog.setValue("Failed to load contents of this file: " + e.getMessage());
 					}
 					compStdoutLog.setFilePath(compRes.stdoutFile.getAbsolutePath());
 			    	resAutoResult.addContribution(compStdoutLog);
 			    	try {
-						compStderrLog.setValue(Utils.removeNonXML10CharsFromBytes(new String(Files.readAllBytes(compRes.stderrFile.toPath()))));
+						compStderrLog.setValue(Utils.removeAnsiAndNonXML10Chars(new String(Files.readAllBytes(compRes.stderrFile.toPath()))));
 					} catch (IOException e) {
 						compStderrLog.setValue("Failed to load contents of this file: " + e.getMessage());
 					}

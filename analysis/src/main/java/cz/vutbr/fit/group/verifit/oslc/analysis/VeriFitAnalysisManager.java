@@ -608,9 +608,9 @@ public class VeriFitAnalysisManager {
     			byte [] fileContents = Files.readAllBytes(f);
     			
     			// remove all not UTF8 characters to avoid encoding errors
-    			String xml10Contents = Utils.removeNonXML10CharsFromBytes(new String(fileContents));
+    			String properString = Utils.removeAnsiAndNonXML10Chars(new String(fileContents));
     			
-    			contrib.setValue(xml10Contents);
+    			contrib.setValue(properString);
     		}
     	}
 	}
