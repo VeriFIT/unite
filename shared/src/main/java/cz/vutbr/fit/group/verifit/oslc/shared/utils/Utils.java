@@ -18,6 +18,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
@@ -363,4 +369,17 @@ public class Utils {
 		
 		return outputParams;
 	}
+	
+	public static String removeNonUtf8CharactersFromBytes(byte [] bytesToProcess) throws CharacterCodingException
+	{
+		CharsetDecoder utf8Decoder = Charset.forName("UTF-8").newDecoder();
+		utf8Decoder.onMalformedInput(CodingErrorAction.IGNORE);
+		utf8Decoder.onUnmappableCharacter(CodingErrorAction.IGNORE);
+		
+		ByteBuffer bufferedBytes = ByteBuffer.wrap(bytesToProcess);
+		CharBuffer parsedBytes = utf8Decoder.decode(bufferedBytes);
+		
+		return parsedBytes.toString();
+	}
+	
 }

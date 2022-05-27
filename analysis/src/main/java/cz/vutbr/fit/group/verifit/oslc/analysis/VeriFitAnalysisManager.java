@@ -606,7 +606,11 @@ public class VeriFitAnalysisManager {
     		{
     			Path f = Paths.get(contrib.getFilePath());
     			byte [] fileContents = Files.readAllBytes(f);
-    			contrib.setValue(new String(fileContents));
+    			
+    			// remove all not UTF8 characters to avoid encoding errors
+    			String utf8Contents = Utils.removeNonUtf8CharactersFromBytes(fileContents);
+    			
+    			contrib.setValue(utf8Contents);
     		}
     	}
 	}

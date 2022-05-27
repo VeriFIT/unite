@@ -8,3 +8,4 @@ sparql_triplestore/triplestore/
 RemoteSystemsTempFiles/
 *.idea*
 *.iml
+.vscode
