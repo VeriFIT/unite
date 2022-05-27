@@ -22,7 +22,7 @@ public class FilterUtils {
 
 	/**
 	 * Loads the entire contents of a file identified by its contribution filePath property.
-	 * Only UTF8 characters are allowed
+	 * Only xml 1.0 encodable characters are allowed
 	 * @param filePath
 	 * @return
 	 * @throws IOException
@@ -30,7 +30,7 @@ public class FilterUtils {
 	public static String loadContentsOfFilePathFile(String filePath) throws IOException {
 		Path f = Paths.get(filePath);
 		byte [] fileContents = Files.readAllBytes(f);
-		return Utils.removeNonUtf8CharactersFromBytes(fileContents);
+		return Utils.removeNonXML10CharsFromBytes(new String(fileContents));
 	}
 	
 }

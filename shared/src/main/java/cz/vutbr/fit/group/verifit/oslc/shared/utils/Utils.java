@@ -18,12 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CodingErrorAction;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
@@ -370,16 +364,24 @@ public class Utils {
 		return outputParams;
 	}
 	
-	public static String removeNonUtf8CharactersFromBytes(byte [] bytesToProcess) throws CharacterCodingException
+	/**
+	 * Remove all non-XML v1.0 characters from a string
+	 * https://stackoverflow.com/questions/4237625/removing-invalid-xml-characters-from-a-string-in-java
+	 * @param bytesToProcess
+	 * @return String with non-XML 1.0 characters removed
+	 */
+	public static String removeNonXML10CharsFromBytes(String strToProcess)
 	{
-		CharsetDecoder utf8Decoder = Charset.forName("UTF-8").newDecoder();
-		utf8Decoder.onMalformedInput(CodingErrorAction.IGNORE);
-		utf8Decoder.onUnmappableCharacter(CodingErrorAction.IGNORE);
+		// XML 1.0
+		// #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
+		String xml10pattern = "[^"
+		                    + "\u0009\r\n"
+		                    + "\u0020-\uD7FF"
+		                    + "\uE000-\uFFFD"
+		                    + "\ud800\udc00-\udbff\udfff"
+		                    + "]";
 		
-		ByteBuffer bufferedBytes = ByteBuffer.wrap(bytesToProcess);
-		CharBuffer parsedBytes = utf8Decoder.decode(bufferedBytes);
-		
-		return parsedBytes.toString();
+		return strToProcess.replace(xml10pattern,"");
 	}
 	
 }
