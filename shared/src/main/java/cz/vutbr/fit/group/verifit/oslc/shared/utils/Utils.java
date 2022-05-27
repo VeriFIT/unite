@@ -387,12 +387,17 @@ public class Utils {
 	/**
 	 * Remove all non-XML v1.0 characters from a string
 	 * https://stackoverflow.com/questions/25245716/remove-all-ansi-colors-styles-from-strings
+	 * https://github.com/chalk/ansi-regex/blob/main/index.js
+	 * https://stackoverflow.com/questions/25245716/remove-all-ansi-colors-styles-from-strings
 	 * @param strToProcess
 	 * @return String with ANSI sequences removed
 	 */
 	public static String removeAnsiSequences(String strToProcess)
-	{
-		return strToProcess.replace("/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g","");
+	{  
+		return strToProcess.replaceAll(
+		  "[\\u001b\\u009b][^m]*?m"
+		//"[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]"
+						,"");
 	}
 	
 	/**
