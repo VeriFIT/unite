@@ -17,8 +17,8 @@ build-all-clean:
 # 	$(MAKE) -C anaconda build-clean
 
 build-all-as-one:
-	$(MAKE) -C unite-base build-clean
-	$(MAKE) -C unite-all build-clean
+	$(MAKE) -C unite-base build
+	$(MAKE) -C unite-all build
 
 build-all-as-one-clean:
 	$(MAKE) -C unite-base build-clean
