@@ -89,6 +89,22 @@ confOutputFiltersCleanCheckAndCopy()
     fi
 }
 
+
+# Check if a directory exists, if yes then copy its contents over to a destination.
+# Clean the destination first
+# $1 ... directory to check
+# $2 ... location to copy to
+confDirectoryCleanCheckAndCopy()
+{
+    # clean destination
+    rm -rf "$2"
+
+    # check if source exists, and copy contents to destination
+    if [ -d "$1" ]; then
+        cp -r "$1" "$2"
+    fi
+}
+
 # $1 ... root directory of the project
 processConfFiles()
 {    
@@ -105,6 +121,15 @@ processConfFiles()
     confAnalysisToolsCleanCheckAndCopy "$1/conf/analysis_advanced/AnalysisTools" "$1/analysis/conf/CustomAnalysisTools"
     echo "Checking Plugin Filters:"
     confOutputFiltersCleanCheckAndCopy "$1/conf/analysis_advanced/PluginFilters" "$1/analysis/conf/CustomPluginFiltersConfiguration" "$1/analysis/src/main/java/pluginFilters/customPluginFilters"
+
+    # Certificates
+    echo "Checking certificates."
+    confDirectoryCleanCheckAndCopy "$1/conf/certificates" "$1/analysis/conf/certificates"
+    confDirectoryCleanCheckAndCopy "$1/conf/certificates" "$1/compilation/conf/certificates"
+
+    # Unic config
+    echo "Checking UniC conf files."
+    confDirectoryCleanCheckAndCopy "$1/conf/unic" "$1/analysis/conf/unic"
 }
 
 

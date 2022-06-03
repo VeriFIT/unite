@@ -1,0 +1,39 @@
+Capturing in maven mode...
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--< [0;36mcz.vutbr.fit.group.verifit.oslc.shared.example:SharedResources.example[0;1m >--[m
+[[1;34mINFO[m] [1mBuilding SharedResources.example 0.0.1-SNAPSHOT[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:2.6:resources[m [1m(default-resources)[m @ [36mSharedResources.example[0;1m ---[m
+[[1;34mINFO[m] Using 'UTF-8' encoding to copy filtered resources.
+[[1;34mINFO[m] skip non existing resourceDirectory /unite/compilation/SUT/1/src/main/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.8.0:compile[m [1m(default-compile)[m @ [36mSharedResources.example[0;1m ---[m
+[[1;34mINFO[m] Nothing to compile - all classes are up to date
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:2.6:testResources[m [1m(default-testResources)[m @ [36mSharedResources.example[0;1m ---[m
+[[1;34mINFO[m] Using 'UTF-8' encoding to copy filtered resources.
+[[1;34mINFO[m] skip non existing resourceDirectory /unite/compilation/SUT/1/src/test/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.8.0:testCompile[m [1m(default-testCompile)[m @ [36mSharedResources.example[0;1m ---[m
+[[1;34mINFO[m] No sources to compile
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-surefire-plugin:2.12.4:test[m [1m(default-test)[m @ [36mSharedResources.example[0;1m ---[m
+[[1;34mINFO[m] No tests to run.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-jar-plugin:2.4:jar[m [1m(default-jar)[m @ [36mSharedResources.example[0;1m ---[m
+[[1;34mINFO[m] Building jar: /unite/compilation/SUT/1/target/SharedResources.example-0.0.1-SNAPSHOT.jar
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-install-plugin:2.4:install[m [1m(default-install)[m @ [36mSharedResources.example[0;1m ---[m
+[[1;34mINFO[m] Installing /unite/compilation/SUT/1/target/SharedResources.example-0.0.1-SNAPSHOT.jar to /root/.m2/repository/cz/vutbr/fit/group/verifit/oslc/shared/example/SharedResources.example/0.0.1-SNAPSHOT/SharedResources.example-0.0.1-SNAPSHOT.jar
+[[1;34mINFO[m] Installing /unite/compilation/SUT/1/pom.xml to /root/.m2/repository/cz/vutbr/fit/group/verifit/oslc/shared/example/SharedResources.example/0.0.1-SNAPSHOT/SharedResources.example-0.0.1-SNAPSHOT.pom
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  0.863 s
+[[1;34mINFO[m] Finished at: 2022-05-27T13:36:43Z
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+Found 0 (out of 37) source files to analyze in /unite/compilation/SUT/1/infer-out
+
+  No issues found  

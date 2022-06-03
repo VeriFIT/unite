@@ -363,4 +363,56 @@ public class Utils {
 		
 		return outputParams;
 	}
+	
+	/**
+	 * Remove all non-XML v1.0 characters from a string
+	 * https://stackoverflow.com/questions/4237625/removing-invalid-xml-characters-from-a-string-in-java
+	 * @param strToProcess
+	 * @return String with non-XML 1.0 characters removed
+	 */
+	public static String removeNonXML10Chars(String strToProcess)
+	{
+		// XML 1.0
+		// #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
+		String xml10pattern = "[^"
+		                    + "\u0009\r\n"
+		                    + "\u0020-\uD7FF"
+		                    + "\uE000-\uFFFD"
+		                    + "\ud800\udc00-\udbff\udfff"
+		                    + "]";
+		
+		return strToProcess.replace(xml10pattern,"");
+	}
+	
+	/**
+	 * Remove all non-XML v1.0 characters from a string
+	 * https://stackoverflow.com/questions/25245716/remove-all-ansi-colors-styles-from-strings
+	 * https://github.com/chalk/ansi-regex/blob/main/index.js
+	 * https://stackoverflow.com/questions/25245716/remove-all-ansi-colors-styles-from-strings
+	 * @param strToProcess
+	 * @return String with ANSI sequences removed
+	 */
+	public static String removeAnsiSequences(String strToProcess)
+	{  
+		return strToProcess.replaceAll(
+		  "[\\u001b\\u009b][^m]*?m"	// TODO maybe get a better regex? the below did not work
+		//"[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-nq-uy=><~]"
+						,"");
+	}
+	
+	/**
+	 * shortcut for calling both removeAnsiSequences and removeNonXML10Chars
+	 * @param strToProcess
+	 * @return
+	 */
+	public static String removeAnsiAndNonXML10Chars(String strToProcess)
+	{
+		String properString = Utils.removeAnsiSequences(strToProcess);
+		properString = Utils.removeNonXML10Chars(properString);
+		return properString;
+	}
+	
+	
+	
+	
 }
