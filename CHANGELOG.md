@@ -1,9 +1,16 @@
 ### v.2.8.0
-- added AHT framework service registration
+- added first version of AHT framework service registration
 - All Contribution values (e.g. file contents inlined as part of a contribution) are now stripped of any potential ANSI
-  escape sequenceslimited only to XML 1.0 legal characters. Any illegal characters are removed when loading the contribution's
+  escape sequences limited only to XML 1.0 legal characters. Any illegal characters are removed when loading the contribution's
   file contents. The original unchanged file can be accessed by downloading the contribution directly or by defining a custom
   output filter (at your own risk of encoding issues).
+- Some configuration file properties are now optional (i.e. they can be missing in the conf file entirely) and not required
+  for successful loading of configuration and subsequent successful start of Unite. These include any properties which are
+  related to a "enabled" property (e.g. if enable_authentication is false, then username and password does not need to be
+  in the conf file at all). All boolean properties are assumed to be false if missing.
+- Configuration was added to enable/disable inProgress outputs by default (so far the default was enabled). The default
+  can be overridden using the usual "enableInProgressOutputs" HTTP request parameter when GETing an Automation Result.
+- The compilation adapter now also can show inProgress stdout and stderr of the compilation process
 
 ### v2.7.4
 - run_all log now prints URL's of the started services

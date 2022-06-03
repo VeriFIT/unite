@@ -83,7 +83,7 @@ if ( ! $l ) {
     $Host.UI.RawUI.FlushInputBuffer()
 
     echo "Booting up Unite"
-    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Unite'; & '$ADAPTER_ROOT_DIR\run_all.ps1' -t ; pause" -passthru
+    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Unite'; & '$ADAPTER_ROOT_DIR\run_all.ps1' ; pause" -passthru
     $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
     $ret = waitForUrlOnline $analysis_url $process.id $SLEEP  # poll the analysis adapter because that one starts last in the run script
     if ($ret -eq 0) {

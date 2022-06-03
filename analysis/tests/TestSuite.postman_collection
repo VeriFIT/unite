@@ -11863,9 +11863,6 @@
 											"    pm.expect(pm.response.text()).to.include(\"Analysis completed successfully\");",
 											"});",
 											"*/",
-											"pm.test(\"returnCode should be 0\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<rdf:value>0</rdf:value>\");",
-											"});",
 											"pm.test(\"stdout should contain some outputs\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"Dummy tool!\");",
 											"});"
@@ -12324,9 +12321,6 @@
 											"    pm.expect(pm.response.text()).to.include(\"Analysis completed successfully\");",
 											"});",
 											"*/",
-											"pm.test(\"returnCode should be 0\", function () {",
-											"    pm.expect(pm.response.text()).to.include(\"<rdf:value>0</rdf:value>\");",
-											"});",
 											"pm.test(\"stdout should not contain any outputs\", function () {",
 											"    pm.expect(pm.response.text()).to.not.include(\"Dummy tool!\");",
 											"});"
@@ -12357,7 +12351,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+									"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}?enableInProgressOutputs=false",
 									"host": [
 										"{{server_address}}"
 									],
@@ -12371,8 +12365,7 @@
 									"query": [
 										{
 											"key": "enableInProgressOutputs",
-											"value": "false",
-											"disabled": true
+											"value": "false"
 										}
 									]
 								}

@@ -58,6 +58,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -112,8 +114,10 @@ public class VeriFitCompilationManager {
 
 	static ExecutionManager AutoRequestExecManager;
 
+	/* TODO not needed for now & unfinished
 	static ArrowheadServiceRegistryClient ahtClientServiceRegistry;
 	static ArrowheadServiceRegistrationForm ahtFormServiceRegistration;
+	*/
     // End of user code
     
     
@@ -135,16 +139,21 @@ public class VeriFitCompilationManager {
 		}
 		
 		// if the first method failed, fallback to the old slow method
-		log.warn("Initializing ID generators: bookmarkID resource not found. Falling back querying the whole database.");
     	long currMaxReqId = 0;
     	try {
     		// loop over all the Automation Requests in the triplestore (TODO potential performance issue for initialization with a large persistent database)
     		for (int page = 0;; page++)
     		{
 				List<AutomationRequest> listAutoRequests = VeriFitCompilationManager.queryAutomationRequests(null, "", "", page, 100);
+				
+				// on the first iteration, check if the whole database is empty and issue a warning if it is not
+				if (page == 0 && listAutoRequests.size() != 0) {
+						log.warn("Initializing ID generators: bookmarkID resource not found. Falling back to querying the whole database.");						
+				}
+				
 				if (listAutoRequests.size() == 0)
 				{
-					break;	
+					break;
 				}
 				else
 				{	
@@ -512,7 +521,55 @@ public class VeriFitCompilationManager {
         updatedResource = aResource;
         return updatedResource;
     }
+
+	/**
+	 * Fetches properties for Automation Result Contributions
+	 * @param httpServletRequest
+	 * @param aResource
+	 */
+    /* TODO will need later (GET for contributions)
+	private static void getAutomationResultLocalContributions(HttpServletRequest httpServletRequest, AutomationResult aResource)
+	{
+		Set<Contribution> contribs = aResource.getContribution();
+        aResource.clearContribution();
+        
+    	for (Contribution contrib : contribs)
+    	{
+    		try {
+	    		Contribution fullContrib = getContribution(httpServletRequest, OslcValues.getResourceIdFromUri(contrib.getAbout()));
+	    		aResource.addContribution(fullContrib);
+    		} catch (Exception e) {
+    			log.warn("AutomationResult GET: Error while flattening Contributions as local - Contribution was probably deleted: " + e.getMessage());
+    		}
+    	}
+	}
+	*/
     
+	/**
+	 * Loads the file contents of "stdout" and "stderr" contributions for an Automation Result. 
+	 * Expects that these contributions have a filePath but do not have a value (or not an up to date one).
+	 * @param autoResult
+	 * @throws IOException When the file read failed
+	 */
+	private static void getAutomationResultInProgressStdOutputs(AutomationResult autoResult) throws IOException
+	{
+		Set<Contribution> contribs = autoResult.getContribution();    
+    	for (Contribution contrib : contribs)
+    	{
+    		// load the file contents of "stdout" and "stderr" contributions
+    		if (contrib.getTitle().equals("stdout") || contrib.getTitle().equals("stderr"))
+    		{
+    			Path f = Paths.get(contrib.getFilePath());
+    			byte [] fileContents = Files.readAllBytes(f);
+    			
+    			// remove all not UTF8 characters to avoid encoding errors
+    			String properString = Utils.removeAnsiAndNonXML10Chars(new String(fileContents));
+    			
+    			contrib.setValue(properString);
+    		}
+    	}
+	}
+	
     // End of user code
 
     public static void contextInitializeServletListener(final ServletContextEvent servletContextEvent)
@@ -537,25 +594,36 @@ public class VeriFitCompilationManager {
     			+ "  ADAPTER_HOST: " + VeriFitCompilationProperties.ADAPTER_HOST + "\n"
     			+ "  ADAPTER_PORT: " + VeriFitCompilationProperties.ADAPTER_PORT + "\n"
     			+ "  SERVER_URL: " + VeriFitCompilationProperties.SERVER_URL + "\n"
+    			
     			+ "  SPARQL_SERVER_NAMED_GRAPH_RESOURCES: " + VeriFitCompilationProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES + "\n"
     			+ "  SPARQL_SERVER_QUERY_ENDPOINT: " + VeriFitCompilationProperties.SPARQL_SERVER_QUERY_ENDPOINT + "\n"
     			+ "  SPARQL_SERVER_UPDATE_ENDPOINT: " + VeriFitCompilationProperties.SPARQL_SERVER_UPDATE_ENDPOINT + "\n"
-    			+ "  AUTHENTICATION_ENABLED: " + VeriFitCompilationProperties.AUTHENTICATION_ENABLED + "\n"
-    			+ "  AUTHENTICATION_USERNAME: " + VeriFitCompilationProperties.AUTHENTICATION_USERNAME + "\n"
-    			+ "  AUTHENTICATION_PASSWORD: " + "********" + "\n"
+    			
+	    		+ "  AUTHENTICATION_ENABLED: " + VeriFitCompilationProperties.AUTHENTICATION_ENABLED + "\n"
+    			+ (VeriFitCompilationProperties.AUTHENTICATION_ENABLED ? 
+	    			  "  AUTHENTICATION_USERNAME: " + VeriFitCompilationProperties.AUTHENTICATION_USERNAME + "\n"
+	    			+ "  AUTHENTICATION_PASSWORD: " + "********" + "\n"
+    			: "")
+    			
     			+ "  KEEP_LAST_N_ENABLED: " + VeriFitCompilationProperties.KEEP_LAST_N_ENABLED + "\n"
-    			+ "  KEEP_LAST_N: " + VeriFitCompilationProperties.KEEP_LAST_N + "\n"
+    			+ (VeriFitCompilationProperties.KEEP_LAST_N_ENABLED ? 
+    				  "  KEEP_LAST_N: " + VeriFitCompilationProperties.KEEP_LAST_N + "\n"
+    			: "")
+    			
     			+ "  PERSIST_SUT_DIRS: " + VeriFitCompilationProperties.PERSIST_SUT_DIRS + "\n"
-				+ "  AHT_ENABLED: " + VeriFitCompilationProperties.AHT_ENABLED + "\n"
-				+ (VeriFitCompilationProperties.AHT_ENABLED ? 
+    			/* TODO not needed for now & unfinished
+    			+ "  AHT_ENABLED: " + VeriFitCompilationProperties.AHT_ENABLED + "\n"
+    			+ (VeriFitCompilationProperties.AHT_ENABLED ? 
 					  "    AHT_SERVICE_REGISTRY_HOST: " + VeriFitCompilationProperties.AHT_SERVICE_REGISTRY_HOST + "\n"
-					+ "    AHT_SERVICE_REGISTRY_PORT: " + VeriFitCompilationProperties.AHT_SERVICE_REGISTRY_PORT + "\n"
-					+ "    AHT_SERVICE_NAME: " + VeriFitCompilationProperties.AHT_SERVICE_NAME + "\n"
-					+ "    AHT_SYSTEM_NAME: " + VeriFitCompilationProperties.AHT_SYSTEM_NAME + "\n"
-					+ "    AHT_CERTIFICATE: " + VeriFitCompilationProperties.AHT_CERTIFICATE + "\n"
-					+ "    AHT_CERTIFICATE_PASSWORD: " + "********" + "\n"
-					: "")
-				);
+	    			+ "    AHT_SERVICE_REGISTRY_PORT: " + VeriFitCompilationProperties.AHT_SERVICE_REGISTRY_PORT + "\n"
+	    			+ "    AHT_SERVICE_NAME: " + VeriFitCompilationProperties.AHT_SERVICE_NAME + "\n"
+	    			+ "    AHT_SYSTEM_NAME: " + VeriFitCompilationProperties.AHT_SYSTEM_NAME + "\n"
+	    			+ "    AHT_CERTIFICATE: " + VeriFitCompilationProperties.AHT_CERTIFICATE + "\n"
+	    			+ "    AHT_CERTIFICATE_PASSWORD: " + "********" + "\n"
+	    			: "")
+    			*/
+    			+ "  INPROGRESS_OUTPUTS_ENABLED: " + VeriFitCompilationProperties.INPROGRESS_OUTPUTS_ENABLED + "\n"
+    			);
     	
     	
     	// create the SUT directory
@@ -624,7 +692,7 @@ public class VeriFitCompilationManager {
 				AutomationPlanDefinition.createPredefinedAutomationPlans();
 			}
 		} catch (StoreAccessException e) {
-			log.error("Adapter initialization: Predefined AutomationPlan creation: " + e.getMessage());
+			log.error("Initialization: Predefined AutomationPlan creation: " + e.getMessage());
 			System.exit(1);
 		}
 
@@ -633,7 +701,7 @@ public class VeriFitCompilationManager {
 		try {
 			initReqId = getCurrentHighestAutomationRequestId() + 1;
 		} catch (Exception e) {
-			log.error("Adapter initialization: Failed to get latest AutomationRequest ID: " + e.getMessage());
+			log.error("Initialization: Failed to get latest AutomationRequest ID: " + e.getMessage());
 			System.exit(1);
 		}
 		AutoRequestIdGen = new ResourceIdGen(initReqId);
@@ -641,7 +709,8 @@ public class VeriFitCompilationManager {
         
 		// initialize execution manager
 		AutoRequestExecManager = new ExecutionManager();
-		
+
+		/* TODO not needed for now & unfinished
 		// register as an AHT service 
 		if (VeriFitCompilationProperties.AHT_ENABLED) {
 			log.info("Initialization: Registering as an AHT service");
@@ -672,10 +741,11 @@ public class VeriFitCompilationManager {
 			    
 			} catch (UnrecoverableKeyException | KeyManagementException | KeyStoreException | NoSuchAlgorithmException
 					| CertificateException | IOException e) {
-				log.error("Adapter initialization: Failed to register as an AHT service: " + e.getMessage());
+				log.error("Initialization: Failed to register as an AHT service: " + e.getMessage());
 				System.exit(1);
 			}
 		}
+		*/
         // End of user code
         
     }
@@ -696,7 +766,9 @@ public class VeriFitCompilationManager {
 			}
     	}
 
-		// register as an AHT service 
+
+		/* TODO not needed for now & unfinished
+		// unregister as an AHT service 
 		if (VeriFitCompilationProperties.AHT_ENABLED) {
 			log.info("Shutdown: Un-registering as an AHT service");
 			Boolean res =  ahtClientServiceRegistry.unregister(ahtFormServiceRegistration);
@@ -704,6 +776,7 @@ public class VeriFitCompilationManager {
 				log.warn("AHT service was not un-registered!");
 			}
 		}
+		*/
         // End of user code
     }
 
@@ -1338,9 +1411,42 @@ public class VeriFitCompilationManager {
             storePool.releaseStore(store);
         }
         // Start of user code getAutomationResult_storeFinalize
+
+
+        /* TODO will need later (GET for contributions)
+        // the triple store only returns the resource as a link not as an inlined one -- fetch their contents
+        getAutomationResultLocalContributions(httpServletRequest, aResource);
+        */
+                
         // End of user code
         
         // Start of user code getAutomationResult
+                
+
+        // if the automation result is still in progress, provide some infos about the run (such as stdout and stderr)
+        // TODO currently the database is only updated after the result execution finishes to avoid too much database communication
+        // can be disabled using a request parameter (query string)
+        if (httpServletRequest != null)
+        {
+        	String inprogressOutputsParam = httpServletRequest.getParameter("enableInProgressOutputs");
+        	boolean inProgressOutputsEnabled = VeriFitCompilationProperties.INPROGRESS_OUTPUTS_ENABLED;
+        	if (inprogressOutputsParam != null) {
+        		if (inprogressOutputsParam.equalsIgnoreCase("true"))
+        			inProgressOutputsEnabled = true;
+        		else if (inprogressOutputsParam.equalsIgnoreCase("false"))
+	    			inProgressOutputsEnabled = false;
+        	}
+        	if (inProgressOutputsEnabled && aResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_INPROGRESS))
+            {
+            	// load the current contents of stdout and stderr
+            	try {
+    				getAutomationResultInProgressStdOutputs(aResource);
+    			} catch (IOException e) {
+    				log.warn("Automation Result GET: Failed to get contents of stdout or stderr of the execution", e);
+    			}
+            }        	
+        }
+        
         // End of user code
         return aResource;
     }

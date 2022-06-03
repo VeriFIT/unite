@@ -94,48 +94,51 @@ public class VeriFitAnalysisProperties
 		
 		String str_AUTHENTICAION_ENABLED;
 		str_AUTHENTICAION_ENABLED = VeriFitAnalysisProperties.getProperty("enable_authentication");	
-		if (str_AUTHENTICAION_ENABLED == null)
-			throw new IOException("enable_authentication missing");
-		try {
-			AUTHENTICATION_ENABLED = Boolean.parseBoolean(str_AUTHENTICAION_ENABLED);
-		} catch (Exception e) {
-			throw new IOException("failed to parse enable_authentication value - boolean expected");
+		if (str_AUTHENTICAION_ENABLED == null) {
+			AUTHENTICATION_ENABLED = false;	// assume false by default
+		} else {
+			try {
+				AUTHENTICATION_ENABLED = Boolean.parseBoolean(str_AUTHENTICAION_ENABLED);
+			} catch (Exception e) {
+				throw new IOException("failed to parse enable_authentication value - boolean expected");
+			}			
 		}
-		
-		AUTHENTICATION_USERNAME = VeriFitAnalysisProperties.getProperty("username");	
-		if (AUTHENTICATION_USERNAME == null)
-			throw new IOException("username missing");
-		
-		AUTHENTICATION_PASSWORD = VeriFitAnalysisProperties.getProperty("password");	
-		if (AUTHENTICATION_PASSWORD == null)
-			throw new IOException("password missing");
-		
+		if (AUTHENTICATION_ENABLED) { // load other relevant props only if needed
+			AUTHENTICATION_USERNAME = VeriFitAnalysisProperties.getProperty("username");	
+			if (AUTHENTICATION_USERNAME == null)
+				throw new IOException("username missing");
+			
+			AUTHENTICATION_PASSWORD = VeriFitAnalysisProperties.getProperty("password");	
+			if (AUTHENTICATION_PASSWORD == null)
+				throw new IOException("password missing");
+		}
 		
 		String str_KEEP_LAST_N_ENABLED;
 		str_KEEP_LAST_N_ENABLED = VeriFitAnalysisProperties.getProperty("keep_last_n_enabled");	
-		if (str_KEEP_LAST_N_ENABLED == null)
-			throw new IOException("keep_last_n_enabled missing");
-		try {
-			KEEP_LAST_N_ENABLED = Boolean.parseBoolean(str_KEEP_LAST_N_ENABLED);
-		} catch (Exception e) {
-			throw new IOException("failed to parse keep_last_n_enabled value - boolean expected");
-			
+		if (str_KEEP_LAST_N_ENABLED == null) {
+			KEEP_LAST_N_ENABLED = false;	// assume false by default
+		} else {
+			try {
+				KEEP_LAST_N_ENABLED = Boolean.parseBoolean(str_KEEP_LAST_N_ENABLED);
+			} catch (Exception e) {
+				throw new IOException("failed to parse keep_last_n_enabled value - boolean expected");
+			}
 		}
-		
-		String str_KEEP_LAST_N;
-		str_KEEP_LAST_N = VeriFitAnalysisProperties.getProperty("keep_last_n");	
-		if (str_KEEP_LAST_N == null)
-			throw new IOException("keep_last_n missing");
-		try {
-			KEEP_LAST_N = Long.parseLong(str_KEEP_LAST_N);
-			if (KEEP_LAST_N < 1)
-				throw new Exception();
-		} catch (Exception e) {
-			throw new IOException("failed to parse keep_last_n value - positive non-zero integer expected");
-			
+		if (KEEP_LAST_N_ENABLED) { // load other relevant props only if needed
+			String str_KEEP_LAST_N;
+			str_KEEP_LAST_N = VeriFitAnalysisProperties.getProperty("keep_last_n");	
+			if (str_KEEP_LAST_N == null)
+				throw new IOException("keep_last_n missing");
+			try {
+				KEEP_LAST_N = Long.parseLong(str_KEEP_LAST_N);
+				if (KEEP_LAST_N < 1)
+					throw new Exception();
+			} catch (Exception e) {
+				throw new IOException("failed to parse keep_last_n value - positive non-zero integer expected");
+				
+			}
 		}
 
-		
 		if (SystemUtils.IS_OS_LINUX) {
 			CONFIG_OS = ConfigOs.LINUX;
 			CONFIG_OS_STR = "linux";
@@ -160,13 +163,14 @@ public class VeriFitAnalysisProperties
 		// AHT service registry configuration
 		String str_AHT_ENABLED;
 		str_AHT_ENABLED = VeriFitAnalysisProperties.getProperty("aht_enabled");	
-		if (str_AHT_ENABLED == null)
-			throw new IOException("aht_enabled missing");
-		try {
-			AHT_ENABLED = Boolean.parseBoolean(str_AHT_ENABLED);
-		} catch (Exception e) {
-			throw new IOException("failed to parse aht_enabled value - boolean expected");
-			
+		if (str_AHT_ENABLED == null) {
+			AHT_ENABLED = false;	// assume false by default 
+		} else {
+			try {
+				AHT_ENABLED = Boolean.parseBoolean(str_AHT_ENABLED);
+			} catch (Exception e) {
+				throw new IOException("failed to parse aht_enabled value - boolean expected");
+			}
 		}
 		if (AHT_ENABLED) { // load other AHT props only if enabled
 			AHT_SERVICE_REGISTRY_HOST = VeriFitAnalysisProperties.getProperty("aht_service_registry_host");	
@@ -197,6 +201,18 @@ public class VeriFitAnalysisProperties
 			AHT_CERTIFICATE_PASSWORD = VeriFitAnalysisProperties.getProperty("aht_certificate_password");
 			if (AHT_CERTIFICATE_PASSWORD == null)
 				throw new IOException("aht_certificate_password missing");
+		}
+		
+		String str_INPROGRESS_OUTPUTS_ENABLED;
+		str_INPROGRESS_OUTPUTS_ENABLED = VeriFitAnalysisProperties.getProperty("inprogress_outputs_enabled");	
+		if (str_INPROGRESS_OUTPUTS_ENABLED == null) {
+			INPROGRESS_OUTPUTS_ENABLED = false;	// assume false by default
+		} else {
+			try {
+				INPROGRESS_OUTPUTS_ENABLED = Boolean.parseBoolean(str_INPROGRESS_OUTPUTS_ENABLED);
+			} catch (Exception e) {
+				throw new IOException("failed to parse inprogress_outputs_enabled value - boolean expected");
+			}
 		}
 	}
 
@@ -235,6 +251,8 @@ public class VeriFitAnalysisProperties
 	public static final String PLUGIN_FILTER_CONF_PATH_BUILTIN = "./conf/BuiltInPluginFiltersConfiguration";
 	public static final String AUTOPLANS_DEF_PATH_CUSTOM = "./conf/CustomAnalysisTools";
 	public static final String PLUGIN_FILTER_CONF_PATH_CUSTOM = "./conf/CustomPluginFiltersConfiguration";
+	public static final String CERTIFICATES_PATH = "./conf/certificates";
+	public static final String UNIC_CONF_PATH = "./conf/unic";
 
 	public static String ADAPTER_HOST;
 	public static String ADAPTER_PORT;
@@ -262,6 +280,8 @@ public class VeriFitAnalysisProperties
     public static String AHT_SYSTEM_NAME;
     public static String AHT_CERTIFICATE;
     public static String AHT_CERTIFICATE_PASSWORD;
+    
+    public static Boolean INPROGRESS_OUTPUTS_ENABLED;
     
     /*
      *  Internal constants

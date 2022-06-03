@@ -23,6 +23,11 @@
         <swagger-ui.version>3.25.0</swagger-ui.version>
         <!-- Start of user code properties
         -->
+        
+        <!--  default host and port -->
+        <adapter_port>8081</adapter_port>
+        <adapter_host>http://localhost</adapter_host>
+        
         <!-- End of user code
         -->
     </properties>
@@ -62,7 +67,7 @@
 		<dependency>  
 			<groupId>cz.vutbr.fit.group.verifit.arrowhead.client</groupId>  
 			<artifactId>jersey</artifactId>
-			<version>0.1.0.qualifier</version>
+			<version>[0.1.0.qualifier]</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
@@ -80,14 +85,14 @@
 		<dependency>  
 			<groupId>cz.vutbr.fit.group.verifit.oslc.shared</groupId>  
 			<artifactId>SharedResources</artifactId>  
-			<version>0.0.1-SNAPSHOT</version>
+			<version>[0.0.1-SNAPSHOT]</version>
 		</dependency>  
 		
         <!-- Unite domain module -->
 		<dependency>  
 			<groupId>cz.vutbr.fit.group.verifit.oslc.domain</groupId>  
 			<artifactId>UniteDomain</artifactId>
-			<version>0.0.1-SNAPSHOT</version>  
+			<version>[0.0.1-SNAPSHOT]</version>  
 		</dependency>  
         
 		<!-- GIT dependencies https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->

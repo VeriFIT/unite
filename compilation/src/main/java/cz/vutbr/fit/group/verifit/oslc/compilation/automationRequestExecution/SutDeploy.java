@@ -24,6 +24,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -178,11 +179,18 @@ public class SutDeploy extends RequestRunner
 			returnCode.setTitle("returnCode");
 			returnCode.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);	
 			
+
+		    /* TODO will need later (GET for contributions)
+			Contribution compStdoutLog = VeriFitCompilationResourcesFactory.createContribution(this.resAutoResultId + "-" + "stdout");
+		    */
 			Contribution compStdoutLog = new Contribution();
 			compStdoutLog.setDescription("Standard output of the compilation.");
 			compStdoutLog.setTitle("stdout");
 			compStdoutLog.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
-			
+
+		    /* TODO will need later (GET for contributions)
+			Contribution compStdoutLog = VeriFitCompilationResourcesFactory.createContribution(this.resAutoResultId + "-" + "stderr");
+		    */
 			Contribution compStderrLog = new Contribution();
 			compStderrLog.setDescription("Error output of the compilation.");
 			compStderrLog.setTitle("stderr");
@@ -231,6 +239,18 @@ public class SutDeploy extends RequestRunner
 			// compile source file if the fetching did not fail and compilation was requested
 			if (performCompilation)
 			{
+
+		    	// add file URIs to standard output contributions, add them to the automation result, and update it in the triplestore 
+		    	// this allows clients to query the contents of stdout and stderr during execution
+		    	String stdOutputsIdentifier = "_compilation_" + this.execAutoRequestId;
+		    	compStdoutLog.setFilePath(folderPath.resolve(".adapter/stdout" + stdOutputsIdentifier).toAbsolutePath().toString());		// TODO HACK has to match the path used in executeString()
+		    	compStderrLog.setFilePath(folderPath.resolve(".adapter/stderr" + stdOutputsIdentifier).toAbsolutePath().toString());		// TODO HACK 
+		    	resAutoResult.addContribution(compStdoutLog);
+				resAutoResult.addContribution(compStderrLog);
+				VeriFitCompilationManager.internalUpdateAutomationResult(resAutoResult, OslcValues.getResourceIdFromUri(resAutoResult.getAbout()));
+
+
+				// start execution
 				ExecutionResult compRes = executeString(folderPath, paramBuildCommand, 0, "_compilation_" + this.execAutoRequestId, this.filesToDeleteIfInterrupted, null, VeriFitCompilationProperties.CONFIG_OS);
 				statusMessage.appendValue("Executing: " + paramBuildCommand + "\n   as: " + compRes.executedString + "\n   In dir: " + folderPath + "\n");
 				if (compRes.exceptionThrown != null)
@@ -265,14 +285,19 @@ public class SutDeploy extends RequestRunner
 						compStdoutLog.setValue("Failed to load contents of this file: " + e.getMessage());
 					}
 					compStdoutLog.setFilePath(compRes.stdoutFile.getAbsolutePath());
-			    	resAutoResult.addContribution(compStdoutLog);
 			    	try {
 						compStderrLog.setValue(Utils.removeAnsiAndNonXML10Chars(new String(Files.readAllBytes(compRes.stderrFile.toPath()))));
 					} catch (IOException e) {
 						compStderrLog.setValue("Failed to load contents of this file: " + e.getMessage());
 					}
 			    	compStderrLog.setFilePath(compRes.stderrFile.getAbsolutePath());
-			    	resAutoResult.addContribution(compStderrLog);
+
+			    	// the stdout and stderr already were added earlier, need to remove them and replace them with the new versions
+			    	// (this will directly modify the resAutoResult.contributions because of pass by reference in java)
+					Set<Contribution> tmpContribs = resAutoResult.getContribution();
+					tmpContribs.removeIf(c -> (c.getTitle().equals("stdout") || c.getTitle().equals("stderr")));
+					tmpContribs.add(compStdoutLog);
+					tmpContribs.add(compStderrLog);
 				}
 			} else {
 				statusMessage.appendValue("Compilation not performed\n");

@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.eclipse.lyo.oslc4j.core.model.ServiceProvider;
 import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
 import cz.vutbr.fit.group.verifit.oslc.analysis.servlet.ServiceProviderCatalogSingleton;
+import cz.vutbr.fit.group.verifit.oslc.analysis.unicConfiguration.UnicConfLoader;
 import cz.vutbr.fit.group.verifit.arrowhead.client.ArrowheadClient;
 import cz.vutbr.fit.group.verifit.arrowhead.client.ArrowheadClientBuilder;
 import cz.vutbr.fit.group.verifit.arrowhead.client.ArrowheadServiceRegistryClient;
@@ -131,6 +132,8 @@ public class VeriFitAnalysisManager {
 	static ArrowheadServiceRegistryClient ahtClientServiceRegistry;
 	static ArrowheadServiceRegistrationForm ahtFormServiceRegistration;
 	
+	static UnicConfLoader unicConfLoader;
+	
     // End of user code
     
     
@@ -152,13 +155,18 @@ public class VeriFitAnalysisManager {
 		}
 		
 		// if the first method failed, fallback to the old slow method
-		log.warn("Initializing ID generators: bookmarkID resource not found. Falling back querying the whole database.");
     	long currMaxReqId = 0;
     	try {
     		// loop over all the Automation Requests in the triplestore (TODO potential performance issue for initialization with a large persistent database)
     		for (int page = 0;; page++)
     		{
 				List<AutomationRequest> listAutoRequests = VeriFitAnalysisManager.queryAutomationRequests(null, "", "", page, 100);
+
+				// on the first iteration, check if the whole database is empty and issue a warning if it is not
+				if (page == 0 && listAutoRequests.size() != 0) {
+						log.warn("Initializing ID generators: bookmarkID resource not found. Falling back to querying the whole database.");						
+				}
+				
 				if (listAutoRequests.size() == 0)
 				{
 					break;	
@@ -761,15 +769,24 @@ public class VeriFitAnalysisManager {
     			+ "  ADAPTER_HOST: " + VeriFitAnalysisProperties.ADAPTER_HOST + "\n"
     			+ "  ADAPTER_PORT: " + VeriFitAnalysisProperties.ADAPTER_PORT + "\n"
     			+ "  SERVER_URL: " + VeriFitAnalysisProperties.SERVER_URL + "\n"
+    			
     			+ "  SPARQL_SERVER_NAMED_GRAPH_RESOURCES: " + VeriFitAnalysisProperties.SPARQL_SERVER_NAMED_GRAPH_RESOURCES + "\n"
     			+ "  SPARQL_SERVER_QUERY_ENDPOINT: " + VeriFitAnalysisProperties.SPARQL_SERVER_QUERY_ENDPOINT + "\n"
     			+ "  SPARQL_SERVER_UPDATE_ENDPOINT: " + VeriFitAnalysisProperties.SPARQL_SERVER_UPDATE_ENDPOINT + "\n"
-    			+ "  AUTHENTICATION_ENABLED: " + VeriFitAnalysisProperties.AUTHENTICATION_ENABLED + "\n"
-    			+ "  AUTHENTICATION_USERNAME: " + VeriFitAnalysisProperties.AUTHENTICATION_USERNAME + "\n"
-    			+ "  AUTHENTICATION_PASSWORD: " + "********" + "\n"
+    			
+	    		+ "  AUTHENTICATION_ENABLED: " + VeriFitAnalysisProperties.AUTHENTICATION_ENABLED + "\n"
+    			+ (VeriFitAnalysisProperties.AUTHENTICATION_ENABLED ? 
+	    			  "  AUTHENTICATION_USERNAME: " + VeriFitAnalysisProperties.AUTHENTICATION_USERNAME + "\n"
+	    			+ "  AUTHENTICATION_PASSWORD: " + "********" + "\n"
+    			: "")
+    			
     			+ "  KEEP_LAST_N_ENABLED: " + VeriFitAnalysisProperties.KEEP_LAST_N_ENABLED + "\n"
-    			+ "  KEEP_LAST_N: " + VeriFitAnalysisProperties.KEEP_LAST_N + "\n"
+    			+ (VeriFitAnalysisProperties.KEEP_LAST_N_ENABLED ? 
+	    			"  KEEP_LAST_N: " + VeriFitAnalysisProperties.KEEP_LAST_N + "\n"
+    			: "")
+    			
     			+ "  DUMMYTOOL_PATH: " + VeriFitAnalysisProperties.DUMMYTOOL_PATH + "\n"
+    			
     			+ "  AHT_ENABLED: " + VeriFitAnalysisProperties.AHT_ENABLED + "\n"
     			+ (VeriFitAnalysisProperties.AHT_ENABLED ? 
 					  "    AHT_SERVICE_REGISTRY_HOST: " + VeriFitAnalysisProperties.AHT_SERVICE_REGISTRY_HOST + "\n"
@@ -779,6 +796,8 @@ public class VeriFitAnalysisManager {
 	    			+ "    AHT_CERTIFICATE: " + VeriFitAnalysisProperties.AHT_CERTIFICATE + "\n"
 	    			+ "    AHT_CERTIFICATE_PASSWORD: " + "********" + "\n"
 	    			: "")
+    			
+    			+ "  INPROGRESS_OUTPUTS_ENABLED: " + VeriFitAnalysisProperties.INPROGRESS_OUTPUTS_ENABLED + "\n"
     			);
     	
         // End of user code
@@ -832,8 +851,9 @@ public class VeriFitAnalysisManager {
 		AutomationPlanConfManager autoPlanManager = AutomationPlanConfManager.getInstance();
         try {
         	autoPlanManager.initializeAutomationPlans();
+    		log.info("Initialization: Loaded AutomationPlans: " + autoPlanManager.getAllAutoPlanIds());
 		} catch (Exception e) {
-			log.error("Adapter initialization: Loading AutomationPlans: " + e.getMessage());
+			log.error("Initialization: Loading AutomationPlans: " + e.getMessage());
 			System.exit(1);
 		}
 
@@ -842,7 +862,7 @@ public class VeriFitAnalysisManager {
 		try {
 			initReqId = getCurrentHighestAutomationRequestId() + 1;
 		} catch (Exception e) {
-			log.error("Adapter initialization: Failed to get latest AutomationRequest ID: " + e.getMessage());
+			log.error("Initialization: Failed to get latest AutomationRequest ID: " + e.getMessage());
 			System.exit(1);
 		}
 		AutoRequestIdGen = new ResourceIdGen(initReqId);
@@ -852,57 +872,35 @@ public class VeriFitAnalysisManager {
 		AutoRequestExecManager = new ExecutionManager();
 		
 		// register as an AHT service 
-		if (VeriFitAnalysisProperties.AHT_ENABLED) {		// TODO as a function
+		if (VeriFitAnalysisProperties.AHT_ENABLED) {		// TODO refactor to a function/class
+			unicConfLoader = new UnicConfLoader();
+			
 			try {
 				log.info("Initialization: Registering as an AHT service");
 
-				// load Unic configuration properties files
-				Properties propertiesUnicConf = new Properties();
-				propertiesUnicConf.load(new FileInputStream(Paths.get("./conf/unic/infer-aht.config").toFile()));	// TODO file name as config
-				Properties propertiesTasksConf = new Properties();
-				propertiesTasksConf.load(new FileInputStream(Paths.get("./conf/unic/infer-aht.tasks").toFile()));	// TODO file name as config			
+				// load all UniC configuration files
+				Map<String,String> unicConfMapForAht = unicConfLoader.loadUnicConfFilesForAht(new File(VeriFitAnalysisProperties.UNIC_CONF_PATH));
+				log.info("Initialization: Loaded UniC configuration files: " + unicConfLoader.getListOfLoadedConf());
 				
-				// merge the two files while prefixing their property names to differentiate them
-				Map<String,String> propertiesAhtService = new HashMap<String,String>();
-		        Set<String> propertyNames = propertiesUnicConf.stringPropertyNames();
-		        for (String name : propertyNames) {
-		            String propertyValue = propertiesUnicConf.getProperty(name);
-		            propertiesAhtService.put("unic.config." + name, propertyValue);
-			    }
-		        propertyNames = propertiesTasksConf.stringPropertyNames();
-		        for (String name : propertyNames) {
-		            String propertyValue = propertiesTasksConf.getProperty(name);
-		            propertiesAhtService.put("unic.tasks." + name, propertyValue);
-			    }
-			
 		        // build a client to connect to the AHT service registry
 				ArrowheadClient ahtClient = ArrowheadClientBuilder.newBuilder().certificate(
 					new FileInputStream(Paths.get(
-					"./conf/certificates/" + VeriFitAnalysisProperties.AHT_CERTIFICATE).toFile()),	// certificate
-					VeriFitAnalysisProperties.AHT_CERTIFICATE_PASSWORD)								// password
-					.defaultLogger()
+					VeriFitAnalysisProperties.CERTIFICATES_PATH).resolve(VeriFitAnalysisProperties.AHT_CERTIFICATE).toFile()),	// certificate
+					VeriFitAnalysisProperties.AHT_CERTIFICATE_PASSWORD)															// password
+					.defaultLogger() // logger is only for debugging
 					.build();
 			    ahtClientServiceRegistry = new ArrowheadServiceRegistryClient(ahtClient,
-			    		VeriFitAnalysisProperties.AHT_SERVICE_REGISTRY_HOST,
-			    		Integer.parseInt(VeriFitAnalysisProperties.AHT_SERVICE_REGISTRY_PORT));
+			    		VeriFitAnalysisProperties.AHT_SERVICE_REGISTRY_HOST,							// host
+			    		Integer.parseInt(VeriFitAnalysisProperties.AHT_SERVICE_REGISTRY_PORT));			// port
 			    
 			    // build a registration form
-			    /*
 			    ahtFormServiceRegistration = new ArrowheadServiceRegistrationForm(
 			    		VeriFitAnalysisProperties.AHT_SERVICE_NAME,					// service name
 			    		VeriFitAnalysisProperties.AHT_SYSTEM_NAME,					// system name 
 			    		VeriFitAnalysisProperties.ADAPTER_HOST,						// address
 			    		Integer.parseInt(VeriFitAnalysisProperties.ADAPTER_PORT),	// port
 			    		VeriFitAnalysisProperties.ADAPTER_CONTEXT,					// uri
-			    		propertiesAhtService);										// metadata
-	    		*/
-			    ahtFormServiceRegistration = new ArrowheadServiceRegistrationForm(
-			    		"verify-oslc",		// service name
-			    		"fit-client1",		// system name 
-			    		"147.229.12.81",	// address
-			    		8080,				// port
-			    		"/oslc",			// uri
-			    		propertiesAhtService);	
+			    		unicConfMapForAht);											// metadata
 	
 			    // unregister and then register
 			    ahtClientServiceRegistry.unregister(ahtFormServiceRegistration);
@@ -913,7 +911,7 @@ public class VeriFitAnalysisManager {
 			    
 			} catch (UnrecoverableKeyException | KeyManagementException | KeyStoreException | NoSuchAlgorithmException
 					| CertificateException | IOException e) {
-				log.error("Adapter initialization: Failed to register as an AHT service: " + e.getMessage());
+				log.error("Initialization: Failed to register as an AHT service: " + e.getMessage());
 				System.exit(1);
 			}
 		}
@@ -1545,7 +1543,6 @@ public class VeriFitAnalysisManager {
         
         // Start of user code getAutomationResult
         
-        
 
         // if the automation result is still in progress, provide some infos about the run (such as stdout and stderr)
         // TODO currently the database is only updated after the result execution finishes to avoid too much database communication
@@ -1553,10 +1550,13 @@ public class VeriFitAnalysisManager {
         if (httpServletRequest != null)
         {
         	String inprogressOutputsParam = httpServletRequest.getParameter("enableInProgressOutputs");
-        	boolean inProgressOutputsEnabled = false;
-        	if (inprogressOutputsParam != null && inprogressOutputsParam.equalsIgnoreCase("true"))
-        		inProgressOutputsEnabled = true;
-        	
+        	boolean inProgressOutputsEnabled = VeriFitAnalysisProperties.INPROGRESS_OUTPUTS_ENABLED;
+        	if (inprogressOutputsParam != null) {
+        		if (inprogressOutputsParam.equalsIgnoreCase("true"))
+        			inProgressOutputsEnabled = true;
+        		else if (inprogressOutputsParam.equalsIgnoreCase("false"))
+	    			inProgressOutputsEnabled = false;
+        	}
         	if (inProgressOutputsEnabled && aResource.getState().iterator().next().equals(OslcValues.AUTOMATION_STATE_INPROGRESS))
             {
             	// load the current contents of stdout and stderr
@@ -1565,8 +1565,7 @@ public class VeriFitAnalysisManager {
     			} catch (IOException e) {
     				log.warn("Automation Result GET: Failed to get contents of stdout or stderr of the execution", e);
     			}
-            }
-        	
+            }	
         }
         
         // End of user code
