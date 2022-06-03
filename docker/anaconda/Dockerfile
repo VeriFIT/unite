@@ -8,6 +8,9 @@ RUN apt-get install -y m4 wget && \
     ./tools/build.sh all && \
     cd ..
 
+# make the image smaller
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # copy over Unite configuration for anaconda
 # make sure to set the right ports in case you change then in the conf
 COPY ./unite-conf ./unite/conf

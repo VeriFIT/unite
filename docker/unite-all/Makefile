@@ -1,10 +1,13 @@
-image = unite-base
-container = unite-base
+image = unite-all
+container = unite-all
 
-build:
+build: dependency
 	docker build -t $(image):latest .
 
-build-clean:
+build-clean: dependency
+	docker build --no-cache -t $(image):latest .
+	
+build-clean-all: dependency-clean
 	docker build --no-cache -t $(image):latest .
 
 run-new:
@@ -20,6 +23,12 @@ clean-container:
 	docker container rm $(container)
 
 clean: clean-image clean-container
+
+dependency:
+	$(MAKE) -C ../unite-base build
+
+dependency-clean:
+	$(MAKE) -C ../unite-base build-clean
 
 
 up:

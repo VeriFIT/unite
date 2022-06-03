@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:fit="http://fit.vutbr.cz/group/verifit/oslc/ns/universal-analysis#"
+    xmlns:oslc_data="http://open-services.net/ns/servicemanagement/1.0/"
+    xmlns:oslc="http://open-services.net/ns/core#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:oslc_auto="http://open-services.net/ns/auto#">
+
+    <oslc_auto:AutomationPlan>
+        <dcterms:identifier>theta-xcfa-cli</dcterms:identifier>
+
+        <oslc_auto:usesExecutionEnvironment rdf:resource="https://github.com/ftsrg/theta/tree/master/subprojects/xcfa/xcfa-cli"/>
+        <dcterms:title rdf:parseType="Literal">XCFAs</dcterms:title>
+        <dcterms:description rdf:parseType="Literal">adds a new formalism, the eXtended Control Flow Automaton to Theta</dcterms:description>
+        <dcterms:creator rdf:resource="https://ftsrg.mit.bme.hu/"/>
+    
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>input</oslc:name>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Exactly-one"/>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--input </fit:valuePrefix>
+                <!-- <oslc:defaultValue>*.c</oslc:defaultValue> --> <!-- TODO could be useful? -->
+                <dcterms:description rdf:parseType="Literal">Which .c file should be analysed. Expects path within the SUT.</dcterms:description>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>portfolio</oslc:name>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--portfolio </fit:valuePrefix>
+                <oslc:defaultValue>COMPLEX</oslc:defaultValue>
+                <oslc:allowedValue>COMPLEX</oslc:allowedValue> <!-- TODO should be restricted like this? -->
+                <oslc:allowedValue>SEQUENTIAL</oslc:allowedValue>
+                <oslc:allowedValue>NONE</oslc:allowedValue>
+                <dcterms:description rdf:parseType="Literal">Which .c file whould be analysed. Expects path within the SUT.</dcterms:description>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>stacktrace</oslc:name>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--stacktrace</fit:valuePrefix>
+                <dcterms:description rdf:parseType="Literal">Enable more detailed error reports for diagnosing errors.</dcterms:description>
+                <oslc:allowedValue></oslc:allowedValue> <!-- only empty value is allowed -->
+                <oslc:defaultValue></oslc:defaultValue> <!-- will be used by default -->
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <!-- TODO should we define any other parameters explicitly? -->
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>other-arguments</oslc:name>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</fit:commandlinePosition>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+                <dcterms:description rdf:parseType="Literal">Use this parameter to specify any other arguments as a free string.</dcterms:description>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+    </oslc_auto:AutomationPlan>
+</rdf:RDF>

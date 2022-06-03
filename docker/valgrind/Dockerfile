@@ -1,7 +1,10 @@
 FROM unite-base:latest
 
-# install Infer
+# install Valgrind
 RUN apt-get install -y valgrind
+
+# make the image smaller
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # copy over Unite configuration for Valgrind
 # make sure to set the right ports in case you change then in the conf

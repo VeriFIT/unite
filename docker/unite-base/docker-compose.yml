@@ -3,6 +3,8 @@ services:
   unite:
     image: unite-base
     build: .
+    
+    restart: unless-stopped
 
     # map ports based on your configuration (from conf. files or env variables here)
     # currently the outside and inside HOST&PORT has to be the same!

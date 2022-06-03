@@ -31,5 +31,8 @@ dependency-clean:
 	$(MAKE) -C ../unite-base build-clean
 
 
-compose: dependency
-	docker-compose up
+up:
+	docker-compose up -d
+
+down:
+	docker-compose down
