@@ -4,7 +4,10 @@ container = unite-infer
 build: dependency
 	docker build -t $(image):latest .
 
-build-clean: dependency-clean
+build-clean: dependency
+	docker build --no-cache -t $(image):latest .
+	
+build-clean-all: dependency-clean
 	docker build --no-cache -t $(image):latest .
 
 run-new:

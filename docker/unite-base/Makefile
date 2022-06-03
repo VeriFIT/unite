@@ -1,5 +1,5 @@
-image = unite
-container = unite
+image = unite-base
+container = unite-base
 
 build:
 	docker build -t $(image):latest .

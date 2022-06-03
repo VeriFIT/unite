@@ -11,6 +11,7 @@
 - Configuration was added to enable/disable inProgress outputs by default (so far the default was enabled). The default
   can be overridden using the usual "enableInProgressOutputs" HTTP request parameter when GETing an Automation Result.
 - The compilation adapter now also can show inProgress stdout and stderr of the compilation process
+- Dockers now use main as the default branch. Compose files now use image names.
 
 ### v2.7.4
 - run_all log now prints URL's of the started services
