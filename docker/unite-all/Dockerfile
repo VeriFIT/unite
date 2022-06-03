@@ -14,6 +14,21 @@ RUN apt-get update && \
     wget https://github.com/ftsrg/theta/releases/download/v4.0.0/theta-xsts-cli.jar && \
     cd ../
 
+# install Frama-C using apt-get
+RUN apt-get update && \
+    apt-get install -y frama-c-base
+    
+# install grep
+RUN apt-get install -y grep
+
+# install Perun
+RUN apt-get install -y python3 pip libfreetype-dev libmagic1 && \
+    ln -s /usr/include/freetype2/ft2build.h /usr/include/ && \
+    git clone --depth=1 https://github.com/tfiedor/perun.git && \
+    cd perun && \
+    make init && \
+    make install
+
 # make the image smaller
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 

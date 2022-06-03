@@ -2,6 +2,7 @@ target
 
 .classpath
 .settings
+.project
 
 src/main/java/pluginFilters
 !src/main/java/pluginFilters/DummyBuiltInTestPluginFilter.java

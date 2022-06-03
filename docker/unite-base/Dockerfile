@@ -2,9 +2,12 @@ FROM openjdk:11-slim
 WORKDIR /
 
 RUN apt-get update && \
-    apt-get install -y maven build-essential curl procps git vim tmux dos2unix
-#RUN git clone --depth 1 --no-single-branch --branch dev https://pajda.fit.vutbr.cz/verifit/unite.git && \
-RUN git clone --depth 1 --no-single-branch https://pajda.fit.vutbr.cz/verifit/unite.git && \
+    # essential for unite
+    apt-get install -y maven build-essential curl procps && \
+    # usefull for general stuff
+    apt-get install -y git vim tmux dos2unix time wget
+RUN git clone --depth 1 --no-single-branch --branch dev https://pajda.fit.vutbr.cz/verifit/unite.git && \
+#RUN git clone --depth 1 --no-single-branch https://pajda.fit.vutbr.cz/verifit/unite.git && \
     cd unite && git config pull.rebase false && cd .. && \
     /bin/bash ./unite/build.sh
 
