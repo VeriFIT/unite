@@ -67,51 +67,63 @@ public class VeriFitCompilationProperties
 		
 		String str_PERSIST_SUT_DIRS;
 		str_PERSIST_SUT_DIRS = VeriFitCompilationProperties.getProperty("persist_sut_dirs");	
-		if (str_PERSIST_SUT_DIRS == null)
-			throw new IOException("persist_sut_dirs missing");
-		try {
-			PERSIST_SUT_DIRS = Boolean.parseBoolean(str_PERSIST_SUT_DIRS);
-		} catch (Exception e) {
-			throw new IOException("failed to parse enable_authentication value - boolean expected");
+		if (str_PERSIST_SUT_DIRS == null) {
+			PERSIST_SUT_DIRS = false;	// assume false by default
+		} else {
+			try {
+				PERSIST_SUT_DIRS = Boolean.parseBoolean(str_PERSIST_SUT_DIRS);
+			} catch (Exception e) {
+				throw new IOException("failed to parse persist_sut_dirs value - boolean expected");
+			}
 		}
 
 		String str_AUTHENTICAION_ENABLED;
 		str_AUTHENTICAION_ENABLED = VeriFitCompilationProperties.getProperty("enable_authentication");	
-		if (str_AUTHENTICAION_ENABLED == null)
-			throw new IOException("enable_authentication missing");
-		AUTHENTICATION_ENABLED = Boolean.parseBoolean(str_AUTHENTICAION_ENABLED);
-		
-		AUTHENTICATION_USERNAME = VeriFitCompilationProperties.getProperty("username");	
-		if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
-			throw new IOException("username missing");
-		
-		AUTHENTICATION_PASSWORD = VeriFitCompilationProperties.getProperty("password");	
-		if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
-			throw new IOException("password missing");
-
+		if (str_AUTHENTICAION_ENABLED == null) {
+			AUTHENTICATION_ENABLED = false;	// assume false by default
+		} else {
+			try {
+				AUTHENTICATION_ENABLED = Boolean.parseBoolean(str_AUTHENTICAION_ENABLED);
+			} catch (Exception e) {
+				throw new IOException("failed to parse enable_authentication value - boolean expected");
+			}			
+		}
+		if (AUTHENTICATION_ENABLED) { // load other relevant props only if needed
+			AUTHENTICATION_ENABLED = Boolean.parseBoolean(str_AUTHENTICAION_ENABLED);
+			
+			AUTHENTICATION_USERNAME = VeriFitCompilationProperties.getProperty("username");	
+			if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
+				throw new IOException("username missing");
+			
+			AUTHENTICATION_PASSWORD = VeriFitCompilationProperties.getProperty("password");	
+			if (SPARQL_SERVER_NAMED_GRAPH_RESOURCES == null)
+				throw new IOException("password missing");
+		}
 		
 		String str_KEEP_LAST_N_ENABLED;
 		str_KEEP_LAST_N_ENABLED = VeriFitCompilationProperties.getProperty("keep_last_n_enabled");	
-		if (str_KEEP_LAST_N_ENABLED == null)
-			throw new IOException("keep_last_n_enabled missing");
-		try {
-			KEEP_LAST_N_ENABLED = Boolean.parseBoolean(str_KEEP_LAST_N_ENABLED);
-		} catch (Exception e) {
-			throw new IOException("failed to parse keep_last_n_enabled value - boolean expected");
-			
+		if (str_KEEP_LAST_N_ENABLED == null) {
+			KEEP_LAST_N_ENABLED = false;	// assume false by default
+		} else {
+			try {
+				KEEP_LAST_N_ENABLED = Boolean.parseBoolean(str_KEEP_LAST_N_ENABLED);
+			} catch (Exception e) {
+				throw new IOException("failed to parse keep_last_n_enabled value - boolean expected");
+			}
 		}
-		
-		String str_KEEP_LAST_N;
-		str_KEEP_LAST_N = VeriFitCompilationProperties.getProperty("keep_last_n");	
-		if (str_KEEP_LAST_N == null)
-			throw new IOException("keep_last_n missing");
-		try {
-			KEEP_LAST_N = Long.parseLong(str_KEEP_LAST_N);
-			if (KEEP_LAST_N < 1)
-				throw new Exception();
-		} catch (Exception e) {
-			throw new IOException("failed to parse keep_last_n value - positive non-zero integer expected");
-			
+		if (KEEP_LAST_N_ENABLED) { // load other relevant props only if needed
+			String str_KEEP_LAST_N;
+			str_KEEP_LAST_N = VeriFitCompilationProperties.getProperty("keep_last_n");	
+			if (str_KEEP_LAST_N == null)
+				throw new IOException("keep_last_n missing");
+			try {
+				KEEP_LAST_N = Long.parseLong(str_KEEP_LAST_N);
+				if (KEEP_LAST_N < 1)
+					throw new Exception();
+			} catch (Exception e) {
+				throw new IOException("failed to parse keep_last_n value - positive non-zero integer expected");
+				
+			}
 		}
 		
 		if (SystemUtils.IS_OS_LINUX) {
@@ -133,6 +145,62 @@ public class VeriFitCompilationProperties
 				throw new IOException("failed to parse config_win_shell value - options are \"windows_ps1\" or \"windows_bat\"");
 			}
 			CONFIG_OS_STR = str_CONFIG_OS;
+		}
+		
+		/* TODO not needed for now & unfinished
+		// AHT service registry configuration
+		String str_AHT_ENABLED;
+		str_AHT_ENABLED = VeriFitCompilationProperties.getProperty("aht_enabled");	
+		if (str_AHT_ENABLED == null)
+			throw new IOException("aht_enabled missing");
+		try {
+			AHT_ENABLED = Boolean.parseBoolean(str_AHT_ENABLED);
+		} catch (Exception e) {
+			throw new IOException("failed to parse aht_enabled value - boolean expected");
+			
+		}
+		if (AHT_ENABLED) { // load other AHT props only if enabled
+			AHT_SERVICE_REGISTRY_HOST = VeriFitCompilationProperties.getProperty("aht_service_registry_host");	
+			if (AHT_SERVICE_REGISTRY_HOST == null)
+				throw new IOException("aht_service_registry_host missing");
+			
+			AHT_SERVICE_REGISTRY_PORT = VeriFitCompilationProperties.getProperty("aht_service_registry_port");	
+			if (AHT_SERVICE_REGISTRY_PORT == null)
+				throw new IOException("aht_service_registry_port missing");
+			try { // check if parsable as int
+				Integer.parseInt(AHT_SERVICE_REGISTRY_PORT);
+			} catch (Exception e) {
+				throw new IOException("failed to parse aht_service_registry_port value - int expected");
+			}
+			
+			AHT_SERVICE_NAME = VeriFitCompilationProperties.getProperty("aht_service_name");	
+			if (AHT_SERVICE_NAME == null)
+				throw new IOException("aht_service_name missing");
+			
+			AHT_SYSTEM_NAME = VeriFitCompilationProperties.getProperty("aht_system_name");	
+			if (AHT_SYSTEM_NAME == null)
+				throw new IOException("aht_system_name missing");
+			
+			AHT_CERTIFICATE = VeriFitCompilationProperties.getProperty("aht_certificate");
+			if (AHT_CERTIFICATE == null)
+				throw new IOException("aht_certificate missing");
+			
+			AHT_CERTIFICATE_PASSWORD = VeriFitCompilationProperties.getProperty("aht_certificate_password");
+			if (AHT_CERTIFICATE_PASSWORD == null)
+				throw new IOException("aht_certificate_password missing");
+		}
+		*/
+		
+		String str_INPROGRESS_OUTPUTS_ENABLED;
+		str_INPROGRESS_OUTPUTS_ENABLED = VeriFitCompilationProperties.getProperty("inprogress_outputs_enabled");	
+		if (str_INPROGRESS_OUTPUTS_ENABLED == null) {
+			INPROGRESS_OUTPUTS_ENABLED = false;	// assume false by default
+		} else {
+			try {
+				INPROGRESS_OUTPUTS_ENABLED = Boolean.parseBoolean(str_INPROGRESS_OUTPUTS_ENABLED);
+			} catch (Exception e) {
+				throw new IOException("failed to parse inprogress_outputs_enabled value - boolean expected");
+			}
 		}
 	}
 
@@ -182,18 +250,29 @@ public class VeriFitCompilationProperties
     public static Boolean KEEP_LAST_N_ENABLED;
     public static long KEEP_LAST_N;
     
-    
 	public static ConfigOs CONFIG_OS;
 	public static String CONFIG_OS_STR;
+
+	/* TODO not needed for now & unfinished
+	public static Boolean AHT_ENABLED;
+    public static String AHT_SERVICE_REGISTRY_HOST;
+    public static String AHT_SERVICE_REGISTRY_PORT;
+    public static String AHT_SERVICE_NAME;
+    public static String AHT_SYSTEM_NAME;
+    public static String AHT_CERTIFICATE;
+    public static String AHT_CERTIFICATE_PASSWORD;
+    */
+    
+    public static Boolean INPROGRESS_OUTPUTS_ENABLED;
     
     /*
      *  Internal constants
      */
 	public static final String AUTOMATION_PROVIDER_ID = "A0";
-	public static String SERVER_URL = ADAPTER_HOST + ":" + ADAPTER_PORT + "/";
-	public static final String ADAPTER_CONTEXT = "compilation/";
-    public static String PATH_AUTOMATION_SERVICE_PROVIDERS = SERVER_URL + ADAPTER_CONTEXT + "services/serviceProviders/";
-    public static String PATH_RESOURCE_SHAPES = SERVER_URL + ADAPTER_CONTEXT + "services/resourceShapes/";
+	public static String SERVER_URL = ADAPTER_HOST + ":" + ADAPTER_PORT;
+	public static final String ADAPTER_CONTEXT = "/compilation";
+    public static String PATH_AUTOMATION_SERVICE_PROVIDERS = SERVER_URL + ADAPTER_CONTEXT + "/services/serviceProviders";
+    public static String PATH_RESOURCE_SHAPES = SERVER_URL + ADAPTER_CONTEXT + "/services/resourceShapes";
     
     public static String SUT_FOLDER = "SUT";	// TODO if this changes, there might be changes required in AnalysisManager->deleteContribution()
 }

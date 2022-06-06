@@ -1,12 +1,20 @@
 version: "3"
 services:
   unite:
+    image: unite-base
     build: .
+    
+    restart: unless-stopped
+
+    # map ports based on your configuration (from conf. files or env variables here)
+    # currently the outside and inside HOST&PORT has to be the same!
     ports:
-        - "8080:8080" # CHANGE PORTS HERE IF NEEDED
-        - "8081:8081" # and here
+        - "8080:8080"
+        - "8081:8081"
+
+    # env variables can be used to overrride conf. files
     environment:
-        - UNITE_ANALYSIS_PORT=8080    # and here
-        - UNITE_COMPILATION_PORT=8081 # and here
-        - UNITE_ANALYSIS_HOST=http://localhost    # CHANGE HOST HERE
-        - UNITE_COMPILATION_HOST=http://localhost # and here
+        - UNITE_ANALYSIS_PORT=8080
+        - UNITE_COMPILATION_PORT=8081
+        - UNITE_ANALYSIS_HOST=http://localhost
+        - UNITE_COMPILATION_HOST=http://localhost

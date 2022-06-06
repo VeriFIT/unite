@@ -1,5 +1,5 @@
-image = unite
-container = unite
+image = unite-base
+container = unite-base
 
 build:
 	docker build -t $(image):latest .
@@ -22,5 +22,8 @@ clean-container:
 clean: clean-image clean-container
 
 
-compose:
-	docker-compose up
+up:
+	docker-compose up -d
+
+down:
+	docker-compose down

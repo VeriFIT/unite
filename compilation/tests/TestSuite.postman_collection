@@ -2,7 +2,8 @@
 	"info": {
 		"_postman_id": "56502f66-8b8e-4597-9633-64f4f853a244",
 		"name": "Compilation Tests",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7000912"
 	},
 	"item": [
 		{
@@ -520,9 +521,9 @@
 											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
 											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
 											"});",
-											"pm.test(\"AutomationResult should not contain any contributions\", function () {",
+											"/*pm.test(\"AutomationResult should not contain any contributions\", function () {",
 											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:contribution\");",
-											"});"
+											"});*/"
 										],
 										"type": "text/javascript"
 									}
@@ -7691,6 +7692,636 @@
 										"services",
 										"resources",
 										"sUTs",
+										"{{requestId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "enabled inProgress stdout and stderr",
+					"item": [
+						{
+							"name": "create request",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code should be 201 (created)\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"",
+											"// save the request ID as a global variable for later tests to use",
+											"const response = xml2Json(pm.response.text());",
+											"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+											"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+											"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
+											"pm.globals.set('requestId', requestId);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var os = pm.globals.get(\"currentOS\");\r",
+											"if (os == \"linux\"){\r",
+											"    pm.globals.set(\"sleepBuildCommand\", \"echo \\\"heartbeat1\\\"; sleep 1; echo \\\"heartbeat2\\\"; sleep 1; echo \\\"heartbeat3\\\"; sleep 1; echo \\\"heartbeat4\\\"; sleep 1; echo \\\"heartbeat5\\\"\");\r",
+											"} else if (os == \"windows_ps1\") {\r",
+											"    pm.globals.set(\"sleepBuildCommand\", \"echo \\\"heartbeat1\\\"; start-Sleep -Seconds 1; echo \\\"heartbeat2\\\"; start-Sleep -Seconds 1; echo \\\"heartbeat3\\\"; start-Sleep -Seconds 1; echo \\\"heartbeat4\\\"; start-Sleep -Seconds 1; echo \\\"heartbeat5\\\"\");\r",
+											"} else { // os == \"windows_bat\")\r",
+											"    pm.globals.set(\"sleepBuildCommand\", \"echo heartbeat1&amp; ping -n 2 127.0.0.1 > nul &amp; echo heartbeat2&amp; ping -n 2 127.0.0.1 > nul &amp; echo heartbeat3&amp; ping -n 2 127.0.0.1 > nul &amp; echo heartbeat4&amp; ping -n 2 127.0.0.1 > nul &amp; echo heartbeat5\");\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/xml"
+									},
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>{{sleepBuildCommand}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+								},
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"createAutomationRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "check result inProgress",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code should be 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"AutomationResult state should be #inProgress\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+											"});",
+											"pm.test(\"AutomationResult verdict should be #unavailable\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#unavailable\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
+											"});",
+											"",
+											"pm.test(\"stdout should contain some outputs\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<rdf:value>heartbeat1\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// wait a bit for some outputs to get to stdout\r",
+											"// the execution should take over 5 seconds\r",
+											"setTimeout(function(){}, [1000]); // 1 second\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}?enableInProgressOutputs=true",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"automationResults",
+										"{{requestId}}"
+									],
+									"query": [
+										{
+											"key": "enableInProgressOutputs",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "wait for #complete (compilation/misc/inProgress stdout and stderr)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
+											"",
+											"var waitCounter = pm.globals.get(\"waitCounter\");",
+											"if(!waitCounter) {",
+											"    waitCounter = 0;",
+											"}",
+											"",
+											"if (pm.response.code != 200) { // wait for the resource to be created",
+											"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+											"        setTimeout(function(){}, [1000]); // 1 second",
+											"        waitCounter++;",
+											"        postman.setNextRequest(pm.info.requestName);",
+											"    } else { // timeout, reset counter",
+											"        waitCounter = 0;",
+											"    }",
+											"} else { // wait for the automation to complete",
+											"    const response = xml2Json(pm.response.text());",
+											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+											"            setTimeout(function(){}, [1000]); // 1 second",
+											"            waitCounter++;",
+											"            postman.setNextRequest(pm.info.requestName);",
+											"        } else { // timeout, reset counter",
+											"            waitCounter = 0;",
+											"        }",
+											"    } else { // wait doen, reset counter",
+											"            waitCounter = 0;",
+											"    }",
+											"}",
+											"",
+											"pm.globals.set(\"waitCounter\", waitCounter);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"automationRequests",
+										"{{requestId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "check result finished",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var os = pm.globals.get(\"currentOS\");",
+											"",
+											"pm.test(\"Response code should be 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"AutomationResult state should be #complete\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+											"});",
+											"pm.test(\"AutomationResult verdict should be #passed\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#unavailable\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
+											"});",
+											"",
+											"pm.test(\"AutomationResult statusMessage have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"SUT fetch successful\");",
+											"    if (os == \"windows_bat\"){",
+											"        pm.expect(pm.response.text()).to.include(\"Executing: echo heartbeat1\");",
+											"    } else {",
+											"        pm.expect(pm.response.text()).to.include(\"Executing: echo \\\"heartbeat1\\\"\");",
+											"    }",
+											"});",
+											"pm.test(\"stdout should contain all outputs\", function () {",
+											"    var os = pm.globals.get(\"currentOS\");",
+											"    if (os == \"linux\"){",
+											"        pm.expect(pm.response.text()).to.include(\"<rdf:value>heartbeat1\\n\");",
+											"        pm.expect(pm.response.text()).to.include(\"heartbeat2\\n\");",
+											"        pm.expect(pm.response.text()).to.include(\"heartbeat3\\n\");",
+											"        pm.expect(pm.response.text()).to.include(\"heartbeat4\\n\");",
+											"        pm.expect(pm.response.text()).to.include(\"heartbeat5\\n\");",
+											"    } else {",
+											"        pm.expect(pm.response.text()).to.include(\"<rdf:value>heartbeat1&#xD;\");",
+											"        pm.expect(pm.response.text()).to.include(\"heartbeat2&#xD;\");",
+											"        pm.expect(pm.response.text()).to.include(\"heartbeat3&#xD;\");",
+											"        pm.expect(pm.response.text()).to.include(\"heartbeat4&#xD;\");",
+											"        pm.expect(pm.response.text()).to.include(\"heartbeat5&#xD;\");",
+											"    }",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"automationResults",
+										"{{requestId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "not-enabled inProgress stdout and stderr",
+					"item": [
+						{
+							"name": "create request",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code should be 201 (created)\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"",
+											"// save the request ID as a global variable for later tests to use",
+											"const response = xml2Json(pm.response.text());",
+											"var resrouceAbout = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"].$[\"rdf:about\"];",
+											"var resourceAboutSplit = resrouceAbout.split(\"/\");",
+											"var requestId = resourceAboutSplit[resourceAboutSplit.length-1];",
+											"pm.globals.set('requestId', requestId);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var os = pm.globals.get(\"currentOS\");\r",
+											"if (os == \"linux\"){\r",
+											"    pm.globals.set(\"sleepBuildCommand\", \"echo \\\"heartbeat1\\\"; sleep 1; echo \\\"heartbeat2\\\"; sleep 1; echo \\\"heartbeat3\\\"; sleep 1; echo \\\"heartbeat4\\\"; sleep 1; echo \\\"heartbeat5\\\"\");\r",
+											"} else if (os == \"windows_ps1\") {\r",
+											"    pm.globals.set(\"sleepBuildCommand\", \"echo \\\"heartbeat1\\\"; start-Sleep -Seconds 1; echo \\\"heartbeat2\\\"; start-Sleep -Seconds 1; echo \\\"heartbeat3\\\"; start-Sleep -Seconds 1; echo \\\"heartbeat4\\\"; start-Sleep -Seconds 1; echo \\\"heartbeat5\\\"\");\r",
+											"} else { // os == \"windows_bat\")\r",
+											"    pm.globals.set(\"sleepBuildCommand\", \"echo heartbeat1&amp; ping -n 2 127.0.0.1 > nul &amp; echo heartbeat2&amp; ping -n 2 127.0.0.1 > nul &amp; echo heartbeat3&amp; ping -n 2 127.0.0.1 > nul &amp; echo heartbeat4&amp; ping -n 2 127.0.0.1 > nul &amp; echo heartbeat5\");\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/xml"
+									},
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{server_context}}/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>{{sleepBuildCommand}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+								},
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/createAutomationRequest",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"createAutomationRequest"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "check result inProgress",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code should be 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"AutomationResult state should be #inProgress\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+											"});",
+											"pm.test(\"AutomationResult verdict should be #unavailable\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#unavailable\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
+											"});",
+											"",
+											"pm.test(\"stdout should not contain any outputs\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"<rdf:value>heartbeat1\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// wait a bit for some outputs to get to stdout\r",
+											"// the execution should take over 5 seconds\r",
+											"setTimeout(function(){}, [1000]); // 1 second\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}?enableInProgressOutputs=false",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"automationResults",
+										"{{requestId}}"
+									],
+									"query": [
+										{
+											"key": "enableInProgressOutputs",
+											"value": "false"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "wait for #complete (compilation/misc/disable inProgress stdout and stderr)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var timeoutSeconds = pm.collectionVariables.get('automation_wait_time');",
+											"",
+											"var waitCounter = pm.globals.get(\"waitCounter\");",
+											"if(!waitCounter) {",
+											"    waitCounter = 0;",
+											"}",
+											"",
+											"if (pm.response.code != 200) { // wait for the resource to be created",
+											"    if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+											"        setTimeout(function(){}, [1000]); // 1 second",
+											"        waitCounter++;",
+											"        postman.setNextRequest(pm.info.requestName);",
+											"    } else { // timeout, reset counter",
+											"        waitCounter = 0;",
+											"    }",
+											"} else { // wait for the automation to complete",
+											"    const response = xml2Json(pm.response.text());",
+											"    var state = response[\"rdf:RDF\"][\"oslc_auto:AutomationRequest\"][\"oslc_auto:state\"].$[\"rdf:resource\"];",
+											"    if (state == \"http://open-services.net/ns/auto#inProgress\") {",
+											"        if (waitCounter < timeoutSeconds) { // timout running, wait, incerement counter",
+											"            setTimeout(function(){}, [1000]); // 1 second",
+											"            waitCounter++;",
+											"            postman.setNextRequest(pm.info.requestName);",
+											"        } else { // timeout, reset counter",
+											"            waitCounter = 0;",
+											"        }",
+											"    } else { // wait doen, reset counter",
+											"            waitCounter = 0;",
+											"    }",
+											"}",
+											"",
+											"pm.globals.set(\"waitCounter\", waitCounter);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/automationRequests/{{requestId}}",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"automationRequests",
+										"{{requestId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "check result finished",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var os = pm.globals.get(\"currentOS\");",
+											"",
+											"pm.test(\"Response code should be 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"AutomationResult state should be #complete\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+											"});",
+											"pm.test(\"AutomationResult verdict should be #passed\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#unavailable\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
+											"});",
+											"",
+											"pm.test(\"AutomationResult statusMessage have the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"SUT fetch successful\");",
+											"    if (os == \"windows_bat\"){",
+											"        pm.expect(pm.response.text()).to.include(\"Executing: echo heartbeat1\");",
+											"    } else {",
+											"        pm.expect(pm.response.text()).to.include(\"Executing: echo \\\"heartbeat1\\\"\");",
+											"    }",
+											"});",
+											"pm.test(\"stdout should contain all outputs\", function () {",
+											"    var os = pm.globals.get(\"currentOS\");",
+											"    if (os == \"linux\"){",
+											"        pm.expect(pm.response.text()).to.include(\"<rdf:value>heartbeat1\\n\");",
+											"        pm.expect(pm.response.text()).to.include(\"heartbeat2\\n\");",
+											"        pm.expect(pm.response.text()).to.include(\"heartbeat3\\n\");",
+											"        pm.expect(pm.response.text()).to.include(\"heartbeat4\\n\");",
+											"        pm.expect(pm.response.text()).to.include(\"heartbeat5\\n\");",
+											"    } else {",
+											"        pm.expect(pm.response.text()).to.include(\"<rdf:value>heartbeat1&#xD;\");",
+											"        pm.expect(pm.response.text()).to.include(\"heartbeat2&#xD;\");",
+											"        pm.expect(pm.response.text()).to.include(\"heartbeat3&#xD;\");",
+											"        pm.expect(pm.response.text()).to.include(\"heartbeat4&#xD;\");",
+											"        pm.expect(pm.response.text()).to.include(\"heartbeat5&#xD;\");",
+											"    }",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/automationResults/{{requestId}}",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"automationResults",
 										"{{requestId}}"
 									]
 								}

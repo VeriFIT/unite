@@ -56,7 +56,7 @@ public class AutomationPlanLoading {
      * @throws StoreAccessException When there was an error accessing the triplestore
      * @throws Exception When there was a loading error 
      */
-    public void loadAutomationPlans(File autoPlansDefPath) throws Exception
+    public void loadAutomationPlans(File autoPlansDefPath)
     {
         // load automation plans one by one from the user configuration
         File[] autoPlansDefFiles = findAutomationPlanDefinitionFiles(autoPlansDefPath);

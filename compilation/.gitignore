@@ -1,5 +1,10 @@
 target
 SUT
 
+.classpath
+.settings
+.project
+
 conf
 !conf/VeriFitCompilationDefault.properties
+/bin/

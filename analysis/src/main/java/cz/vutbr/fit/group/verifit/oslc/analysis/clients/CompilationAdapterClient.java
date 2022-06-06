@@ -65,7 +65,8 @@ public class CompilationAdapterClient
 
         // Start of user code getServiceProviderCatalog_init
         ClientBuilder builder = ClientBuilder.newBuilder();
-        builder.register(HttpAuthenticationFeature.basic(username, password.getBytes()));
+        if(VeriFitAnalysisProperties.AUTHENTICATION_ENABLED)
+        	builder.register(HttpAuthenticationFeature.basic(username, password.getBytes()));
         client = new OslcClient(builder);
         // End of user code
 
@@ -87,7 +88,8 @@ public class CompilationAdapterClient
 
         // Start of user code getSUT_init
         ClientBuilder builder = ClientBuilder.newBuilder();
-        builder.register(HttpAuthenticationFeature.basic(username, password.getBytes()));
+        if(VeriFitAnalysisProperties.AUTHENTICATION_ENABLED)
+        	builder.register(HttpAuthenticationFeature.basic(username, password.getBytes()));
         client = new OslcClient(builder);
         // End of user code
 

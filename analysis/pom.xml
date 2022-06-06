@@ -23,6 +23,11 @@
         <swagger-ui.version>3.25.0</swagger-ui.version>
         <!-- Start of user code properties
         -->
+        
+        <!--  default host and port -->
+        <adapter_port>8080</adapter_port>
+        <adapter_host>http://localhost</adapter_host>
+        
         <!-- End of user code
         -->
     </properties>
@@ -63,19 +68,36 @@
         <!-- Specific dependencies -->
         <!-- Start of user code dependencies
         -->
-        
+        <!-- AHT client as jar & other needed dependencies -->
+		<dependency>  
+			<groupId>cz.vutbr.fit.group.verifit.arrowhead.client</groupId>  
+			<artifactId>jersey</artifactId>
+			<version>[0.1.0.qualifier]</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<version>2.25.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.bundles.repackaged</groupId>
+			<artifactId>jersey-guava</artifactId>
+			<version>2.25.1</version>
+		</dependency>
+		
+		
         <!-- shared code module -->
 		<dependency>  
 			<groupId>cz.vutbr.fit.group.verifit.oslc.shared</groupId>  
 			<artifactId>SharedResources</artifactId>
-			<version>0.0.1-SNAPSHOT</version>  
+			<version>[0.0.1-SNAPSHOT]</version>  
 		</dependency>  
 		
         <!-- Unite domain module -->
 		<dependency>  
 			<groupId>cz.vutbr.fit.group.verifit.oslc.domain</groupId>  
 			<artifactId>UniteDomain</artifactId>
-			<version>0.0.1-SNAPSHOT</version>  
+			<version>[0.0.1-SNAPSHOT]</version>  
 		</dependency>  
 		
         <!-- jSEM for plugins -->

@@ -2,7 +2,8 @@
 	"info": {
 		"_postman_id": "0ba65627-1f78-443d-86bd-f1d6866a87b5",
 		"name": "Tutorial",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7000912"
 	},
 	"item": [
 		{
@@ -53,7 +54,7 @@
 			]
 		},
 		{
-			"name": "1) look at resource shapes",
+			"name": "1) look at resource shapes (FYI)",
 			"item": [
 				{
 					"name": "analysis",
@@ -308,7 +309,7 @@
 			]
 		},
 		{
-			"name": "2) choose an Automation Plan (ie. a tool)",
+			"name": "2) choose an Automation Plan (ie. an analysis tool or its configuration)",
 			"item": [
 				{
 					"name": "query Automation Plan",
@@ -538,7 +539,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}:{{compilation_port}}/compilation/services/resources/automationPlans/0\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>First prototype request</dcterms:title>\n\t<dcterms:description>Test</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}:{{compilation_port}}/compilation/services/resources/automationPlans/0\" />\n\t\n    <!-- This parameter specifies where/how to get the SUT source files. Examples are sourceBase64 (files are directly in this request), sourceUrl (URL to download files from), sourceGit (public Git repository to clone, ... -->\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>sourceBase64</oslc:name>\n\t\t\t<rdf:value>TestEchoProgram.cpp\nI2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbihpbnQgYXJnYywgY2hhcioqIGFyZ3YpCnsKCXByaW50ZigiJXNcbiIsIGFyZ3ZbMV0pOwoJcmV0dXJuIDA7Cn0K</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n    <!-- This parameter specifies the command to execute on the SUT source files in order to build it. -->\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>buildCommand</oslc:name>\n\t\t\t<rdf:value>gcc -g TestEchoProgram.cpp -o my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n    <!-- This parameter specifies how to execute the SUT. This command can be used later when executing analysis as a shortcut. -->\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>launchCommand</oslc:name>\n\t\t\t<rdf:value>./my_echo</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
 									"raw": "{{server_address}}:{{compilation_port}}/compilation/services/resources/createAutomationRequest",
@@ -557,7 +558,7 @@
 							"response": []
 						},
 						{
-							"name": "check the producedAutomationResult (look at fit:createdSUT)",
+							"name": "poll the producedAutomationResult till oslc_auto:state is complete (look at fit:createdSUT)",
 							"event": [
 								{
 									"listen": "test",
@@ -565,6 +566,16 @@
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {",
 											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"AutomationResult state should be #complete\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+											"});",
+											"pm.test(\"AutomationResult verdict should be #passed\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#unavailable\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
 											"});"
 										],
 										"type": "text/javascript"
@@ -601,6 +612,14 @@
 										"resources",
 										"automationResults",
 										"{{compilation_reqId}}"
+									],
+									"query": [
+										{
+											"key": "enableInProgressOutputs",
+											"value": "true",
+											"description": "Use this parameter with \"true/false\" to enable/disable inProgress outputs in the Automation Result. If disabled then there will be no stdout/stderr visible until the state is complete. If enabled then current up-to-date stdout/stderr will be visible even while the state is inProgress.",
+											"disabled": true
+										}
 									]
 								}
 							},
@@ -709,7 +728,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>Tutorial title</dcterms:title>\n\t<dcterms:description>Tutorial description</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{analysis_port}}/analysis/services/resources/automationPlans/dummy\" />\n\t<dcterms:creator rdf:resource=\"Title-creator\"/>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value>HelloWorld</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{server_address}}:{{compilation_port}}/compilation/services/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+									"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>Tutorial title</dcterms:title>\n\t<dcterms:description>Tutorial description</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{server_address}}/{{analysis_port}}/analysis/services/resources/automationPlans/dummy\" />\n\t<dcterms:creator rdf:resource=\"Title-creator\"/>\n\t\n    <!--\n        This parameter specifies arguments for the analysis tool to execute. In the case of the Dummy Tool we only need this one parameter called \"arguments\". \n        Proper tools could have their entire command-line interface mapped to these inputPrameters, or there can also be just one which is expected to\n        contain all the tool arguments in a single string (same as writing them by hand on a command-line)\n    -->\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value>HelloWorld</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n    <!-- This parameter specifies which SUT to execute the analysis on -->\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{server_address}}:{{compilation_port}}/compilation/services/resources/sUTs/{{sutId}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 								},
 								"url": {
 									"raw": "{{server_address}}:{{analysis_port}}/analysis/services/resources/createAutomationRequest",
@@ -728,7 +747,7 @@
 							"response": []
 						},
 						{
-							"name": "poll result till oslc_auto:state is complete (look at \"oslc_auto:contribution\"s)",
+							"name": "poll result till oslc_auto:state is complete (look at \"oslc_auto:contribution\"s, e.g. \"stdout\")",
 							"event": [
 								{
 									"listen": "test",
@@ -736,6 +755,16 @@
 										"exec": [
 											"pm.test(\"Response code should be 200 (OK)\", function () {",
 											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"AutomationResult state should be #complete\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#new\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#inProgress\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#complete\\\"/>\");",
+											"});",
+											"pm.test(\"AutomationResult verdict should be #passed\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#unavailable\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:verdict rdf:resource=\\\"http://open-services.net/ns/auto#passed\\\"/>\");",
+											"    pm.expect(pm.response.text()).to.not.include(\"oslc_auto:state rdf:resource=\\\"http://open-services.net/ns/auto#error\\\"/>\");",
 											"});"
 										],
 										"type": "text/javascript"
@@ -772,6 +801,14 @@
 										"resources",
 										"automationResults",
 										"{{analysis_reqId}}"
+									],
+									"query": [
+										{
+											"key": "enableInProgressOutputs",
+											"value": "true",
+											"description": "Use this parameter with \"true/false\" to enable/disable inProgress outputs in the Automation Result. If disabled then there will be no stdout/stderr visible until the state is complete. If enabled then current up-to-date stdout/stderr will be visible even while the state is inProgress.",
+											"disabled": true
+										}
 									]
 								}
 							},
