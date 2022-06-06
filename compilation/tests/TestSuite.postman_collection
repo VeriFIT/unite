@@ -7735,7 +7735,7 @@
 											"} else if (os == \"windows_ps1\") {\r",
 											"    pm.globals.set(\"sleepBuildCommand\", \"echo \\\"heartbeat1\\\"; start-Sleep -Seconds 1; echo \\\"heartbeat2\\\"; start-Sleep -Seconds 1; echo \\\"heartbeat3\\\"; start-Sleep -Seconds 1; echo \\\"heartbeat4\\\"; start-Sleep -Seconds 1; echo \\\"heartbeat5\\\"\");\r",
 											"} else { // os == \"windows_bat\")\r",
-											"    pm.globals.set(\"sleepBuildCommand\", \"echo \\\"heartbeat1\\\" &amp; ping -n 2 127.0.0.1 > nul &amp; echo \\\"heartbeat2\\\" &amp; ping -n 2 127.0.0.1 > nul &amp; echo \\\"heartbeat3\\\" &amp; ping -n 2 127.0.0.1 > nul &amp; echo \\\"heartbeat4\\\" &amp; ping -n 2 127.0.0.1 > nul &amp; echo \\\"heartbeat5\\\"\");\r",
+											"    pm.globals.set(\"sleepBuildCommand\", \"echo heartbeat1&amp; ping -n 2 127.0.0.1 > nul &amp; echo heartbeat2&amp; ping -n 2 127.0.0.1 > nul &amp; echo heartbeat3&amp; ping -n 2 127.0.0.1 > nul &amp; echo heartbeat4&amp; ping -n 2 127.0.0.1 > nul &amp; echo heartbeat5\");\r",
 											"}\r",
 											""
 										],
@@ -7934,6 +7934,8 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"var os = pm.globals.get(\"currentOS\");",
+											"",
 											"pm.test(\"Response code should be 200 (OK)\", function () {",
 											"    pm.response.to.have.status(200);",
 											"});",
@@ -7950,7 +7952,11 @@
 											"",
 											"pm.test(\"AutomationResult statusMessage have the expected value\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"SUT fetch successful\");",
-											"    pm.expect(pm.response.text()).to.include(\"Executing: echo \\\"heartbeat1\\\"\");",
+											"    if (os == \"windows_bat\"){",
+											"        pm.expect(pm.response.text()).to.include(\"Executing: echo heartbeat1\");",
+											"    } else {",
+											"        pm.expect(pm.response.text()).to.include(\"Executing: echo \\\"heartbeat1\\\"\");",
+											"    }",
 											"});",
 											"pm.test(\"stdout should contain all outputs\", function () {",
 											"    var os = pm.globals.get(\"currentOS\");",
@@ -8044,7 +8050,7 @@
 											"} else if (os == \"windows_ps1\") {\r",
 											"    pm.globals.set(\"sleepBuildCommand\", \"echo \\\"heartbeat1\\\"; start-Sleep -Seconds 1; echo \\\"heartbeat2\\\"; start-Sleep -Seconds 1; echo \\\"heartbeat3\\\"; start-Sleep -Seconds 1; echo \\\"heartbeat4\\\"; start-Sleep -Seconds 1; echo \\\"heartbeat5\\\"\");\r",
 											"} else { // os == \"windows_bat\")\r",
-											"    pm.globals.set(\"sleepBuildCommand\", \"echo \\\"heartbeat1\\\" &amp; ping -n 2 127.0.0.1 > nul &amp; echo \\\"heartbeat2\\\" &amp; ping -n 2 127.0.0.1 > nul &amp; echo \\\"heartbeat3\\\" &amp; ping -n 2 127.0.0.1 > nul &amp; echo \\\"heartbeat4\\\" &amp; ping -n 2 127.0.0.1 > nul &amp; echo \\\"heartbeat5\\\"\");\r",
+											"    pm.globals.set(\"sleepBuildCommand\", \"echo heartbeat1&amp; ping -n 2 127.0.0.1 > nul &amp; echo heartbeat2&amp; ping -n 2 127.0.0.1 > nul &amp; echo heartbeat3&amp; ping -n 2 127.0.0.1 > nul &amp; echo heartbeat4&amp; ping -n 2 127.0.0.1 > nul &amp; echo heartbeat5\");\r",
 											"}\r",
 											""
 										],
@@ -8243,6 +8249,8 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"var os = pm.globals.get(\"currentOS\");",
+											"",
 											"pm.test(\"Response code should be 200 (OK)\", function () {",
 											"    pm.response.to.have.status(200);",
 											"});",
@@ -8259,7 +8267,11 @@
 											"",
 											"pm.test(\"AutomationResult statusMessage have the expected value\", function () {",
 											"    pm.expect(pm.response.text()).to.include(\"SUT fetch successful\");",
-											"    pm.expect(pm.response.text()).to.include(\"Executing: echo \\\"heartbeat1\\\"\");",
+											"    if (os == \"windows_bat\"){",
+											"        pm.expect(pm.response.text()).to.include(\"Executing: echo heartbeat1\");",
+											"    } else {",
+											"        pm.expect(pm.response.text()).to.include(\"Executing: echo \\\"heartbeat1\\\"\");",
+											"    }",
 											"});",
 											"pm.test(\"stdout should contain all outputs\", function () {",
 											"    var os = pm.globals.get(\"currentOS\");",
