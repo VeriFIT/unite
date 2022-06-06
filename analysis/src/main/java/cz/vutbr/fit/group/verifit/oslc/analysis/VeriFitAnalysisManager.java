@@ -45,6 +45,8 @@ import cz.vutbr.fit.group.verifit.arrowhead.dto.ArrowheadServiceRegistrationForm
 import cz.vutbr.fit.group.verifit.arrowhead.dto.ArrowheadServiceRegistryEntry;
 import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.analysis.ServiceProviderInfo;
+import cz.vutbr.fit.group.verifit.oslc.analysis.aht.AhtRegistration;
+
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
 import org.eclipse.lyo.oslc.domains.auto.AutomationRequest;
 import org.eclipse.lyo.oslc.domains.auto.AutomationResult;
@@ -128,11 +130,9 @@ public class VeriFitAnalysisManager {
 	static ResourceIdGen AutoRequestIdGen;
 	
 	static ExecutionManager AutoRequestExecManager;
-
-	static ArrowheadServiceRegistryClient ahtClientServiceRegistry;
-	static ArrowheadServiceRegistrationForm ahtFormServiceRegistration;
 	
 	static UnicConfLoader unicConfLoader;
+	static AhtRegistration ahtRegistration;
 	
     // End of user code
     
@@ -874,6 +874,7 @@ public class VeriFitAnalysisManager {
 		// register as an AHT service 
 		if (VeriFitAnalysisProperties.AHT_ENABLED) {		// TODO refactor to a function/class
 			unicConfLoader = new UnicConfLoader();
+			ahtRegistration = new AhtRegistration();
 			
 			try {
 				log.info("Initialization: Registering as an AHT service");
@@ -882,31 +883,8 @@ public class VeriFitAnalysisManager {
 				Map<String,String> unicConfMapForAht = unicConfLoader.loadUnicConfFilesForAht(new File(VeriFitAnalysisProperties.UNIC_CONF_PATH));
 				log.info("Initialization: Loaded UniC configuration files: " + unicConfLoader.getListOfLoadedConf());
 				
-		        // build a client to connect to the AHT service registry
-				ArrowheadClient ahtClient = ArrowheadClientBuilder.newBuilder().certificate(
-					new FileInputStream(Paths.get(
-					VeriFitAnalysisProperties.CERTIFICATES_PATH).resolve(VeriFitAnalysisProperties.AHT_CERTIFICATE).toFile()),	// certificate
-					VeriFitAnalysisProperties.AHT_CERTIFICATE_PASSWORD)															// password
-					.defaultLogger() // logger is only for debugging
-					.build();
-			    ahtClientServiceRegistry = new ArrowheadServiceRegistryClient(ahtClient,
-			    		VeriFitAnalysisProperties.AHT_SERVICE_REGISTRY_HOST,							// host
-			    		Integer.parseInt(VeriFitAnalysisProperties.AHT_SERVICE_REGISTRY_PORT));			// port
-			    
-			    // build a registration form
-			    ahtFormServiceRegistration = new ArrowheadServiceRegistrationForm(
-			    		VeriFitAnalysisProperties.AHT_SERVICE_NAME,					// service name
-			    		VeriFitAnalysisProperties.AHT_SYSTEM_NAME,					// system name 
-			    		VeriFitAnalysisProperties.ADAPTER_HOST,						// address
-			    		Integer.parseInt(VeriFitAnalysisProperties.ADAPTER_PORT),	// port
-			    		VeriFitAnalysisProperties.ADAPTER_CONTEXT,					// uri
-			    		unicConfMapForAht);											// metadata
-	
-			    // unregister and then register
-			    ahtClientServiceRegistry.unregister(ahtFormServiceRegistration);
-			    ArrowheadServiceRegistryEntry ahtEntry = ahtClientServiceRegistry.register(ahtFormServiceRegistration);
-			    // TODO check result using ahtEntry
-			    
+				// send a registration form to the AHT registry
+				ahtRegistration.register(unicConfMapForAht);
 				log.info("Initialization: Registered successfully as an AHT service ");
 			    
 			} catch (UnrecoverableKeyException | KeyManagementException | KeyStoreException | NoSuchAlgorithmException
@@ -925,10 +903,10 @@ public class VeriFitAnalysisManager {
         // Start of user code contextDestroyed
 		log.info("Shutting down");
 		
-		// register as an AHT service 
+		// unregister as an AHT service 
 		if (VeriFitAnalysisProperties.AHT_ENABLED) {
 			log.info("Shutdown: Un-registering as an AHT service");
-			Boolean res =  ahtClientServiceRegistry.unregister(ahtFormServiceRegistration);
+			Boolean res = ahtRegistration.unregister();
 			if (res == false){
 				log.warn("AHT service was not un-registered!");
 			}

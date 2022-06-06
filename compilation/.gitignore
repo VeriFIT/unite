@@ -7,3 +7,4 @@ SUT
 
 conf
 !conf/VeriFitCompilationDefault.properties
+/bin/

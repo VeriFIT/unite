@@ -11,3 +11,4 @@ conf
 !conf/BuiltInAnalysisTools
 !conf/BuiltInPluginFiltersConfiguration
 !conf/VeriFitAnalysisDefault.properties
+/bin/
