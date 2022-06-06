@@ -1,4 +1,4 @@
-### v.2.8.0
+### v2.8.0
 - added first version of AHT framework service registration
 - All Contribution values (e.g. file contents inlined as part of a contribution) are now stripped of any potential ANSI
   escape sequences limited only to XML 1.0 legal characters. Any illegal characters are removed when loading the contribution's
