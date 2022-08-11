@@ -11,6 +11,9 @@ RUN git clone --depth 1 --no-single-branch https://pajda.fit.vutbr.cz/verifit/un
     cd unite && git config pull.rebase false && cd .. && \
     /bin/bash ./unite/build.sh
 
+# make the image smaller
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # default ports
 EXPOSE 8080
 EXPOSE 8081

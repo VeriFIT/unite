@@ -1,3 +1,8 @@
+### v2.8.1
+- added cbmc docker
+- added symbiotic docker
+- changed the unite-base docker file to clean apt-get cache to make it smaller
+
 ### v2.8.0
 - added first version of AHT framework service registration
 - All Contribution values (e.g. file contents inlined as part of a contribution) are now stripped of any potential ANSI
