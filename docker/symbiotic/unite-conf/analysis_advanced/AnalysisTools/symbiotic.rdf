@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:fit="http://fit.vutbr.cz/group/verifit/oslc/ns/universal-analysis#"
+    xmlns:oslc_data="http://open-services.net/ns/servicemanagement/1.0/"
+    xmlns:oslc="http://open-services.net/ns/core#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:oslc_auto="http://open-services.net/ns/auto#">
+
+     <oslc_auto:AutomationPlan>
+        <dcterms:identifier>symbiotic</dcterms:identifier>
+        <oslc_auto:usesExecutionEnvironment rdf:resource="https://github.com/staticafi/symbiotic"/>
+        <dcterms:title rdf:parseType="Literal">Symbiotic</dcterms:title>
+        <dcterms:creator rdf:resource="https://pajda.fit.vutbr.cz/ivasicek"/>
+        <dcterms:description rdf:parseType="Literal">Run Symbiotic</dcterms:description>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>arguments</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+                <dcterms:description rdf:parseType="Literal">Speciafy any arguments.</dcterms:description>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>files</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</fit:commandlinePosition>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+                <dcterms:description rdf:parseType="Literal">Speciafy which files to analyze.</dcterms:description>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+    </oslc_auto:AutomationPlan>
+</rdf:RDF>
