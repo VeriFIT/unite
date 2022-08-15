@@ -1,12 +1,15 @@
 FROM unite-base:latest
 
 # install anaconda
-RUN apt-get install -y m4 wget && \
-    git clone --depth 1 --recurse-submodules --shallow-submodules https://pajda.fit.vutbr.cz/anaconda/anaconda.git && \
-    cd anaconda && \
-    ./tools/build.sh --setup-environment && \
-    ./tools/build.sh all && \
-    cd ..
+RUN apt-get update && \
+    apt-get install -y m4 wget
+RUN git clone --depth 1 --recurse-submodules --shallow-submodules https://pajda.fit.vutbr.cz/anaconda/anaconda.git
+#RUN cd anaconda
+#RUN cd anaconda && ./tools/build.sh --setup-environment
+#RUN cd anaconda && ./tools/build.sh all
+#RUN echo 0 > /proc/sys/kernel/yama/ptrace_scope
+
+# TODO currently broken
 
 # make the image smaller
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*

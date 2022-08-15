@@ -32,6 +32,8 @@ RUN apt-get install -y python3 pip libfreetype-dev libmagic1 && \
 # install cbmc
 RUN apt-get install -y cbmc
 
+# TODO add anaconda nad symbiotic, once their individual docker images are figured out
+
 # make the image smaller
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 

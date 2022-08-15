@@ -11,7 +11,7 @@ build-clean-all: dependency-clean
 	docker build --no-cache -t $(image):latest .
 
 run-new:
-	docker run -p 8080:8080 -p 8081:8081 --name $(container) $(image)
+	docker run -p 8080:8080 -p 8081:8081 --name $(container) --privileged $(image)
 
 run-existing:
 	docker start -a $(container)

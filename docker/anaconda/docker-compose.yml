@@ -6,6 +6,9 @@ services:
     
     restart: unless-stopped
 
+    # needed by anaconda (/proc/sys/kernel/yama/ptrace_scope)
+    privileged: true
+
     # map ports based on your configuration (from conf. files or env variables here)
     # currently the outside and inside HOST&PORT has to be the same!
     ports:
