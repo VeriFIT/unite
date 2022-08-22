@@ -1,0 +1,121 @@
+version: "3"
+services:
+
+  unite-infer:
+    image: unite-infer
+    build: ./facebook-infer
+    restart: unless-stopped
+    ports:
+        - "9090:9090"
+        - "9091:9091"
+    environment:
+        - UNITE_ANALYSIS_PORT=9090
+        - UNITE_COMPILATION_PORT=9091
+        - UNITE_ANALYSIS_HOST=http://localhost
+        - UNITE_COMPILATION_HOST=http://localhost
+
+  unite-theta:
+    image: unite-theta
+    build: ./theta
+    restart: unless-stopped
+    ports:
+        - "9092:9092"
+        - "9093:9093"
+    environment:
+        - UNITE_ANALYSIS_PORT=9092
+        - UNITE_COMPILATION_PORT=9093
+        - UNITE_ANALYSIS_HOST=http://localhost
+        - UNITE_COMPILATION_HOST=http://localhost
+
+  unite-valgrind:
+    image: unite-valgrind
+    build: ./valgrind
+    restart: unless-stopped
+    ports:
+        - "9094:9094"
+        - "9095:9095"
+    environment:
+        - UNITE_ANALYSIS_PORT=9094
+        - UNITE_COMPILATION_PORT=9095
+        - UNITE_ANALYSIS_HOST=http://localhost
+        - UNITE_COMPILATION_HOST=http://localhost
+
+# TODO anaconda is currently broken
+#  unite-anaconda:
+#    image: unite-anaconda
+#    build: ./anaconda
+#    restart: unless-stopped
+#    privileged: true
+#    ports:
+#        - "9096:9096"
+#        - "9097:9097"
+#    environment:
+#        - UNITE_ANALYSIS_PORT=9096
+#        - UNITE_COMPILATION_PORT=9097
+#        - UNITE_ANALYSIS_HOST=http://localhost
+#        - UNITE_COMPILATION_HOST=http://localhost
+
+  unite-frama-c:
+    image: unite-frama-c
+    build: ./frama-c
+    restart: unless-stopped
+    ports:
+        - "9098:9098"
+        - "9099:9099"
+    environment:
+        - UNITE_ANALYSIS_PORT=9098
+        - UNITE_COMPILATION_PORT=9099
+        - UNITE_ANALYSIS_HOST=http://localhost
+        - UNITE_COMPILATION_HOST=http://localhost
+  
+  unite-perun:
+    image: unite-perun
+    build: ./perun
+    restart: unless-stopped
+    ports:
+        - "9100:9100"
+        - "9101:9101"
+    environment:
+        - UNITE_ANALYSIS_PORT=9100
+        - UNITE_COMPILATION_PORT=9101
+        - UNITE_ANALYSIS_HOST=http://localhost
+        - UNITE_COMPILATION_HOST=http://localhost
+
+  unite-grep:
+    image: grep
+    build: ./grep
+    restart: unless-stopped
+    ports:
+        - "9102:9102"
+        - "9103:9103"
+    environment:
+        - UNITE_ANALYSIS_PORT=9102
+        - UNITE_COMPILATION_PORT=9103
+        - UNITE_ANALYSIS_HOST=http://localhost
+        - UNITE_COMPILATION_HOST=http://localhost
+  
+  unite-symbiotic:
+    image: unite-symbiotic
+    build: ./symbiotic
+    restart: unless-stopped
+    ports:
+        - "9104:9104"
+        - "9105:9105"
+    environment:
+        - UNITE_ANALYSIS_PORT=9104
+        - UNITE_COMPILATION_PORT=9105
+        - UNITE_ANALYSIS_HOST=http://localhost
+        - UNITE_COMPILATION_HOST=http://localhost
+
+  unite-cbmc:
+    image: unite-cbmc
+    build: ./cbmc
+    restart: unless-stopped
+    ports:
+        - "9106:9106"
+        - "9107:9107"
+    environment:
+        - UNITE_ANALYSIS_PORT=9106
+        - UNITE_COMPILATION_PORT=9107
+        - UNITE_ANALYSIS_HOST=http://localhost
+        - UNITE_COMPILATION_HOST=http://localhost
