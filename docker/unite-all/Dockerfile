@@ -32,7 +32,17 @@ RUN apt-get install -y python3 pip libfreetype-dev libmagic1 && \
 # install cbmc
 RUN apt-get install -y cbmc
 
-# TODO add anaconda nad symbiotic, once their individual docker images are figured out
+# install symbiotic
+RUN apt-get update && \
+    apt-get install -y git cmake make llvm zlib1g-dev clang g++ python3 python curl wget rsync unzip gcc-multilib xz-utils libz3-dev libsqlite3-dev && \
+    git clone --depth 1 --no-single-branch  https://github.com/staticafi/symbiotic && \
+    git config --global user.email "anonymous@email.com" && \
+    git config --global user.name "anonymous" && \
+    cd symbiotic && \
+    ./build.sh -j4 && \
+    ln -s "/symbiotic/scripts/symbiotic" "/usr/local/bin/symbiotic"
+
+# TODO add anaconda once its docker images are figured out
 
 # make the image smaller
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*

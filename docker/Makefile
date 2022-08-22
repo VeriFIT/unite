@@ -7,7 +7,7 @@ build-all:
 	$(MAKE) -C grep build
 	$(MAKE) -C perun build
 	$(MAKE) -C cbmc build
-#	$(MAKE) -C symbiotic build
+	$(MAKE) -C symbiotic build
 # 	$(MAKE) -C anaconda build
 
 build-all-clean:
@@ -19,7 +19,7 @@ build-all-clean:
 	$(MAKE) -C grep build-clean
 	$(MAKE) -C perun build-clean
 	$(MAKE) -C cbmc build-clean
-#	$(MAKE) -C symbiotic build-clean
+	$(MAKE) -C symbiotic build-clean
 # 	$(MAKE) -C anaconda build-clean
 
 build-all-as-one:
@@ -38,7 +38,7 @@ up-all:
 	$(MAKE) -C grep up
 	$(MAKE) -C perun up
 	$(MAKE) -C cbmc up
-#	$(MAKE) -C symbiotic up
+	$(MAKE) -C symbiotic up
 #	$(MAKE) -C anaconda up
 
 down-all:
@@ -49,7 +49,7 @@ down-all:
 	$(MAKE) -C grep down
 	$(MAKE) -C perun down
 	$(MAKE) -C cbmc down
-#	$(MAKE) -C symbiotic down
+	$(MAKE) -C symbiotic down
 # 	$(MAKE) -C anaconda down
 
 up-one:
