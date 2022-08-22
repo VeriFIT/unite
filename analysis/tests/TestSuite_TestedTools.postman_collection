@@ -4403,7 +4403,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>test request</dcterms:title>\n\t<dcterms:description>Testing a tool through Unite</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{analysis_provider}}/services/resources/automationPlans/symbiotic\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value></rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>files</oslc:name>\n\t\t\t<rdf:value>*.c</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:dcterms=\"http://purl.org/dc/terms/\"\n         xmlns:oslc=\"http://open-services.net/ns/core#\"\n\t\t xmlns:oslc_auto=\"http://open-services.net/ns/auto#\">\n\n  <oslc_auto:AutomationRequest>\n\t<dcterms:title>test request</dcterms:title>\n\t<dcterms:description>Testing a tool through Unite</dcterms:description>\n\t<oslc_auto:executesAutomationPlan rdf:resource=\"{{analysis_provider}}/services/resources/automationPlans/symbiotic\" />\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>exit-on-error</oslc:name>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>symb-timeout</oslc:name>\n\t\t\t<rdf:value>60</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>verifier</oslc:name>\n\t\t\t<rdf:value>klee</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>arguments</oslc:name>\n\t\t\t<rdf:value></rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>files</oslc:name>\n\t\t\t<rdf:value>*.c</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\t\n\t<oslc_auto:inputParameter>\n\t\t<oslc_auto:ParameterInstance>\n\t\t\t<oslc:name>SUT</oslc:name>\n\t\t\t<rdf:value>{{SUT}}</rdf:value>\n\t\t</oslc_auto:ParameterInstance>\n\t</oslc_auto:inputParameter>\n\n\n  </oslc_auto:AutomationRequest>\n\n</rdf:RDF>"
 						},
 						"url": {
 							"raw": "{{analysis_provider}}/services/resources/createAutomationRequest",
@@ -4528,10 +4528,9 @@
 									"});",
 									"pm.test(\"AutomationResult analysis stdout should have the expected value\", function () {",
 									"    pm.expect(pm.response.text()).to.include(\"INFO: Starting verification\");",
-									"    pm.expect(pm.response.text()).to.include(\"KLEE: ERROR: /unite/compilation/SUT/1/test1.c:27: ASSERTION FAIL:\");",
-									"    pm.expect(pm.response.text()).to.include(\"INFO: Verification time:\");",
-									"    pm.expect(pm.response.text()).to.include(\"Error: ASSERTION FAIL: a[x] <= a[y]\");",
-									"    pm.expect(pm.response.text()).to.include(\"Error found.\");",
+									"    pm.expect(pm.response.text()).to.include(\"Error: ASSERTION FAIL: a[x]\");",
+									"    pm.expect(pm.response.text()).to.include(\"test1.c:27\");",
+									"    pm.expect(pm.response.text()).to.include(\"RESULT: false(unreach-call)\");",
 									"});"
 								],
 								"type": "text/javascript"

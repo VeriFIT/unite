@@ -18,6 +18,49 @@
 
         <oslc_auto:parameterDefinition>
             <oslc_auto:ParameterDefinition>
+                <oslc:name>exit-on-error</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--exit-on-error</fit:valuePrefix>
+                <dcterms:description rdf:parseType="Literal">Set KLEE to exit right after encountering the first error.</dcterms:description>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+                <oslc:allowedValue></oslc:allowedValue>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>symb-timeout</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--timeout=</fit:valuePrefix>
+                <dcterms:description rdf:parseType="Literal">Set a timeout in seconds in symbiotic</dcterms:description>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+        
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>verifier</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--verifier=</fit:valuePrefix>
+                <dcterms:description rdf:parseType="Literal">Select which tool to use in symbiotic</dcterms:description>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+                <oslc:allowedValue>klee</oslc:allowedValue>
+                <!--
+                <oslc:allowedValue>cbmc</oslc:allowedValue>
+                <oslc:allowedValue>cpachecker</oslc:allowedValue>
+                <oslc:allowedValue>seahorn</oslc:allowedValue>
+                <oslc:allowedValue>ceagle</oslc:allowedValue>
+                <oslc:allowedValue>skink</oslc:allowedValue>
+                <oslc:allowedValue>smack</oslc:allowedValue>
+                -->
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
                 <oslc:name>arguments</oslc:name>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
