@@ -1,4 +1,24 @@
-### v2.8.1
+### v3.0.0
+- added a way to force default values to not be used
+- changed the semantics of input parameters
+  - null values (parameter without value) are now allowed and are used to force the default value of the parameter to not be used (if one is defined)
+  - parameter definition value types for tool command line parameters now have meaning
+    -  string - Value of the parameter will be used as part of the string to execute (this was the only behavior so far)
+    -  bool - Only accept true/false values and have new semantics. The value itself will not be used as part of the string to execute, only the value prefix will.
+              This allows parameters such as "--help" to have a default value of "true" and then be disabled if requested by setting the value to "false".
+              This was previously impossible because such parameters used empty values, and when the empty value was set as the default there was no way to unset it during requests.
+              Boolean value type now has a check for valid values.
+- analysis sub-adapter
+  - added basic validation for automation plan definition files
+  - common parameter definitions now do not have default values
+  - renamed toolCommand parameter to noToolCommand and reversed its values
+  - dummy tool default values changed
+  - added a parameter to GET automation plan capabilities to hide common parameter definitions
+  - Parameters launchSUT and SUTbuildCommand are now bool value types
+- compilation sub-adapter
+  - renamed compile parameter to noCompilation and reversed its values 
+- updated all automation plans in dockers to match the new boolean semantics
+
 - added cbmc docker
 - added symbiotic docker
 - changed the unite-base docker file to clean apt-get cache to make it smaller

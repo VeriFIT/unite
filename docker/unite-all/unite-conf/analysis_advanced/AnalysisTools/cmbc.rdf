@@ -22,7 +22,7 @@
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
                 <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-                <dcterms:description rdf:parseType="Literal">Speciafy any arguments.</dcterms:description>
+                <dcterms:description rdf:parseType="Literal">Specify any arguments.</dcterms:description>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
 
@@ -32,7 +32,7 @@
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</fit:commandlinePosition>
                 <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-                <dcterms:description rdf:parseType="Literal">Speciafy which files to analyze.</dcterms:description>
+                <dcterms:description rdf:parseType="Literal">Specify which files to analyze.</dcterms:description>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
     </oslc_auto:AutomationPlan>

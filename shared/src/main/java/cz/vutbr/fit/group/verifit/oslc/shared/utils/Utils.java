@@ -259,7 +259,8 @@ public class Utils {
 	
 	/**
 	 * TODO make into a class
-	 * Checks that all input parameters are valid (occurs, allowed value) that there are no unknown parameters and creates output parameters using default values.
+	 * Checks that all input parameters are valid (occurs, allowed value, valuetype) that there are no unknown parameters and creates output parameters using default values.
+	 * Input parameters can have null values to force default values to not be used, in this case only one instance of the parameter is allowed even if the allowed occurrence is many.
 	 * @param inputParameters
 	 * @param parameterDefinitions
 	 * @return Output parameters for an AutomationResult
@@ -274,47 +275,67 @@ public class Utils {
 		{				
 			// find the corresponding autoRequest input parameter to check allowed values
 			boolean matched = false;
+			int nMatches = 0;
+			boolean nullValueSubmitted = false;
 			for (ParameterInstance submittedParam : inputParameters)
-			{				
+			{		
 				if (definedParam.getName().equals(submittedParam.getName()))
-				{		
-					// check if the value is allowed, and check for empty value
+				{					
+					// keep track of if a null value was submitted
+					if (submittedParam.getValue() == null)
+					{
+						nullValueSubmitted = true;
+					}
+					
+					// if there are allowed values defined, then the submitted value needs to match to one of them
+					// if there are no allowed values defined, then the submitted value has no restrictions
 					Boolean validValue = true;
-					Boolean emptyValueAllowed = false;
-					if (definedParam.getAllowedValue() != null && definedParam.getAllowedValue().size() > 0)
+					if (definedParam.getAllowedValue() != null && definedParam.getAllowedValue().size() > 0 // if there are allowed values defined
+						&& submittedParam.getValue() != null )												// and the submitted value is not null
 					{
 						validValue = false;
 						for (String allowedValue : definedParam.getAllowedValue())
 						{
-							if (allowedValue.isEmpty())
-							{
-								emptyValueAllowed = true;
-							}		
-							
-							if (allowedValue.isEmpty() && submittedParam.getValue() == null)
-							{
-								validValue = true;
-								break;
-							}
-							else if (allowedValue.equals(submittedParam.getValue()))
+							if (allowedValue.equals(submittedParam.getValue()))
 							{
 								validValue = true;
 								break;
 							}
 						}
 					}
-					if (submittedParam.getValue() == null && !emptyValueAllowed)
-					{
-						throw new OslcResourceException("parameter " + submittedParam.getName() + " is missing a value");
-					}
 					if (!validValue)
 					{
 						throw new OslcResourceException("value '" + submittedParam.getValue() + "' not allowed for the '" + definedParam.getName() + "' parameter");
 					}
 					
+					// check value type
+					if (definedParam.getValueType() != null && !definedParam.getValueType().isEmpty() && submittedParam.getValue() != null)
+					{
+						Link valueType = definedParam.getValueType().iterator().next();
+						if (valueType.getValue().equals(OslcValues.OSLC_VAL_TYPE_BOOL.getValue()))
+						{
+							if (!submittedParam.getValue().equalsIgnoreCase("false") && !submittedParam.getValue().equalsIgnoreCase("true"))
+							{
+								throw new OslcResourceException("value '" + submittedParam.getValue() + "' is not the right type for the '" + definedParam.getName() + "' parameter -- expected boolean");
+							}
+						}
+						
+						// TODO check other types
+					}
+					
+					
 					matched = true;
+					nMatches++;
 				}
 			}
+			
+
+			// if a null value was submitted then only one input parameter instance is allowed for this param definition
+			if (nullValueSubmitted == true && nMatches > 1)
+			{
+				throw new OslcResourceException("multiple input parameter instances were submitted for parameter '" + definedParam.getName() + "' when one of the instance's value was null -- a null value can only be used when a single instance is submitted");
+			}
+			
 			// try to use the default value if no matching input param found
 			if (!matched && definedParam.getDefaultValue() != null)
 			{
@@ -328,23 +349,28 @@ public class Utils {
 			}
 			
 			// check parameter occurrences
-			Boolean paramMissing = false;
 			Link paramOccurs = definedParam.getOccurs();
 			if (paramOccurs.equals(OslcValues.OSLC_OCCURS_ONE)) {
-				// TODO check for more then one when there should be exactly one
 				if (!matched)
-					paramMissing = true;
+					throw new OslcResourceException("'" + definedParam.getName() + "' required input parameter missing");
+				else if (nMatches > 1)
+					throw new OslcResourceException("'" + definedParam.getName() + "' input parameter can only occur at most once");
+				else if (nullValueSubmitted)
+					throw new OslcResourceException("'" + definedParam.getName() + "' required input parameter missing (submitted with a null value)");
+				
 			} else if (paramOccurs.equals(OslcValues.OSLC_OCCURS_ONEorMany)) {
 				if (!matched)
-					paramMissing = true;				
+					throw new OslcResourceException("'" + definedParam.getName() + "' required input parameter missing");
+				else if (nullValueSubmitted)
+					throw new OslcResourceException("'" + definedParam.getName() + "' required input parameter missing (submitted with a null value)");
+				
 			} else if (paramOccurs.equals(OslcValues.OSLC_OCCURS_ZEROorONE)) {
-				// TODO check for more then one when there should be max one
+				if (nMatches > 1)
+					throw new OslcResourceException("'" + definedParam.getName() + "' input parameter can only occur at most once");
+				
 			} else if (paramOccurs.equals(OslcValues.OSLC_OCCURS_ZEROorMany)) {
-				// not relevant
+				// not relevant, no checks needed
 			}
-			
-			if (paramMissing == true)
-				throw new OslcResourceException("'" + definedParam.getName() + "' input parameter missing");
 		}
 		
 		// check that there were no unknown input parameters

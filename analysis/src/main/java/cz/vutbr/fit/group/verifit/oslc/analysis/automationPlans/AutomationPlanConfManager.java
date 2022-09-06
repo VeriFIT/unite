@@ -84,25 +84,25 @@ public class AutomationPlanConfManager {
 
     public static class AutomationPlanConf {
     	private String identifier;
-        private String launchCommand;
+        private String toolLaunchCommand;
         private String toolSpecificArgs;
         private Boolean oneInstanceOnly;
         private Map<String, IFilter> filters; 
 
-        public AutomationPlanConf(String identifier, String launchCommand, String toolSpecificArgs, Boolean oneInstanceOnly) {
+        public AutomationPlanConf(String identifier, String toolLaunchCommand, String toolSpecificArgs, Boolean oneInstanceOnly) {
         	this.identifier = identifier;
-            this.launchCommand = launchCommand;
+            this.toolLaunchCommand = toolLaunchCommand;
             this.toolSpecificArgs = toolSpecificArgs;
             this.oneInstanceOnly = oneInstanceOnly;
             this.filters = new HashMap<String, IFilter>();
         }
 
-        public void setLaunchCommand(String s) {
-        	this.launchCommand = s;
+        public void setToolLaunchCommand(String s) {
+        	this.toolLaunchCommand = s;
         }
         
-        public String getLaunchCommand() {
-            return launchCommand;
+        public String getToolLaunchCommand() {
+            return toolLaunchCommand;
         }
 
         public String getToolSpecificArgs() {

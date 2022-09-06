@@ -60,8 +60,8 @@
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
                 <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--stacktrace</fit:valuePrefix>
                 <dcterms:description rdf:parseType="Literal">Enable more detailed error reports for diagnosing errors.</dcterms:description>
-                <oslc:allowedValue></oslc:allowedValue> <!-- only empty value is allowed -->
-                <oslc:defaultValue></oslc:defaultValue> <!-- will be used by default -->
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+                <oslc:defaultValue>true</oslc:defaultValue>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
 

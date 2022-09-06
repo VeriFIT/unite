@@ -104,7 +104,7 @@ public class SutDeploy extends RequestRunner
 			String paramBuildCommand =  null;
 			String paramLaunchCommand =  null;
 			String paramUnpackZip =  null;
-			String paramCompile =  null;
+			String paramNoCompilation =  null;
 			
 			// extract values from parameters
 			for (ExecutionParameter param : this.execParameters)
@@ -116,7 +116,7 @@ public class SutDeploy extends RequestRunner
 				else if (param.getName().equals("buildCommand")) paramBuildCommand = param.getValue();
 				else if (param.getName().equals("launchCommand")) paramLaunchCommand = param.getValue();
 				else if (param.getName().equals("unpackZip")) paramUnpackZip = param.getValue();
-				else if (param.getName().equals("compile")) paramCompile = param.getValue();
+				else if (param.getName().equals("noCompilation")) paramNoCompilation = param.getValue();
 				
 			}
 			
@@ -202,7 +202,9 @@ public class SutDeploy extends RequestRunner
 			sutAsContribution.addValueType(new Link (new URI (VeriFitCompilationProperties.PATH_RESOURCE_SHAPES + "sUT")));
 			
 			// init compilation toggle flag
-			Boolean performCompilation = Boolean.valueOf(paramCompile);
+			Boolean performCompilation = true;
+			if (paramNoCompilation != null && Boolean.valueOf(paramNoCompilation))
+				performCompilation = false;
 			Link executionVerdict = OslcValues.AUTOMATION_VERDICT_PASSED;
 			
 			// fetch source file
@@ -218,7 +220,7 @@ public class SutDeploy extends RequestRunner
 				fetchLog.setValue("TODO currently only shows error messages");
 				
 			    // unzip the SUT if requested
-			    if (paramUnpackZip.equalsIgnoreCase("true"))
+			    if (paramUnpackZip != null && paramUnpackZip.equalsIgnoreCase("true"))
 			    {
 			    	File sutZipFile = folderPath.resolve(filenameSUT).toFile();
 			    	Utils.unzipFile(folderPath, sutZipFile);

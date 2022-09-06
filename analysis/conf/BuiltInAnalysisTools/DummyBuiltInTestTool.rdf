@@ -34,6 +34,7 @@
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
                 <oslc:defaultValue>0</oslc:defaultValue>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
                 <dcterms:description rdf:parseType="Literal">Used to pass a sleep duration in seconds to the dummy tool</dcterms:description>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
@@ -63,7 +64,7 @@
             <oslc_auto:ParameterDefinition>
                 <oslc:name>launchSUT</oslc:name>
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</fit:commandlinePosition>
-                <oslc:defaultValue>True</oslc:defaultValue>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
                 <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position</dcterms:description>
             </oslc_auto:ParameterDefinition>
@@ -76,7 +77,7 @@
             <oslc_auto:ParameterDefinition>
                 <oslc:name>SUTbuildCommand</oslc:name>
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</fit:commandlinePosition>
-                <oslc:defaultValue>True</oslc:defaultValue>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
                 <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Plan to place the SUT launch command at this command line position</dcterms:description>
             </oslc_auto:ParameterDefinition>

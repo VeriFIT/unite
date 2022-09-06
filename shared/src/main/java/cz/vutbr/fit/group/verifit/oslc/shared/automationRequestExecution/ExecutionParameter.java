@@ -16,6 +16,8 @@ import java.util.Set;
 import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
 import org.eclipse.lyo.oslc.domains.auto.ParameterInstance;
 
+import cz.vutbr.fit.group.verifit.oslc.OslcValues;
+
 public class ExecutionParameter {
 	private String name;
 	private String value;
@@ -39,7 +41,15 @@ public class ExecutionParameter {
 	private ExecutionParameter(ParameterInstance paramInst, ParameterDefinition paramDef)
 	{
 		this.name = paramInst.getName();
-		this.value = (paramInst.getValue() == null ? "" : paramInst.getValue());
+		this.value = paramInst.getValue();
+		this.valuePrefix = (paramDef.getValuePrefix() == null ? "" : paramDef.getValuePrefix());
+		this.cmdPosition = paramDef.getCommandlinePosition();
+	}
+	
+	private ExecutionParameter(ParameterInstance paramInst, ParameterDefinition paramDef, String value)
+	{
+		this.name = paramInst.getName();
+		this.value = value;
 		this.valuePrefix = (paramDef.getValuePrefix() == null ? "" : paramDef.getValuePrefix());
 		this.cmdPosition = paramDef.getCommandlinePosition();
 	}
@@ -83,13 +93,35 @@ public class ExecutionParameter {
 		
 		for (ParameterInstance outParam : outputParameters)
 		{
-			ParameterDefinition paramDef = findParamDefForAParamInstance(outParam, parameterDefinitions);
-			executionParameters.add(new ExecutionParameter(outParam, paramDef));
+			if (outParam.getValue() != null)	// parameters with null values will not get translated into execution parameters
+			{	
+				ParameterDefinition paramDef = findParamDefForAParamInstance(outParam, parameterDefinitions);	
+				// command line parameters with boolean values have special semantics (false means dont include parameter at all, true means use value prefix only)
+				if (paramDef.getCommandlinePosition() != null && paramDef.getValueType().iterator().next().getValue().equals(OslcValues.OSLC_VAL_TYPE_BOOL.getValue()))
+				{
+					if (outParam.getValue().equalsIgnoreCase("true"))
+						executionParameters.add(new ExecutionParameter(outParam, paramDef, ""));
+				}
+				else
+					executionParameters.add(new ExecutionParameter(outParam, paramDef));
+			}
 		}
+		
+		// the same copied for input parameters
 		for (ParameterInstance inParam : inputParameters)
 		{
-			ParameterDefinition paramDef = findParamDefForAParamInstance(inParam, parameterDefinitions);
-			executionParameters.add(new ExecutionParameter(inParam, paramDef));
+			if (inParam.getValue() != null)	// parameters with null values will not get translated into execution parameters
+			{
+				ParameterDefinition paramDef = findParamDefForAParamInstance(inParam, parameterDefinitions);	
+				// command line parameters with boolean values have special semantics (false means dont include parameter at all, true means use value prefix only)
+				if (paramDef.getCommandlinePosition() != null && paramDef.getValueType().iterator().next().getValue().equals(OslcValues.OSLC_VAL_TYPE_BOOL.getValue()))
+				{
+					if (inParam.getValue().equalsIgnoreCase("true"))
+						executionParameters.add(new ExecutionParameter(inParam, paramDef, ""));
+				}
+				else
+					executionParameters.add(new ExecutionParameter(inParam, paramDef));
+			}
 		}
 		
 		return executionParameters;

@@ -434,29 +434,28 @@ public class VeriFitCompilationManager {
     }
     
     /**
-	 * Check that the build command is defined if the compilation parameter is set to true
+	 * Check that the build command is defined if compilation is not disabled
 	 * @param autoRequest			Automation Request with parameters to check
 	 * @throws OslcResourceException 	When the compilation parameter is true and the build command is null
 	 */
     public static void checkSutDeployCompilationAndBuildParams (AutomationRequest autoRequest) throws OslcResourceException
     {
-		// count the "source.*" input params
-		Boolean compileSet = true;
+		Boolean compileDisabled = false;
 		Boolean buildCmdFound = false;
     	for (ParameterInstance submittedParam : autoRequest.getInputParameter())
 		{				
-			if (submittedParam.getName().equals("compile"))
+			if (submittedParam.getName().equals("noCompilation"))
 			{
-				compileSet = Boolean.valueOf(submittedParam.getValue());
+				compileDisabled = Boolean.valueOf(submittedParam.getValue());
 			}
-			else if (submittedParam.getName().equals("buildCommand"))
+			else if (submittedParam.getName().equals("buildCommand") && submittedParam.getValue() != null)
 			{
 				buildCmdFound = true;
 			}
 		}
     	
-    	if (compileSet == true && buildCmdFound == false)
-    		throw new OslcResourceException("compilation is enabled, but the buildCommand is missing.");
+    	if (compileDisabled != true && buildCmdFound == false)
+    		throw new OslcResourceException("compilation is enabled, but the buildCommand is missing or is missing a value.");
     	else
     		return;
     }
