@@ -99,6 +99,7 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.FilterManager;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -1677,6 +1678,30 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code getAutomationPlan
+        
+        /*
+         *	Allows clients to see a smaller version of a tool automation plan by hiding all common parameter definitions.
+         *	Only shows parameters which have a command-line position, therefore only the tool interface parameters defined during configuration.
+         *	An exception is the SUT parameter which should be visible at all times. 
+         */
+        if (httpServletRequest != null)
+        {
+        	String commandlineParametersOnlyParam = httpServletRequest.getParameter("commandlineParametersOnly");
+        	if (commandlineParametersOnlyParam != null && commandlineParametersOnlyParam.equalsIgnoreCase("true"))
+        	{
+        		Set<ParameterDefinition> origParamDefs = aResource.getParameterDefinition();
+        		Set<ParameterDefinition> filteredParamDefs = new HashSet<ParameterDefinition>();
+        		for (ParameterDefinition paramDef : origParamDefs)
+        		{
+        			if (paramDef.getCommandlinePosition() != null || 
+        				(paramDef.getName() != null && paramDef.getName().equals("SUT")))
+        			{
+        				filteredParamDefs.add(paramDef);
+        			}
+        		}
+        		aResource.setParameterDefinition(filteredParamDefs);
+        	}
+        }
         // End of user code
         return aResource;
     }

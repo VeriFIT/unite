@@ -13,7 +13,7 @@
   - common parameter definitions now do not have default values
   - renamed toolCommand parameter to noToolCommand and reversed its values
   - dummy tool default values changed
-  - added a parameter to GET automation plan capabilities to hide common parameter definitions
+  - added a parameter "commandlineParametersOnly" to GET automation plan capabilities to hide common parameter definitions (only shows the ones with a command line position and the SUT parameter)
   - Parameters launchSUT and SUTbuildCommand are now bool value types
 - compilation sub-adapter
   - renamed compile parameter to noCompilation and reversed its values 

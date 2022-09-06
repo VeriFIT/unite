@@ -13122,6 +13122,115 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "commandlineParametersOnly parameter",
+					"item": [
+						{
+							"name": "get automation plan",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var serverAddr = pm.variables.get(\"server_address\");",
+											"var server_context = pm.variables.get(\"server_context\");",
+											"",
+											"pm.test(\"Response code should be 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"Response body should contain an AutomationPlan (id:dummy)\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"oslc_auto:AutomationPlan rdf:about=\\\"\" + serverAddr + \"/\" + server_context + \"/services/resources/automationPlans/dummy\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a dcterms:title property\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<dcterms:title\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a dcterms:created property\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<dcterms:created\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a dcterms:modified property\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<dcterms:modified\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a <dcterms:creator property\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<dcterms:creator\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a arguments parameter definition\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>arguments</oslc:name>\");",
+											"    pm.expect(pm.response.text()).to.include(\"<fit:valuePrefix>--args=</fit:valuePrefix>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a launchSUT parameter definition\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>launchSUT</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a SUT parameter definition\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>SUT</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a SUTbuildCommand parameter definition\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc:name>SUTbuildCommand</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should not contain a timeout parameter definition\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"<oslc:name>timeout</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should not contain a outputFileRegex parameter definition\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"<oslc:name>outputFileRegex</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should not contain a zipOutputs parameter definition\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"<oslc:name>zipOutputs</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should not contain a noToolCommand parameter definition\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"<oslc:name>noToolCommand</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should not contain a outputFilter parameter definition\", function () {",
+											"    pm.expect(pm.response.text()).to.not.include(\"<oslc:name>outputFilter</oslc:name>\");",
+											"});",
+											"pm.test(\"AutomationPlan should contain a usesExecutionEnvironment property with the expected value\", function () {",
+											"    pm.expect(pm.response.text()).to.include(\"<oslc_auto:usesExecutionEnvironment rdf:resource=\\\"https://pajda.fit.vutbr.cz/xvasic/oslc-generic-analysis/-/blob/master/analysis/tests/dummy_tool.sh\\\"/>\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/rdf+xml"
+									}
+								],
+								"url": {
+									"raw": "{{server_address}}/{{server_context}}/services/resources/automationPlans/dummy?commandlineParametersOnly=true",
+									"host": [
+										"{{server_address}}"
+									],
+									"path": [
+										"{{server_context}}",
+										"services",
+										"resources",
+										"automationPlans",
+										"dummy"
+									],
+									"query": [
+										{
+											"key": "commandlineParametersOnly",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		},
