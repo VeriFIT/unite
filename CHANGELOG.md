@@ -12,6 +12,7 @@
   - added basic validation for automation plan definition files
   - common parameter definitions now do not have default values
   - renamed toolCommand parameter to noToolCommand and reversed its values
+    - Setting noToolCommand to true now also removes "toolSpecificArgs" from the tool .properties file as they make no sense without the tool command.
   - dummy tool default values changed
   - added a parameter "commandlineParametersOnly" to GET automation plan capabilities to hide common parameter definitions (only shows the ones with a command line position and the SUT parameter)
   - Parameters launchSUT and SUTbuildCommand are now bool value types

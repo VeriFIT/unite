@@ -536,17 +536,19 @@ public class SutAnalyse extends RequestRunner
 	private String buildStringToExecFromParams(String noToolCommand, List<ExecutionParameter> execParams)
 	{
 		String buildStringToExecute = "";
-		// tool comand can be skipped if requested
-		if (noToolCommand == null || !noToolCommand.equalsIgnoreCase("true")) 
-			buildStringToExecute += this.autoPlanConf.getToolLaunchCommand();
-		
-		// only insert tool specific args if they are not empty
-		if (this.autoPlanConf.getToolSpecificArgs() != null && !this.autoPlanConf.getToolSpecificArgs().isEmpty()) 
+		// tool comand can be skipped if requested, this also means skipping tool specific args as they make no sense without the tool command
+		if (noToolCommand == null || !noToolCommand.equalsIgnoreCase("true"))
 		{
-			if (!buildStringToExecute.isEmpty())
-					buildStringToExecute += " ";
-			buildStringToExecute += this.autoPlanConf.getToolSpecificArgs();
+			buildStringToExecute += this.autoPlanConf.getToolLaunchCommand();
 			
+			// only insert tool specific args if they are not empty
+			if (this.autoPlanConf.getToolSpecificArgs() != null && !this.autoPlanConf.getToolSpecificArgs().isEmpty()) 
+			{
+				if (!buildStringToExecute.isEmpty())
+					buildStringToExecute += " ";
+				buildStringToExecute += this.autoPlanConf.getToolSpecificArgs();
+				
+			}
 		}
 
 		List<ExecutionParameter> cmdLineParams = new ArrayList<ExecutionParameter>();
