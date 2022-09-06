@@ -23,3 +23,6 @@ All configuration files should be placed into the \*cloned_repo\*/conf directory
     - in *conf/analysis_advanced/AnalysisTools* define an AutomationPlan in a .rdf file and a .properties file for every tool that you want to run using the adapter. Use the "ExampleTool" definition in *conf_example/analysis_advanced/AnalysisTools* as a guide on how to define your own. For more details refer to the [wiki](https://pajda.fit.vutbr.cz/verifit/oslc-generic-analysis/-/wikis/Usage-Guide/2.-Analysis-Tool-Definition).
 - Output filter definition
     - in *conf/analysis_advanced/PluginFilters* define output filters using a .java file and a .properties file for every filter. Use the "ExamplePluginFilter" definition in *conf_example/analysis_advanced/PluginFilters* as a guide on how to define your own. For more details refer to the [wiki](https://pajda.fit.vutbr.cz/verifit/oslc-generic-analysis/-/wikis/Usage-Guide/3.-Plugin-Output-Filters).
+
+Alternatively, one can use environmental variables to override configuration from configuration files.
+The available environmental variables are: UNITE_ANALYSIS_PORT, UNITE_ANALYSIS_HOST, UNITE_COMPILATION_PORT, UNITE_COMPILATION_HOST
