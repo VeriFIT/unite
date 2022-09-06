@@ -46,7 +46,7 @@
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
                 <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">--verifier=</fit:valuePrefix>
                 <dcterms:description rdf:parseType="Literal">Select which tool to use in symbiotic</dcterms:description>
-                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
                 <oslc:allowedValue>klee</oslc:allowedValue>
                 <!--
                 <oslc:allowedValue>cbmc</oslc:allowedValue>
