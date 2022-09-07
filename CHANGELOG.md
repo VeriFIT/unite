@@ -1,4 +1,10 @@
 ### v3.0.0
+- BREAKING CHANGES
+  - toolCommand -> noToolCommand
+  - compile -> noCompilation
+  - boolean parameter definitions
+  - null values for input parameters 
+
 - added a way to force default values to not be used
 - changed the semantics of input parameters
   - null values (parameter without value) are now allowed and are used to force the default value of the parameter to not be used (if one is defined)

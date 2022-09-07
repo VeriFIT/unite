@@ -63,6 +63,7 @@
             -->
             <oslc_auto:ParameterDefinition>
                 <oslc:name>launchSUT</oslc:name>
+                <oslc:defaultValue>false</oslc:defaultValue>
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</fit:commandlinePosition>
                 <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
