@@ -10,7 +10,7 @@
 			 	
 ##### Other (hilite - test case geenration)
 - Does not need an SUT, just a payload or an artifact
-- _hus no build or launch command, maybe use the title
+- _has no build or launch command, maybe use the title
 		
 ##### Statefull analysis or combination of tools (perun) 
 - Multiple analysis requests on the same SUT - easiest and the most easy to use

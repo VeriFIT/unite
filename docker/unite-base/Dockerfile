@@ -6,10 +6,14 @@ RUN apt-get update && \
     apt-get install -y maven build-essential curl procps && \
     # usefull for general stuff
     apt-get install -y git vim tmux dos2unix time wget
+# TODO used to swithc dev and master branches
 #RUN git clone --depth 1 --no-single-branch --branch dev https://pajda.fit.vutbr.cz/verifit/unite.git && \
 RUN git clone --depth 1 --no-single-branch https://pajda.fit.vutbr.cz/verifit/unite.git && \
     cd unite && git config pull.rebase false && cd .. && \
     /bin/bash ./unite/build.sh
+
+# make the image smaller
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # default ports
 EXPOSE 8080

@@ -122,9 +122,9 @@ public class SutAnalyse extends RequestRunner
 			// input parameters
 			String outputRegex = null;
 			String zipOutputs = null;
-			String timeout = null;
-			String toolCommand = null;
-			String outputFilter = null;
+			String timeout = "0";
+			String noToolCommand = null;
+			String outputFilter = "default";
 			List<String> confFiles = new ArrayList<String>();		// there can be multiple conf files
 			String beforeCommand = null;
 			String afterCommand = null;
@@ -137,7 +137,7 @@ public class SutAnalyse extends RequestRunner
 				if (param.getName().equals("outputFileRegex")) outputRegex = param.getValue();
 				else if (param.getName().equals("zipOutputs")) zipOutputs = param.getValue();
 				else if (param.getName().equals("timeout")) timeout = param.getValue();
-				else if (param.getName().equals("toolCommand")) toolCommand = param.getValue();
+				else if (param.getName().equals("noToolCommand")) noToolCommand = param.getValue();
 				else if (param.getName().equals("outputFilter")) outputFilter = param.getValue();
 				else if (param.getName().equals("confFile")) confFiles.add(param.getValue());
 				else if (param.getName().equals("beforeCommand")) beforeCommand = param.getValue();
@@ -147,7 +147,7 @@ public class SutAnalyse extends RequestRunner
 			}
 	
 			// build the string to execute later from command line input parameters (those that have a commandline position)
-			final String stringToExecute = buildStringToExecFromParams(toolCommand, this.execParameters);
+			final String stringToExecute = buildStringToExecFromParams(noToolCommand, this.execParameters);
 	
 			// set the states of the Automation Result and Request to "inProgress" - if they are not that already
 			if (!(execAutoRequest.getState().iterator().next().getValue()
@@ -216,9 +216,11 @@ public class SutAnalyse extends RequestRunner
 	    		statusMessage.appendValue("Warning: Analysing an SUT which was not compiled\n");
 		    }
 		    
-		    // take a snapshot of SUT files modification times before executing the analysis
+		    
+		    // take a snapshot of SUT files modification times before executing the analysis, if the ouputRegex parameter was set
 		    GetModifFilesBySnapshot snapshotter = new GetModifFilesBySnapshot(new File(execSut.getSUTdirectoryPath()));
-		    snapshotter.takeBeforeSnapshot(outputRegex);
+		    if (outputRegex != null)
+		    	snapshotter.takeBeforeSnapshot(outputRegex);
 		    
 		    // get the SUT path
 			final Path SUTdirAsPath = FileSystems.getDefault().getPath(execSut.getSUTdirectoryPath());
@@ -368,9 +370,13 @@ public class SutAnalyse extends RequestRunner
 			// only do more processing if there was no exception during execution
 			if (executionVerdict != OslcValues.AUTOMATION_VERDICT_ERROR)
 			{		    
-				// take a snapshot of SUT files after analysis and get a list of modified ones
-		    	snapshotter.takeAfterSnapshot();
-		    	Collection<File> modifFiles = snapshotter.getModifFiles();
+				// take a snapshot of SUT files after analysis and get a list of modified ones, if the ouputRegex parameter was set
+		    	Collection<File> modifFiles = new HashSet<File>();
+			    if (outputRegex != null)
+			    {
+			    	snapshotter.takeAfterSnapshot();
+			    	modifFiles = snapshotter.getModifFiles();
+			    }
 		    	
 		    	// remove the stdout and stderr files from the list of modified files from the snapshot (if they are there)
 		    	// (will be added manually with special description etc..)	[hack]
@@ -397,7 +403,7 @@ public class SutAnalyse extends RequestRunner
 				if (afterCmdRes  != null) modifFiles.add(afterCmdRes.stderrFile);
 				
 				// create a zip of all file contributions if needed
-				if (zipOutputs.equalsIgnoreCase("true"))
+				if (zipOutputs != null && zipOutputs.equalsIgnoreCase("true"))
 				{
 					final String zipName = "out" + this.execAutoRequestId + ".zip";
 					final Path zipDir = FileSystems.getDefault().getPath(this.execSut.getSUTdirectoryPath());
@@ -527,16 +533,24 @@ public class SutAnalyse extends RequestRunner
 	 * @param execParams
 	 * @return The string to execute
 	 */
-	private String buildStringToExecFromParams(String toolCommand, List<ExecutionParameter> execParams)
+	private String buildStringToExecFromParams(String noToolCommand, List<ExecutionParameter> execParams)
 	{
-		toolCommand = (toolCommand.equalsIgnoreCase("true")  // insert the analysis tool launch command if the parameter was true
-				? this.autoPlanConf.getLaunchCommand()
-				: "" );
-		
-		String buildStringToExecute = ""
-			+ toolCommand + " "
-			+ this.autoPlanConf.getToolSpecificArgs();
-		
+		String buildStringToExecute = "";
+		// tool comand can be skipped if requested, this also means skipping tool specific args as they make no sense without the tool command
+		if (noToolCommand == null || !noToolCommand.equalsIgnoreCase("true"))
+		{
+			buildStringToExecute += this.autoPlanConf.getToolLaunchCommand();
+			
+			// only insert tool specific args if they are not empty
+			if (this.autoPlanConf.getToolSpecificArgs() != null && !this.autoPlanConf.getToolSpecificArgs().isEmpty()) 
+			{
+				if (!buildStringToExecute.isEmpty())
+					buildStringToExecute += " ";
+				buildStringToExecute += this.autoPlanConf.getToolSpecificArgs();
+				
+			}
+		}
+
 		List<ExecutionParameter> cmdLineParams = new ArrayList<ExecutionParameter>();
 		for (ExecutionParameter param : execParams)
 		{
@@ -548,7 +562,9 @@ public class SutAnalyse extends RequestRunner
 		cmdLineParams.sort((ExecutionParameter a, ExecutionParameter b) -> a.getCmdPosition().compareTo(b.getCmdPosition()));
 		for (ExecutionParameter param : cmdLineParams)
 		{
-			buildStringToExecute += " " + param.getValuePrefix() + param.getValue();
+			if (!buildStringToExecute.isEmpty())
+				buildStringToExecute += " ";
+			buildStringToExecute += param.getValuePrefix() + param.getValue();
 		}
 		return buildStringToExecute;
 	}

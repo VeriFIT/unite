@@ -1,0 +1,20 @@
+version: "3"
+services:
+  unite-symbiotic:
+    image: unite-symbiotic
+    build: .
+    
+    restart: unless-stopped
+
+    # map ports based on your configuration (from conf. files or env variables here)
+    # currently the outside and inside HOST&PORT has to be the same!
+    ports:
+        - "9104:9104"
+        - "9105:9105"
+
+    # env variables can be used to overrride conf. files
+    environment:
+        - UNITE_ANALYSIS_PORT=9104
+        - UNITE_COMPILATION_PORT=9105
+        - UNITE_ANALYSIS_HOST=http://localhost
+        - UNITE_COMPILATION_HOST=http://localhost

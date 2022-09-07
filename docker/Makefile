@@ -5,6 +5,9 @@ build-all:
 	$(MAKE) -C valgrind build
 	$(MAKE) -C frama-c build
 	$(MAKE) -C grep build
+	$(MAKE) -C perun build
+	$(MAKE) -C cbmc build
+	$(MAKE) -C symbiotic build
 # 	$(MAKE) -C anaconda build
 
 build-all-clean:
@@ -14,6 +17,9 @@ build-all-clean:
 	$(MAKE) -C valgrind build-clean
 	$(MAKE) -C frama-c build-clean
 	$(MAKE) -C grep build-clean
+	$(MAKE) -C perun build-clean
+	$(MAKE) -C cbmc build-clean
+	$(MAKE) -C symbiotic build-clean
 # 	$(MAKE) -C anaconda build-clean
 
 build-all-as-one:
@@ -25,23 +31,13 @@ build-all-as-one-clean:
 	$(MAKE) -C unite-all build-clean
 
 up-all:
-	$(MAKE) -C facebook-infer up
-	$(MAKE) -C theta up
-	$(MAKE) -C valgrind up
-	$(MAKE) -C frama-c up
-	$(MAKE) -C grep up
-#	$(MAKE) -C anaconda up
+	docker-compose up -d
 
 down-all:
-	$(MAKE) -C facebook-infer down
-	$(MAKE) -C theta down
-	$(MAKE) -C valgrind down
-	$(MAKE) -C frama-c down
-	$(MAKE) -C grep down
-# 	$(MAKE) -C anaconda down
+	docker-compose down
 
-up-one:
+up-all-as-one:
 	$(MAKE) -C unite-all up
 
-down-one:
+down-all-as-one:
 	$(MAKE) -C unite-all down

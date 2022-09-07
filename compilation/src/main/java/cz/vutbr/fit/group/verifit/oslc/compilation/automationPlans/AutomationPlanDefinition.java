@@ -99,17 +99,17 @@ public class AutomationPlanDefinition {
 			/*
 			 * Build options
 			 */
-			ParameterDefinition compile = new ParameterDefinition();
-			compile.setDescription("Set this parameter to \"false\" to disable SUT compilation."); 
-			compile.setName("compile");
-			compile.setDefaultValue("true");
-			compile.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
-			compile.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
+			ParameterDefinition noCompilation = new ParameterDefinition();
+			noCompilation.setDescription("Set this parameter to \"true\" to disable SUT compilation."); 
+			noCompilation.setName("noCompilation");
+			//noCompilation.setDefaultValue("false");
+			noCompilation.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
+			noCompilation.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
 			
 			ParameterDefinition unpackZip = new ParameterDefinition();
 			unpackZip.setDescription("Set this parameter to \"true\" to have the adapter unpack the SUT using ZIP after fetching it."); 
 			unpackZip.setName("unpackZip");
-			unpackZip.setDefaultValue("false");
+			//unpackZip.setDefaultValue("false");
 			unpackZip.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			unpackZip.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
 			
@@ -146,7 +146,7 @@ public class AutomationPlanDefinition {
 			propertiesPlan.addParameterDefinition(unpackZip);
 			propertiesPlan.addParameterDefinition(buildCommand);
 			propertiesPlan.addParameterDefinition(launchCommand);
-			propertiesPlan.addParameterDefinition(compile);
+			propertiesPlan.addParameterDefinition(noCompilation);
 			propertiesPlan.addCreator(new Link(new URI("https://pajda.fit.vutbr.cz/xvasic")));
 			VeriFitCompilationManager.createAutomationPlan(propertiesPlan);
 	

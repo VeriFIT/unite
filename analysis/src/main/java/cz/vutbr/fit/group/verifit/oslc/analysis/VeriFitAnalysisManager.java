@@ -99,6 +99,7 @@ import cz.vutbr.fit.group.verifit.oslc.analysis.outputFilters.FilterManager;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -234,6 +235,7 @@ public class VeriFitAnalysisManager {
         
 		try {
 
+			// set basic properties
 			String newID = aResource.getIdentifier();
 			newResource = VeriFitAnalysisResourcesFactory.createAutomationPlan(newID);
 			newResource.setUsesExecutionEnvironment(aResource.getUsesExecutionEnvironment());
@@ -243,6 +245,7 @@ public class VeriFitAnalysisManager {
 			newResource.setContributor(aResource.getContributor());
 			newResource.setExtendedProperties(aResource.getExtendedProperties());
 			
+			// add all common parameter definitions to all automation plans
 			ParameterDefinition SUT = new ParameterDefinition();
 			SUT.setDescription("Refference to an SUT resource to analyse. SUTs are created using the compilation provider.");
 			SUT.setName("SUT");
@@ -257,7 +260,7 @@ public class VeriFitAnalysisManager {
 			outputFileRegex.setName("outputFileRegex");
 			outputFileRegex.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			outputFileRegex.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
-			outputFileRegex.setDefaultValue(".^");
+			//outputFileRegex.setDefaultValue(".^");
 			newResource.addParameterDefinition(outputFileRegex);
 
 			ParameterDefinition zipOutputs = new ParameterDefinition();
@@ -265,7 +268,7 @@ public class VeriFitAnalysisManager {
 			zipOutputs.setName("zipOutputs");
 			zipOutputs.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			zipOutputs.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
-			zipOutputs.setDefaultValue("false");
+			//zipOutputs.setDefaultValue("false");
 			newResource.addParameterDefinition(zipOutputs);
 
 			ParameterDefinition timeout = new ParameterDefinition();
@@ -273,17 +276,17 @@ public class VeriFitAnalysisManager {
 			timeout.setName("timeout");
 			timeout.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			timeout.addValueType(OslcValues.OSLC_VAL_TYPE_INTEGER);
-			timeout.setDefaultValue("0");
+			//timeout.setDefaultValue("0");
 			newResource.addParameterDefinition(timeout);
 
-			ParameterDefinition toolCommand = new ParameterDefinition();
-			toolCommand.setDescription("Used to omit the analysis tool launch command while executing analysis. True means the tool " + 
+			ParameterDefinition noToolCommand = new ParameterDefinition();
+			noToolCommand.setDescription("Used to omit the analysis tool launch command while executing analysis. True means the tool " + 
 			"will be used and False means the tool command will not be used. (eg. \"./tool ./sut args\" vs \"/sut args\").");
-			toolCommand.setName("toolCommand");
-			toolCommand.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
-			toolCommand.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
-			toolCommand.setDefaultValue("true");
-			newResource.addParameterDefinition(toolCommand);
+			noToolCommand.setName("noToolCommand");
+			noToolCommand.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
+			noToolCommand.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
+			//toolCommand.setDefaultValue("false");
+			newResource.addParameterDefinition(noToolCommand);
 			
 			ParameterDefinition outputFilter = new ParameterDefinition();
 			outputFilter.setDescription("Use this parameter to select which output filter should be used to process"
@@ -291,7 +294,7 @@ public class VeriFitAnalysisManager {
 			outputFilter.setName("outputFilter");
 			outputFilter.setOccurs(OslcValues.OSLC_OCCURS_ZEROorONE);
 			outputFilter.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);
-			outputFilter.setDefaultValue("default");
+			//outputFilter.setDefaultValue("default");
 			for (String filterName : automationPlanConf.getFilters().keySet()) {	// set alloweValues based on defined filters
 				outputFilter.addAllowedValue(filterName);
 			}
@@ -498,81 +501,30 @@ public class VeriFitAnalysisManager {
 	 * Commands like "launchSUT" or "SUTbuildCommand" instruct the adapter to fetch the SUT launch command or build command
 	 * and insert it to the string to be executed on the commandline.
 	 * @param executedSUT	SUT resource to fetch info out of
-	 * @param newAutoResult	AutomationResult holding input and output parameters
 	 * @param execParams	List of execution parameters for the request runner. This is an output parameter.
 	 * @throws OslcResourceException	If some of the infos to be fetched are missing
 	 */
-	private static void processSpecialInputParams(final SUT executedSUT, final AutomationResult newAutoResult, List<ExecutionParameter> execParams) throws OslcResourceException {
-		for ( ParameterInstance param : newAutoResult.getInputParameter())
+	private static void processSpecialInputParams(final SUT executedSUT, List<ExecutionParameter> execParams) throws OslcResourceException
+	{
+		for ( ExecutionParameter execParam : execParams)
 		{ 
-			if (param.getName().equals("launchSUT"))
+			if (execParam.getName().equals("launchSUT"))
 			{
-				String launchCmd = "";
-				if (param.getValue().equalsIgnoreCase("true")) // only check the SUT property if parameter value was true
-				{
-					// get property from SUT
-					launchCmd = executedSUT.getLaunchCommand();
-					if (launchCmd == null)
-						throw new OslcResourceException("paramer launchSUT - referenced SUT is missing a launchCommand");
-				}
+				String launchCmd = executedSUT.getLaunchCommand();
+				if (launchCmd == null)
+					throw new OslcResourceException("parameter launchSUT - referenced SUT is missing a launchCommand");
 
-				// replace execution parameter value (from true to SUT property, or from false to "")
-				for (ExecutionParameter execParam : execParams)
-					if (execParam.getName().equals("launchSUT"))
-						execParam.setValue(launchCmd);
+				// replace execution parameter value
+				execParam.setValue(launchCmd);
 			}
-			else if (param.getName().equals("SUTbuildCommand"))
+			else if (execParam.getName().equals("SUTbuildCommand"))
 			{
-				String buildCmd = "";
-				if (param.getValue().equalsIgnoreCase("true")) // only check the SUT property if parameter value was true
-				{
-					// get property from SUT
-					buildCmd = executedSUT.getBuildCommand();
-					if (buildCmd == null)
-						throw new OslcResourceException("paramer SUTbuildCommand - referenced SUT is missing a buildCommand");
-				}
+				String buildCmd = executedSUT.getBuildCommand();
+				if (buildCmd == null)
+					throw new OslcResourceException("paramer SUTbuildCommand - referenced SUT is missing a buildCommand");
 
-				// replace execution command value (from true to SUT property)
-				for (ExecutionParameter execParam : execParams)
-					if (execParam.getName().equals("SUTbuildCommand"))
-						execParam.setValue(buildCmd);
-			}
-		}
-		
-		// same thing copy pasted for output parameters (will be used if one of the parameters was not supplied by the client and a default value was used instead)
-		for ( ParameterInstance param : newAutoResult.getOutputParameter())
-		{ 
-			if (param.getName().equals("launchSUT"))
-			{
-				String launchCmd = "";
-				if (param.getValue().equalsIgnoreCase("true")) // only check the SUT property if parameter value was true
-				{
-					// get property from SUT
-					launchCmd = executedSUT.getLaunchCommand();
-					if (launchCmd == null)
-						throw new OslcResourceException("paramer launchSUT - referenced SUT is missing a launchCommand");
-				}
-
-				// replace execution parameter value (from true to SUT property, or from false to "")
-				for (ExecutionParameter execParam : execParams)
-					if (execParam.getName().equals("launchSUT"))
-						execParam.setValue(launchCmd);
-			}
-			else if (param.getName().equals("SUTbuildCommand"))
-			{
-				String buildCmd = "";
-				if (param.getValue().equalsIgnoreCase("true")) // only check the SUT property if parameter value was true
-				{
-					// get property from SUT
-					buildCmd = executedSUT.getBuildCommand();
-					if (buildCmd == null)
-						throw new OslcResourceException("paramer SUTbuildCommand - referenced SUT is missing a buildCommand");
-				}
-
-				// replace execution command value (from true to SUT property)
-				for (ExecutionParameter execParam : execParams)
-					if (execParam.getName().equals("SUTbuildCommand"))
-						execParam.setValue(buildCmd);
+				// replace execution command value
+				execParam.setValue(buildCmd);
 			}
 		}
 	}
@@ -714,6 +666,10 @@ public class VeriFitAnalysisManager {
 
     	for (ParameterInstance param : inputParameter)
     	{
+    		
+    		if (param.getValue() == null) // empty values are allowed for everything in order to force default values to not be used
+    			continue;
+    		
     		if (param.getName().equals("confFile"))
     		{
     			String paramValue = param.getValue();
@@ -1212,7 +1168,7 @@ public class VeriFitAnalysisManager {
 			List<ExecutionParameter> execParams = ExecutionParameter.createExecutionParameters(newAutoResult.getInputParameter(), newAutoResult.getOutputParameter(), execAutoPlan.getParameterDefinition());
 			
 			// process special input parameters
-			processSpecialInputParams(executedSUT, newAutoResult, execParams);
+			processSpecialInputParams(executedSUT, execParams);
 			
 			// create a new thread to execute the automation request - and start it OR queue it up
 			runner = new SutAnalyse(newResource, newAutoResult, executedSUT, execParams);
@@ -1722,6 +1678,30 @@ public class VeriFitAnalysisManager {
         // End of user code
         
         // Start of user code getAutomationPlan
+        
+        /*
+         *	Allows clients to see a smaller version of a tool automation plan by hiding all common parameter definitions.
+         *	Only shows parameters which have a command-line position, therefore only the tool interface parameters defined during configuration.
+         *	An exception is the SUT parameter which should be visible at all times. 
+         */
+        if (httpServletRequest != null)
+        {
+        	String commandlineParametersOnlyParam = httpServletRequest.getParameter("commandlineParametersOnly");
+        	if (commandlineParametersOnlyParam != null && commandlineParametersOnlyParam.equalsIgnoreCase("true"))
+        	{
+        		Set<ParameterDefinition> origParamDefs = aResource.getParameterDefinition();
+        		Set<ParameterDefinition> filteredParamDefs = new HashSet<ParameterDefinition>();
+        		for (ParameterDefinition paramDef : origParamDefs)
+        		{
+        			if (paramDef.getCommandlinePosition() != null || 
+        				(paramDef.getName() != null && paramDef.getName().equals("SUT")))
+        			{
+        				filteredParamDefs.add(paramDef);
+        			}
+        		}
+        		aResource.setParameterDefinition(filteredParamDefs);
+        	}
+        }
         // End of user code
         return aResource;
     }

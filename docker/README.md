@@ -15,8 +15,8 @@ $ make up-all
 
 To build and run all analysis tools in a single docker use:
 ```
-$ build-all-as-one
-$ up-one
+$ make build-all-as-one
+$ make up-one
 ...
 # make down-one     # to shut down
 ```

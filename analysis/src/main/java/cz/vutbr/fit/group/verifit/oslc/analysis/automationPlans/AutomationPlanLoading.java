@@ -11,10 +11,13 @@
 package cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans;
 
 import org.eclipse.lyo.oslc.domains.auto.AutomationPlan;
+import org.eclipse.lyo.oslc.domains.auto.ParameterDefinition;
+import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.eclipse.lyo.store.StoreAccessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.vutbr.fit.group.verifit.oslc.OslcValues;
 import cz.vutbr.fit.group.verifit.oslc.analysis.VeriFitAnalysisManager;
 import cz.vutbr.fit.group.verifit.oslc.analysis.automationPlans.AutomationPlanConfManager.AutomationPlanConf;
 import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
@@ -28,6 +31,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -120,7 +125,61 @@ public class AutomationPlanLoading {
 
         // load the .rdf file
         AutomationPlan newAutoPlan = loadAutomationPlanRdfConfiguration(autoPlanDef);
+        if (newAutoPlan.getIdentifier() == null || newAutoPlan.getIdentifier().isEmpty())
+        {
+        	throw new Exception("Loading AutomationPlan: definition in file \"" + autoPlanDef.getName() + "\" is missing an identifier or identifier is empty");
+        }
         
+        // add value type string to all param definitions that have none
+        for (ParameterDefinition paramDef : newAutoPlan.getParameterDefinition())
+        {
+        	if (paramDef.getValueType() == null)
+        		paramDef.setValueType(new HashSet<Link>());
+        	if (paramDef.getValueType().isEmpty())
+        		paramDef.addValueType(OslcValues.OSLC_VAL_TYPE_STRING);	// TODO maybe copy instead to avoid accidental modification?
+        }
+        
+        // make sure special parameter definitions are correct
+    	for (ParameterDefinition paramDef : newAutoPlan.getParameterDefinition())
+    	{
+    		// check launchSUT -- needs a command line position and value type bool
+    		if (paramDef.getName() != null && paramDef.getName().equals("launchSUT"))
+    		{
+    			if (paramDef.getCommandlinePosition() == null)
+                	throw new Exception("Loading AutomationPlan: definition of Automation Plan \"" + newAutoPlan.getIdentifier() + "\" contains a \"launchSUT\" ParameterDefinition which is missing a fit:commandlinePosition property.");  				   				
+    			
+    			// correct the type if needed
+    			if (!paramDef.getValueType().iterator().next().getValue().equals(
+    					OslcValues.OSLC_VAL_TYPE_BOOL.getValue()
+					))
+    			{
+    				paramDef.setValueType(new HashSet<Link>());
+    				paramDef.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
+                	log.warn("Loading AutomationPlan: definition of Automation Plan \"" + newAutoPlan.getIdentifier() + "\" contains a \"launchSUT\" ParameterDefinition with an incorrect valuetype -- autocorrected to http://www.w3.org/2001/XMLSchema#boolean");
+    			}
+    		}
+
+    		// check SUTbuildCommand -- needs a command line position and value type bool
+    		if (paramDef.getName() != null && paramDef.getName().equals("SUTbuildCommand"))
+    		{
+    			if (paramDef.getCommandlinePosition() == null)
+                	throw new Exception("Loading AutomationPlan: definition of Automation Plan \"" + newAutoPlan.getIdentifier() + "\" contains a \"SUTbuildCommand\" ParameterDefinition which is missing a fit:commandlinePosition property.");  				   				
+    			
+    			// correct the type if needed
+    			if (!paramDef.getValueType().iterator().next().getValue().equals(
+    					OslcValues.OSLC_VAL_TYPE_BOOL.getValue()
+					))
+    			{
+    				paramDef.setValueType(new HashSet<Link>());
+    				paramDef.addValueType(OslcValues.OSLC_VAL_TYPE_BOOL);
+                	log.warn("Loading AutomationPlan: definition of Automation Plan \"" + newAutoPlan.getIdentifier() + "\" contains a \"SUTbuildCommand\" ParameterDefinition with an incorrect valuetype -- autocorrected to http://www.w3.org/2001/XMLSchema#boolean");
+    			}
+    		}
+    	}
+    	
+        
+        // check that the automation plan configuration is correct
+        checkAutomationPlanConfiguration(newAutoPlan);
         
         // load the .properties file
         String autoPlanPropsName = autoPlanDef.getName().replace(".rdf", ".properties");
@@ -129,13 +188,13 @@ public class AutomationPlanLoading {
         
         // the dummy tool needs special treatment to make it portable (win vs linux)
         if (newAutoPlanConf.getIdentifier().equals("dummy")) {
-        	newAutoPlanConf.setLaunchCommand(VeriFitAnalysisProperties.DUMMYTOOL_PATH);
+        	newAutoPlanConf.setToolLaunchCommand(VeriFitAnalysisProperties.DUMMYTOOL_PATH);
         }
         
         // check for duplicit Automation Plans
         if (this.automationPlans.containsKey(newAutoPlan.getIdentifier()))
 		{
-        	throw new Exception("Identifier \"" + newAutoPlan.getIdentifier() + "\" is already taken.");
+        	throw new Exception("Loading AutomationPlan: Identifier \"" + newAutoPlan.getIdentifier() + "\" is already taken.");
 		}
         else
         {
@@ -165,7 +224,7 @@ public class AutomationPlanLoading {
         }
         if (parsedResources == null || parsedResources.length != 1) {
         	throw new Exception("Loading AutomationPlan: Parsed definition .rdf file ("
-                    + autoPlanDefFile.getName() + ") did not contain exactly on Automation Plan resource");
+                    + autoPlanDefFile.getName() + ") did not contain exactly one Automation Plan resource");
         }
         
         return parsedResources[0]; // there is only one
@@ -223,4 +282,63 @@ public class AutomationPlanLoading {
 
         return autoPlanDefFiles;
     }
+    
+
+    /**
+     * Check that the Automation Plan is well defined
+     * @param autoPlan
+     * @throws Exception with description if the check fails
+     */
+    private void checkAutomationPlanConfiguration(AutomationPlan autoPlan) throws Exception
+    {
+
+    	/*
+    	 * check that each parameter definition has properties: name, one value type, and occurs
+    	 */
+    	for (ParameterDefinition paramDef : autoPlan.getParameterDefinition())
+    	{
+    		// check name
+    		if (paramDef.getName() == null || paramDef.getName().isEmpty())
+    		{
+            	throw new Exception("Loading AutomationPlan: definition of Automation Plan \"" + autoPlan.getIdentifier() + "\" contains a ParameterDefinition which is missing a name or its name is empty");
+    		}
+    		// check value type
+    		if (paramDef.getValueType() == null || paramDef.getValueType().size() != 1)
+    		{
+            	throw new Exception("Loading AutomationPlan: definition of Automation plan \"" + autoPlan.getIdentifier() + "\" contains a ParameterDefinition \"" + paramDef.getName() + "\" which is missing a value type or has multiple value types.");
+            	// TODO check for valid value types
+    		}
+    		// check occurs
+    		if (paramDef.getOccurs() == null || (
+    				!paramDef.getOccurs().getValue().equals(OslcValues.OSLC_OCCURS_ONE.getValue())        &&
+    				!paramDef.getOccurs().getValue().equals(OslcValues.OSLC_OCCURS_ONEorMany.getValue())  &&
+    				!paramDef.getOccurs().getValue().equals(OslcValues.OSLC_OCCURS_ZEROorMany.getValue()) &&
+    				!paramDef.getOccurs().getValue().equals(OslcValues.OSLC_OCCURS_ZEROorONE.getValue())   )
+    			)
+    		{
+            	throw new Exception("Loading AutomationPlan: definition of Automation plan \"" + autoPlan.getIdentifier() + "\" contains a ParameterDefinition \"" + paramDef.getName() + "\" which is missing a \"occurs\" property or the property has an invalid value.");
+    		}
+    	}
+    	
+    	
+    	/*
+    	 * check that there are no duplicit parameter definitions
+    	 */
+    	
+    	// convert to list for fixed order
+    	List<ParameterDefinition> listParams = new ArrayList<ParameterDefinition>(autoPlan.getParameterDefinition());
+    	for (int i = 0; i < listParams.size(); i++)
+    	{    		
+    		// then loop over all other param defs to check duplicate names
+    		for(int j = i+1; j < listParams.size(); j++)
+    		{
+    			if (listParams.get(i).getName().equals(listParams.get(j).getName()))
+    	        	throw new Exception("Loading AutomationPlan: definition of Automation plan \"" + autoPlan.getIdentifier() + "\" has ParameterDefinitions with duplicit names \"" + listParams.get(i).getName() + "\"");
+    		}
+    	}
+    	
+    	// TODO do other configuration checks
+    	
+    }
 }
+

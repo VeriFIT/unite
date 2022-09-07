@@ -1,7 +1,8 @@
 FROM unite-base:latest
 
 # install grep
-RUN apt-get install -y grep
+RUN apt-get update && \
+    apt-get install -y grep
 
 # make the image smaller
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*

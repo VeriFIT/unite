@@ -23,7 +23,7 @@
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
                 <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">-h</fit:valuePrefix>
                 <dcterms:description rdf:parseType="Literal">Print the script usage</dcterms:description>
-                <oslc:allowedValue></oslc:allowedValue>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
 
@@ -33,7 +33,7 @@
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
                 <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-                <dcterms:description rdf:parseType="Literal">Speciafy Valgrind options. Each option could be defined as a separate parameter definition.</dcterms:description>
+                <dcterms:description rdf:parseType="Literal">Specify Valgrind options. Each option could be defined as a separate parameter definition.</dcterms:description>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
 
@@ -44,7 +44,7 @@
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
                 <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">-q</fit:valuePrefix>
                 <dcterms:description rdf:parseType="Literal">run silently; only print error msgs</dcterms:description>
-                <oslc:allowedValue></oslc:allowedValue>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
 
@@ -55,7 +55,7 @@
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
                 <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">-v</fit:valuePrefix>
                 <dcterms:description rdf:parseType="Literal">be more verbose -- show misc extra info</dcterms:description>
-                <oslc:allowedValue></oslc:allowedValue>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
 
@@ -222,6 +222,7 @@
                 <oslc:defaultValue>True</oslc:defaultValue>
                 <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
                 <dcterms:description rdf:parseType="Literal">This parameter definitions tells the Automation Provider to place the SUT launch command at this command line position</dcterms:description>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
 
@@ -231,7 +232,6 @@
                 <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</fit:commandlinePosition>
                 <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
                 <dcterms:description rdf:parseType="Literal">Set the execution parameters for the analyzed program. Write down all parameters as you would in a console.</dcterms:description>
-                <oslc:defaultValue></oslc:defaultValue>
                 <oslc:name>executionParameters</oslc:name>
             </oslc_auto:ParameterDefinition>
         </oslc_auto:parameterDefinition>
