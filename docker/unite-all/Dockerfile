@@ -2,6 +2,15 @@ FROM unite-base:latest
 
 RUN apt-get update
 
+# install symbiotic (install first bc it takes a very long time -- the higher up it is, the less likely it is to be reinstalled when modifying the docker file)
+RUN apt-get install -y git cmake make llvm zlib1g-dev clang g++ python3 python curl wget rsync unzip gcc-multilib xz-utils libz3-dev libsqlite3-dev && \
+    git clone --depth 1 --no-single-branch  https://github.com/staticafi/symbiotic && \
+    git config --global user.email "anonymous@email.com" && \
+    git config --global user.name "anonymous" && \
+    cd symbiotic && \
+    ./build.sh -j4 && \
+    ln -s "/symbiotic/scripts/symbiotic" "/usr/local/bin/symbiotic"
+
 # install Valgrind
 RUN apt-get install -y valgrind
 
@@ -32,15 +41,12 @@ RUN apt-get install -y python3 pip libfreetype-dev libmagic1 && \
 # install cbmc
 RUN apt-get install -y cbmc
 
-# install symbiotic
-RUN apt-get update && \
-    apt-get install -y git cmake make llvm zlib1g-dev clang g++ python3 python curl wget rsync unzip gcc-multilib xz-utils libz3-dev libsqlite3-dev && \
-    git clone --depth 1 --no-single-branch  https://github.com/staticafi/symbiotic && \
-    git config --global user.email "anonymous@email.com" && \
-    git config --global user.name "anonymous" && \
-    cd symbiotic && \
-    ./build.sh -j4 && \
-    ln -s "/symbiotic/scripts/symbiotic" "/usr/local/bin/symbiotic"
+# install its-tools
+RUN mkdir its && \
+    cd its && \
+    wget https://lip6.github.io/ITS-commandline/fr.lip6.move.gal.itscl.product-linux.gtk.x86_64.zip && \
+    unzip fr.lip6.move.gal.itscl.product-linux.gtk.x86_64.zip && \
+    rm fr.lip6.move.gal.itscl.product-linux.gtk.x86_64.zip
 
 # TODO add anaconda once its docker images are figured out
 

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:fit="http://fit.vutbr.cz/group/verifit/oslc/ns/universal-analysis#"
+    xmlns:oslc_data="http://open-services.net/ns/servicemanagement/1.0/"
+    xmlns:oslc="http://open-services.net/ns/core#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:oslc_auto="http://open-services.net/ns/auto#">
+
+     <oslc_auto:AutomationPlan>
+        <dcterms:identifier>its-tools</dcterms:identifier>
+        <oslc_auto:usesExecutionEnvironment rdf:resource="https://lip6.github.io/ITSTools-web/"/>
+        <dcterms:title rdf:parseType="Literal">its-tools</dcterms:title>
+        <dcterms:creator rdf:resource="https://pajda.fit.vutbr.cz/ivasicek"/>
+        <dcterms:description rdf:parseType="Literal">Run its-tools</dcterms:description>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>file</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Exactly-one"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+                <dcterms:description rdf:parseType="Literal">Specify the input file.</dcterms:description>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">-i </fit:valuePrefix>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>logic-flags</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+                <dcterms:description rdf:parseType="Literal">Select the type of analysis to perform.</dcterms:description>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">-</fit:valuePrefix>
+                <oslc:defaultValue>reach</oslc:defaultValue>
+                <oslc:allowedValue>reach</oslc:allowedValue>
+                <oslc:allowedValue>ctl</oslc:allowedValue>
+                <oslc:allowedValue>ltl</oslc:allowedValue>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>its-flags</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <fit:commandlinePosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</fit:commandlinePosition>
+                <oslc:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+                <oslc:defaultValue>"-t CGAL --fixpoint BFS -ssD2 1 --sdd --stats"</oslc:defaultValue>
+                <dcterms:description rdf:parseType="Literal">Additional flags to be passed "as is" to the actual model-checking tool.</dcterms:description>
+                <fit:valuePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">-itsflags </fit:valuePrefix>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+
+        <!-- override default values of some Unite builtin/common parameters -->
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>outputFileRegex</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <oslc:defaultValue>.*[.](gal|prop)</oslc:defaultValue>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+        <oslc_auto:parameterDefinition>
+            <oslc_auto:ParameterDefinition>
+                <oslc:name>zipOutputs</oslc:name>
+                <oslc:occurs rdf:resource="http://open-services.net/ns/core#Zero-or-One"/>
+                <oslc:defaultValue>true</oslc:defaultValue>
+            </oslc_auto:ParameterDefinition>
+        </oslc_auto:parameterDefinition>
+
+    </oslc_auto:AutomationPlan>
+</rdf:RDF>
