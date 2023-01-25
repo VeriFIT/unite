@@ -1,15 +1,17 @@
-FROM unite-base:latest
+ARG UNITE_VERSION=latest
+FROM unite-base:${UNITE_VERSION}
 
 RUN apt-get update
 
-# install symbiotic (install first bc it takes a very long time -- the higher up it is, the less likely it is to be reinstalled when modifying the docker file)
-RUN apt-get install -y git cmake make llvm zlib1g-dev clang g++ python3 python curl wget rsync unzip gcc-multilib xz-utils libz3-dev libsqlite3-dev && \
-    git clone --depth 1 --no-single-branch  https://github.com/staticafi/symbiotic && \
-    git config --global user.email "anonymous@email.com" && \
-    git config --global user.name "anonymous" && \
-    cd symbiotic && \
-    ./build.sh -j4 && \
-    ln -s "/symbiotic/scripts/symbiotic" "/usr/local/bin/symbiotic"
+# Symbiotic takes way too long to install --> not included in the default unite-all
+## install symbiotic (install first bc it takes a very long time -- the higher up it is, the less likely it is to be reinstalled when modifying the docker file)
+#RUN apt-get install -y git cmake make llvm zlib1g-dev clang g++ python3 python curl wget rsync unzip gcc-multilib xz-utils libz3-dev libsqlite3-dev && \
+#    git clone --depth 1 --no-single-branch  https://github.com/staticafi/symbiotic && \
+#    git config --global user.email "anonymous@email.com" && \
+#    git config --global user.name "anonymous" && \
+#    cd symbiotic && \
+#    ./build.sh -j4 && \
+#    ln -s "/symbiotic/scripts/symbiotic" "/usr/local/bin/symbiotic"
 
 # install Valgrind
 RUN apt-get install -y valgrind
@@ -42,7 +44,8 @@ RUN apt-get install -y python3 pip libfreetype-dev libmagic1 && \
 RUN apt-get install -y cbmc
 
 # install its-tools
-RUN mkdir its && \
+RUN apt-get install -y unzip && \
+    mkdir its && \
     cd its && \
     wget https://lip6.github.io/ITS-commandline/fr.lip6.move.gal.itscl.product-linux.gtk.x86_64.zip && \
     unzip fr.lip6.move.gal.itscl.product-linux.gtk.x86_64.zip && \

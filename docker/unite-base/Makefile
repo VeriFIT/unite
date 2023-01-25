@@ -1,17 +1,12 @@
 image = unite-base
 container = unite-base
+unite_version = v3.0.0
 
 build:
-	docker build -t $(image):latest .
+	docker build --build-arg UNITE_VERSION=$(unite_version) -t $(image):$(unite_version) .
 
 build-clean:
-	docker build --no-cache -t $(image):latest .
-
-run-new:
-	docker run -p 8080:8080 -p 8081:8081 --name $(container) $(image)
-
-run-existing:
-	docker start -a $(container)
+	docker build --build-arg UNITE_VERSION=$(unite_version) --no-cache -t $(image):$(unite_version) .
 
 clean-image:
 	docker image rm $(container)

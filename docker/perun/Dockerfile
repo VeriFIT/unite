@@ -1,4 +1,5 @@
-FROM unite-base:latest
+ARG UNITE_VERSION=latest
+FROM unite-base:${UNITE_VERSION}
 
 # install Perun
 RUN apt-get update && \

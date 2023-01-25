@@ -1,4 +1,5 @@
-FROM unite-base:latest
+ARG UNITE_VERSION=latest
+FROM unite-base:${UNITE_VERSION}
 
 # install anaconda
 RUN apt-get update && \

@@ -1,6 +1,6 @@
 ### v3.0.1
 - added its-tools docker
-- Unite base image now uses a git tag instead of the latest master commit
+- Unite base image now uses a configurable git tag instead of the latest master commit
 
 ### v3.0.0
 - BREAKING CHANGES

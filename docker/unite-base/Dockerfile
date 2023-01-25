@@ -1,4 +1,5 @@
 FROM openjdk:11-slim
+ARG UNITE_VERSION=v3.0.0
 WORKDIR /
 
 RUN apt-get update && \
@@ -8,7 +9,7 @@ RUN apt-get update && \
     apt-get install -y git vim tmux dos2unix time wget
 # TODO used to switch dev and master branches
 #RUN git clone --depth 1 --no-single-branch --branch dev https://pajda.fit.vutbr.cz/verifit/unite.git && \
-RUN git clone --depth 1 --branch v3.0.0 https://pajda.fit.vutbr.cz/verifit/unite.git && \
+RUN git clone --depth 1 --branch ${UNITE_VERSION} https://pajda.fit.vutbr.cz/verifit/unite.git && \
     cd unite && git config pull.rebase false && cd .. && \
     /bin/bash ./unite/build.sh
 

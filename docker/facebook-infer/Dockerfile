@@ -1,4 +1,5 @@
-FROM unite-base:latest
+ARG UNITE_VERSION=latest
+FROM unite-base:${UNITE_VERSION}
 
 # install Infer
 RUN VERSION=1.0.0; curl -sSL "https://github.com/facebook/infer/releases/download/v$VERSION/infer-linux64-v$VERSION.tar.xz" | tar -C /opt -xJ && ln -s "/opt/infer-linux64-v$VERSION/bin/infer" /usr/local/bin/infer
