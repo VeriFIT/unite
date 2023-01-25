@@ -119,3 +119,16 @@ services:
         - UNITE_COMPILATION_PORT=9107
         - UNITE_ANALYSIS_HOST=http://localhost
         - UNITE_COMPILATION_HOST=http://localhost
+
+  unite-its-tools:
+    image: unite-its-tools
+    build: ./its-tools
+    restart: unless-stopped
+    ports:
+        - "9108:9108"
+        - "9109:9109"
+    environment:
+        - UNITE_ANALYSIS_PORT=9108
+        - UNITE_COMPILATION_PORT=9109
+        - UNITE_ANALYSIS_HOST=http://localhost
+        - UNITE_COMPILATION_HOST=http://localhost

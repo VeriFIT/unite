@@ -1,5 +1,5 @@
-image = unite-perun
-container = unite-perun
+image = unite-its-tools
+container = unite-its-tools
 unite_version = v3.0.0
 
 build: dependency

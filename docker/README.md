@@ -21,30 +21,18 @@ $ make up-one
 # make down-one     # to shut down
 ```
 
-## HOW TO manual one by one
-Pick a directory based on the desired docker image and run:
+## HOW TO one by one
+Use docker-compose. Pick a directory based on the desired
+docker image and then run:
 ```
 $ cd facebook-infer        # or any other directory
-$ make build
-$ make run-new
+$ make build               # or build-clean or build-clean-all
+$ make up
 # Unite is now listening on localhost on ports 8080 and 8081
-```
-
-To rerun an existing container try using:
-```
-$ make run-existing
+# Or you can change the docker-compose.yml to customize ports and host
 ```
 
 Unite configuration can be changed by placing the contents of your unite "conf"
 directory into the "unite-conf" directory of your desired image.
+Host and port can be overridden in the docker-compose file
 See also the Makefile options for further commands.
-
-## HOW TO with docker compose
-Alternatively, you can use docker-compose. Pick a directory based on the desired
-docker image and then run:
-```
-$ cd facebook-infer        # or any other directory
-$ make compose
-# Unite is now listening on localhost on ports 8080 and 8081
-# Or you can change the docker-compose.yml to customize ports and host
-```

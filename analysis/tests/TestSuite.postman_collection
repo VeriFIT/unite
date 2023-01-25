@@ -8534,9 +8534,9 @@
 										"exec": [
 											"var os = pm.globals.get(\"currentOS\");\r",
 											"if (os == \"windows_bat\"){\r",
-											"    pm.globals.set(\"multipleCommands\", \"ls &amp; echo \\\"testing\\\" &amp; cat TestEchoProgram.cpp &amp; \");\r",
+											"    pm.globals.set(\"multipleCommands\", \"ls &amp; echo \\\"testing\\\" &amp; cat TestEchoProgram.cpp\");\r",
 											"} else{\r",
-											"    pm.globals.set(\"multipleCommands\", \"ls ; echo \\\"testing\\\" ; cat TestEchoProgram.cpp ; \");\r",
+											"    pm.globals.set(\"multipleCommands\", \"ls ; echo \\\"testing\\\" ; cat TestEchoProgram.cpp\");\r",
 											"}"
 										],
 										"type": "text/javascript"

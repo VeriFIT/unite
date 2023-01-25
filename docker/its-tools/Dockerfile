@@ -1,9 +1,16 @@
 ARG UNITE_VERSION=latest
 FROM unite-base:${UNITE_VERSION}
 
-# install cbmc
-RUN apt-get update && \
-    apt-get install -y cbmc
+
+# install dependencies
+RUN apt-get update && apt-get install unzip
+
+# install its-tools
+RUN mkdir its && \
+    cd its && \
+    wget https://lip6.github.io/ITS-commandline/fr.lip6.move.gal.itscl.product-linux.gtk.x86_64.zip && \
+    unzip fr.lip6.move.gal.itscl.product-linux.gtk.x86_64.zip && \
+    rm fr.lip6.move.gal.itscl.product-linux.gtk.x86_64.zip
 
 ## make the image smaller
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
