@@ -37,7 +37,6 @@ RUN apt-get install -y python3 pip libfreetype-dev libmagic1 && \
     ln -s /usr/include/freetype2/ft2build.h /usr/include/ && \
     git clone --depth=1 https://github.com/tfiedor/perun.git && \
     cd perun && \
-    make init && \
     make install
 
 # install cbmc

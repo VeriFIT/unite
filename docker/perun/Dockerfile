@@ -7,7 +7,6 @@ RUN apt-get update && \
     ln -s /usr/include/freetype2/ft2build.h /usr/include/ && \
     git clone --depth=1 https://github.com/tfiedor/perun.git && \
     cd perun && \
-    make init && \
     make install
 
 # make the image smaller
