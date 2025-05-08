@@ -89,11 +89,13 @@ import cz.vutbr.fit.group.verifit.oslc.shared.exceptions.OslcResourceException;
 
 import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -568,7 +570,47 @@ public class VeriFitCompilationManager {
     		}
     	}
 	}
-	
+    /**
+     * Returns the SUT file for the given SUT ID. The SUT file is a zip file containing the contents of the SUT directory.
+     * @param id The ID of the SUT
+     * @return The SUT zip file
+     */
+    public static File getSUTFile(final String id)
+    {
+        SUT aResource = null;
+        Path zipFile = null;
+
+        Store store = storePool.getStore();
+        URI uri = VeriFitCompilationResourcesFactory.constructURIForSUT(id);
+        try {
+            aResource = store.getResource(storePool.getDefaultNamedGraphUri(), uri, SUT.class);
+        } catch (NoSuchElementException e) {
+            log.error("Resource: '" + uri + "' not found");
+            throw new WebApplicationException("Failed to get resource: '" + uri + "'", e, Status.NOT_FOUND);
+        } catch (StoreAccessException | ModelUnmarshallingException  e) {
+            log.error("Failed to get resource: '" + uri + "'", e);
+            throw new WebApplicationException("Failed to get resource: '" + uri + "'", e, Status.INTERNAL_SERVER_ERROR);
+        } finally {
+            storePool.releaseStore(store);
+        }
+
+        Path dirPath = FileSystems.getDefault().getPath(VeriFitCompilationProperties.SUT_FOLDER).resolve(id);
+        if(dirPath == null)
+            return null;
+
+        File dir = dirPath.toFile();
+        if(dir.exists() && dir.isDirectory())
+        {
+            try {
+                zipFile = FileSystems.getDefault().getPath(VeriFitCompilationProperties.SUT_FOLDER).resolve(id + ".zip");
+                Collection<File> files = FileUtils.listFiles(dir, null, true);
+                Utils.zipFiles(files, dirPath, zipFile);
+            } catch (IOException e) {
+                log.error("Failed to create zip file for SUT: " + e.getMessage());
+            }
+        }
+        return zipFile.toFile();
+    }   
     // End of user code
 
     public static void contextInitializeServletListener(final ServletContextEvent servletContextEvent)
