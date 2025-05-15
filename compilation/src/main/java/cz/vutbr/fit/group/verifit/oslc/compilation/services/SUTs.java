@@ -95,6 +95,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 // Start of user code imports
+import java.io.File;
 // End of user code
 
 // Start of user code pre_class_code
@@ -113,6 +114,29 @@ public class SUTs
     // End of user code
 
     // Start of user code class_methods
+    @GET
+    @Path("sUTs/{id}")
+    @Produces({MediaType.APPLICATION_OCTET_STREAM})
+    @ApiOperation(
+        value = "GET for resources of type {'" + FitDomainConstants.SUT_LOCALNAME + "'}",
+        notes = "GET for resources of type {'" + "<a href=\"" + FitDomainConstants.SUT_TYPE + "\">" + FitDomainConstants.SUT_LOCALNAME + "</a>" + "'}" +
+            ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + FitDomainConstants.SUT_PATH + "\">" + FitDomainConstants.SUT_LOCALNAME + "</a>" + "'}",
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML + ", " + MediaType.APPLICATION_OCTET_STREAM
+    )
+    public Response getSUTFile(
+        @PathParam("id") final String id
+        ) throws IOException, ServletException, URISyntaxException
+    {
+        File aSUT = VeriFitCompilationManager.getSUTFile(id);
+
+        if (aSUT != null) {
+            return Response.ok(aSUT, MediaType.APPLICATION_OCTET_STREAM)
+	        	      .header("Content-Disposition", "attachment; filename=\"" + aSUT.getName() + "\"" )
+	        	      .build();    
+        }
+
+        throw new WebApplicationException(Status.BAD_REQUEST);
+    }
     // End of user code
 
     public SUTs()
@@ -136,7 +160,7 @@ public class SUTs
         value = "GET for resources of type {'" + FitDomainConstants.SUT_LOCALNAME + "'}",
         notes = "GET for resources of type {'" + "<a href=\"" + FitDomainConstants.SUT_TYPE + "\">" + FitDomainConstants.SUT_LOCALNAME + "</a>" + "'}" +
             ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + FitDomainConstants.SUT_PATH + "\">" + FitDomainConstants.SUT_LOCALNAME + "</a>" + "'}",
-        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML + ", " + MediaType.APPLICATION_OCTET_STREAM
     )
     public SUT getSUT(
                 @PathParam("id") final String id
@@ -165,7 +189,7 @@ public class SUTs
         value = "GET for resources of type {'" + FitDomainConstants.SUT_LOCALNAME + "'}",
         notes = "GET for resources of type {'" + "<a href=\"" + FitDomainConstants.SUT_TYPE + "\">" + FitDomainConstants.SUT_LOCALNAME + "</a>" + "'}" +
             ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + FitDomainConstants.SUT_PATH + "\">" + FitDomainConstants.SUT_LOCALNAME + "</a>" + "'}",
-        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML + ", " + MediaType.APPLICATION_OCTET_STREAM
     )
     public void getSUTAsHtml(
         @PathParam("id") final String id
@@ -196,7 +220,7 @@ public class SUTs
         value = "GET for resources of type {'" + FitDomainConstants.SUT_LOCALNAME + "'}",
         notes = "GET for resources of type {'" + "<a href=\"" + FitDomainConstants.SUT_TYPE + "\">" + FitDomainConstants.SUT_LOCALNAME + "</a>" + "'}" +
             ", with respective resource shapes {'" + "<a href=\"" + "../services/" + OslcConstants.PATH_RESOURCE_SHAPES + "/" + FitDomainConstants.SUT_PATH + "\">" + FitDomainConstants.SUT_LOCALNAME + "</a>" + "'}",
-        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML
+        produces = OslcMediaType.APPLICATION_RDF_XML + ", " + OslcMediaType.APPLICATION_XML + ", " + OslcMediaType.APPLICATION_JSON + ", " + OslcMediaType.TEXT_TURTLE + ", " + MediaType.TEXT_HTML + ", " + OslcMediaType.APPLICATION_X_OSLC_COMPACT_XML + ", " + MediaType.APPLICATION_OCTET_STREAM
     )
     public Compact getSUTCompact(
         @PathParam("id") final String id
