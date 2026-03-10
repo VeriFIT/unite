@@ -32,12 +32,13 @@ RUN apt-get install -y frama-c-base
 # install grep
 RUN apt-get install -y grep
 
+# TODO broken with the new image
 # install Perun
-RUN apt-get install -y python3 pip libfreetype-dev libmagic1 && \
-    ln -s /usr/include/freetype2/ft2build.h /usr/include/ && \
-    git clone --depth=1 https://github.com/tfiedor/perun.git && \
-    cd perun && \
-    make install
+#RUN apt-get install -y python3 pip libfreetype-dev libmagic1 && \
+#    ln -s /usr/include/freetype2/ft2build.h /usr/include/ && \
+#    git clone --depth=1 https://github.com/tfiedor/perun.git && \
+#    cd perun && \
+#    make install
 
 # install cbmc
 RUN apt-get install -y cbmc
@@ -56,7 +57,8 @@ RUN apt-get install -y unzip && \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # z3 libraries need to be in path for Theta
-ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/theta/lib/"
+#ENV LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/theta/lib/"
+ENV LD_LIBRARY_PATH="/theta/lib/"
 
 # copy over Unite configuration for Infer
 # make sure to set the right ports in case you change then in the conf

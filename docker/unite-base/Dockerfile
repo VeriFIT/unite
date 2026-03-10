@@ -1,4 +1,6 @@
-FROM docker.io/openjdk:11-slim
+#FROM openjdk:11-slim
+#FROM docker.io/openjdk:11-slim
+FROM docker.io/eclipse-temurin:11
 ARG UNITE_VERSION=v3.0.0
 WORKDIR /
 
