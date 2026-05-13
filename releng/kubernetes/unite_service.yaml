@@ -9,13 +9,13 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: 9080
-      targetPort: 8080
+    - port: 31080
+      targetPort: 31080
       nodePort: 31080
-      name: service-at-9080
-    - port: 9081
-      targetPort: 8081
+      name: service-at-31080
+    - port: 31081
+      targetPort: 31081
       nodePort: 31081
-      name: service-at-9081
+      name: service-at-31081
   selector:
     app: unite

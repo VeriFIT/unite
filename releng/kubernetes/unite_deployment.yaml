@@ -23,11 +23,11 @@ spec:
         - name: unite
           image: 
           ports:
-            - containerPort: 8080
-              hostPort: 9080
+            - containerPort: 31080
+              hostPort: 31080
               protocol: TCP
-            - containerPort: 8081
-              hostPort: 9081
+            - containerPort: 31081
+              hostPort: 31081
               protocol: TCP
           env:
             - name: UNITE_ANALYSIS_HOST

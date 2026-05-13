@@ -4,13 +4,13 @@
       "app_name": "unite",
       "ports": [
         {
-          "target_port": 8080,
-          "port": 9080,
+          "target_port": 31080,
+          "port": 31080,
           "node_port": 31080
         },
         {
-          "target_port": 8081,
-          "port": 9081,
+          "target_port": 31081,
+          "port": 31081,
           "node_port": 31081
         }
       ],
