@@ -38,6 +38,10 @@ spec:
               value: http://verifit1.fit.vutbr.cz
             - name: UNITE_COMPILATION_PORT
               value: "31081"
+      hostAliases:
+        - ip: "127.0.0.1"
+          hostnames:
+            - "verifit1.fit.vutbr.cz"
       imagePullSecrets:
         - name: registry-credentials
       restartPolicy: Always
