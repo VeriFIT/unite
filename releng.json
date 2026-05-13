@@ -1,0 +1,43 @@
+{
+  "apps": [
+    {
+      "app_name": "unite",
+      "ports": [
+        {
+          "target_port": 8080,
+          "port": 9080,
+          "node_port": 31080
+        },
+        {
+          "target_port": 8081,
+          "port": 9081,
+          "node_port": 31081
+        }
+      ],
+      "custom_dockerfiles": [
+        {
+          "dockerfile_path": "docker/unite-base/Dockerfile",
+          "image_name": "unite-base",
+          "building_path": "docker/unite-base",
+          "build_arguments": [
+            {
+              "argument": "UNITE_VERSION",
+              "value": "v3.0.0"
+            }
+          ]
+        },
+        {
+          "dockerfile_path": "docker/unite-all/Dockerfile",
+          "image_name": "unite-all",
+          "building_path": "docker/unite-all",
+          "build_arguments": [
+            {
+              "argument": "UNITE_VERSION",
+              "value": "v3.0.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
