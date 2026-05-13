@@ -12,10 +12,10 @@ spec:
     - port: 9080
       targetPort: 8080
       nodePort: 31080
-      name: service_at_9080
+      name: service-at-9080
     - port: 9081
       targetPort: 8081
       nodePort: 31081
-      name: service_at_9081
+      name: service-at-9081
   selector:
     app: unite
