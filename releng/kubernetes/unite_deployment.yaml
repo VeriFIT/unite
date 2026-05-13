@@ -33,11 +33,11 @@ spec:
             - name: UNITE_ANALYSIS_HOST
               value: http://verifit1.fit.vutbr.cz
             - name: UNITE_ANALYSIS_PORT
-              value: 31080
+              value: "31080"
             - name: UNITE_COMPILATION_HOST
               value: http://verifit1.fit.vutbr.cz
             - name: UNITE_COMPILATION_PORT
-              value: 31081
+              value: "31081"
       imagePullSecrets:
         - name: registry-credentials
       restartPolicy: Always
