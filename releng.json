@@ -22,7 +22,7 @@
           "build_arguments": [
             {
               "argument": "UNITE_VERSION",
-              "value": "v3.0.0"
+              "value": "${VERSION}"
             }
           ]
         },
@@ -33,7 +33,7 @@
           "build_arguments": [
             {
               "argument": "UNITE_VERSION",
-              "value": "v3.0.0"
+              "value": "${VERSION}"
             }
           ]
         }

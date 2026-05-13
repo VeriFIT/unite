@@ -42,7 +42,8 @@ while IFS= read -r deployment; do
 		build_args=()
 		while IFS= read -r build_arg; do
 			if [[ -n "${build_arg}" ]]; then
-				build_args+=("--build-arg" "${build_arg}")
+				resolved_build_arg=$(bash -lc "echo \"${build_arg}\"")
+				build_args+=("--build-arg" "${resolved_build_arg}")
 			fi
 		done < <(jq -r '.build_arguments[]? // empty' <<<"${dockerfile_entry}")
 

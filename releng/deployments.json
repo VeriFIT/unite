@@ -7,7 +7,7 @@
                 "image": "unite-base:$VERSION",
                 "building_path": "docker/unite-base",
                 "build_arguments": [
-                    "UNITE_VERSION=v3.0.0"
+                    "UNITE_VERSION=${VERSION}"
                 ]
             },
             {
@@ -15,7 +15,7 @@
                 "image": "${CI_REGISTRY}/${CI_PROJECT_PATH}/unite-all:$VERSION",
                 "building_path": "docker/unite-all",
                 "build_arguments": [
-                    "UNITE_VERSION=v3.0.0"
+                    "UNITE_VERSION=${VERSION}"
                 ]
             }
         ],
