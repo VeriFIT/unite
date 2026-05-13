@@ -27,8 +27,9 @@ RUN apt-get install -y --no-install-recommends libgomp1 wget && \
     cd ../
 
 # install Frama-C using apt-get
-RUN apt-get install -y frama-c-base
-    
+# TODO: Frama-C packages are not available in Ubuntu 26.04
+#RUN apt-get install -y frama-c-base
+
 # install grep
 RUN apt-get install -y grep
 
