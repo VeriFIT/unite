@@ -1,0 +1,117 @@
+#
+# Copyright (C) 2026 Jan Fiedor <fiedorjan@centrum.cz>
+#
+# This program and the accompanying materials are made available under
+# the terms of the Eclipse Public License 2.0 which is available at
+# https://www.eclipse.org/legal/epl-2.0
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Contributors:
+#   Viktoriia Martynovych <xmartyn@fi.muni.cz> (initial implementation)
+#   Jan Fiedor <fiedorjan@centrum.cz>
+#
+
+# [CUSTOM]
+workflow:
+  rules:
+# Trigger for tags that follow semantic versioning pattern (e.g., v1.0.0-2), change regex if needed
+    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+(\.[0-9]+)?(\-[0-9]+)?$/'
+      when: always
+# Trigger for merge into master branch, uncomment if you want to trigger on merge master branch
+# DO NOT FORGET to check resolve_version job so the version is resolved correctly when triggered on branches
+    # - if: '$CI_COMMIT_BRANCH == "master"'
+    #   when: always
+    - when: never
+
+variables:
+  DOWNSTREAM_PROJECT_ID: "725" # ID of the deployment project
+  DEPLOYMENT_FILE: "releng/deployments.json"
+  VERSION: "$CI_COMMIT_TAG"
+
+# This job runs only when CI_COMMIT_TAG is not set (i.e. version cannot be resolved from the tag).
+# Use it to define a fallback version strategy, e.g. commit hash or branch-based versioning.
+# [CUSTOM]
+resolve_version:
+  stage: .pre
+  image: alpine:latest
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - when: always
+  script:
+# This is an example to use commit hash as a version
+    - VERSION="${CI_COMMIT_SHORT_SHA}"
+
+# This is an example to use branch name in versioning, "{branch}X.Y.Z" format is implemented, but you can define your own regex
+    # - VERSION="$(echo "$CI_COMMIT_REF_NAME" | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | tail -n1)"
+
+    - echo "VERSION=${VERSION}" > version.env
+  artifacts:
+    reports:
+      dotenv: version.env
+
+# This job builds and pushes Docker images to the container registry (using buildah instead of docker CLI)
+build_image:
+  stage: build_images
+  tags: ["image-build"]
+  image: quay.io/buildah/stable
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+    STORAGE_DRIVER: vfs
+  before_script:
+    # Login into the container registry
+    - echo "$CI_REGISTRY_PASSWORD" | buildah login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    # Install jq for JSON processing
+    - microdnf install -y jq
+  script:
+    - bash releng/scripts/build.sh
+
+# This job updated images with current version (Commit tag is used by default, but can be overriden by )
+update_image_version:
+  stage: build_images
+  image: alpine:latest
+  before_script:
+    # Install curl, jq, yq, and bash for processing JSON/YAML and running scripts
+    - apk add --no-cache curl jq yq bash
+  script:
+    - bash releng/scripts/update_images_in_manifests.sh
+
+  # Updated deployment manifests are needed for the next job, so we need to pass them as artifacts
+  artifacts:
+    paths:
+      - releng/kubernetes/
+    expire_in: 1 day
+
+# This job triggers the deployment pipeline in the downstream project, passing deployment manifests
+deploy_to_k8s:
+  stage: deploy_to_k8s
+  image: alpine:latest
+  needs:
+    - job: update_image_version
+      artifacts: true
+    - job: build_image
+      artifacts: false
+  before_script:
+  # Install curl, jq, and bash for processing JSON and running scripts
+  - apk add --no-cache curl jq bash
+  script:
+  - bash releng/scripts/deploy_to_k8s.sh
+      
+  # Passing downstream ID via artifacts for the next job
+  artifacts:
+    reports:
+      dotenv: downstream.env
+
+# This job checks the result of the deployment in the downstream project
+check_k8s_deployment:
+  stage: check_deployment
+  image: alpine:latest
+  needs:
+    - job: deploy_to_k8s
+      artifacts: true
+  before_script:
+  # Install curl, jq, and bash for processing JSON and running scripts
+  - apk add --no-cache curl jq bash
+  script:
+    - bash releng/scripts/check_result.sh

@@ -1,0 +1,27 @@
+[
+    {
+        "app_name": "unite",
+        "dockerfiles": [
+            {
+                "dockerfile_path": "docker/unite-base/Dockerfile",
+                "image": "unite-base:$VERSION",
+                "building_path": "docker/unite-base",
+                "build_arguments": [
+                    "UNITE_VERSION=v3.0.0"
+                ]
+            },
+            {
+                "dockerfile_path": "docker/unite-all/Dockerfile",
+                "image": "${CI_REGISTRY}/${CI_PROJECT_PATH}/unite-all:$VERSION",
+                "building_path": "docker/unite-all",
+                "build_arguments": [
+                    "UNITE_VERSION=v3.0.0"
+                ]
+            }
+        ],
+        "kubernetes_manifests": {
+            "service": "kubernetes/unite_service.yaml",
+            "deployment": "kubernetes/unite_deployment.yaml"
+        }
+    }
+]
