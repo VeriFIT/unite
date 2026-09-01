@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -141,7 +142,7 @@ public abstract class RequestRunner extends Thread {
 		String execArg = "";
 		String pathSlash = "/";
 		if (configOs == ConfigOs.LINUX) {
-			shell = "/bin/bash";
+			shell = Objects.requireNonNullElse(System.getenv("UNITE_SHELL_CMD"), "/bin/bash");
 			fileEnding = ".sh";
 			execArg = stringToExecute;
 			scriptContents = shell + " -c \"$1\"" + "\n"
@@ -150,7 +151,7 @@ public abstract class RequestRunner extends Thread {
 		} else {
 			if (configOs == ConfigOs.WINDOWS_BAT) // if CMD
 			{
-				shell = "cmd.exe";
+				shell = Objects.requireNonNullElse(System.getenv("UNITE_SHELL_CMD"), "cmd.exe");
 				pathSlash = "\\";
 				shellArg = "/c";	// to avoid changing directories due to a powershell profile
 				fileEnding = ".bat";
@@ -158,7 +159,7 @@ public abstract class RequestRunner extends Thread {
 			}
 			else // if (configOs == ConfigOs.WINDOWS_PS1) // Powershell
 			{
-				shell = "powershell.exe";
+				shell = Objects.requireNonNullElse(System.getenv("UNITE_SHELL_CMD"), "powershell.exe");
 				shellArg = "-NoProfile";	// to avoid changing directories due to a powershell profile
 				fileEnding = ".ps1";
 				scriptContents = "try { \n"
