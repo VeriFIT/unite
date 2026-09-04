@@ -11,7 +11,7 @@
 #   ...
 
 #image: maven:3.6.3-jdk-8
-image: docker.io/maven:3.9.9-eclipse-temurin-8
+image: docker.io/maven:3.9.16-eclipse-temurin-17
 
 # Cache downloaded dependencies and plugins between builds.
 cache:
