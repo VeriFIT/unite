@@ -28,6 +28,9 @@ $USAGE="   Usage: $PSCommandPath [-t|-h|-b]
       -h ... help
 "
 
+# PowerShell executable used to run this script, use it when calling other scripts
+$PSProcessName=(Get-Process -Id $PID).ProcessName
+
 $USRPATH=$(pwd)         # get the call directory
 $ROOTDIR="$PSScriptRoot"  # get the script directory
 $PIDS_TO_KILL=@()
@@ -128,13 +131,13 @@ $Host.UI.RawUI.FlushInputBuffer()
 # open new terminal that tails the log file and record its PID to kill later
 if ($t)
 {
-    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Triplestore Log (feel free to close this window)'; Get-Content '$ROOTDIR\logs\..\logs\..\logs\triplestore_$CURTIME.log' -Wait -Tail 10; pause" -passthru
+    $process = Start-Process -FilePath $PSProcessName -ArgumentList "-c",  "(Get-Host).ui.RawUI.WindowTitle='tail: Triplestore Log (feel free to close this window)'; Get-Content '$ROOTDIR\logs\..\logs\..\logs\triplestore_$CURTIME.log' -Wait -Tail 10; pause" -passthru
     $PID_TRIPLESTORE_TAIL = $process.id
 }
 
-# start the triplestore 
+# start the triplestore
 Write-Host -NoNewline "Starting the Triplestore"
-$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Triplestore'; cd '$ROOTDIR\sparql_triplestore'; .\run.ps1 >> '$ROOTDIR\logs\triplestore_$CURTIME.log' 2>&1" -passthru
+$process = Start-Process -WindowStyle Minimized -FilePath $PSProcessName -ArgumentList "-c", "(Get-Host).ui.RawUI.WindowTitle='Triplestore'; cd '$ROOTDIR\sparql_triplestore'; .\run.ps1 >> '$ROOTDIR\logs\triplestore_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 $pid_as_string = $process.id
 echo " (PID: $pid_as_string)"
@@ -166,13 +169,13 @@ if ($ret -eq 0) {       # OK
 # open new terminal that tails the log file and record its PID to kill later
 if ($t)
 {
-    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Compilation Log (feel free to close this window)'; Get-Content '$ROOTDIR\logs\..\logs\..\logs\compilation_$CURTIME.log' -Wait -Tail 10; pause" -passthru
+    $process = Start-Process -FilePath $PSProcessName -ArgumentList "-c",  "(Get-Host).ui.RawUI.WindowTitle='tail: Compilation Log (feel free to close this window)'; Get-Content '$ROOTDIR\logs\..\logs\..\logs\compilation_$CURTIME.log' -Wait -Tail 10; pause" -passthru
     $PID_COMPILATION_TAIL = $process.id
 }
 
 # start the compilation adapter
 Write-Host -NoNewline "Starting the Compilation adapter"
-$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; cd '$ROOTDIR\compilation' ; .\run.ps1 >> '$ROOTDIR\logs\compilation_$CURTIME.log' 2>&1" -passthru
+$process = Start-Process -WindowStyle Minimized -FilePath $PSProcessName -ArgumentList "-c",  "(Get-Host).ui.RawUI.WindowTitle='Compilation Adapter'; cd '$ROOTDIR\compilation' ; .\run.ps1 >> '$ROOTDIR\logs\compilation_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 $pid_as_string = $process.id
 echo " (PID: $pid_as_string)"
@@ -204,13 +207,13 @@ if ($ret -eq 0) {
 # open new terminal that tails the log file and record its PID to kill later
 if ($t)
 {
-    $process = Start-Process powershell.exe "(Get-Host).ui.RawUI.WindowTitle='tail: Analysis Log (feel free to close this window)'; Get-Content '$ROOTDIR\logs\..\logs\..\logs\analysis_$CURTIME.log' -Wait -Tail 10; pause" -passthru
+    $process = Start-Process -FilePath $PSProcessName -ArgumentList "-c",  "(Get-Host).ui.RawUI.WindowTitle='tail: Analysis Log (feel free to close this window)'; Get-Content '$ROOTDIR\logs\..\logs\..\logs\analysis_$CURTIME.log' -Wait -Tail 10; pause" -passthru
     $PID_ANALYSIS_TAIL = $process.id
 }
 
 # start the analysis adapter
 Write-Host -NoNewline "Starting the Analysis adapter"
-$process = Start-Process -WindowStyle Minimized powershell.exe "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; cd '$ROOTDIR\analysis' ; .\run.ps1 >> '$ROOTDIR\logs\analysis_$CURTIME.log' 2>&1" -passthru
+$process = Start-Process -WindowStyle Minimized -FilePath $PSProcessName -ArgumentList "-c",  "(Get-Host).ui.RawUI.WindowTitle='Analysis Adapter'; cd '$ROOTDIR\analysis' ; .\run.ps1 >> '$ROOTDIR\logs\analysis_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 $pid_as_string = $process.id
 echo " (PID: $pid_as_string)"
