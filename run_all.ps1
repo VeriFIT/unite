@@ -137,7 +137,7 @@ if ($t)
 
 # start the triplestore
 Write-Host -NoNewline "Starting the Triplestore"
-$process = Start-Process -WindowStyle Minimized -FilePath $PSProcessName -ArgumentList "-c", "(Get-Host).ui.RawUI.WindowTitle='Triplestore'; cd `"$ROOTDIR\sparql_triplestore`"; .\run.ps1 >> `"$ROOTDIR\logs\triplestore_$CURTIME.log`" 2>&1" -passthru
+$process = Start-Process -WindowStyle Minimized -FilePath $PSProcessName -ArgumentList "-c", "(Get-Host).ui.RawUI.WindowTitle='Triplestore'; cd '$ROOTDIR\sparql_triplestore'; .\run.ps1 >> '$ROOTDIR\logs\triplestore_$CURTIME.log' 2>&1" -passthru
 $PIDS_TO_KILL = $PIDS_TO_KILL + $process.id
 $pid_as_string = $process.id
 echo " (PID: $pid_as_string)"
