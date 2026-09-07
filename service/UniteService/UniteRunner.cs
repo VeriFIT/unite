@@ -109,6 +109,7 @@ public class UniteRunner(
         RedirectStandardError = true
       };
 
+      RegisterAnalysisTools(configuration);
       ApplyEnvironmentConfiguration(startInfo, configuration);
 
       _process = new Process
@@ -332,6 +333,52 @@ public class UniteRunner(
 
       startInfo.Environment[variable.Key] =
         Environment.ExpandEnvironmentVariables(variable.Value ?? string.Empty);
+    }
+  }
+
+  /// <summary>
+  /// Copies analysis tools definitions into Unite's configuration directory.
+  /// </summary>
+  private void RegisterAnalysisTools(IConfiguration configuration)
+  {
+    var sourceDirectories = configuration
+      .GetSection("Unite:RegisterAnalysisTools")
+      .GetChildren();
+    var targetDirectory = Environment.ExpandEnvironmentVariables(
+      "%UNITE_HOME%\\conf\\analysis_advanced\\AnalysisTools");
+
+    Directory.CreateDirectory(targetDirectory);
+
+    foreach (var sourceDirectory in sourceDirectories)
+    {
+      var sourcePath = Environment.ExpandEnvironmentVariables(
+        sourceDirectory.Value ?? string.Empty);
+
+      if (string.IsNullOrWhiteSpace(sourcePath) ||
+        !Directory.Exists(sourcePath))
+      {
+        logger.LogWarning(
+          $"Analysis tool configuration directory '{sourcePath}' was not found; skipping it.");
+
+        continue;
+      }
+
+      // Copy all files from the source directory to the target directory,
+      // preserving the directory structure
+      foreach (var sourceFile in Directory.EnumerateFiles(
+        sourcePath, "*", SearchOption.AllDirectories))
+      {
+        var relativePath = Path.GetRelativePath(sourcePath, sourceFile);
+        var targetFile = Path.Combine(targetDirectory, relativePath);
+        var targetParent = Path.GetDirectoryName(targetFile);
+
+        if (!string.IsNullOrEmpty(targetParent))
+        {
+          Directory.CreateDirectory(targetParent);
+        }
+
+        File.Copy(sourceFile, targetFile, overwrite: true);
+      }
     }
   }
 
