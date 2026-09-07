@@ -109,6 +109,8 @@ public class UniteRunner(
         RedirectStandardError = true
       };
 
+      ApplyEnvironmentConfiguration(startInfo, configuration);
+
       _process = new Process
       {
         StartInfo = startInfo,
@@ -313,6 +315,24 @@ public class UniteRunner(
     }
 
     return Environment.ExpandEnvironmentVariables(value);
+  }
+
+  /// <summary>
+  /// Applies configured environment variables to the Unite script process.
+  /// </summary>
+  private static void ApplyEnvironmentConfiguration(
+    ProcessStartInfo startInfo, IConfiguration configuration)
+  {
+    foreach (var variable in configuration.GetSection("Environment").GetChildren())
+    {
+      if (string.IsNullOrWhiteSpace(variable.Key))
+      {
+        continue;
+      }
+
+      startInfo.Environment[variable.Key] =
+        Environment.ExpandEnvironmentVariables(variable.Value ?? string.Empty);
+    }
   }
 
   /// <summary>
