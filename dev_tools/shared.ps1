@@ -1,12 +1,31 @@
 ##########################
-# Copyright (C) 2020 Ondřej Vašíček <ondrej.vasicek.0@gmail.com>, <xvasic25@stud.fit.vutbr.cz>
+# Copyright (C) 2020-2026 Ondřej Vašíček <ondrej.vasicek.0@gmail.com>, <xvasic25@stud.fit.vutbr.cz>
 #
 # This program and the accompanying materials are made available under
 # the terms of the Eclipse Public License 2.0 which is available at
 # https://www.eclipse.org/legal/epl-2.0
 #
 # SPDX-License-Identifier: EPL-2.0
+#
+# Contributors:
+#   Jan Fiedor <fiedorjan@centrum.cz>
 ##########################
+
+# Invokes Maven with the repository configured by UNITE_MAVEN_REPO, if set
+function Invoke-UniteMaven ()
+{
+    param (
+        [Parameter(ValueFromRemainingArguments=$true)]
+        [string[]]$MavenArgs
+    )
+
+    $mavenRepoArgs = @()
+    if (![string]::IsNullOrWhiteSpace($env:UNITE_MAVEN_REPO)) {
+        $mavenRepoArgs = @("-Dmaven.repo.local=$env:UNITE_MAVEN_REPO")
+    }
+
+    & mvn @mavenRepoArgs @MavenArgs
+}
 
 # look for a conf file
 #   if found, then copy it over to the destination place
@@ -326,7 +345,9 @@ function KillWithChildren {
     Get-WmiObject win32_process | where {$_.ParentProcessId -eq $1} | ForEach { KillWithChildren $_.ProcessId }
     try {
         Stop-Process $1 2> $null
-    } catch {}
+    } catch {
+        Write-Warning "Failed to kill process $1!"
+    }
 }
 
 # kills all listed pids
@@ -336,7 +357,13 @@ function killAllWithChildren {
         $1
     )
     foreach ($i in $1) {
-        KillWithChildren $i
+        if ($null -ne $i) {
+            KillWithChildren $i
+        }
+        else
+        {
+            Write-Warning "Trying to kill process with null PID!"
+        }
     }
 }
 

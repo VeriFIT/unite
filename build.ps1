@@ -1,11 +1,14 @@
 ##########################
-# Copyright (C) 2020 Ondřej Vašíček <ondrej.vasicek.0@gmail.com>, <xvasic25@stud.fit.vutbr.cz>
+# Copyright (C) 2020-2026 Ondřej Vašíček <ondrej.vasicek.0@gmail.com>, <xvasic25@stud.fit.vutbr.cz>
 #
 # This program and the accompanying materials are made available under
 # the terms of the Eclipse Public License 2.0 which is available at
 # https://www.eclipse.org/legal/epl-2.0
 #
 # SPDX-License-Identifier: EPL-2.0
+#
+# Contributors:
+#   Jan Fiedor <fiedorjan@centrum.cz>
 ##########################
 
 param (
@@ -50,15 +53,15 @@ echo "    Building and Installing shared resources"
 echo "############################################################"
 echo ""
 
-mvn -f "$ROOTDIR\domain\pom.xml" clean install
+Invoke-UniteMaven "-f" "$ROOTDIR\domain\pom.xml" "clean" "install"
 if ( ! $? ) {
     exit $LastExitCode
 }
-mvn -f "$ROOTDIR\shared\pom.xml" clean install
+Invoke-UniteMaven "-f" "$ROOTDIR\shared\pom.xml" "clean" "install"
 if ( ! $? ) {
     exit $LastExitCode
 }
-mvn install:install-file -Dfile="$ROOTDIR\lib\cz.vutbr.fit.group.verifit.arrowhead.client.jersey_0.1.0.202205231408.jar" -DgroupId='cz.vutbr.fit.group.verifit.arrowhead.client' -DartifactId='jersey' -Dversion='0.1.0.qualifier' -Dpackaging='jar'
+Invoke-UniteMaven "install:install-file" "-Dfile=$ROOTDIR\lib\cz.vutbr.fit.group.verifit.arrowhead.client.jersey_0.1.0.202205231408.jar" "-DgroupId=cz.vutbr.fit.group.verifit.arrowhead.client" "-DartifactId=jersey" "-Dversion=0.1.0.qualifier" "-Dpackaging=jar"
 if ( ! $? ) {
     exit $LastExitCode
 }
@@ -68,7 +71,7 @@ echo "############################################################"
 echo "    Building and Installing the Compilation adapter"
 echo "############################################################"
 echo ""
-mvn -f "$ROOTDIR\compilation\pom.xml" clean install
+Invoke-UniteMaven "-f" "$ROOTDIR\compilation\pom.xml" "clean" "install"
 if ( ! $? ) {
     exit $LastExitCode
 }
@@ -78,7 +81,7 @@ echo "############################################################"
 echo "    Building and Installing the Analysis adapter"
 echo "############################################################"
 echo ""
-mvn -f "$ROOTDIR\analysis\pom.xml" clean install
+Invoke-UniteMaven "-f" "$ROOTDIR\analysis\pom.xml" "clean" "install"
 if ( ! $? ) {
     exit $LastExitCode
 }
