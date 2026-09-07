@@ -1,0 +1,4 @@
+UniteScript:
+  PowerShellExecutable: 'powershell.exe'
+  ScriptPath: '%UNITE_HOME%\run_all.ps1'
+  WorkingDirectory: '%UNITE_HOME%'
